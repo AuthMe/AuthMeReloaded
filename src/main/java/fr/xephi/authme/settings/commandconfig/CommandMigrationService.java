@@ -31,7 +31,7 @@ class CommandMigrationService implements MigrationService {
 
     @Override
     public boolean checkAndMigrate(PropertyReader reader, ConfigurationData configurationData) {
-        final CommandConfig commandConfig = CommandSettingsHolder.COMMANDS.determineValue(reader);
+        final CommandConfig commandConfig = CommandSettingsHolder.COMMANDS.determineValue(reader).getValue();
         if (moveOtherAccountsConfig(commandConfig) || isAnyCommandMissing(reader)) {
             configurationData.setValue(CommandSettingsHolder.COMMANDS, commandConfig);
             return true;

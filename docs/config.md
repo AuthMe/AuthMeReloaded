@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Tue Jan 21 10:33:12 CET 2020. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Sun Apr 04 21:31:43 CEST 2021. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder,
@@ -28,6 +28,8 @@ DataSource:
     mySQLUsername: authme
     # Password to connect to the MySQL database
     mySQLPassword: '12345'
+    # Driver Name of the MySQL database
+    mySQLDriverClassName: com.mysql.jdbc.Driver
     # Database Name, use with converters or as SQLITE database name
     mySQLDatabase: authme
     # Table of the database
@@ -138,8 +140,9 @@ settings:
         # Allowed commands for unauthenticated players
         allowCommands: 
         - /login
-        - /register
+        - /log
         - /l
+        - /register
         - /reg
         - /email
         - /captcha
@@ -584,4 +587,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue Jan 21 10:33:12 CET 2020
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Apr 04 21:31:43 CEST 2021

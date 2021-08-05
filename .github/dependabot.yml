@@ -7,11 +7,6 @@ updates:
   open-pull-requests-limit: 10
   ignore:
   - dependency-name: com.google.code.gson:gson
-    versions:
-    - "> 2.2.4"
   - dependency-name: com.google.guava:guava
-    versions:
-    - "> 17.0"
   - dependency-name: org.apache.logging.log4j:log4j-core
-    versions:
-    - "> 2.5, < 3"
+  - dependency-name: mysql:mysql-connector-java

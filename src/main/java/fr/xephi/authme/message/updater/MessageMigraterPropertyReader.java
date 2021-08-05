@@ -60,6 +60,11 @@ final class MessageMigraterPropertyReader implements PropertyReader {
     }
 
     @Override
+    public Set<String> getChildKeys(String s) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public Object getObject(String path) {
         if (path.isEmpty()) {
             return root.get("");

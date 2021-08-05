@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import fr.xephi.authme.data.limbo.LimboPlayer;
@@ -57,10 +58,6 @@ class LimboPlayerSerializer implements JsonSerializer<LimboPlayer> {
             }
             return jsonGroup;
         }).collect(Collectors.toList());
-
-        JsonArray jsonGroups = new JsonArray();
-        groups.forEach(jsonGroups::add);
-        obj.add(GROUPS, jsonGroups);
 
         obj.addProperty(IS_OP, limboPlayer.isOperator());
         obj.addProperty(CAN_FLY, limboPlayer.isCanFly());

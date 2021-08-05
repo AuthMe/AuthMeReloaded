@@ -2,7 +2,7 @@
 # %nl% - Goes to new line.
 # %username% - Replaces the username of the player receiving the message.
 # %displayname% - Replaces the nickname (and colors) of the player receiving the message.
-# Edited: 2019/11/17 MCBBS ID:CH1
+# Edited: 2020/11/26 Leonard Jiang @ Waveland
 
 # Registration
 registration:
@@ -20,7 +20,7 @@ password:
     name_in_password: '&8[&6玩家系统&8] &f你不能使用你的名字作为密码。 '
     unsafe_password: '&8[&6玩家系统&8] &f你不能使用安全性过低的密码。 '
     forbidden_characters: '&4您的密码包含了非法字符。可使用的字符: %valid_chars'
-    wrong_length: '&8[&6玩家系统&8] &你的密码没有达到要求！'
+    wrong_length: '&8[&6玩家系统&8] &你的密码不符合要求'
 
 # Login
 login:
@@ -28,7 +28,7 @@ login:
     wrong_password: '&8[&6玩家系统&8] &c错误的密码'
     success: '&8[&6玩家系统&8] &c已成功登录！'
     login_request: '&8[&6玩家系统&8] &c请输入“/login <密码>”以登录'
-    timeout_error: '&8[&6玩家系统&8] &f给你登录的时间已经过了'
+    timeout_error: '&8[&6玩家系统&8] &f登录超时'
 
 # Errors
 error:
@@ -46,9 +46,9 @@ error:
 
 # AntiBot
 antibot:
-    kick_antibot: '&8[&6玩家系统&8] &f防机器人程序已启用 !请稍等几分钟后再次进入服务器'
-    auto_enabled: '&8[&6玩家系统&8] &f防机器人程序由于大量异常连接而启用'
-    auto_disabled: '&8[&6玩家系统&8] &f防机器人程序由于异常连接减少而在 %m 分钟后停止'
+    kick_antibot: '&8[&6玩家系统&8] &f验证程序已启用 !请稍等几分钟后再次进入服务器'
+    auto_enabled: '&8[&6玩家系统&8] &f验证程序由于大量异常连接而启用'
+    auto_disabled: '&8[&6玩家系统&8] &f验证程序由于异常连接减少而在 %m 分钟后停止'
 
 # Unregister
 unregister:
@@ -78,9 +78,9 @@ on_join_validation:
     characters_in_name: '&8[&6玩家系统&8] &c你的用户名包含非法字母，用户名里允许的字母: %valid_chars'
     kick_full_server: '&8[&6玩家系统&8] &c抱歉，服务器已满!'
     country_banned: '这个服务器禁止该国家登陆'
-    not_owner_error: '&8[&6玩家系统&8] &4警告！ &c你并不是此帐户持有人，请立即登出。 '
+    not_owner_error: '&8[&6玩家系统&8] &4警告！ &c你并不是此帐户的拥有者，请立即登出！ '
     invalid_name_case: '&8[&6玩家系统&8] &c你应该使用「%valid」而并非「%invalid」登入游戏。 '
-    quick_command: '&8[&6玩家系统&8] &c您发送命令的速度太快了，请重新加入服务器等待一会后再使用命令'
+    quick_command: '&8[&6玩家系统&8] &c您发送命令的速度太快了，请重新加入服务器再等待一会后再使用命令'
 
 # Email
 email:
@@ -137,8 +137,8 @@ verification:
 time:
     second: '秒'
     seconds: '秒'
-    minute: '分钟'
-    minutes: '分钟'
+    minute: '分'
+    minutes: '分'
     hour: '小时'
     hours: '小时'
     day: '天'
@@ -147,12 +147,12 @@ time:
 # Two-factor authentication
 two_factor:
     code_created: '&8[&6玩家系统&8] &a你的代码是 %code，你可以使用 %url 来进行扫描'
-    confirmation_required: '&8[&6玩家系统&8] &3请输入 &a/2fa confirm <验证码> &3来确认两步验证'
-    code_required: '&8[&6玩家系统&8] &c请输入 &a/2fa code <验证码> &c来提交两步验证验证码'
-    already_enabled: '&8[&6玩家系统&8] &a两步验证码已在您的账号上启用'
-    enable_error_no_code: '&8[&6玩家系统&8] &c两步验证密钥不存在或已过期，请输入 &a/2fa add &c来添加'
-    enable_success: '&8[&6玩家系统&8] &a已成功启用两步验证码'
-    enable_error_wrong_code: '&8[&6玩家系统&8] &c两步验证代码错误或者已经过期，请重新执行 &a/2fa add'
-    not_enabled_error: '&8[&6玩家系统&8] &c两步验证码未在您的账号上启用，请使用 &a/2fa add &c来启用'
-    removed_success: '&8[&6玩家系统&8] &c两步验证码已从您的账号上删除'
+    confirmation_required: '&8[&6玩家系统&8] &3请输入 &a/2fa confirm <验证码> &3来确认双重认证'
+    code_required: '&8[&6玩家系统&8] &c请输入 &a/2fa code <验证码> &c来提交双重认证验证码'
+    already_enabled: '&8[&6玩家系统&8] &a双重认证已在您的账号上启用'
+    enable_error_no_code: '&8[&6玩家系统&8] &c双重认证密钥不存在或已过期，请输入 &a/2fa add &c来添加'
+    enable_success: '&8[&6玩家系统&8] &a已成功启用双重认证'
+    enable_error_wrong_code: '&8[&6玩家系统&8] &c双重认证代码错误或者已经过期，请重新执行 &a/2fa add'
+    not_enabled_error: '&8[&6玩家系统&8] &c双重认证码未在您的账号上启用，请使用 &a/2fa add &c来启用'
+    removed_success: '&8[&6玩家系统&8] &c双重认证码已从您的账号上删除'
     invalid_code: '&8[&6玩家系统&8] &c无效的验证码'
