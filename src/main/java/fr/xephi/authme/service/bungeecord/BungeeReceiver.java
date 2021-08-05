@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.data.ProxySessionManager;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
@@ -24,16 +25,18 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
 
     private final AuthMe plugin;
     private final BukkitService bukkitService;
+    private final ProxySessionManager proxySessionManager;
     private final Management management;
     private final DataSource dataSource;
 
     private boolean isEnabled;
 
     @Inject
-    BungeeReceiver(AuthMe plugin, BukkitService bukkitService, Management management,
-                   DataSource dataSource, Settings settings) {
+    BungeeReceiver(AuthMe plugin, BukkitService bukkitService, ProxySessionManager proxySessionManager,
+                   Management management, DataSource dataSource, Settings settings) {
         this.plugin = plugin;
         this.bukkitService = bukkitService;
+        this.proxySessionManager = proxySessionManager;
         this.management = management;
         this.dataSource = dataSource;
         reload(settings);
@@ -152,6 +155,11 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
             management.forceLogin(player);
             logger.info("The user " + player.getName() + " has been automatically logged in, "
                 + "as requested via plugin messaging.");
+        } else {
+            proxySessionManager.processProxySessionMessage(name);
+            logger.info("The user " + name + " should be automatically logged in, "
+                + "as requested via plugin messaging but has not been detected, nickname has been"
+                +" added to autologin queue.");
         }
     }
 

@@ -70,6 +70,27 @@ abstract class AuthMeController {
         }
         return false;
     }
+    
+    
+    /**
+     * Changes password for player.
+     *
+     * @param string $username the username
+     * @param string $password the password
+     * @return bool true whether or not password change was successful 
+     */
+    function changePassword($username, $password) {
+        $mysqli = $this->getAuthmeMySqli();
+        if ($mysqli !== null) {
+            $hash = $this->hash($password);
+            $stmt = $mysqli->prepare('UPDATE ' . self::AUTHME_TABLE . ' SET password=? '
+                . 'WHERE username=?');
+            $username_low = strtolower($username);
+            $stmt->bind_param('ss', $hash, $username_low);
+            return $stmt->execute();
+        }
+        return false;
+    }
 
     /**
      * Hashes the given password.
