@@ -6,6 +6,7 @@ import ch.jalu.injector.testing.InjectDelayed;
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.limbo.LimboPlayer;
+import fr.xephi.authme.data.limbo.UserGroup;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
@@ -48,22 +49,22 @@ public class DistributedFilesPersistenceHandlerTest {
     /** Player is in seg32-10110 and should be migrated into seg16-f. */
     private static final UUID MIGRATED_UUID = fromString("f6a97c88-7c8f-c12e-4931-6206d4ca067d");
     private static final Matcher<LimboPlayer> MIGRATED_LIMBO_MATCHER =
-        isLimbo(false, true, 0.2f, 0.1f, "noob");
+        isLimbo(false, true, 0.2f, 0.1f, new UserGroup("noob"));
 
     /** Existing player in seg16-f. */
     private static final UUID UUID_FAB69 = fromString("fab69c88-2cd0-1fed-f00d-dead14ca067d");
     private static final Matcher<LimboPlayer> FAB69_MATCHER =
-        isLimbo(false, false, 0.2f, 0.1f, "");
+        isLimbo(false, false, 0.2f, 0.1f, new UserGroup(""));
 
     /** Player in seg16-8. */
     private static final UUID UUID_STAFF = fromString("88897c88-7c8f-c12e-4931-6206d4ca067d");
     private static final Matcher<LimboPlayer> STAFF_MATCHER =
-        isLimbo(true, false, 0.3f, 0.1f, "staff", "mod");
+        isLimbo(true, false, 0.3f, 0.1f, new UserGroup("staff"), new UserGroup("mod"));
 
     /** Player in seg16-8. */
     private static final UUID UUID_8C679 = fromString("8c679491-1234-abcd-9102-1fa6e0cc3f81");
     private static final Matcher<LimboPlayer> SC679_MATCHER =
-        isLimbo(false, true, 0.1f, 0.0f, "primary");
+        isLimbo(false, true, 0.1f, 0.0f, new UserGroup("primary"));
 
     /** UUID for which no data is stored (belongs to a segment file that does not exist, seg16-4). */
     private static final UUID UNKNOWN_UUID = fromString("42d1cc0b-8f12-d04a-e7ba-a067d05cdc39");
@@ -156,7 +157,7 @@ public class DistributedFilesPersistenceHandlerTest {
         // given
         Player uuidToAdd1 = mockPlayerWithUuid(UNKNOWN_UUID);
         Location location1 = mockLocation("1world");
-        LimboPlayer limbo1 = new LimboPlayer(location1, false, Collections.singletonList("group-1"), true, 0.1f, 0.2f);
+        LimboPlayer limbo1 = new LimboPlayer(location1, false, Collections.singletonList(new UserGroup("group-1")), true, 0.1f, 0.2f);
         Player uuidToAdd2 = mockPlayerWithUuid(UNKNOWN_UUID2);
         Location location2 = mockLocation("2world");
         LimboPlayer limbo2 = new LimboPlayer(location2, true, Collections.emptyList(), false, 0.0f, 0.25f);

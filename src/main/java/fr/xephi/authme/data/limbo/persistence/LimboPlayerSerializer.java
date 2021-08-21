@@ -4,13 +4,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import org.bukkit.Location;
 
 import java.lang.reflect.Type;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Converts a LimboPlayer to a JsonElement.
@@ -47,11 +48,19 @@ class LimboPlayerSerializer implements JsonSerializer<LimboPlayer> {
 
         JsonObject obj = new JsonObject();
         obj.add(LOCATION, locationObject);
-        JsonArray groups = new JsonArray();
-        for (String group : limboPlayer.getGroups()) {
-            groups.add(new JsonPrimitive(group));
-        }
-        obj.add(GROUPS, groups);
+
+        List<JsonObject> groups = limboPlayer.getGroups().stream().map(g -> {
+            JsonObject jsonGroup = new JsonObject();
+            jsonGroup.addProperty("groupName", g.getGroupName());
+            if (g.getContextMap() != null) {
+                jsonGroup.addProperty("contextMap", GSON.toJson(g.getContextMap()));
+            }
+            return jsonGroup;
+        }).collect(Collectors.toList());
+
+        JsonArray jsonGroups = new JsonArray();
+        groups.forEach(jsonGroups::add);
+        obj.add(GROUPS, jsonGroups);
 
         obj.addProperty(IS_OP, limboPlayer.isOperator());
         obj.addProperty(CAN_FLY, limboPlayer.isCanFly());

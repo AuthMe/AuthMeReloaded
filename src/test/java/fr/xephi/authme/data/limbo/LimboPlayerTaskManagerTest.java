@@ -106,7 +106,7 @@ public class LimboPlayerTaskManagerTest {
         String name = "rats";
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
-        LimboPlayer limboPlayer = new LimboPlayer(null, true, Collections.singletonList("grp"), false, 0.1f, 0.0f);
+        LimboPlayer limboPlayer = new LimboPlayer(null, true, Collections.singletonList(new UserGroup("grp")), false, 0.1f, 0.0f);
         MessageTask existingMessageTask = mock(MessageTask.class);
         limboPlayer.setMessageTask(existingMessageTask);
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(8);
@@ -129,7 +129,7 @@ public class LimboPlayerTaskManagerTest {
         String name = "race";
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
-        LimboPlayer limboPlayer = new LimboPlayer(null, true, Collections.singletonList("grp"), false, 0.1f, 0.0f);
+        LimboPlayer limboPlayer = new LimboPlayer(null, true, Collections.singletonList(new UserGroup("grp")), false, 0.1f, 0.0f);
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(12);
         given(registrationCaptchaManager.isCaptchaRequired(name)).willReturn(true);
         String captcha = "M032";
