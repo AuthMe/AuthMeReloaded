@@ -64,7 +64,7 @@
         <maven.minimumVersion>3.6.0</maven.minimumVersion>
 
         <!-- Dependencies versions -->
-        <spigot.version>1.17-R0.1-SNAPSHOT</spigot.version>
+        <spigot.version>1.17.1-R0.1-SNAPSHOT</spigot.version>
 
         <!-- Versioning properties -->
         <project.outputName>AuthMe</project.outputName>
@@ -290,6 +290,7 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
+                        <!--
                         <configuration>
                             <artifactSet>
                                 <excludes>
@@ -297,7 +298,9 @@
                                 </excludes>
                             </artifactSet>
                         </configuration>
+                        -->
                     </execution>
+                    <!--
                     <execution>
                         <id>shaded-jar-legacy</id>
                         <phase>package</phase>
@@ -305,10 +308,11 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <!-- Use the base jar name, to help server owners download the right jar -->
+                            Use the base jar name, to help server owners download the right jar
                             <finalName>${project.finalNameBase}-legacy</finalName>
                         </configuration>
                     </execution>
+                    -->
                 </executions>
                 <configuration>
                     <!-- Don't create the reduced pom file, as we don't deploy the shaded jar -->
@@ -623,7 +627,13 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.49</version>
+            <version>8.0.26</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>2.7.4</version>
             <optional>true</optional>
         </dependency>
 

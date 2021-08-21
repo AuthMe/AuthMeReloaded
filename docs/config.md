@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Aug 21 22:53:23 CEST 2021. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Sat Aug 21 23:12:31 CEST 2021. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder,
@@ -28,7 +28,10 @@ DataSource:
     mySQLUsername: authme
     # Password to connect to the MySQL database
     mySQLPassword: '12345'
-    # Driver Name of the MySQL database
+    # Driver Name of the MySQL database.
+    # Built-in drivers:
+    #     MySQL: 'com.mysql.cj.jdbc.Driver'
+    #     MariaDB: 'org.mariadb.jdbc.Driver'
     mySQLDriverClassName: com.mysql.cj.jdbc.Driver
     # Database Name, use with converters or as SQLITE database name
     mySQLDatabase: authme
@@ -587,4 +590,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Aug 21 22:53:23 CEST 2021
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Aug 21 23:12:31 CEST 2021

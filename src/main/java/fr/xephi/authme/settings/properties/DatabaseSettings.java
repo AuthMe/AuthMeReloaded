@@ -45,7 +45,10 @@ public final class DatabaseSettings implements SettingsHolder {
     public static final Property<String> MYSQL_PASSWORD =
         newProperty("DataSource.mySQLPassword", "12345");
     
-        @Comment("Driver Name of the MySQL database")
+    @Comment({"Driver Name of the MySQL database.",
+        "Built-in drivers:",
+        "    MySQL: 'com.mysql.cj.jdbc.Driver'",
+        "    MariaDB: 'org.mariadb.jdbc.Driver'"})
     public static final Property<String> MYSQL_DRIVER_CLASS_NAME =
         newProperty("DataSource.mySQLDriverClassName", "com.mysql.cj.jdbc.Driver");
 
