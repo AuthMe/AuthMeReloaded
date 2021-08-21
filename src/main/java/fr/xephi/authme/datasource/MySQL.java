@@ -101,6 +101,12 @@ public class MySQL extends AbstractSqlDataSource {
         this.username = settings.getProperty(DatabaseSettings.MYSQL_USERNAME);
         this.password = settings.getProperty(DatabaseSettings.MYSQL_PASSWORD);
         this.className = settings.getProperty(DatabaseSettings.MYSQL_DRIVER_CLASS_NAME);
+        try {
+            Class.forName(this.className);
+        } catch (ClassNotFoundException e) {
+            logger.info("Driver class '" + this.className + "' not found! Falling back to legacy MySQL driver (com.mysql.jdbc.Driver)");
+            this.className = "com.mysql.jdbc.Driver";
+        }
         this.database = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
         this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
         this.columnOthers = settings.getProperty(HooksSettings.MYSQL_OTHER_USERNAME_COLS);
@@ -122,7 +128,7 @@ public class MySQL extends AbstractSqlDataSource {
 
         // Pool Settings
         ds.setMaximumPoolSize(poolSize);
-        ds.setMaxLifetime(maxLifetime * 1000);
+        ds.setMaxLifetime(maxLifetime * 1000L);
 
         // Database URL
         ds.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
