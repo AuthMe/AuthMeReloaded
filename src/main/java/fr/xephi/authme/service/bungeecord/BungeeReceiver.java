@@ -152,7 +152,7 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
     private void performLogin(final String name) {
         Player player = bukkitService.getPlayerExact(name);
         if (player != null && player.isOnline()) {
-            management.forceLogin(player);
+            management.forceLogin(player, true);
             logger.info("The user " + player.getName() + " has been automatically logged in, "
                 + "as requested via plugin messaging.");
         } else {

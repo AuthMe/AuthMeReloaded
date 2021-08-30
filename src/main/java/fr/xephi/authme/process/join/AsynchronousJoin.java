@@ -15,6 +15,8 @@ import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
+import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.WelcomeMessageConfiguration;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -72,6 +74,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     @Inject
     private SessionService sessionService;
+
+    @Inject
+    private BungeeSender bungeeSender;
 
     @Inject
     private ProxySessionManager proxySessionManager;
@@ -148,6 +153,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             });
 
             // Skip if registration is optional
+            bungeeSender.sendAuthMeBungeecordMessage(MessageType.LOGIN, name);
             return;
         }
 
