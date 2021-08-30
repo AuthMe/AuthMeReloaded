@@ -61,10 +61,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <maven.minimumVersion>3.3.9</maven.minimumVersion>
+        <maven.minimumVersion>3.6.0</maven.minimumVersion>
 
         <!-- Dependencies versions -->
-        <spigot.version>1.16.1-R0.1-SNAPSHOT</spigot.version>
+        <spigot.version>1.17.1-R0.1-SNAPSHOT</spigot.version>
 
         <!-- Versioning properties -->
         <project.outputName>AuthMe</project.outputName>
@@ -76,7 +76,7 @@
         <pluginDescription.name>${project.outputName}</pluginDescription.name>
         <pluginDescription.version>${project.versionCode}</pluginDescription.version>
         <pluginDescription.main>${project.groupId}.${project.artifactId}.${pluginDescription.name}</pluginDescription.main>
-        <pluginDescription.authors>Xephi, sgdc3, DNx5, timvisee, games647, ljacqu, Gnat008</pluginDescription.authors>
+        <pluginDescription.authors>sgdc3, ljacqu, games647, Hex3l, krusic22</pluginDescription.authors>
     </properties>
 
     <!-- Jenkins profile -->
@@ -151,7 +151,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.3.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -161,7 +161,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>1.4.1</version>
+                <version>3.0.0</version>
                 <executions>
                     <execution>
                         <id>enforce-environment</id>
@@ -205,7 +205,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.6</version>
+                <version>0.8.7</version>
                 <executions>
                     <execution>
                         <id>pre-unit-test</id>
@@ -285,11 +285,34 @@
                 <version>3.2.4</version>
                 <executions>
                     <execution>
+                        <id>shaded-jar</id>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
+                        <!--
+                        <configuration>
+                            <artifactSet>
+                                <excludes>
+                                    <exclude>mysql:mysql-connector-java</exclude>
+                                </excludes>
+                            </artifactSet>
+                        </configuration>
+                        -->
                     </execution>
+                    <!--
+                    <execution>
+                        <id>shaded-jar-legacy</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            Use the base jar name, to help server owners download the right jar
+                            <finalName>${project.finalNameBase}-legacy</finalName>
+                        </configuration>
+                    </execution>
+                    -->
                 </executions>
                 <configuration>
                     <!-- Don't create the reduced pom file, as we don't deploy the shaded jar -->
@@ -370,7 +393,22 @@
                                 <exclude>META-INF/*.RSA</exclude>
                             </excludes>
                         </filter>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.MF</exclude>
+                                <exclude>META-INF/DEPENDENCIES</exclude>
+                            </excludes>
+                        </filter>
                     </filters>
+
+                    <transformers>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"/>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
+                            <addHeader>false</addHeader>
+                        </transformer>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                    </transformers>
                 </configuration>
             </plugin>
             <!-- Install the jars as artifacts into the local repository -->
@@ -560,7 +598,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>3.4.5</version>
+            <version>4.0.3</version>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
@@ -573,7 +611,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.30</version>
+            <version>1.7.32</version>
             <optional>true</optional>
         </dependency>
 
@@ -585,11 +623,25 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- MySQL connector, shaded into the legacy jar -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.26</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>2.7.4</version>
+            <optional>true</optional>
+        </dependency>
+
         <!-- Argon2 implementation -->
         <dependency>
             <groupId>de.mkammerer</groupId>
             <artifactId>argon2-jvm-nolibs</artifactId>
-            <version>2.8</version>
+            <version>2.10.1</version>
             <optional>true</optional>
         </dependency>
 
@@ -657,15 +709,15 @@
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>1.7</version>
+            <version>2.2.1</version>
             <optional>true</optional>
         </dependency>
 
         <!-- ProtocolLib -->
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
-            <artifactId>ProtocolLib-API</artifactId>
-            <version>4.4.0</version>
+            <artifactId>ProtocolLib</artifactId>
+            <version>4.7.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -683,7 +735,7 @@
         <dependency>
             <groupId>net.luckperms</groupId>
             <artifactId>api</artifactId>
-            <version>5.2</version>
+            <version>5.3</version>
             <scope>provided</scope>
         </dependency>
 
@@ -741,7 +793,7 @@
         <dependency>
             <groupId>com.onarandombox.multiversecore</groupId>
             <artifactId>Multiverse-Core</artifactId>
-            <version>4.2.2</version>
+            <version>4.3.0</version>
             <type>jar</type>
             <scope>provided</scope>
             <exclusions>
@@ -868,7 +920,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.18</version>
+            <version>42.2.23</version>
             <optional>true</optional>
         </dependency>
 
@@ -878,7 +930,7 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
-            <version>4.13.1</version>
+            <version>4.13.2</version>
         </dependency>
 
         <dependency>
@@ -892,7 +944,7 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
-            <version>3.6.28</version>
+            <version>3.12.4</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hamcrest-core</artifactId>
@@ -905,7 +957,7 @@
         <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
-            <version>3.8.0</version>
+            <version>3.17.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -913,7 +965,7 @@
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>3.34.0</version>
+            <version>3.36.0.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>

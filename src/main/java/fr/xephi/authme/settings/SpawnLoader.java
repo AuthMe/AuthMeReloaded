@@ -273,7 +273,7 @@ public class SpawnLoader implements Reloadable {
      * @return location of the given player if alive, spawn location if dead.
      */
     public Location getPlayerLocationOrSpawn(Player player) {
-        if (player.isOnline() && player.isDead()) {
+        if (player.getHealth() <= 0.0) {
             return getSpawnLocation(player);
         }
         return player.getLocation();

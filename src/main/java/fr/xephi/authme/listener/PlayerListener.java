@@ -190,7 +190,7 @@ public class PlayerListener implements Listener {
         teleportationService.teleportNewPlayerToFirstSpawn(player);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGH) // HIGH as EssentialsX listens at HIGHEST
     public void onJoinMessage(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
 

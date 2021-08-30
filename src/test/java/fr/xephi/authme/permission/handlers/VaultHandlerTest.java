@@ -1,12 +1,15 @@
 package fr.xephi.authme.permission.handlers;
 
+import fr.xephi.authme.data.limbo.UserGroup;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertThat;
@@ -29,10 +32,11 @@ public class VaultHandlerTest {
         given(permissionMock.getPlayerGroups(null, player)).willReturn(new String[]{"abc", "test"});
 
         // when
-        List<String> result = vaultHandlerTest.getGroups(player);
+        List<UserGroup> result = vaultHandlerTest.getGroups(player);
 
         // then
-        assertThat(result, contains("abc", "test"));
+        List<String> groupNames = result.stream().map(UserGroup::getGroupName).collect(toList());
+        assertThat(groupNames, contains("abc", "test"));
         verify(permissionMock).getPlayerGroups(null, player);
     }
 
@@ -47,7 +51,7 @@ public class VaultHandlerTest {
         given(permissionMock.getPlayerGroups(null, player)).willReturn(null);
 
         // when
-        List<String> result = vaultHandlerTest.getGroups(player);
+        List<UserGroup> result = vaultHandlerTest.getGroups(player);
 
         // then
         assertThat(result, empty());

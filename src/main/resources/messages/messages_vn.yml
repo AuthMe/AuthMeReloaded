@@ -40,7 +40,7 @@ error:
     max_registration: '&cBạn đã vượt quá giới hạn tối đa đăng ký tài khoản (%reg_count/%max_acc %reg_names) cho những lần kết nối tài khoản!'
     logged_in: '&cBạn đã đăng nhập!'
     kick_for_vip: '&eChỉ có thành viên VIP mới được tham gia khi máy chủ đầy!'
-    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
+    kick_unresolved_hostname: '&cLôi đã xảy ra: Không thể phân giải hostname!'
     tempban_max_logins: '&cBạn đã bị tạm thời khóa truy cập do đăng nhập sai nhiều lần.'
 
 # AntiBot
@@ -79,7 +79,7 @@ on_join_validation:
     country_banned: '&4Quốc gia của bạn bị cấm tham gia máy chủ này!'
     not_owner_error: 'Bạn không phải là chủ sở hữu tài khoản này, hãy chọn tên khác!'
     invalid_name_case: 'Bạn nên vào máy chủ với tên đăng nhập là %valid, không phải là %invalid.'
-    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
+    quick_command: 'Bạn đang xài lệnh quá nhanh. Hãy thoát máy chủ và chờ một lúc trước khi sử dụng lệnh'
 
 # Email
 email:
@@ -90,10 +90,10 @@ email:
     old_email_invalid: '&cEmail cũ không hợp lệ, vui lòng thử lại!'
     invalid: '&cĐại chỉ email không hợp lệ, vui lòng thử lại!'
     added: '&2Địa chỉ email đã thêm vào tài khoản của bạn thành công!'
-    # TODO add_not_allowed: '&cAdding email was not allowed'
+    add_not_allowed: '&cViệc thêm email không được cho phép!'
     request_confirmation: '&cVui lòng xác nhận địa chỉ email của bạn!'
     changed: '&2Địa chỉ email đã thay đổi!'
-    # TODO change_not_allowed: '&cChanging email was not allowed'
+    change_not_allowed: '&cViệc đổi địa chỉ email không được cho phép'
     email_show: '&2Địa chỉ email hiện tại của bạn là: &f%email'
     no_email_for_account: '&2Hiện tại bạn chưa liên kết bất kỳ email nào với tài khoản này.'
     already_used: '&4Địa chỉ email đã được sử dụng'
@@ -110,9 +110,9 @@ recovery:
     code:
         code_sent: 'Một mã khôi phục mật khẩu đã được gửi đến địa chỉ email của bạn.'
         incorrect: 'Mã khôi phục không đúng! Dùng lệnh /email recovery [email] để tạo một mã mới'
-        # TODO tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
-        # TODO correct: 'Recovery code entered correctly!'
-        # TODO change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
+        tries_exceeded: 'Bạn đã vượt quá số lần tối đa cho phép nhập mã khôi phục. Hãy sử dụng lệnh "/email recovery [email]" để tạo một mã mới.'
+        correct: 'Mã khôi phục đã được nhập chính xác!'
+        change_password: 'Hãy sử dụng lệnh "/email setpassword <mật khẩu mới>" để đổi mật khẩu của bạn ngay lập tức.'
 
 # Captcha
 captcha:
@@ -125,12 +125,12 @@ captcha:
 # Verification code
 verification:
     # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-    # TODO command_usage: '&cUsage: /verification <code>'
+    command_usage: '&cLệnh: /verification <code>'
     # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
+    success: '&2Danh tính của bạn đã được xác minh! Bạn đã có thể sử dụng các lệnh trong phiên đăng nhập này'
     # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
     # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
-    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
+    email_needed: '&3Để xác định danh tính của bạn, bạn cần kết nối tài khoản này với 1 email!'
 
 # Time units
 time:
@@ -146,12 +146,13 @@ time:
 # Two-factor authentication
 two_factor:
     code_created: '&2Mã bí mật của bạn là %code. Bạn có thể quét nó tại đây %url'
-    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
-    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
-    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
-    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
-    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
-    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
-    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
-    # TODO removed_success: 'Successfully removed two-factor auth from your account'
-    # TODO invalid_code: 'Invalid code!'
+    confirmation_required: 'Hãy xác thực mã của bạn bằng lệnh /2fa confirm <mã>'
+    code_required: 'Hãy gửi đi mã xác thực 2 lớp của bạn bằng lệnh /2fa code <mã>'
+    already_enabled: 'Xác thực 2 lớp đã được kích hoạt trên tài khoản của bạn!'
+    enable_error_no_code: 'Không có mã xác thực nào đã được tạo cho tài khoản của bạn hoặc nó đã hết hạn. Hãy sử dụng lệnh /2fa add'
+    enable_success: 'Đã thành công kích hoạt xác thực 2 lớp cho tài khoản của bạn!'
+    enable_error_wrong_code: 'Mã xác thực bị sai hoặc đã bị hết hạn. Hãy sử dụng lệnh /2fa add'
+    not_enabled_error: 'Xác thực 2 lớp không được kích hoạt trên tài khoản của bạn. Hãy sử dụng lệnh /2fa add'
+    removed_success: 'Đã thành công tắt xác thực 2 lớp khỏi tài khoản của bạn'
+    invalid_code: 'Mã xác thực không hợp lệ!'
+

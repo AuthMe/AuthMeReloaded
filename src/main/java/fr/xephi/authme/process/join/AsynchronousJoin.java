@@ -1,6 +1,7 @@
 package fr.xephi.authme.process.join;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.data.ProxySessionManager;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
@@ -77,6 +78,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
     @Inject
     private BungeeSender bungeeSender;
 
+    @Inject
+    private ProxySessionManager proxySessionManager;
+
     AsynchronousJoin() {
     }
 
@@ -132,6 +136,15 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(
                     () -> commandManager.runCommandsOnSessionLogin(player));
                 bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
+                return;
+            } else if (proxySessionManager.shouldResumeSession(name)) {
+                service.send(player, MessageKey.SESSION_RECONNECTION);
+                // Run commands
+                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(
+                    () -> commandManager.runCommandsOnSessionLogin(player));
+                bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
+                logger.info("The user " + player.getName() + " has been automatically logged in, "
+                    + "as present in autologin queue.");
                 return;
             }
         } else if (!service.getProperty(RegistrationSettings.FORCE)) {

@@ -186,8 +186,6 @@ public class GeoIpService {
      * @throws IOException if failed during downloading and writing to destination file
      */
     private String downloadDatabaseArchive(Instant lastModified, Path destination) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(ARCHIVE_URL).openConnection();
-
         String clientId = settings.getProperty(ProtectionSettings.MAXMIND_API_CLIENT_ID);
         String licenseKey = settings.getProperty(ProtectionSettings.MAXMIND_API_LICENSE_KEY);
         if (clientId.isEmpty() || licenseKey.isEmpty()) {
@@ -195,6 +193,8 @@ public class GeoIpService {
                 + " GeoIp protections will be disabled.");
             return null;
         }
+
+        HttpURLConnection connection = (HttpURLConnection) new URL(ARCHIVE_URL).openConnection();
         String basicAuth = "Basic " + new String(Base64.getEncoder().encode((clientId + ":" + licenseKey).getBytes()));
         connection.setRequestProperty("Authorization", basicAuth);
 
