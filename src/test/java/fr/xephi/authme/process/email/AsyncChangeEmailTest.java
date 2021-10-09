@@ -1,5 +1,6 @@
 package fr.xephi.authme.process.email;
 
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
@@ -10,6 +11,7 @@ import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import org.bukkit.entity.Player;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -55,6 +57,11 @@ public class AsyncChangeEmailTest {
 
     @Mock
     private BukkitService bukkitService;
+
+    @BeforeClass
+    public static void setUp() {
+        TestHelper.setupLogger();
+    }
 
     @Test
     public void shouldChangeEmail() {
