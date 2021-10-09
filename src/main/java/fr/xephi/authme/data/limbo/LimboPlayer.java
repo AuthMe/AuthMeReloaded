@@ -4,6 +4,7 @@ import fr.xephi.authme.task.MessageTask;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -29,7 +30,7 @@ public class LimboPlayer {
                        float flySpeed) {
         this.loc = loc;
         this.operator = operator;
-        this.groups = groups;
+        this.groups = new ArrayList<>(groups); // prevent bug #2413
         this.canFly = fly;
         this.walkSpeed = walkSpeed;
         this.flySpeed = flySpeed;
