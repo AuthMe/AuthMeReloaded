@@ -213,7 +213,7 @@ public class MySQL extends AbstractSqlDataSource {
 
             if (isColumnMissing(md, col.LAST_IP)) {
                 st.executeUpdate("ALTER TABLE " + tableName
-                    + " ADD COLUMN " + col.LAST_IP + " VARCHAR(40) CHARACTER SET ascii COLLATE ascii_bin;");
+                    + " ADD COLUMN " + col.LAST_IP + " VARCHAR(128) CHARACTER SET ascii COLLATE ascii_bin;");
             } else {
                 MySqlMigrater.migrateLastIpColumn(st, md, tableName, col);
             }
@@ -231,7 +231,7 @@ public class MySQL extends AbstractSqlDataSource {
 
             if (isColumnMissing(md, col.REGISTRATION_IP)) {
                 st.executeUpdate("ALTER TABLE " + tableName
-                    + " ADD COLUMN " + col.REGISTRATION_IP + " VARCHAR(40) CHARACTER SET ascii COLLATE ascii_bin;");
+                    + " ADD COLUMN " + col.REGISTRATION_IP + " VARCHAR(128) CHARACTER SET ascii COLLATE ascii_bin;");
             }
 
             if (isColumnMissing(md, col.LASTLOC_X)) {
