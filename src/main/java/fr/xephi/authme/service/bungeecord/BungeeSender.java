@@ -23,6 +23,7 @@ public class BungeeSender implements SettingsDependent {
     private final DataSource dataSource;
 
     private boolean isEnabled;
+    private String channel;
     private String destinationServerOnLogin;
 
     /*
@@ -40,12 +41,13 @@ public class BungeeSender implements SettingsDependent {
     @Override
     public void reload(final Settings settings) {
         this.isEnabled = settings.getProperty(HooksSettings.BUNGEECORD);
+        this.channel = settings.getProperty(HooksSettings.BUNGEECORD_CHANNEL);
         this.destinationServerOnLogin = settings.getProperty(HooksSettings.BUNGEECORD_SERVER);
 
         if (this.isEnabled) {
             final Messenger messenger = plugin.getServer().getMessenger();
-            if (!messenger.isOutgoingChannelRegistered(plugin, "BungeeCord")) {
-                messenger.registerOutgoingPluginChannel(plugin, "BungeeCord");
+            if (!messenger.isOutgoingChannelRegistered(plugin, channel)) {
+                messenger.registerOutgoingPluginChannel(plugin, channel);
             }
         }
     }
@@ -59,7 +61,7 @@ public class BungeeSender implements SettingsDependent {
         for (final String element : data) {
             out.writeUTF(element);
         }
-        bukkitService.sendBungeeMessage(out.toByteArray());
+        bukkitService.sendBungeeMessage(channel, out.toByteArray());
     }
 
     private void sendForwardedBungeecordMessage(final String subChannel, final String... data) {
@@ -74,7 +76,7 @@ public class BungeeSender implements SettingsDependent {
         final byte[] dataBytes = dataOut.toByteArray();
         out.writeShort(dataBytes.length);
         out.write(dataBytes);
-        bukkitService.sendBungeeMessage(out.toByteArray());
+        bukkitService.sendBungeeMessage(channel, out.toByteArray());
     }
 
     /**

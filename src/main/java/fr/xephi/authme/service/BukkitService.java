@@ -14,9 +14,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
@@ -303,12 +301,13 @@ public class BukkitService implements SettingsDependent {
     /**
      * Send the specified message to bungeecord using the first available player connection.
      *
+     * @param channel the channel
      * @param bytes the message
      */
-    public void sendBungeeMessage(byte[] bytes) {
+    public void sendBungeeMessage(String channel, byte[] bytes) {
         Player player = Iterables.getFirst(getOnlinePlayers(), null);
         if (player != null) {
-            player.sendPluginMessage(authMe, "BungeeCord", bytes);
+            player.sendPluginMessage(authMe, channel, bytes);
         }
     }
 
