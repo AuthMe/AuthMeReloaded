@@ -20,8 +20,8 @@ public final class HooksSettings implements SettingsHolder {
         newProperty("Hooks.bungeecord", false);
 
     @Comment("Plugin messaging channel")
-    public static final Property<String> BUNGEECORD_CHANNEL =
-        newProperty("Hooks.bungeecordChannel", "BungeeCord");
+    public static final Property<String> PLUGIN_MESSAGING_CHANNEL =
+        newProperty("Hooks.pluginMessagingChannel", "BungeeCord");
 
     @Comment("Send player to this BungeeCord server after register/login")
     public static final Property<String> BUNGEECORD_SERVER =

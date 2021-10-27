@@ -46,7 +46,7 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
     @Override
     public void reload(final Settings settings) {
         this.isEnabled = settings.getProperty(HooksSettings.BUNGEECORD);
-        this.channel = settings.getProperty(HooksSettings.BUNGEECORD_CHANNEL);
+        this.channel = settings.getProperty(HooksSettings.PLUGIN_MESSAGING_CHANNEL);
 
         if (this.isEnabled) {
             final Messenger messenger = plugin.getServer().getMessenger();
