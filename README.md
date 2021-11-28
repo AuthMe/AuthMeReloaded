@@ -116,7 +116,7 @@ You can also create your own translation file and, if you want, you can share it
 ## Requirements
 
 ##### Compiling requirements:
->- JDK 8 (JDK 11 is recommended)
+>- JDK 8 (JDK 17 is recommended)
 >- Maven
 >- Git/Github (Optional)
 

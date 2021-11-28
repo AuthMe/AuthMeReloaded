@@ -2,7 +2,6 @@ package fr.xephi.authme.events;
 
 import fr.xephi.authme.ClassCollector;
 import fr.xephi.authme.TestHelper;
-import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.event.Event;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -49,7 +48,11 @@ public class EventsConsistencyTest {
     @Test
     public void shouldHaveStaticEventHandlerMethod() {
         for (Class<?> clazz : classes) {
-            Method handlerListMethod = MethodUtils.getAccessibleMethod(clazz, "getHandlerList", new Class<?>[]{});
+            Method handlerListMethod = null;
+            try {
+                handlerListMethod = clazz.getMethod("getHandlerList");
+            } catch (NoSuchMethodException ignored) {
+            }
             if (canBeInstantiated(clazz)) {
                 assertThat("Class " + clazz.getSimpleName() + " has static method getHandlerList()",
                     handlerListMethod != null && Modifier.isStatic(handlerListMethod.getModifiers()), equalTo(true));

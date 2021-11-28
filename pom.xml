@@ -64,7 +64,7 @@
         <maven.minimumVersion>3.6.0</maven.minimumVersion>
 
         <!-- Dependencies versions -->
-        <spigot.version>1.17.1-R0.1-SNAPSHOT</spigot.version>
+        <spigot.version>1.18-rc3-R0.1-SNAPSHOT</spigot.version>
 
         <!-- Versioning properties -->
         <project.outputName>AuthMe</project.outputName>
@@ -290,17 +290,15 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
-                        <!--
                         <configuration>
                             <artifactSet>
                                 <excludes>
-                                    <exclude>mysql:mysql-connector-java</exclude>
+                                    <exclude>com.google.guava:guava</exclude>
+                                    <exclude>com.google.code.gson:gson</exclude>
                                 </excludes>
                             </artifactSet>
                         </configuration>
-                        -->
                     </execution>
-                    <!--
                     <execution>
                         <id>shaded-jar-legacy</id>
                         <phase>package</phase>
@@ -308,11 +306,23 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            Use the base jar name, to help server owners download the right jar
                             <finalName>${project.finalNameBase}-legacy</finalName>
+                            <relocations>
+                                <relocation>
+                                    <pattern>com.google.common</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.com.google.common</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.google.thirdparty</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.com.google.thirdparty</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.google.gson</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.com.google.gson</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
-                    -->
                 </executions>
                 <configuration>
                     <!-- Don't create the reduced pom file, as we don't deploy the shaded jar -->
@@ -326,7 +336,7 @@
                     Relocate all lib we use in order to fix class loading errors if we use different versions
                     than already loaded libs
                     -->
-                    <relocations>
+                    <relocations combine.children="append">
                         <relocation>
                             <pattern>ch.jalu</pattern>
                             <shadedPattern>fr.xephi.authme.libs.ch.jalu</shadedPattern>
@@ -399,13 +409,10 @@
                                 <exclude>META-INF/*.SF</exclude>
                                 <exclude>META-INF/*.DSA</exclude>
                                 <exclude>META-INF/*.RSA</exclude>
-                            </excludes>
-                        </filter>
-                        <filter>
-                            <artifact>*:*</artifact>
-                            <excludes>
+                                <exclude>META-INF/*.RSA</exclude>
                                 <exclude>META-INF/*.MF</exclude>
                                 <exclude>META-INF/DEPENDENCIES</exclude>
+                                <exclude>META-INF/**/module-info.class</exclude>
                             </excludes>
                         </filter>
                     </filters>
@@ -682,19 +689,19 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!--  Keep in sync with spigot 1.8.8  -->
+        <!--  Keep in sync with spigot 1.18  -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>17.0</version>
-            <scope>provided</scope>
+            <version>31.0.1-jre</version>
+            <optional>true</optional>
         </dependency>
-        <!--  Keep in sync with spigot 1.8.8  -->
+        <!--  Keep in sync with spigot 1.18  -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.2.4</version>
-            <scope>provided</scope>
+            <version>2.8.8</version>
+            <optional>true</optional>
         </dependency>
 
         <!-- Bukkit Libraries  -->
