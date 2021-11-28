@@ -4,9 +4,9 @@ language: java
 jdk:
   - openjdk16
 before_install:
-  - wget https://downloads.apache.org/maven/maven-3/3.8.3/binaries/apache-maven-3.8.3-bin.tar.gz
-  - tar xzvf apache-maven-3.8.3-bin.tar.gz
-  - export PATH=`pwd`/apache-maven-3.8.3/bin:$PATH
+  - wget https://downloads.apache.org/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz
+  - tar xzvf apache-maven-3.8.4-bin.tar.gz
+  - export PATH=`pwd`/apache-maven-3.8.4/bin:$PATH
   - mvn -v
 cache:
   directories:
