@@ -59,6 +59,8 @@ public class LoginSecurityConverter implements Converter {
         try (Connection connection = createConnectionOrInformSender(sender)) {
             if (connection != null) {
                 performConversion(sender, connection);
+                logger.info("LoginSecurity conversion completed! Please remember to set \"legacyHashes: ['BCRYPT']\" "
+                    + "in your configuration file!");
             }
         } catch (SQLException e) {
             sender.sendMessage("Failed to convert from SQLite. Please see the log for more info");
