@@ -384,6 +384,10 @@
                             <pattern>org.mariadb.jdbc</pattern>
                             <shadedPattern>fr.xephi.authme.libs.org.mariadb.jdbc</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>com.mysql</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.com.mysql</shadedPattern>
+                        </relocation>
                     </relocations>
 
                     <filters>

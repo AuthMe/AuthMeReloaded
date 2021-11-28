@@ -104,8 +104,8 @@ public class MySQL extends AbstractSqlDataSource {
         try {
             Class.forName(this.className);
         } catch (ClassNotFoundException e) {
-            logger.info("Driver class '" + this.className + "' not found! Falling back to legacy MySQL driver (com.mysql.jdbc.Driver)");
-            this.className = "com.mysql.jdbc.Driver";
+            this.className = DatabaseSettings.MYSQL_DRIVER_CLASS_NAME.getDefaultValue();
+            logger.info("Driver class '" + this.className + "' not found! Falling back to the built-in MySQL driver (" + this.className + ")");
         }
         this.database = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
         this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);

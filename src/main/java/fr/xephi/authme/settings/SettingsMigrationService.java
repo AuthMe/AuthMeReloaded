@@ -65,8 +65,9 @@ public class SettingsMigrationService extends PlainMigrationService {
             configurationData.setValue(ALLOWED_NICKNAME_CHARACTERS, "[a-zA-Z0-9_]*");
             changes = true;
         }
-        if ("com.mysql.jdbc.Driver".equals(reader.getString(DatabaseSettings.MYSQL_DRIVER_CLASS_NAME.getPath()))) {
-            configurationData.setValue(DatabaseSettings.MYSQL_DRIVER_CLASS_NAME, "com.mysql.cj.jdbc.Driver");
+        String driverClass = reader.getString(DatabaseSettings.MYSQL_DRIVER_CLASS_NAME.getPath());
+        if ("com.mysql.jdbc.Driver".equals(driverClass) || "com.mysql.cj.jdbc.Driver".equals(driverClass)) {
+            configurationData.setValue(DatabaseSettings.MYSQL_DRIVER_CLASS_NAME, DatabaseSettings.MYSQL_DRIVER_CLASS_NAME.getDefaultValue());
             changes = true;
         }
 

@@ -47,10 +47,10 @@ public final class DatabaseSettings implements SettingsHolder {
     
     @Comment({"Driver Name of the MySQL database.",
         "Built-in drivers:",
-        "    MySQL: 'com.mysql.cj.jdbc.Driver'",
-        "    MariaDB: 'org.mariadb.jdbc.Driver'"})
+        "    MySQL: 'fr.xephi.authme.libs.com.mysql.cj.jdbc.Driver'",
+        "    MariaDB: 'fr.xephi.authme.libs.org.mariadb.jdbc.Driver'"})
     public static final Property<String> MYSQL_DRIVER_CLASS_NAME =
-        newProperty("DataSource.mySQLDriverClassName", "com.mysql.cj.jdbc.Driver");
+        newProperty("DataSource.mySQLDriverClassName", "fr.xephi.authme.libs.com.mysql.cj.jdbc.Driver");
 
     @Comment("Database Name, use with converters or as SQLITE database name")
     public static final Property<String> MYSQL_DATABASE =
