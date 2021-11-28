@@ -380,6 +380,10 @@
                             <pattern>org.bstats</pattern>
                             <shadedPattern>fr.xephi.authme.libs.org.bstats</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>org.mariadb.jdbc</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.org.mariadb.jdbc</shadedPattern>
+                        </relocation>
                     </relocations>
 
                     <filters>
