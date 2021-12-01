@@ -23,6 +23,7 @@ public class BungeeSender implements SettingsDependent {
     private final DataSource dataSource;
 
     private boolean isEnabled;
+    private boolean velocity;
     private String destinationServerOnLogin;
 
     /*
@@ -39,13 +40,21 @@ public class BungeeSender implements SettingsDependent {
 
     @Override
     public void reload(final Settings settings) {
-        this.isEnabled = settings.getProperty(HooksSettings.BUNGEECORD);
+        this.velocity = settings.getProperty(HooksSettings.VELOCITY);
+        this.isEnabled = settings.getProperty(HooksSettings.BUNGEECORD) || velocity;
+
         this.destinationServerOnLogin = settings.getProperty(HooksSettings.BUNGEECORD_SERVER);
 
         if (this.isEnabled) {
             final Messenger messenger = plugin.getServer().getMessenger();
-            if (!messenger.isOutgoingChannelRegistered(plugin, "BungeeCord")) {
-                messenger.registerOutgoingPluginChannel(plugin, "BungeeCord");
+            if (!velocity) {
+                if (!messenger.isOutgoingChannelRegistered(plugin, "BungeeCord")) {
+                    messenger.registerOutgoingPluginChannel(plugin, "BungeeCord");
+                }
+            } else {
+                if (!messenger.isOutgoingChannelRegistered(plugin, "authme:main")) {
+                    messenger.registerOutgoingPluginChannel(plugin, "authme:main");
+                }
             }
         }
     }
@@ -102,6 +111,7 @@ public class BungeeSender implements SettingsDependent {
                 logger.debug("Tried to send a " + type + " bungeecord message but the plugin was disabled!");
                 return;
             }
+            logger.debug("Sending a " + type + " bungeecord message!");
             if (type.isRequiresCaching() && !dataSource.isCached()) {
                 return;
             }

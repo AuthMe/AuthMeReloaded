@@ -19,6 +19,14 @@ public final class HooksSettings implements SettingsHolder {
     public static final Property<Boolean> BUNGEECORD =
         newProperty("Hooks.bungeecord", false);
 
+    @Comment({
+        "Do we need to hook with Velocity?",
+        "NOTE: requires AuthMeBungee on velocity",
+        "      to enabled velocity communications you will also need to",
+        "      copy the file in each 'AuthMeBungee/uuid' to 'AuthMeReloaded/allowed_proxy' folder"})
+    public static final Property<Boolean> VELOCITY =
+        newProperty("Hooks.velocity", false);
+
     @Comment("Send player to this BungeeCord server after register/login")
     public static final Property<String> BUNGEECORD_SERVER =
         newProperty("Hooks.sendPlayerTo", "");

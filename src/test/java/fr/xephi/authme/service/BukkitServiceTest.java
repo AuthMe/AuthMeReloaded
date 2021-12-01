@@ -4,6 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.events.FailedLoginEvent;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
@@ -56,6 +57,7 @@ public class BukkitServiceTest {
         given(server.getScheduler()).willReturn(scheduler);
         given(server.getPluginManager()).willReturn(pluginManager);
         given(settings.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(true);
+        given(settings.getProperty(HooksSettings.VELOCITY)).willReturn(false);
         bukkitService = new BukkitService(authMe, settings);
     }
 
