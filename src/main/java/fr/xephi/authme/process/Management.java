@@ -57,7 +57,7 @@ public class Management {
     }
 
     public void forceLogin(Player player, boolean quiet) {
-        runTask(() -> asynchronousLogin.forceLogin(player, quiet));
+        runTask(player, () -> asynchronousLogin.forceLogin(player, quiet));
     }
 
     public void performLogout(Player player) {
