@@ -24,19 +24,20 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.StructureModifier;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.listener.ListenerService;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.service.BukkitService;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
+
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 class InventoryPacketAdapter extends PacketAdapter {
 
@@ -49,13 +50,12 @@ class InventoryPacketAdapter extends PacketAdapter {
     private static final int HOTBAR_SIZE = 9;
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(InventoryPacketAdapter.class);
-    private final PlayerCache playerCache;
-    private final DataSource dataSource;
 
-    InventoryPacketAdapter(AuthMe plugin, PlayerCache playerCache, DataSource dataSource) {
+    private final ListenerService listenerService;
+
+    InventoryPacketAdapter(AuthMe plugin, ListenerService listenerService) {
         super(plugin, PacketType.Play.Server.SET_SLOT, PacketType.Play.Server.WINDOW_ITEMS);
-        this.playerCache = playerCache;
-        this.dataSource = dataSource;
+        this.listenerService = listenerService;
     }
 
     @Override
@@ -64,7 +64,7 @@ class InventoryPacketAdapter extends PacketAdapter {
         PacketContainer packet = packetEvent.getPacket();
 
         int windowId = packet.getIntegers().read(0);
-        if (windowId == PLAYER_INVENTORY && shouldHideInventory(player.getName())) {
+        if (windowId == PLAYER_INVENTORY && listenerService.shouldRestrictPlayer(player.getName())) {
             packetEvent.setCancelled(true);
         }
     }
@@ -78,12 +78,8 @@ class InventoryPacketAdapter extends PacketAdapter {
         ProtocolLibrary.getProtocolManager().addPacketListener(this);
 
         bukkitService.getOnlinePlayers().stream()
-            .filter(player -> shouldHideInventory(player.getName()))
+            .filter(player -> listenerService.shouldRestrictPlayer(player.getName()))
             .forEach(this::sendBlankInventoryPacket);
-    }
-
-    private boolean shouldHideInventory(String playerName) {
-        return !playerCache.isAuthenticated(playerName) && dataSource.isAuthAvailable(playerName);
     }
 
     public void unregister() {

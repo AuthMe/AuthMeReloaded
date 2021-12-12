@@ -4,6 +4,7 @@ import ch.jalu.injector.testing.BeforeInjecting;
 import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.auth.PlayerCache.RegistrationStatus;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
@@ -119,6 +120,7 @@ public class ListenerServiceTest {
         String playerName = "myPlayer1";
         Player player = mockPlayerWithName(playerName);
         given(playerCache.isAuthenticated(playerName)).willReturn(false);
+        given(playerCache.getRegistrationStatus(playerName)).willReturn(RegistrationStatus.UNREGISTERED);
         given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(false);
         EntityEvent event = mock(EntityEvent.class);
         given(event.getEntity()).willReturn(player);
@@ -130,7 +132,7 @@ public class ListenerServiceTest {
         // then
         assertThat(result, equalTo(false));
         verify(playerCache).isAuthenticated(playerName);
-        verify(dataSource).isAuthAvailable(playerName);
+        verify(playerCache).getRegistrationStatus(playerName);
     }
 
     @Test
@@ -154,10 +156,9 @@ public class ListenerServiceTest {
     public void shouldAllowNpcPlayer() {
         // given
         String playerName = "other_npc";
-        Player player = mockPlayerWithName(playerName);
+        Player player = mockPlayerWithName(playerName, true);
         EntityEvent event = mock(EntityEvent.class);
         given(event.getEntity()).willReturn(player);
-        given(player.hasMetadata("NPC")).willReturn(true);
 
         // when
         boolean result = listenerService.shouldCancelEvent(event);
@@ -214,8 +215,13 @@ public class ListenerServiceTest {
     }
 
     private static Player mockPlayerWithName(String name) {
+        return mockPlayerWithName(name,false);
+    }
+
+    private static Player mockPlayerWithName(String name, boolean npc) {
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
+        given(player.hasMetadata("NPC")).willReturn(npc);
         return player;
     }
 
