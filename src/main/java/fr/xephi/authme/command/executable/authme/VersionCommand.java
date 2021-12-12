@@ -8,7 +8,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 public class VersionCommand implements ExecutableCommand {
@@ -22,21 +24,25 @@ public class VersionCommand implements ExecutableCommand {
         sender.sendMessage(ChatColor.GOLD + "==========[ " + AuthMe.getPluginName() + " ABOUT ]==========");
         sender.sendMessage(ChatColor.GOLD + "Version: " + ChatColor.WHITE + AuthMe.getPluginName()
             + " v" + AuthMe.getPluginVersion() + ChatColor.GRAY + " (build: " + AuthMe.getPluginBuildNumber() + ")");
-        sender.sendMessage(ChatColor.GOLD + "Developers:");
+        sender.sendMessage(ChatColor.GOLD + "Authors:");
         Collection<Player> onlinePlayers = bukkitService.getOnlinePlayers();
-        printDeveloper(sender, "Alexandre Vanhecke", "xephi59", "Original Author", onlinePlayers);
-        printDeveloper(sender, "Lucas J.", "ljacqu", "Main Developer", onlinePlayers);
-        printDeveloper(sender, "Gnat008", "gnat008", "Developer", onlinePlayers);
-        printDeveloper(sender, "DNx5", "DNx5", "Developer", onlinePlayers);
-        printDeveloper(sender, "games647", "games647", "Developer", onlinePlayers);
-        printDeveloper(sender, "Tim Visee", "timvisee", "Developer", onlinePlayers);
         printDeveloper(sender, "Gabriele C.", "sgdc3", "Project manager, Contributor", onlinePlayers);
+        printDeveloper(sender, "Lucas J.", "ljacqu", "Main Developer", onlinePlayers);
+        printDeveloper(sender, "games647", "games647", "Developer", onlinePlayers);
+        printDeveloper(sender, "Hex3l", "Hex3l", "Developer", onlinePlayers);
+        printDeveloper(sender, "krusic22", "krusic22", "Support", onlinePlayers);
+        sender.sendMessage(ChatColor.GOLD + "Retired authors:");
+        printDeveloper(sender, "Alexandre Vanhecke", "xephi59", "Original Author", onlinePlayers);
+        printDeveloper(sender, "Gnat008", "gnat008", "Developer, Retired", onlinePlayers);
+        printDeveloper(sender, "DNx5", "DNx5", "Developer, Retired", onlinePlayers);
+        printDeveloper(sender, "Tim Visee", "timvisee", "Developer, Retired", onlinePlayers);
         sender.sendMessage(ChatColor.GOLD + "Website: " + ChatColor.WHITE
-            + "http://dev.bukkit.org/bukkit-plugins/authme-reloaded/");
+            + "https://github.com/AuthMe/AuthMeReloaded");
         sender.sendMessage(ChatColor.GOLD + "License: " + ChatColor.WHITE + "GNU GPL v3.0"
             + ChatColor.GRAY + ChatColor.ITALIC + " (See LICENSE file)");
         sender.sendMessage(ChatColor.GOLD + "Copyright: " + ChatColor.WHITE
-            + "Copyright (c) AuthMe-Team 2019. Released under GPL v3 License.");
+            + "Copyright (c) AuthMe-Team " + new SimpleDateFormat("yyyy").format(new Date())
+            + ". Released under GPL v3 License.");
     }
 
     /**

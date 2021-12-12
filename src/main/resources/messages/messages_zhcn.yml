@@ -2,7 +2,6 @@
 # %nl% - Goes to new line.
 # %username% - Replaces the username of the player receiving the message.
 # %displayname% - Replaces the nickname (and colors) of the player receiving the message.
-# Edited: 2020/11/26 Leonard Jiang @ Waveland
 
 # Registration
 registration:
@@ -20,7 +19,7 @@ password:
     name_in_password: '&8[&6玩家系统&8] &f你不能使用你的名字作为密码。 '
     unsafe_password: '&8[&6玩家系统&8] &f你不能使用安全性过低的密码。 '
     forbidden_characters: '&4您的密码包含了非法字符。可使用的字符: %valid_chars'
-    wrong_length: '&8[&6玩家系统&8] &你的密码不符合要求'
+    wrong_length: '&8[&6玩家系统&8] &c你的密码不符合要求'
 
 # Login
 login:

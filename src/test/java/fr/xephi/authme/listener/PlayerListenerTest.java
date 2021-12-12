@@ -65,7 +65,7 @@ import java.util.UUID;
 import static com.google.common.collect.Sets.newHashSet;
 import static fr.xephi.authme.listener.EventCancelVerifier.withServiceMock;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay;
-import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -345,7 +345,7 @@ public class PlayerListenerTest {
         // message sender + 3 recipients = 4
         verify(listenerService, times(4)).shouldCancelEvent(any(Player.class));
         verify(event, never()).setCancelled(anyBoolean());
-        assertThat(event.getRecipients(), contains(recipients.get(1), recipients.get(2)));
+        assertThat(event.getRecipients(), containsInAnyOrder(recipients.get(1), recipients.get(2)));
     }
 
     @Test

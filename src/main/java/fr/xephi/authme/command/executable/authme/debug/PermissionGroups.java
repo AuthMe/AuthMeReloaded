@@ -1,5 +1,6 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
+import fr.xephi.authme.data.limbo.UserGroup;
 import fr.xephi.authme.permission.DebugSectionPermissions;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -10,6 +11,8 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Outputs the permission groups of a player.
@@ -37,8 +40,11 @@ class PermissionGroups implements DebugSection {
         if (player == null) {
             sender.sendMessage("Player " + name + " could not be found");
         } else {
-            sender.sendMessage("Player " + name + " has permission groups: "
-                + String.join(", ", permissionsManager.getGroups(player)));
+            List<String> groupNames = permissionsManager.getGroups(player).stream()
+                .map(UserGroup::getGroupName)
+                .collect(toList());
+
+            sender.sendMessage("Player " + name + " has permission groups: " + String.join(", ", groupNames));
             sender.sendMessage("Primary group is: " + permissionsManager.getGroups(player));
         }
     }

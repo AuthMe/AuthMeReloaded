@@ -1,6 +1,7 @@
 package fr.xephi.authme.process.join;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.data.ProxySessionManager;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
@@ -15,6 +16,8 @@ import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
+import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.WelcomeMessageConfiguration;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -76,6 +79,12 @@ public class AsynchronousJoin implements AsynchronousProcess {
     @Inject
     private SessionService sessionService;
 
+    @Inject
+    private BungeeSender bungeeSender;
+
+    @Inject
+    private ProxySessionManager proxySessionManager;
+
     AsynchronousJoin() {
     }
 
@@ -132,6 +141,15 @@ public class AsynchronousJoin implements AsynchronousProcess {
                     () -> commandManager.runCommandsOnSessionLogin(player));
                 asyncUserScheduler.runTask(name, () -> asynchronousLogin.forceLogin(player));
                 return;
+            } else if (proxySessionManager.shouldResumeSession(name)) {
+                service.send(player, MessageKey.SESSION_RECONNECTION);
+                // Run commands
+                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(
+                    () -> commandManager.runCommandsOnSessionLogin(player));
+                bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
+                logger.info("The user " + player.getName() + " has been automatically logged in, "
+                    + "as present in autologin queue.");
+                return;
             }
         } else if (!service.getProperty(RegistrationSettings.FORCE)) {
             bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
@@ -139,6 +157,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             });
 
             // Skip if registration is optional
+            bungeeSender.sendAuthMeBungeecordMessage(MessageType.LOGIN, name);
             return;
         }
 

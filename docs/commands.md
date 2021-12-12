@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat May 16 15:10:08 CEST 2020. See docs/commands/commands.tpl.md -->
+<!-- File auto-generated on Sun Apr 04 21:31:42 CEST 2021. See docs/commands/commands.tpl.md -->
 
 ## AuthMe Commands
 You can use the following commands to use the features of AuthMe. Mandatory arguments are marked with `< >`
@@ -105,6 +105,7 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
   <br />Requires `authme.player.security.verificationcode`
 - **/verification help** [query]: View detailed help for /verification commands.
 
+
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat May 16 15:10:08 CEST 2020
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Apr 04 21:31:42 CEST 2021

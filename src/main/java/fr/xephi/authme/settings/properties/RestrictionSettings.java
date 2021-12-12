@@ -27,7 +27,7 @@ public final class RestrictionSettings implements SettingsHolder {
     @Comment("Allowed commands for unauthenticated players")
     public static final Property<Set<String>> ALLOW_COMMANDS =
         newLowercaseStringSetProperty("settings.restrictions.allowCommands",
-            "/login", "/register", "/l", "/reg", "/email", "/captcha", "/2fa", "/totp");
+            "/login", "/log", "/l", "/register", "/reg", "/email", "/captcha", "/2fa", "/totp");
 
     @Comment({
         "Max number of allowed registrations per IP",

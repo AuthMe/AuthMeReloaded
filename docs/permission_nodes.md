@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Fri Aug 02 16:25:54 CEST 2019. See docs/permissions/permission_nodes.tpl.md -->
+<!-- File auto-generated on Sun Apr 04 21:31:44 CEST 2021. See docs/permissions/permission_nodes.tpl.md -->
 
 ## AuthMe Permission Nodes
 The following are the permission nodes that are currently supported by the latest dev builds.
@@ -73,4 +73,4 @@ The following are the permission nodes that are currently supported by the lates
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Fri Aug 02 16:25:54 CEST 2019
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Apr 04 21:31:44 CEST 2021

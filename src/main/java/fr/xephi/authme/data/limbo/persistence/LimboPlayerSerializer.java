@@ -1,6 +1,7 @@
 package fr.xephi.authme.data.limbo.persistence;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
@@ -9,6 +10,8 @@ import fr.xephi.authme.data.limbo.LimboPlayer;
 import org.bukkit.Location;
 
 import java.lang.reflect.Type;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Converts a LimboPlayer to a JsonElement.
@@ -45,7 +48,19 @@ class LimboPlayerSerializer implements JsonSerializer<LimboPlayer> {
 
         JsonObject obj = new JsonObject();
         obj.add(LOCATION, locationObject);
-        obj.add(GROUPS, GSON.toJsonTree(limboPlayer.getGroups()).getAsJsonArray());
+
+        List<JsonObject> groups = limboPlayer.getGroups().stream().map(g -> {
+            JsonObject jsonGroup = new JsonObject();
+            jsonGroup.addProperty("groupName", g.getGroupName());
+            if (g.getContextMap() != null) {
+                jsonGroup.addProperty("contextMap", GSON.toJson(g.getContextMap()));
+            }
+            return jsonGroup;
+        }).collect(Collectors.toList());
+
+        JsonArray jsonGroups = new JsonArray();
+        groups.forEach(jsonGroups::add);
+        obj.add(GROUPS, jsonGroups);
 
         obj.addProperty(IS_OP, limboPlayer.isOperator());
         obj.addProperty(CAN_FLY, limboPlayer.isCanFly());

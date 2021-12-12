@@ -2,6 +2,7 @@ package fr.xephi.authme.permission;
 
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.data.limbo.UserGroup;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.permission.handlers.LuckPermsHandler;
@@ -285,7 +286,7 @@ public class PermissionsManager implements Reloadable {
      *
      * @return Permission groups, or an empty collection if this feature is not supported.
      */
-    public Collection<String> getGroups(OfflinePlayer player) {
+    public Collection<UserGroup> getGroups(OfflinePlayer player) {
         return isEnabled() ? handler.getGroups(player) : Collections.emptyList();
     }
 
@@ -296,7 +297,7 @@ public class PermissionsManager implements Reloadable {
      *
      * @return The name of the primary permission group. Or null.
      */
-    public String getPrimaryGroup(OfflinePlayer player) {
+    public UserGroup getPrimaryGroup(OfflinePlayer player) {
         return isEnabled() ? handler.getPrimaryGroup(player) : null;
     }
 
@@ -309,7 +310,7 @@ public class PermissionsManager implements Reloadable {
      * @return True if the player is in the specified group, false otherwise.
      *         False is also returned if groups aren't supported by the used permissions system.
      */
-    public boolean isInGroup(OfflinePlayer player, String groupName) {
+    public boolean isInGroup(OfflinePlayer player, UserGroup groupName) {
         return isEnabled() && handler.isInGroup(player, groupName);
     }
 
@@ -322,8 +323,8 @@ public class PermissionsManager implements Reloadable {
      * @return True if succeed, false otherwise.
      *         False is also returned if this feature isn't supported for the current permissions system.
      */
-    public boolean addGroup(OfflinePlayer player, String groupName) {
-        if (!isEnabled() || StringUtils.isEmpty(groupName)) {
+    public boolean addGroup(OfflinePlayer player, UserGroup groupName) {
+        if (!isEnabled() || StringUtils.isEmpty(groupName.getGroupName())) {
             return false;
         }
         return handler.addToGroup(player, groupName);
@@ -338,7 +339,7 @@ public class PermissionsManager implements Reloadable {
      * @return True if at least one group was added, false otherwise.
      *         False is also returned if this feature isn't supported for the current permissions system.
      */
-    public boolean addGroups(OfflinePlayer player, Collection<String> groupNames) {
+    public boolean addGroups(OfflinePlayer player, Collection<UserGroup> groupNames) {
         // If no permissions system is used, return false
         if (!isEnabled()) {
             return false;
@@ -346,9 +347,9 @@ public class PermissionsManager implements Reloadable {
 
         // Add each group to the user
         boolean result = false;
-        for (String groupName : groupNames) {
-            if (!groupName.isEmpty()) {
-                result |= handler.addToGroup(player, groupName);
+        for (UserGroup group : groupNames) {
+            if (!group.getGroupName().isEmpty()) {
+                result |= handler.addToGroup(player, group);
             }
         }
 
@@ -360,13 +361,13 @@ public class PermissionsManager implements Reloadable {
      * Remove the permission group of a player, if supported.
      *
      * @param player    The player
-     * @param groupName The name of the group.
+     * @param group The name of the group.
      *
      * @return True if succeed, false otherwise.
      *         False is also returned if this feature isn't supported for the current permissions system.
      */
-    public boolean removeGroup(OfflinePlayer player, String groupName) {
-        return isEnabled() && handler.removeFromGroup(player, groupName);
+    public boolean removeGroup(OfflinePlayer player, UserGroup group) {
+        return isEnabled() && handler.removeFromGroup(player, group);
     }
 
     /**
@@ -378,7 +379,7 @@ public class PermissionsManager implements Reloadable {
      * @return True if at least one group was removed, false otherwise.
      *         False is also returned if this feature isn't supported for the current permissions system.
      */
-    public boolean removeGroups(OfflinePlayer player, Collection<String> groupNames) {
+    public boolean removeGroups(OfflinePlayer player, Collection<UserGroup> groupNames) {
         // If no permissions system is used, return false
         if (!isEnabled()) {
             return false;
@@ -386,9 +387,9 @@ public class PermissionsManager implements Reloadable {
 
         // Add each group to the user
         boolean result = false;
-        for (String groupName : groupNames) {
-            if (!groupName.isEmpty()) {
-                result |= handler.removeFromGroup(player, groupName);
+        for (UserGroup group : groupNames) {
+            if (!group.getGroupName().isEmpty()) {
+                result |= handler.removeFromGroup(player, group);
             }
         }
 
@@ -401,13 +402,13 @@ public class PermissionsManager implements Reloadable {
      * This clears the current groups of the player.
      *
      * @param player    The player
-     * @param groupName The name of the group.
+     * @param group The name of the group.
      *
      * @return True if succeed, false otherwise.
      *         False is also returned if this feature isn't supported for the current permissions system.
      */
-    public boolean setGroup(OfflinePlayer player, String groupName) {
-        return isEnabled() && handler.setGroup(player, groupName);
+    public boolean setGroup(OfflinePlayer player, UserGroup group) {
+        return isEnabled() && handler.setGroup(player, group);
     }
 
     /**
@@ -427,10 +428,10 @@ public class PermissionsManager implements Reloadable {
         }
 
         // Get a list of current groups
-        Collection<String> groupNames = getGroups(player);
+        Collection<UserGroup> groups = getGroups(player);
 
         // Remove each group
-        return removeGroups(player, groupNames);
+        return removeGroups(player, groups);
     }
 
     /**
