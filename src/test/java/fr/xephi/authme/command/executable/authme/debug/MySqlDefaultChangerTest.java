@@ -9,6 +9,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.datasource.SqlDataSourceTestUtil;
 import fr.xephi.authme.settings.Settings;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -33,6 +34,11 @@ public class MySqlDefaultChangerTest {
 
     @Mock
     private Settings settings;
+
+    @BeforeClass
+    public static void setUpLogger() {
+        TestHelper.setupLogger();
+    }
 
     @Test
     public void shouldReturnMySqlConnection() throws SQLException {
