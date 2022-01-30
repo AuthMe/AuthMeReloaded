@@ -1,13 +1,14 @@
 # AuthMeReloaded
 **"The best authentication plugin for the Bukkit modding API!"**
-<img src="wallpaper.png?raw=true" alt="AuthMeLogo" style="width: 250px;"/>
+
+<img src="wallpaper.png?raw=true" alt="AuthMeLogo"/>
 
 | Type              | Badges                                                                                                                                                                                                                                                                                                                                                                                |
 |-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **General:**      | ![](https://tokei.rs/b1/github/AuthMe/AuthMeReloaded?category=code) ![](https://tokei.rs/b1/github/AuthMe/AuthMeReloaded?category=files)                                                                                                                                                                                                                                              |
 | **Code quality:** | [![Code Climate](https://codeclimate.com/github/AuthMe/AuthMeReloaded/badges/gpa.svg)](https://codeclimate.com/github/AuthMe/AuthMeReloaded) [![Coverage status](https://coveralls.io/repos/AuthMe-Team/AuthMeReloaded/badge.svg?branch=master&service=github)](https://coveralls.io/github/AuthMe-Team/AuthMeReloaded?branch=master)                                                 |
 | **Jenkins CI:**   | [![Jenkins Status](https://img.shields.io/website-up-down-green-red/http/shields.io.svg?label=ci.codemc.org)](https://ci.codemc.org/) [![Build Status](https://ci.codemc.org/buildStatus/icon?job=AuthMe/AuthMeReloaded)](https://ci.codemc.org/job/AuthMe/job/AuthMeReloaded) ![Build Tests](https://img.shields.io/jenkins/t/https/ci.codemc.org/job/AuthMe/job/AuthMeReloaded.svg) |
-| **Other CIs:**    | [![Build Status](https://travis-ci.org/AuthMe/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/AuthMe/AuthMeReloaded)                                                                                                                                                                                                                                                             |
+| **Other CIs:**    | [![Build Status](https://www.travis-ci.com/AuthMe/AuthMeReloaded.svg?branch=master)](https://www.travis-ci.com/AuthMe/AuthMeReloaded)                                                                                                                                                                                                                                                             |
 
 ## Description
 
@@ -115,7 +116,7 @@ You can also create your own translation file and, if you want, you can share it
 ## Requirements
 
 ##### Compiling requirements:
->- JDK 8 (JDK 11 is recommended)
+>- JDK 8 (JDK 17 is recommended)
 >- Maven
 >- Git/Github (Optional)
 

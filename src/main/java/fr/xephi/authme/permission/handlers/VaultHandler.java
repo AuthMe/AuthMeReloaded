@@ -1,6 +1,7 @@
 package fr.xephi.authme.permission.handlers;
 
 import com.google.common.annotations.VisibleForTesting;
+import fr.xephi.authme.data.limbo.UserGroup;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsSystemType;
 import net.milkbowl.vault.permission.Permission;
@@ -11,6 +12,8 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Handler for permissions via Vault.
@@ -51,8 +54,8 @@ public class VaultHandler implements PermissionHandler {
     }
 
     @Override
-    public boolean addToGroup(OfflinePlayer player, String group) {
-        return vaultProvider.playerAddGroup(null, player, group);
+    public boolean addToGroup(OfflinePlayer player, UserGroup group) {
+        return vaultProvider.playerAddGroup(null, player, group.getGroupName());
     }
 
     @Override
@@ -66,33 +69,33 @@ public class VaultHandler implements PermissionHandler {
     }
 
     @Override
-    public boolean isInGroup(OfflinePlayer player, String group) {
-        return vaultProvider.playerInGroup(null, player, group);
+    public boolean isInGroup(OfflinePlayer player, UserGroup group) {
+        return vaultProvider.playerInGroup(null, player, group.getGroupName());
     }
 
     @Override
-    public boolean removeFromGroup(OfflinePlayer player, String group) {
-        return vaultProvider.playerRemoveGroup(null, player, group);
+    public boolean removeFromGroup(OfflinePlayer player, UserGroup group) {
+        return vaultProvider.playerRemoveGroup(null, player, group.getGroupName());
     }
 
     @Override
-    public boolean setGroup(OfflinePlayer player, String group) {
-        for (String groupName : getGroups(player)) {
-            removeFromGroup(player, groupName);
+    public boolean setGroup(OfflinePlayer player, UserGroup group) {
+        for (UserGroup g : getGroups(player)) {
+            removeFromGroup(player, g);
         }
 
-        return vaultProvider.playerAddGroup(null, player, group);
+        return vaultProvider.playerAddGroup(null, player, group.getGroupName());
     }
 
     @Override
-    public List<String> getGroups(OfflinePlayer player) {
+    public List<UserGroup> getGroups(OfflinePlayer player) {
         String[] groups = vaultProvider.getPlayerGroups(null, player);
-        return groups == null ? Collections.emptyList() : Arrays.asList(groups);
+        return groups == null ? Collections.emptyList() : Arrays.stream(groups).map(UserGroup::new).collect(toList());
     }
 
     @Override
-    public String getPrimaryGroup(OfflinePlayer player) {
-        return vaultProvider.getPrimaryGroup(null, player);
+    public UserGroup getPrimaryGroup(OfflinePlayer player) {
+        return new UserGroup(vaultProvider.getPrimaryGroup(null, player));
     }
 
     @Override

@@ -2,6 +2,12 @@
 <!DOCTYPE module PUBLIC
         "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
         "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+<!--
+ Note: Checkstyle likes to introduce breaking changes like removing support for certain properties. Since this
+ configuration is also used by CodeClimate, we should keep it in sync with the version that they use:
+ https://github.com/codeclimate/codeclimate-checkstyle/blob/master/bin/install-checkstyle.sh
+ https://docs.codeclimate.com/docs/checkstyle (currently outdated)
+-->
 
 <module name="Checker">
     <property name="charset" value="UTF-8"/>
@@ -143,24 +149,20 @@
             <property name="allowSamelineMultipleAnnotations" value="true"/>
         </module>
         <module name="NonEmptyAtclauseDescription"/>
-        <module name="JavadocTagContinuationIndentation"/>
+        <module name="JavadocTagContinuationIndentation">
+            <property name="offset" value="2"/>
+        </module>
         <module name="AtclauseOrder">
             <property name="tagOrder" value="@param, @return, @throws, @deprecated"/>
             <property name="target" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
         </module>
         <module name="JavadocMethod">
-            <property name="scope" value="package"/>
             <property name="allowedAnnotations" value="Override, EventHandler"/>
             <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/> <!-- exclude CTOR_DEF -->
         </module>
         <module name="MissingJavadocMethod">
             <property name="scope" value="package"/>
             <property name="minLineCount" value="4"/>
-            <property name="allowedAnnotations" value="Override, EventHandler"/>
-            <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/> <!-- exclude CTOR_DEF -->
-        </module>
-        <module name="JavadocMethod">
-            <property name="scope" value="private"/>
             <property name="allowedAnnotations" value="Override, EventHandler"/>
             <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/> <!-- exclude CTOR_DEF -->
         </module>

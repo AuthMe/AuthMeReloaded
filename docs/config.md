@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Apr 04 21:31:43 CEST 2021. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Sat Dec 25 15:40:26 CET 2021. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder,
@@ -28,8 +28,11 @@ DataSource:
     mySQLUsername: authme
     # Password to connect to the MySQL database
     mySQLPassword: '12345'
-    # Driver Name of the MySQL database
-    mySQLDriverClassName: com.mysql.jdbc.Driver
+    # Driver Name of the MySQL database.
+    # Built-in drivers:
+    #     MySQL: 'fr.xephi.authme.libs.com.mysql.cj.jdbc.Driver'
+    #     MariaDB: 'fr.xephi.authme.libs.org.mariadb.jdbc.Driver'
+    mySQLDriverClassName: fr.xephi.authme.libs.com.mysql.cj.jdbc.Driver
     # Database Name, use with converters or as SQLITE database name
     mySQLDatabase: authme
     # Table of the database
@@ -89,7 +92,7 @@ ExternalBoardOptions:
     # Other MySQL columns where we need to put the username (case-sensitive)
     mySQLOtherUsernameColumns: []
     # How much log2 rounds needed in BCrypt (do not change if you do not know what it does)
-    bCryptLog2Round: 10
+    bCryptLog2Round: 12
     # phpBB table prefix defined during the phpBB installation process
     phpbbTablePrefix: phpbb_
     # phpBB activated group ID; 2 is the default registered group defined by phpBB
@@ -405,7 +408,7 @@ Protection:
         # The MaxMind clientId used to download the GeoIp database,
         # get one at https://www.maxmind.com/en/accounts/current/license-key
         # The EssentialsX project has a very useful tutorial on how to generate
-        # the license key: https://essentialsx.cf/wiki/GeoIP.html
+        # the license key: https://github.com/EssentialsX/Wiki/blob/master/GeoIP.md
         clientId: ''
         # The MaxMind licenseKey used to download the GeoIp database.
         licenseKey: ''
@@ -587,4 +590,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Apr 04 21:31:43 CEST 2021
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Dec 25 15:40:26 CET 2021

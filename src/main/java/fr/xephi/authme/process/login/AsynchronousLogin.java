@@ -119,6 +119,19 @@ public class AsynchronousLogin implements AsynchronousProcess {
     }
 
     /**
+     * Logs a player in without requiring a password.
+     *
+     * @param player the player to log in
+     * @param quiet if true no messages will be sent
+     */
+    public void forceLogin(Player player, boolean quiet) {
+        PlayerAuth auth = getPlayerAuth(player, quiet);
+        if (auth != null) {
+            performLogin(player, auth);
+        }
+    }
+
+    /**
      * Checks the precondition for authentication (like user known) and returns
      * the player's {@link PlayerAuth} object.
      *
@@ -127,15 +140,32 @@ public class AsynchronousLogin implements AsynchronousProcess {
      *         (e.g. because he is already logged in)
      */
     private PlayerAuth getPlayerAuth(Player player) {
+        return getPlayerAuth(player, false);
+    }
+
+    /**
+     * Checks the precondition for authentication (like user known) and returns
+     * the player's {@link PlayerAuth} object.
+     *
+     * @param player the player to check
+     * @param quiet don't send messages
+     * @return the PlayerAuth object, or {@code null} if the player doesn't exist or may not log in
+     *         (e.g. because he is already logged in)
+     */
+    private PlayerAuth getPlayerAuth(Player player, boolean quiet) {
         final String name = player.getName().toLowerCase();
         if (playerCache.isAuthenticated(name)) {
-            service.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
+            if (!quiet) {
+                service.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
+            }
             return null;
         }
 
         PlayerAuth auth = dataSource.getAuth(name);
         if (auth == null) {
-            service.send(player, MessageKey.UNKNOWN_USER);
+            if (!quiet) {
+                service.send(player, MessageKey.UNKNOWN_USER);
+            }
             // Recreate the message task to immediately send the message again as response
             limboService.resetMessageTask(player, LimboMessageType.REGISTER);
             return null;
@@ -143,13 +173,17 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
         if (!service.getProperty(DatabaseSettings.MYSQL_COL_GROUP).isEmpty()
             && auth.getGroupId() == service.getProperty(HooksSettings.NON_ACTIVATED_USERS_GROUP)) {
-            service.send(player, MessageKey.ACCOUNT_NOT_ACTIVATED);
+            if (!quiet) {
+                service.send(player, MessageKey.ACCOUNT_NOT_ACTIVATED);
+            }
             return null;
         }
 
         final String ip = PlayerUtils.getPlayerIp(player);
         if (hasReachedMaxLoggedInPlayersForIp(player, ip)) {
-            service.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
+            if (!quiet) {
+                service.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
+            }
             return null;
         }
 

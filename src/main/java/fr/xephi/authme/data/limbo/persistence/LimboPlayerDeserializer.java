@@ -1,11 +1,14 @@
 package fr.xephi.authme.data.limbo.persistence;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import fr.xephi.authme.data.limbo.LimboPlayer;
+import fr.xephi.authme.data.limbo.UserGroup;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -15,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.CAN_FLY;
@@ -37,6 +41,8 @@ import static java.util.Optional.ofNullable;
 class LimboPlayerDeserializer implements JsonDeserializer<LimboPlayer> {
 
     private static final String GROUP_LEGACY = "group";
+    private static final String CONTEXT_MAP = "contextMap";
+    private static final String GROUP_NAME = "groupName";
 
     private BukkitService bukkitService;
 
@@ -54,7 +60,7 @@ class LimboPlayerDeserializer implements JsonDeserializer<LimboPlayer> {
         Location loc = deserializeLocation(jsonObject);
         boolean operator = getBoolean(jsonObject, IS_OP);
 
-        Collection<String> groups = getLimboGroups(jsonObject);
+        Collection<UserGroup> groups = getLimboGroups(jsonObject);
         boolean canFly = getBoolean(jsonObject, CAN_FLY);
         float walkSpeed = getFloat(jsonObject, WALK_SPEED, LimboPlayer.DEFAULT_WALK_SPEED);
         float flySpeed = getFloat(jsonObject, FLY_SPEED, LimboPlayer.DEFAULT_FLY_SPEED);
@@ -84,16 +90,35 @@ class LimboPlayerDeserializer implements JsonDeserializer<LimboPlayer> {
         return element != null ? element.getAsString() : "";
     }
 
-    private static List<String> getLimboGroups(JsonObject jsonObject) {
+    /**
+     * @param jsonObject LimboPlayer represented as JSON
+     * @return The list of UserGroups create from JSON
+     */
+    private static List<UserGroup> getLimboGroups(JsonObject jsonObject) {
         JsonElement element = jsonObject.get(GROUPS);
         if (element == null) {
             String legacyGroup = ofNullable(jsonObject.get(GROUP_LEGACY)).map(JsonElement::getAsString).orElse(null);
-            return legacyGroup == null ? Collections.emptyList() : Collections.singletonList(legacyGroup);
+            return legacyGroup == null ? Collections.emptyList() :
+                Collections.singletonList(new UserGroup(legacyGroup, null));
         }
-        List<String> result = new ArrayList<>();
+        List<UserGroup> result = new ArrayList<>();
         JsonArray jsonArray = element.getAsJsonArray();
         for (JsonElement arrayElement : jsonArray) {
-            result.add(arrayElement.getAsString());
+            if (!arrayElement.isJsonObject()) {
+                result.add(new UserGroup(arrayElement.getAsString(), null));
+            } else {
+                JsonObject jsonGroup = arrayElement.getAsJsonObject();
+                Map<String, String> contextMap = null;
+                if (jsonGroup.has(CONTEXT_MAP)) {
+                    JsonElement contextMapJson = jsonGroup.get("contextMap");
+                    Type type = new TypeToken<Map<String, String>>() {
+                    }.getType();
+                    contextMap = new Gson().fromJson(contextMapJson.getAsString(), type);
+                }
+
+                String groupName = jsonGroup.get(GROUP_NAME).getAsString();
+                result.add(new UserGroup(groupName, contextMap));
+            }
         }
         return result;
     }
@@ -122,7 +147,6 @@ class LimboPlayerDeserializer implements JsonDeserializer<LimboPlayer> {
      * @param numberFunction the function to get the number from the element
      * @param defaultValue   the value to return if the element is null or the number cannot be retrieved
      * @param <N>            the number type
-     *
      * @return the number from the given JSON element, or the default value
      */
     private static <N extends Number> N getNumberFromElement(JsonElement jsonElement,

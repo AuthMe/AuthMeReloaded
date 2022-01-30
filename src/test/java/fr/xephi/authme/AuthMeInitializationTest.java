@@ -64,11 +64,11 @@ class AuthMeInitializationTest {
     @BeforeEach
     void initAuthMe() throws IOException {
         File settingsFile = new File(dataFolder, "config.yml");
+        given(server.getLogger()).willReturn(Logger.getAnonymousLogger());
         JavaPluginLoader pluginLoader = new JavaPluginLoader(server);
         Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "config.test.yml"), settingsFile);
 
         // Mock / wire various Bukkit components
-        given(server.getLogger()).willReturn(Logger.getAnonymousLogger());
         ReflectionTestUtils.setField(Bukkit.class, null, "server", server);
 
         // PluginDescriptionFile is final: need to create a sample one

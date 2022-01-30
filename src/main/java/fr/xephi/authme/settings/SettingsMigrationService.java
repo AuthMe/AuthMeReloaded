@@ -60,8 +60,15 @@ public class SettingsMigrationService extends PlainMigrationService {
     @SuppressWarnings("checkstyle:BooleanExpressionComplexity")
     protected boolean performMigrations(PropertyReader reader, ConfigurationData configurationData) {
         boolean changes = false;
+
         if ("[a-zA-Z0-9_?]*".equals(reader.getString(ALLOWED_NICKNAME_CHARACTERS.getPath()))) {
             configurationData.setValue(ALLOWED_NICKNAME_CHARACTERS, "[a-zA-Z0-9_]*");
+            changes = true;
+        }
+        String driverClass = reader.getString(DatabaseSettings.MYSQL_DRIVER_CLASS_NAME.getPath());
+        if ("com.mysql.jdbc.Driver".equals(driverClass) || "com.mysql.cj.jdbc.Driver".equals(driverClass)) {
+            configurationData.setValue(DatabaseSettings.MYSQL_DRIVER_CLASS_NAME,
+                DatabaseSettings.MYSQL_DRIVER_CLASS_NAME.getDefaultValue());
             changes = true;
         }
 

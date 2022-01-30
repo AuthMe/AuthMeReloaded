@@ -44,7 +44,7 @@ public final class HooksSettings implements SettingsHolder {
 
     @Comment("How much log2 rounds needed in BCrypt (do not change if you do not know what it does)")
     public static final Property<Integer> BCRYPT_LOG2_ROUND =
-        newProperty("ExternalBoardOptions.bCryptLog2Round", 10);
+        newProperty("ExternalBoardOptions.bCryptLog2Round", 12);
 
     @Comment("phpBB table prefix defined during the phpBB installation process")
     public static final Property<String> PHPBB_TABLE_PREFIX =

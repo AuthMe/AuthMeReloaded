@@ -5,6 +5,7 @@ import ch.jalu.injector.testing.DelayedInjectionExtension;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.limbo.LimboPlayer;
+import fr.xephi.authme.data.limbo.UserGroup;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.util.FileUtils;
@@ -76,7 +77,7 @@ class IndividualFilesPersistenceHandlerTest {
         assertThat(data.isCanFly(), equalTo(true));
         assertThat(data.getWalkSpeed(), equalTo(0.2f));
         assertThat(data.getFlySpeed(), equalTo(0.1f));
-        assertThat(data.getGroups(), contains("players"));
+        assertThat(data.getGroups(), contains(new UserGroup("players")));
         Location location = data.getLocation();
         assertThat(location.getX(), equalTo(-113.219));
         assertThat(location.getY(), equalTo(72.0));
@@ -110,7 +111,7 @@ class IndividualFilesPersistenceHandlerTest {
         World world = mock(World.class);
         given(world.getName()).willReturn("player-world");
         Location location = new Location(world, 0.2, 102.25, -89.28, 3.02f, 90.13f);
-        LimboPlayer limbo = new LimboPlayer(location, true, Collections.singletonList("primary-grp"), true, 1.2f, 0.8f);
+        LimboPlayer limbo = new LimboPlayer(location, true, Collections.singletonList(new UserGroup("primary-grp")), true, 1.2f, 0.8f);
 
         // when
         handler.saveLimboPlayer(player, limbo);

@@ -4,6 +4,7 @@ import fr.xephi.authme.task.MessageTask;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -17,7 +18,7 @@ public class LimboPlayer {
 
     private final boolean canFly;
     private final boolean operator;
-    private final Collection<String> groups;
+    private final Collection<UserGroup> groups;
     private final Location loc;
     private final float walkSpeed;
     private final float flySpeed;
@@ -25,11 +26,11 @@ public class LimboPlayer {
     private MessageTask messageTask = null;
     private LimboPlayerState state = LimboPlayerState.PASSWORD_REQUIRED;
 
-    public LimboPlayer(Location loc, boolean operator, Collection<String> groups, boolean fly, float walkSpeed,
+    public LimboPlayer(Location loc, boolean operator, Collection<UserGroup> groups, boolean fly, float walkSpeed,
                        float flySpeed) {
         this.loc = loc;
         this.operator = operator;
-        this.groups = groups;
+        this.groups = new ArrayList<>(groups); // prevent bug #2413
         this.canFly = fly;
         this.walkSpeed = walkSpeed;
         this.flySpeed = flySpeed;
@@ -58,7 +59,7 @@ public class LimboPlayer {
      *
      * @return The permissions groups the player belongs to
      */
-    public Collection<String> getGroups() {
+    public Collection<UserGroup> getGroups() {
         return groups;
     }
 

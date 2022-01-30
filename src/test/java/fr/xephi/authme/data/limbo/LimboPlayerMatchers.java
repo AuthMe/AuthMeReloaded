@@ -6,27 +6,31 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 
 /**
  * Contains matchers for LimboPlayer.
  */
-@SuppressWarnings("checkstyle:JavadocMethod") // Justification: Javadoc would be huge because of the many parameters
+// Justification: Javadoc would be huge because of the many parameters
+@SuppressWarnings("checkstyle:MissingJavadocMethod")
 public final class LimboPlayerMatchers {
 
     private LimboPlayerMatchers() {
     }
 
     public static Matcher<LimboPlayer> isLimbo(LimboPlayer limbo) {
-        String[] groups = limbo.getGroups().toArray(new String[limbo.getGroups().size()]);
+        UserGroup[] groups = limbo.getGroups().toArray(new UserGroup[limbo.getGroups().size()]);
         return isLimbo(limbo.isOperator(), limbo.isCanFly(), limbo.getWalkSpeed(), limbo.getFlySpeed(), groups);
     }
 
     public static Matcher<LimboPlayer> isLimbo(boolean isOp, boolean canFly, float walkSpeed, float flySpeed,
-                                               String... groups) {
+                                               UserGroup... groups) {
         return new TypeSafeMatcher<LimboPlayer>() {
             @Override
             protected boolean matchesSafely(LimboPlayer item) {
@@ -39,14 +43,19 @@ public final class LimboPlayerMatchers {
 
             @Override
             public void describeTo(Description description) {
+                List<String> groupNames = Arrays.stream(groups).map(UserGroup::getGroupName).collect(toList());
                 description.appendText(format("Limbo with isOp=%s, groups={%s}, canFly=%s, walkSpeed=%f, flySpeed=%f",
-                    isOp, String.join(" ,", groups), canFly, walkSpeed, flySpeed));
+                    isOp, String.join(" ,", groupNames), canFly, walkSpeed, flySpeed));
             }
 
             @Override
             public void describeMismatchSafely(LimboPlayer item, Description description) {
+                List<String> groupNames = item.getGroups().stream()
+                    .map(UserGroup::getGroupName)
+                    .collect(toList());
+
                 description.appendText(format("Limbo with isOp=%s, groups={%s}, canFly=%s, walkSpeed=%f, flySpeed=%f",
-                    item.isOperator(), String.join(" ,", item.getGroups()), item.isCanFly(),
+                    item.isOperator(), String.join(" ,", groupNames), item.isCanFly(),
                     item.getWalkSpeed(), item.getFlySpeed()));
             }
         };
@@ -119,7 +128,7 @@ public final class LimboPlayerMatchers {
     }
 
     // Hamcrest's contains() doesn't like it when there are no items, so we need to check for the empty case explicitly
-    private static boolean collectionContains(Collection<String> givenItems, String... expectedItems) {
+    private static boolean collectionContains(Collection<UserGroup> givenItems, UserGroup... expectedItems) {
         if (expectedItems.length == 0) {
             return givenItems.isEmpty();
         }

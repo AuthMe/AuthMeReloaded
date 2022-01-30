@@ -11,8 +11,6 @@ import fr.xephi.authme.util.AtomicIntervalCounter;
 import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_MINUTE;

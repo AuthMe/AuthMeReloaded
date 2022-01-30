@@ -9,6 +9,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.datasource.SqlDataSourceTestUtil;
 import fr.xephi.authme.settings.Settings;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -33,6 +34,11 @@ class MySqlDefaultChangerTest {
 
     @Mock
     private Settings settings;
+
+    @BeforeAll
+    static void setUpLogger() {
+        TestHelper.setupLogger();
+    }
 
     @Test
     void shouldReturnMySqlConnection() throws SQLException {
