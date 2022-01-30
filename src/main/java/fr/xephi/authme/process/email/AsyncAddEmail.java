@@ -43,7 +43,8 @@ public class AsyncAddEmail implements AsynchronousProcess {
     @Inject
     private BukkitService bukkitService;
 
-    AsyncAddEmail() { }
+    AsyncAddEmail() {
+    }
 
     /**
      * Handles the request to add the given email to the player's account.

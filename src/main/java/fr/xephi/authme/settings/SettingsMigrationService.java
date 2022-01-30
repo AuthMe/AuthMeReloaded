@@ -67,7 +67,8 @@ public class SettingsMigrationService extends PlainMigrationService {
         }
         String driverClass = reader.getString(DatabaseSettings.MYSQL_DRIVER_CLASS_NAME.getPath());
         if ("com.mysql.jdbc.Driver".equals(driverClass) || "com.mysql.cj.jdbc.Driver".equals(driverClass)) {
-            configurationData.setValue(DatabaseSettings.MYSQL_DRIVER_CLASS_NAME, DatabaseSettings.MYSQL_DRIVER_CLASS_NAME.getDefaultValue());
+            configurationData.setValue(DatabaseSettings.MYSQL_DRIVER_CLASS_NAME,
+                DatabaseSettings.MYSQL_DRIVER_CLASS_NAME.getDefaultValue());
             changes = true;
         }
 

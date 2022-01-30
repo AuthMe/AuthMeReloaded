@@ -17,7 +17,8 @@ import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 /**
  * Contains matchers for LimboPlayer.
  */
-@SuppressWarnings("checkstyle:JavadocMethod") // Justification: Javadoc would be huge because of the many parameters
+// Justification: Javadoc would be huge because of the many parameters
+@SuppressWarnings("checkstyle:MissingJavadocMethod")
 public final class LimboPlayerMatchers {
 
     private LimboPlayerMatchers() {

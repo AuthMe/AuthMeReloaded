@@ -304,12 +304,12 @@ public class GeoIpService {
      *
      * @param ip textual IP address to lookup
      * @return the wrapped Country model or {@link Optional#empty()} if
-     * <ul>
+     *   <ul>
      *     <li>Database reader isn't initialized</li>
      *     <li>MaxMind has no record about this IP address</li>
      *     <li>IP address is local</li>
      *     <li>Textual representation is not a valid IP address</li>
-     * </ul>
+     *   </ul>
      */
     private Optional<Country> getCountry(String ip) {
         if (ip == null || ip.isEmpty() || !isDataAvailable()) {
