@@ -11,14 +11,14 @@ registration:
     command_usage: '&eNaudojimas: /register slaptazodis pakartotiSlaptazodi'
     reg_only: '&cTik prisiregistravusiem zaidejams: apsilankykite: http://example.com tam kad uzsiregistruoti.'
     success: '&aSekmingai prisiregistravote.'
-    # TODO kicked_admin_registered: 'An admin just registered you; please log in again'
+    kicked_admin_registered: 'Administatorius jus uzregistravo. Prisijunkite isnaujo'
 
 # Password errors on registration
 password:
     match_error: '&cSlaptazodziai nesutampa'
-    # TODO name_in_password: '&cYou can''t use your name as password, please choose another one...'
-    # TODO unsafe_password: '&cThe chosen password isn''t safe, please choose another one...'
-    # TODO forbidden_characters: '&4Your password contains illegal characters. Allowed chars: %valid_chars'
+    name_in_password: '&cJus negalite naudoti savo varda slaptazodyje'
+    unsafe_password: '&cSi slaptazodi lengva nulausti, pasirinkite kita slaptazodi'
+    forbidden_characters: '&4Jusus slaptazodis turi netinkamu simboliu. Leidziami simboliai: %valid_chars'
     wrong_length: '&cJusu slaptazodis buvo per ilgas arba per trumpas.'
 
 # Login
@@ -31,23 +31,23 @@ login:
 
 # Errors
 error:
-    # TODO denied_command: '&cIn order to use this command you must be authenticated!'
-    # TODO denied_chat: '&cIn order to chat you must be authenticated!'
+    denied_command: '&cKad galetumete naudoti sia komanda turite buti prisijunge!'
+    denied_chat: '&cKad galetumete kalbeti jus turite buti prisijunge!'
     unregistered_user: '&cVartotojas neprisiregistraves'
     not_logged_in: '&cTu neprisijunges!'
     no_permission: '&cNera leidimo'
     unexpected_error: '&cAtsirado klaida, praneskite adminstratoriui.'
     max_registration: '&cJus pasiekete maksimalu registraciju skaiciu.'
-    logged_in: '&cTu aju prisijunges!'
+    logged_in: '&cTu jau prisijunges!'
     kick_for_vip: '&cA VIP prisijunge i pilna serveri!'
-    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
-    # TODO tempban_max_logins: '&cYou have been temporarily banned for failing to log in too many times.'
+    kick_unresolved_hostname: '&cIvyko klaida: Ivyko klaida su zaidejo adresu!'
+    tempban_max_logins: '&cJus laikinai uzblokuotas nes kelis kartus neteisingai suvedete salptazodi.'
 
 # AntiBot
 antibot:
-    # TODO kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
-    # TODO auto_enabled: '&4[AntiBotService] AntiBot enabled due to the huge number of connections!'
-    # TODO auto_disabled: '&2[AntiBotService] AntiBot disabled after %m minutes!'
+    kick_antibot: 'AntiBot prevencija ijungta! Palaukite pries prisijungiant.'
+    auto_enabled: '&4[AntiBotService] AntiBot prevencija pajungta del didelio kiekio prisijungimu!'
+    auto_disabled: '&2[AntiBotService] AntiBot isjungtas po: %m minutes!'
 
 # Unregister
 unregister:
@@ -61,8 +61,8 @@ misc:
     logout: '&aSekmingai atsijungete'
     reload: '&aNustatymai ir duomenu baze buvo perkrauta.'
     usage_change_password: '&ePanaudojimas: /changepassword senasSlaptazodis naujasSlaptazodis'
-    # TODO accounts_owned_self: 'You own %count accounts:'
-    # TODO accounts_owned_other: 'The player %name has %count accounts:'
+    accounts_owned_self: 'Jus turite %count paskyra(-s):'
+    accounts_owned_other: 'Zaidejas %name turi %count paskyra(-s):'
 
 # Session messages
 session:
@@ -71,87 +71,87 @@ session:
 
 # Error messages when joining
 on_join_validation:
-    # TODO same_ip_online: 'A player with the same IP is already in game!'
+    same_ip_online: 'Zaidejas su tuo paciu ip jau yra zaidime!'
     same_nick_online: '&cKazkas situo vardu jau zaidzia.'
     name_length: '&cJusu varsdas yra per ilgas arba per trumpas.'
     characters_in_name: '&cJusu varde yra neledziamu simboliu, leidziami: %valid_chars'
     kick_full_server: '&cServeris yra pilnas, Atsiprasome.'
-    # TODO country_banned: '&4Your country is banned from this server!'
-    # TODO not_owner_error: 'You are not the owner of this account. Please choose another name!'
-    # TODO invalid_name_case: 'You should join using username %valid, not %invalid.'
-    # TODO quick_command: 'You used a command too fast! Please, join the server again and wait more before using any command.'
+    country_banned: '&4Jusu salis yra uzblokuota siame serveryje!'
+    not_owner_error: 'Tu neesi sios paskyros savininkas, pasirinkite kita varda!'
+    invalid_name_case: 'Turetumete prisijungti su vardu: %valid, o ne su: %invalid.'
+    quick_command: 'Tu panaudojai komanda per greitai! Prisijunkite isnaujo ir siek tiek palaukite pries naudojant komandas.'
 
 # Email
 email:
-    add_email_request: '&ePrasau pridekite savo el.pasta : /email add Email confirmEmail'
-    # TODO usage_email_add: '&cUsage: /email add <email> <confirmEmail>'
-    # TODO usage_email_change: '&cUsage: /email change <oldEmail> <newEmail>'
-    # TODO new_email_invalid: '&cInvalid new email, try again!'
-    # TODO old_email_invalid: '&cInvalid old email, try again!'
-    # TODO invalid: '&cInvalid email address, try again!'
-    # TODO added: '&2Email address successfully added to your account!'
-    # TODO add_not_allowed: '&cAdding email was not allowed'
-    # TODO request_confirmation: '&cPlease confirm your email address!'
-    # TODO changed: '&2Email address changed correctly!'
-    # TODO change_not_allowed: '&cChanging email was not allowed'
-    # TODO email_show: '&2Your current email address is: &f%email'
-    # TODO no_email_for_account: '&2You currently don''t have email address associated with this account.'
-    # TODO already_used: '&4The email address is already being used'
-    # TODO incomplete_settings: 'Error: not all required settings are set for sending emails. Please contact an admin.'
-    # TODO send_failure: 'The email could not be sent. Please contact an administrator.'
-    # TODO change_password_expired: 'You cannot change your password using this command anymore.'
-    # TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
+    add_email_request: '&ePrasau pridekite savo el.pasta : /email add <el.pastas> <el.pastas>'
+    usage_email_add: '&cNaudojimas: /email add <el.pastas> <el.pastas>'
+    usage_email_change: '&cNaudojimas: /email change <senas el.pastas> <naujas el.pastas>'
+    new_email_invalid: '&cNeteisingas el.pastas, bandykite isnaujo!'
+    old_email_invalid: '&cNeteisingas senas el.pastas, bandykite isnaujo!'
+    invalid: '&cNeteisingas el.pastas, bandykite isnaujo!'
+    added: '&2El.pastas sekmingai pridetas!'
+    add_not_allowed: '&cNaujo el.pasto pridejimas nera galimas'
+    request_confirmation: '&cPatvirtinkite savo el.pasta!'
+    changed: '&2El.pasta pakeistas sekmingai!'
+    change_not_allowed: '&cEl.pasto keitimas nera galimas'
+    email_show: '&2Jusu dabartinis el.pasto adresas: &f%email'
+    no_email_for_account: '&2Siuo metu jus neturite prideja jokio el.pasto adreso.'
+    already_used: '&4Jis el.pasto adresas jau yra naudojamas'
+    incomplete_settings: 'Klaidas: Nevisi nustatymai yra nustatyti laisko siuntimui. Susikietite su administratorium.'
+    send_failure: 'El.pasto laiskas nebuvo issiustas. Susikietite su administratorium.'
+    change_password_expired: 'Jus nebegalite pakeisti savo slaptazodzio naudojant sia komanda.'
+    email_cooldown_error: '&cEl.pasto laiskas jau buvo issiustas. Palaukite %time pries siunciant nauja.'
 
 # Password recovery by email
 recovery:
     forgot_password_hint: '&cPamirsote slaptazodi? Rasykite: /email recovery el.pastas'
-    # TODO command_usage: '&cUsage: /email recovery <Email>'
-    # TODO email_sent: '&2Recovery email sent successfully! Please check your email inbox!'
+    command_usage: '&cNaudojimas: /email recovery el.pastas'
+    email_sent: '&2Laiskas i jusu pasto adresa buvo issiustas!'
     code:
-        # TODO code_sent: 'A recovery code to reset your password has been sent to your email.'
-        # TODO incorrect: 'The recovery code is not correct! You have %count tries remaining.'
-        # TODO tries_exceeded: 'You have exceeded the maximum number attempts to enter the recovery code. Use "/email recovery [email]" to generate a new one.'
-        # TODO correct: 'Recovery code entered correctly!'
-        # TODO change_password: 'Please use the command /email setpassword <new password> to change your password immediately.'
+        code_sent: 'Kodas slaptazodzio atstatymui buvo issiustas i jusu pasta.'
+        incorrect: 'Kodas neteisingas! jums liko %count bandymai(-as).'
+        tries_exceeded: 'Jus isnaudojote visus bandymus. Naudokite "/email recovery el.pastas" kad gauti nauja koda.'
+        correct: 'Kodas ivestas sekmingai!'
+        change_password: 'Naudokite /email setpassword <Naujas_Slaptazodis> kad pasikeistumete slaptazodi.'
 
 # Captcha
 captcha:
     usage_captcha: '&cPanaudojimas: /captcha %captcha_code'
     wrong_captcha: '&cNeteisinga Captcha, naudokite : /captcha %captcha_code'
     valid_captcha: '&cJusu captcha Teisinga!'
-    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
-    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+    captcha_for_registration: 'Kad prisiregistruotumete turite ivygdyti captcha, rasykite: /captcha %captcha_code'
+    register_captcha_valid: '&2Captcha Teisinga! Galite naudoti /register'
 
 # Verification code
 verification:
-    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
-    # TODO command_usage: '&cUsage: /verification <code>'
-    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-    # TODO success: '&2Your identity has been verified! You can now execute all commands within the current session!'
-    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
-    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
-    # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
+    code_required: '&3Kad naudotumete sia komanda turi patvirtinti savo pasto adresa! Sekite instrukcijas savo el.paste.'
+    command_usage: '&cNaudojimas: /verification <kodas>'
+    incorrect_code: '&cNeteisingas kodas, naudokite "/verification <kodas>" ivesdami koda gauta savo el.paste'
+    success: '&2Jusu paskyra patvirtinta! Jus galite naudoti visas komandas!'
+    already_verified: '&2Jus jau esate patvirtintas ir galite naudoti visas komandas!'
+    code_expired: '&3Jusu kodo galiojimas baigesi! Panaudokite komanda isnaujo kad gauti nauja koda!'
+    email_needed: '&3Kad patvirtinti savo paskyra turite prideti el.pasto adresa!'
 
 # Time units
 time:
-    # TODO second: 'second'
-    # TODO seconds: 'seconds'
-    # TODO minute: 'minute'
-    # TODO minutes: 'minutes'
-    # TODO hour: 'hour'
-    # TODO hours: 'hours'
-    # TODO day: 'day'
-    # TODO days: 'days'
+    second: 'sekunde'
+    seconds: 'sekundes'
+    minute: 'minute'
+    minutes: 'minutes'
+    hour: 'valanda'
+    hours: 'valandas'
+    day: 'diena'
+    days: 'dienas'
 
 # Two-factor authentication
 two_factor:
-    # TODO code_created: '&2Your secret code is %code. You can scan it from here %url'
-    # TODO confirmation_required: 'Please confirm your code with /2fa confirm <code>'
-    # TODO code_required: 'Please submit your two-factor authentication code with /2fa code <code>'
-    # TODO already_enabled: 'Two-factor authentication is already enabled for your account!'
-    # TODO enable_error_no_code: 'No 2fa key has been generated for you or it has expired. Please run /2fa add'
-    # TODO enable_success: 'Successfully enabled two-factor authentication for your account'
-    # TODO enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
-    # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
-    # TODO removed_success: 'Successfully removed two-factor auth from your account'
-    # TODO invalid_code: 'Invalid code!'
+    code_created: '&2Tavo slaptas kodas yra %code. Ji gali nuskenuoti cia: %url'
+    confirmation_required: 'Patvirtinkite savo koda su: /2fa confirm <kodas>'
+    code_required: 'Patvirkinkite savo koda su: /2fa code <kodas>'
+    already_enabled: 'Jus jau turite dvieju faktoriu autentifikacija!'
+    enable_error_no_code: 'Jus neturite dvieju faktoriu autentifikacijos arba ji pasibaige. Rasykite /2fa add'
+    enable_success: 'Dvieju faktoriu autentifikacija sekmingai ijungta'
+    enable_error_wrong_code: 'Wrong code or code has expired. Please run /2fa add'
+    not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
+    removed_success: 'Successfully removed two-factor auth from your account'
+    invalid_code: 'Neteisingas kodas!'
