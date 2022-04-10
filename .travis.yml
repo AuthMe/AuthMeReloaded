@@ -6,7 +6,8 @@ before_install:
   - source "$HOME/.sdkman/bin/sdkman-init.sh"
   - sdk install java 17-open
   - sdk use java 17-open
-  - sdk install maven
+  - sdk install maven 3.8.5
+  - sdk use maven 3.8.5
 cache:
   directories:
     - '$HOME/.m2/repository'
