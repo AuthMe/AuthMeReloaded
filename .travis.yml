@@ -1,21 +1,36 @@
-sudo: false
 dist: focal
+
+language: java
+
+matrix:
+  include:
+  - env:
+    - JDK_VERSION=8
+  - env:
+    - JDK_VERSION=11
+  - env:
+    - JDK_VERSION=17
+
+include:
+  env: 
+    - JAVA_HOME="$HOME/.sdkman/candidates/java/current"
+    - MAVEN_HOME="$HOME/.sdkman/candidates/maven/current"
+    - M2_HOME="$MAVEN_HOME"
+
 before_install:
+  - "[[ -d $HOME/.sdkman/ ]] && [[ -d $HOME/.sdkman/bin/ ]] || rm -rf $HOME/.sdkman/"
   - curl -s "https://get.sdkman.io" | bash
+  - mkdir -p "$HOME/.sdkman/etc/"
+  - echo sdkman_auto_answer=true > "$HOME/.sdkman/etc/config"
+  - echo sdkman_auto_selfupdate=true >> "$HOME/.sdkman/etc/config"
   - source "$HOME/.sdkman/bin/sdkman-init.sh"
-  - sdk install java 17-open
-  - sdk default java 17-open
-  - sdk use java 17-open
+
+install:
+  - sdk install java $JDK_VERSION-open
   - sdk install maven 3.8.5
-  - sdk default maven 3.8.5
-  - sdk use maven 3.8.5
-  - export M2_HOME=$MAVEN_HOME
-  - export PATH=$MAVEN_HOME/bin:$PATH
-  - echo $PATH
-  - echo $MAVEN_HOME
-  - echo $JAVA_HOME
-  - which java
-  - which mvn
+  - env
+
 cache:
   directories:
-    - '$HOME/.m2/repository'
+    - $HOME/.sdkman
+    - $HOME/.m2/repository
