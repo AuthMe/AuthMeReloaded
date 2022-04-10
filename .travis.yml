@@ -26,7 +26,7 @@ before_install:
   - source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 install:
-  - sdk install java $JDK_VERSION-open
+  - sdk install java $(sdk list java | grep -o "$JDK_VERSION\.[0-9]*\.[0-9]*\-open" | head -1)
   - sdk install maven 3.8.5
   - env
 
