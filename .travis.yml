@@ -5,9 +5,11 @@ before_install:
   - curl -s "https://get.sdkman.io" | bash
   - source "$HOME/.sdkman/bin/sdkman-init.sh"
   - sdk install java 17-open
-  - sdk use java 17-open
+  - sdk default java 17-open
   - sdk install maven 3.8.5
-  - sdk use maven 3.8.5
+  - sdk default maven 3.8.5
+  - export M2_HOME=$MAVEN_HOME
+  - export PATH=$MAVEN_HOME/bin:$PATH
 cache:
   directories:
     - '$HOME/.m2/repository'
