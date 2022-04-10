@@ -28,6 +28,7 @@ install:
   - export M2_HOME="$MAVEN_HOME"
   - export PATH=${M2_HOME}/bin:${PATH}
   - env
+  - mvn -v
 
 cache:
   directories:
