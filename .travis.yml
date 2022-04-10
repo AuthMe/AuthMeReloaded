@@ -1,13 +1,12 @@
 sudo: false
-dist: trusty
+dist: focal
 language: java
-jdk:
-  - openjdk16
 before_install:
-  - wget https://downloads.apache.org/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz
-  - tar xzvf apache-maven-3.8.4-bin.tar.gz
-  - export PATH=`pwd`/apache-maven-3.8.4/bin:$PATH
-  - mvn -v
+  - curl -s "https://get.sdkman.io" | bash
+  - source "$HOME/.sdkman/bin/sdkman-init.sh"
+  - sdk install java 17-open
+  - sdk use java 17-open
+  - sdk install maven
 cache:
   directories:
     - '$HOME/.m2/repository'
