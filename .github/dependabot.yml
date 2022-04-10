@@ -10,3 +10,4 @@ updates:
   - dependency-name: com.google.guava:guava
   - dependency-name: org.apache.logging.log4j:log4j-core
   - dependency-name: mysql:mysql-connector-java
+  - dependency-name: com.zaxxer:HikariCP
