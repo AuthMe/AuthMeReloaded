@@ -14,6 +14,7 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.SessionService;
+import fr.xephi.authme.service.SpectateLoginService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.service.bungeecord.MessageType;
@@ -80,6 +81,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     @Inject
     private ProxySessionManager proxySessionManager;
+
+    @Inject
+    private SpectateLoginService spectateLoginService;
 
     AsynchronousJoin() {
     }
@@ -191,6 +195,14 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 int blindTimeOut = (registrationTimeout <= 0) ? 99999 : registrationTimeout;
                 player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, blindTimeOut, 2));
             }
+
+            if (service.getProperty(RestrictionSettings.SPECTATE_STAND_LOGIN)) {
+                // The delay is necessary in order to make sure that the player is teleported to spawn and after authorization appears in the same place
+                bukkitService.runTaskLater(() -> {
+                    spectateLoginService.createStand(player);
+                }, 1);
+            }
+
             commandManager.runCommandsOnJoin(player);
         });
     }

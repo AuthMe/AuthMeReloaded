@@ -11,6 +11,7 @@ import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.JoinMessageService;
+import fr.xephi.authme.service.SpectateLoginService;
 import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
@@ -19,6 +20,7 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -49,6 +51,8 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.InventoryView;
 
 import javax.inject.Inject;
@@ -90,6 +94,8 @@ public class PlayerListener implements Listener {
     private PermissionsManager permissionsManager;
     @Inject
     private QuickCommandsProtectionManager quickCommandsProtectionManager;
+    @Inject
+    private SpectateLoginService spectateLoginService;
 
     // Lowest priority to apply fast protection checks
     @EventHandler(priority = EventPriority.LOWEST)
@@ -505,6 +511,27 @@ public class PlayerListener implements Listener {
     public void onPlayerInventoryClick(InventoryClickEvent event) {
         if (listenerService.shouldCancelEvent(event.getWhoClicked())
             && !isInventoryWhitelisted(event.getView())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onToggleSneak(PlayerToggleSneakEvent event) {
+        if (listenerService.shouldCancelEvent(event.getPlayer())
+            && (settings.getProperty(RestrictionSettings.SPECTATE_STAND_LOGIN)
+            || spectateLoginService.hasStand(event.getPlayer()))) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onTeleport(PlayerTeleportEvent event) {
+        if (listenerService.shouldCancelEvent(event.getPlayer())
+            && event.getCause() == PlayerTeleportEvent.TeleportCause.SPECTATE
+            && event.getPlayer().getGameMode() == GameMode.SPECTATOR
+            && (settings.getProperty(RestrictionSettings.SPECTATE_STAND_LOGIN)
+            || spectateLoginService.hasStand(event.getPlayer()))) {
+            spectateLoginService.updateTarget(event.getPlayer());
             event.setCancelled(true);
         }
     }
