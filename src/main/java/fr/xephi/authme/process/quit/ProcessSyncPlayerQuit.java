@@ -35,7 +35,8 @@ public class ProcessSyncPlayerQuit implements SynchronousProcess {
         if (wasLoggedIn) {
             commandManager.runCommandsOnLogout(player);
         } else {
-            if (service.getProperty(RestrictionSettings.SPECTATE_STAND_LOGIN) || spectateLoginService.hasStand(player)) {
+            if (service.getProperty(RestrictionSettings.SPECTATE_STAND_LOGIN)
+                || spectateLoginService.hasStand(player)) {
                 spectateLoginService.removeStand(player);
             }
 

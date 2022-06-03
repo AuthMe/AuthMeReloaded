@@ -197,7 +197,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
             }
 
             if (service.getProperty(RestrictionSettings.SPECTATE_STAND_LOGIN)) {
-                // The delay is necessary in order to make sure that the player is teleported to spawn and after authorization appears in the same place
+                // The delay is necessary in order to make sure that the player is teleported to spawn
+                // and after authorization appears in the same place
                 bukkitService.runTaskLater(() -> {
                     spectateLoginService.createStand(player);
                 }, 1);

@@ -103,7 +103,8 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
             player.removePotionEffect(PotionEffectType.BLINDNESS);
         }
 
-        if (commonService.getProperty(RestrictionSettings.SPECTATE_STAND_LOGIN) || spectateLoginService.hasStand(player)) {
+        if (commonService.getProperty(RestrictionSettings.SPECTATE_STAND_LOGIN)
+            || spectateLoginService.hasStand(player)) {
             spectateLoginService.removeStand(player);
         }
 
