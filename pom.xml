@@ -648,7 +648,7 @@
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
-            <version>3.0.4</version>
+            <version>3.0.5</version>
             <optional>true</optional>
         </dependency>
 
@@ -732,7 +732,7 @@
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
-            <version>4.7.0</version>
+            <version>4.8.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
