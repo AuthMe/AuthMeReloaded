@@ -41,16 +41,6 @@ public class SpectateLoginService {
     }
 
     /**
-     * Checks whether the stand is used when authorizing the player
-     *
-     * @param stand the stand
-     * @return true if the stand is used for authorization, false otherwise
-     */
-    public boolean isStandReserved(ArmorStand stand) {
-        return armorStands.containsValue(stand);
-    }
-
-    /**
      * Updates spectator target for the player
      *
      * @param player the player
@@ -78,6 +68,18 @@ public class SpectateLoginService {
             gameModeMap.remove(player);
             armorStands.remove(player);
         }
+    }
+
+    /**
+     * Removes all armorstands and restores player gamemode
+     */
+    public void removeArmorstands() {
+        for (Player player : armorStands.keySet()) {
+            removeStand(player);
+        }
+
+        gameModeMap.clear();
+        armorStands.clear();
     }
 
     public boolean hasStand(Player player) {
