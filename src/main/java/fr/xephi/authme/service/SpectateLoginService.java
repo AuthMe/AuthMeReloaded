@@ -1,7 +1,6 @@
 package fr.xephi.authme.service;
 
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
@@ -39,6 +38,16 @@ public class SpectateLoginService {
 
         player.setGameMode(GameMode.SPECTATOR);
         player.setSpectatorTarget(stand);
+    }
+
+    /**
+     * Checks whether the stand is used when authorizing the player
+     *
+     * @param stand the stand
+     * @return true if the stand is used for authorization, false otherwise
+     */
+    public boolean isStandReserved(ArmorStand stand) {
+        return armorStands.containsValue(stand);
     }
 
     /**

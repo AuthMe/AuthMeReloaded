@@ -5,7 +5,6 @@ import fr.xephi.authme.data.ProxySessionManager;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
-import fr.xephi.authme.listener.PlayerListener19Spigot;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.PlayerStatePermission;
