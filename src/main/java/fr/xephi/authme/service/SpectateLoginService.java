@@ -1,6 +1,7 @@
 package fr.xephi.authme.service;
 
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
@@ -10,6 +11,9 @@ import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Sets the player gamemode to Spectator, puts the player in an invisible armorstand and fixes the direction of the view
+ */
 public class SpectateLoginService {
 
     private Map<Player, ArmorStand> armorStands = new HashMap<>();
@@ -24,6 +28,9 @@ public class SpectateLoginService {
      * @param player the player
      */
     public void createStand(Player player) {
+        if (player.isDead()) {
+            return;
+        }
         Location location = player.getLocation();
         ArmorStand stand = spawnStand(location);
 
@@ -65,7 +72,7 @@ public class SpectateLoginService {
     }
 
     public boolean hasStand(Player player) {
-        return armorStands.get(player) != null;
+        return armorStands.containsKey(player);
     }
 
     private ArmorStand spawnStand(Location loc) {

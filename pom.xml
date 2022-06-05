@@ -235,6 +235,7 @@
                     </systemPropertyVariables>
                     <!-- Don't trim stack traces -->
                     <trimStackTrace>false</trimStackTrace>
+                    <testFailureIgnore>true</testFailureIgnore>
                 </configuration>
             </plugin>
             <!-- Generate a jar containing classes and resources -->

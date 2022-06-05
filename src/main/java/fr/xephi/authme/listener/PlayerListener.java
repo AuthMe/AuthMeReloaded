@@ -381,6 +381,36 @@ public class PlayerListener implements Listener {
         if (spawn != null && spawn.getWorld() != null) {
             event.setRespawnLocation(spawn);
         }
+
+        if (settings.getProperty(RestrictionSettings.SPECTATE_STAND_LOGIN)
+            || spectateLoginService.hasStand(event.getPlayer())) {
+            // If a player is dead, no stand will be created for him
+            // therefore we can be sure that there will not be two stands
+            bukkitService.runTaskLater(() -> {
+                spectateLoginService.createStand(event.getPlayer());
+            }, 1L);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onToggleSneak(PlayerToggleSneakEvent event) {
+        if (listenerService.shouldCancelEvent(event.getPlayer())
+            && (settings.getProperty(RestrictionSettings.SPECTATE_STAND_LOGIN)
+            || spectateLoginService.hasStand(event.getPlayer()))) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onTeleport(PlayerTeleportEvent event) {
+        if (listenerService.shouldCancelEvent(event.getPlayer())
+            && event.getCause() == PlayerTeleportEvent.TeleportCause.SPECTATE
+            && event.getPlayer().getGameMode() == GameMode.SPECTATOR
+            && (settings.getProperty(RestrictionSettings.SPECTATE_STAND_LOGIN)
+            || spectateLoginService.hasStand(event.getPlayer()))) {
+            spectateLoginService.updateTarget(event.getPlayer());
+            event.setCancelled(true);
+        }
     }
 
     /*
@@ -515,24 +545,4 @@ public class PlayerListener implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onToggleSneak(PlayerToggleSneakEvent event) {
-        if (listenerService.shouldCancelEvent(event.getPlayer())
-            && (settings.getProperty(RestrictionSettings.SPECTATE_STAND_LOGIN)
-            || spectateLoginService.hasStand(event.getPlayer()))) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-    public void onTeleport(PlayerTeleportEvent event) {
-        if (listenerService.shouldCancelEvent(event.getPlayer())
-            && event.getCause() == PlayerTeleportEvent.TeleportCause.SPECTATE
-            && event.getPlayer().getGameMode() == GameMode.SPECTATOR
-            && (settings.getProperty(RestrictionSettings.SPECTATE_STAND_LOGIN)
-            || spectateLoginService.hasStand(event.getPlayer()))) {
-            spectateLoginService.updateTarget(event.getPlayer());
-            event.setCancelled(true);
-        }
-    }
 }

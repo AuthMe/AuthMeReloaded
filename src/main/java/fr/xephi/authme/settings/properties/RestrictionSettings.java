@@ -199,15 +199,15 @@ public final class RestrictionSettings implements SettingsHolder {
         "pitch + yaw? may be more effective than 'allowMovement' at locking the player in place."
     })
     public static final Property<Boolean> SPECTATE_STAND_LOGIN =
-        newProperty("settings.restrictions.spectateStandLogin", true);
+        newProperty("settings.restrictions.spectateStandLogin.enabled", false);
 
     @Comment("Head Yaw position for 'spectateStandLogin'.")
     public static final Property<Double> HEAD_YAW =
-        newProperty("settings.restrictions.headYaw", 0.0f);
+        newProperty("settings.restrictions.spectateStandLogin.headYaw", 0.0f);
 
     @Comment("Head Pitch position for 'spectateStandLogin'.")
     public static final Property<Double> HEAD_PITCH =
-        newProperty("settings.restrictions.headPitch", 0.0f);
+        newProperty("settings.restrictions.spectateStandLogin.headPitch", 0.0f);
 
     private RestrictionSettings() {
     }
