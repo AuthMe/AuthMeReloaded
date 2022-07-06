@@ -20,7 +20,7 @@ import javax.inject.Inject;
 import java.util.Optional;
 
 public class BungeeReceiver implements PluginMessageListener, SettingsDependent {
-    
+
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(BungeeReceiver.class);
 
     private final AuthMe plugin;
@@ -45,7 +45,9 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
     @Override
     public void reload(final Settings settings) {
         this.isEnabled = settings.getProperty(HooksSettings.BUNGEECORD);
-
+        if (this.isEnabled) {
+            this.isEnabled = bukkitService.isBungeeCordConfiguredForSpigot().orElse(false);
+        }
         if (this.isEnabled) {
             final Messenger messenger = plugin.getServer().getMessenger();
             if (!messenger.isIncomingChannelRegistered(plugin, "BungeeCord")) {
@@ -159,7 +161,7 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
             proxySessionManager.processProxySessionMessage(name);
             logger.info("The user " + name + " should be automatically logged in, "
                 + "as requested via plugin messaging but has not been detected, nickname has been"
-                +" added to autologin queue.");
+                + " added to autologin queue.");
         }
     }
 
