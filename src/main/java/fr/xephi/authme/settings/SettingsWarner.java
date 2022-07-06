@@ -67,6 +67,14 @@ public class SettingsWarner {
                 + " AuthMeBungee add-on to work properly you have to enable this option!");
         }
 
+        if (!isTrue(bukkitService.isBungeeCordConfiguredForSpigot())
+            && settings.getProperty(HooksSettings.BUNGEECORD)) {
+            logger.warning("Note: Hooks.bungeecord is set to true but your server appears to be running in"
+                + " non-bungeecord mode (see your spigot.yml). In order to prevent untrusted payload attack, "
+                + "BungeeCord hook will be automatically disabled!");
+        }
+
+
         // Check if argon2 library is present and can be loaded
         if (settings.getProperty(SecuritySettings.PASSWORD_HASH).equals(HashAlgorithm.ARGON2)
             && !Argon2.isLibraryLoaded()) {
