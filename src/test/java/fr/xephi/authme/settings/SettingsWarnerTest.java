@@ -37,9 +37,6 @@ public class SettingsWarnerTest {
     private Settings settings;
 
     @Mock
-    private AuthMe authMe;
-
-    @Mock
     private BukkitService bukkitService;
 
     @Test
@@ -63,6 +60,26 @@ public class SettingsWarnerTest {
     }
 
     @Test
+    public void shouldWarnBungeeWithoutSpigot() {
+        Logger logger = TestHelper.setupLogger();
+
+        // this cannot be covered above, because it's conflicting with the other settings
+        given(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)).willReturn(true);
+        given(settings.getProperty(EmailSettings.SMTP_PORT)).willReturn(25);
+        given(settings.getProperty(EmailSettings.PORT25_USE_TLS)).willReturn(false);
+        given(settings.getProperty(PluginSettings.SESSIONS_ENABLED)).willReturn(false);
+        given(settings.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.MD5);
+        given(settings.getProperty(HooksSettings.BUNGEECORD)).willReturn(true);
+        given(bukkitService.isBungeeCordConfiguredForSpigot()).willReturn(Optional.of(false));
+
+        // when
+        settingsWarner.logWarningsForMisconfigurations();
+
+        // then
+        verify(logger, times(1)).warning(anyString());
+    }
+
+    @Test
     public void shouldNotLogAnyWarning() {
         Logger logger = TestHelper.setupLogger();
         given(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)).willReturn(true);
@@ -70,6 +87,7 @@ public class SettingsWarnerTest {
         given(settings.getProperty(EmailSettings.PORT25_USE_TLS)).willReturn(false);
         given(settings.getProperty(PluginSettings.SESSIONS_ENABLED)).willReturn(false);
         given(settings.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.MD5);
+        given(settings.getProperty(HooksSettings.BUNGEECORD)).willReturn(false);
         given(bukkitService.isBungeeCordConfiguredForSpigot()).willReturn(Optional.empty());
 
         // when
