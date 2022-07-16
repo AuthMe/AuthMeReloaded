@@ -242,6 +242,12 @@ public class AuthMeApiTest {
     }
 
     @Test
+    public void testGetLastLoginMillis() {
+        AuthMeApi result = AuthMeApi.getInstance();
+        assertThat(result.getLastLoginTime("notAPlayer"), nullValue());
+    }
+
+    @Test
     public void shouldHandleNullLastLoginTime() {
         // given
         String name = "John";
