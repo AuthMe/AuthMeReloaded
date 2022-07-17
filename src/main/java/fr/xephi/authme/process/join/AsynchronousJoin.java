@@ -93,6 +93,11 @@ public class AsynchronousJoin implements AsynchronousProcess {
         final String name = player.getName().toLowerCase();
         final String ip = PlayerUtils.getPlayerIp(player);
 
+        if (!validationService.fulfillsNameRestrictions(player)) {
+            handlePlayerWithUnmetNameRestriction(player, ip);
+            return;
+        }
+
         if (service.getProperty(RestrictionSettings.UNRESTRICTED_NAMES).contains(name)) {
             return;
         }
@@ -105,11 +110,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
         if (service.getProperty(HooksSettings.DISABLE_SOCIAL_SPY)) {
             pluginHookService.setEssentialsSocialSpyStatus(player, false);
-        }
-
-        if (!validationService.fulfillsNameRestrictions(player)) {
-            handlePlayerWithUnmetNameRestriction(player, ip);
-            return;
         }
 
         if (!validatePlayerCountForIp(player, ip)) {
