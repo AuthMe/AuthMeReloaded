@@ -453,6 +453,13 @@
                     <!-- The secret token is provided with a command-line parameter -->
                     <failOnServiceError>false</failOnServiceError>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>javax.xml.bind</groupId>
+                        <artifactId>jaxb-api</artifactId>
+                        <version>2.3.1</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
