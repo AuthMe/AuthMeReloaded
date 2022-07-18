@@ -37,6 +37,11 @@ public final class DatabaseSettings implements SettingsHolder {
     public static final Property<Boolean> MYSQL_CHECK_SERVER_CERTIFICATE =
         newProperty( "DataSource.mySQLCheckServerCertificate", true );
 
+    @Comment({"Authorize client to retrieve RSA server public key.",
+        "Advanced option, ignore if you don't know what it means."})
+    public static final Property<Boolean> MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL =
+        newProperty( "DataSource.mySQLAllowPublicKeyRetrieval", true );
+
     @Comment("Username to connect to the MySQL database")
     public static final Property<String> MYSQL_USERNAME =
         newProperty("DataSource.mySQLUsername", "authme");
