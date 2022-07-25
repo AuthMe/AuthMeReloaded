@@ -167,4 +167,6 @@ public abstract class AbstractSqlDataSource implements DataSource {
             return DataSourceValueImpl.unknownRow();
         }
     }
+
+    abstract String getJdbcUrl(String host, String port, String database);
 }

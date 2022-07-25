@@ -134,7 +134,7 @@ public class MySQL extends AbstractSqlDataSource {
         ds.setMaxLifetime(maxLifetime * 1000L);
 
         // Database URL
-        ds.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
+        ds.setJdbcUrl(this.getJdbcUrl(this.host, this.port, this.database));
 
         // Auth
         ds.setUsername(this.username);
