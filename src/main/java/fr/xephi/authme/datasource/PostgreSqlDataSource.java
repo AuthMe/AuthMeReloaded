@@ -119,7 +119,7 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
 
         // Database URL
         ds.setDriverClassName("org.postgresql.Driver");
-        ds.setJdbcUrl("jdbc:postgresql://" + this.host + ":" + this.port + "/" + this.database);
+        ds.setJdbcUrl(this.getJdbcUrl(this.host, this.port, this.database));
 
         // Auth
         ds.setUsername(this.username);
@@ -304,6 +304,11 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
             logSqlException(ex);
         }
         return false;
+    }
+
+    @Override
+    String getJdbcUrl(String host, String port, String database) {
+        return "jdbc:postgresql://" + host + ":" + port + "/" + database;
     }
 
     @Override

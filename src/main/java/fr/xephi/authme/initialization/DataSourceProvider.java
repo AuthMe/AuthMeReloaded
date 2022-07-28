@@ -5,6 +5,7 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSourceType;
+import fr.xephi.authme.datasource.MariaDB;
 import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.datasource.PostgreSqlDataSource;
 import fr.xephi.authme.datasource.SQLite;
@@ -65,6 +66,9 @@ public class DataSourceProvider implements Provider<DataSource> {
         switch (dataSourceType) {
             case MYSQL:
                 dataSource = new MySQL(settings, mySqlExtensionsFactory);
+                break;
+            case MARIADB:
+                dataSource = new MariaDB(settings, mySqlExtensionsFactory);
                 break;
             case POSTGRESQL:
                 dataSource = new PostgreSqlDataSource(settings, mySqlExtensionsFactory);

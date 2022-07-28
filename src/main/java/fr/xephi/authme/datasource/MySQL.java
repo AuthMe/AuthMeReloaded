@@ -134,7 +134,7 @@ public class MySQL extends AbstractSqlDataSource {
         ds.setMaxLifetime(maxLifetime * 1000L);
 
         // Database URL
-        ds.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
+        ds.setJdbcUrl(this.getJdbcUrl(this.host, this.port, this.database));
 
         // Auth
         ds.setUsername(this.username);
@@ -299,7 +299,7 @@ public class MySQL extends AbstractSqlDataSource {
     }
 
     private boolean isColumnMissing(DatabaseMetaData metaData, String columnName) throws SQLException {
-        try (ResultSet rs = metaData.getColumns(null, null, tableName, columnName)) {
+        try (ResultSet rs = metaData.getColumns(database, null, tableName, columnName)) {
             return !rs.next();
         }
     }
@@ -346,6 +346,11 @@ public class MySQL extends AbstractSqlDataSource {
             logSqlException(ex);
         }
         return false;
+    }
+
+    @Override
+    String getJdbcUrl(String host, String port, String database) {
+        return "jdbc:mysql://" + host + ":" + port + "/" + database;
     }
 
     @Override

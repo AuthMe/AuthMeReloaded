@@ -7,6 +7,8 @@ public enum DataSourceType {
 
     MYSQL,
 
+    MARIADB,
+
     POSTGRESQL,
 
     SQLITE
