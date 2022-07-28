@@ -10,7 +10,7 @@ import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 public final class DatabaseSettings implements SettingsHolder {
 
     @Comment({"What type of database do you want to use?",
-        "Valid values: SQLITE, MYSQL, POSTGRESQL"})
+        "Valid values: SQLITE, MARIADB, MYSQL, POSTGRESQL"})
     public static final Property<DataSourceType> BACKEND =
         newProperty(DataSourceType.class, "DataSource.backend", DataSourceType.SQLITE);
 
@@ -49,13 +49,6 @@ public final class DatabaseSettings implements SettingsHolder {
     @Comment("Password to connect to the MySQL database")
     public static final Property<String> MYSQL_PASSWORD =
         newProperty("DataSource.mySQLPassword", "12345");
-    
-    @Comment({"Driver Name of the MySQL database.",
-        "Built-in drivers:",
-        "    MySQL: 'fr.xephi.authme.libs.com.mysql.cj.jdbc.Driver'",
-        "    MariaDB: 'fr.xephi.authme.libs.org.mariadb.jdbc.Driver'"})
-    public static final Property<String> MYSQL_DRIVER_CLASS_NAME =
-        newProperty("DataSource.mySQLDriverClassName", "fr.xephi.authme.libs.com.mysql.cj.jdbc.Driver");
 
     @Comment("Database Name, use with converters or as SQLITE database name")
     public static final Property<String> MYSQL_DATABASE =

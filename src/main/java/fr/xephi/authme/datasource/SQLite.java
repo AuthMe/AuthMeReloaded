@@ -88,7 +88,7 @@ public class SQLite extends AbstractSqlDataSource {
         }
 
         logger.debug("SQLite driver loaded");
-        this.con = DriverManager.getConnection("jdbc:sqlite:" + this.dataFolder + File.separator + database + ".db");
+        this.con = DriverManager.getConnection(this.getJdbcUrl(this.dataFolder.getAbsolutePath(), "", this.database));
         this.columnsHandler = AuthMeColumnsHandler.createForSqlite(con, settings);
     }
 
@@ -403,6 +403,11 @@ public class SQLite extends AbstractSqlDataSource {
             tableName, col.REGISTRATION_DATE, currentTimestamp));
         logger.info("Created column '" + col.REGISTRATION_DATE + "' and set the current timestamp, "
             + currentTimestamp + ", to all " + updatedRows + " rows");
+    }
+
+    @Override
+    String getJdbcUrl(String dataPath, String ignored, String database) {
+        return "jdbc:sqlite:" + dataPath + File.separator + database + ".db";
     }
 
     private static void close(Connection con) {
