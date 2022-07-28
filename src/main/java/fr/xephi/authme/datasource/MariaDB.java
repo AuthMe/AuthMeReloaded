@@ -16,6 +16,11 @@ public class MariaDB extends MySQL {
     }
 
     @Override
+    protected String getDriverClassName() {
+        return "org.mariadb.jdbc.Driver";
+    }
+
+    @Override
     public DataSourceType getType() {
         return DataSourceType.MARIADB;
     }
