@@ -31,6 +31,12 @@ login:
 
 # Errors
 error:
+  # TODO missing_base_command: '&4Failed to parse %plugin_name command!'
+  # TODO unknown_command: '&4Unknown command!'
+  # TODO suggest_command: '&eDid you mean &6%command&e?'
+  # TODO suggest_command_help: '&eUse the command &6/%command help &eto view help.'
+  # TODO incorrect_arguments: '&4Incorrect command arguments!'
+  # TODO suggest_command_detailed_help: '&6Detailed help: &f/%parent help %child'
   unregistered_user: '&cAcest jucator nu este inregistrat!'
   denied_command: '&cPentru a utiliza aceasta comanda trebuie sa fi autentificat!'
   denied_chat: '&cPentru a utiliza chat-ul trebuie sa fi autentificat!'

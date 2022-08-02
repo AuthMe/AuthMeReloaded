@@ -31,6 +31,12 @@ login:
 
 # Errors
 error:
+  missing_base_command: '&4Failed to parse %plugin_name command!'
+  unknown_command: '&4Unknown command!'
+  suggest_command: '&eDid you mean &6%command&e?'
+  suggest_command_help: '&eUse the command &6/%command help &eto view help.'
+  incorrect_arguments: '&4Incorrect command arguments!'
+  suggest_command_detailed_help: '&6Detailed help: &f/%parent help %child'
   unregistered_user: '&cThis user isn''t registered!'
   denied_command: '&cIn order to use this command you must be authenticated!'
   denied_chat: '&cIn order to chat you must be authenticated!'
