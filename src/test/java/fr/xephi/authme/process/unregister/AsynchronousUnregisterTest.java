@@ -13,7 +13,6 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
-import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -128,7 +127,6 @@ public class AsynchronousUnregisterTest {
         verify(teleportationService).teleportOnJoin(player);
         verifyCalledUnregisterEventFor(player);
         verify(commandManager).runCommandsOnUnregister(player);
-        verify(bungeeSender).sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
         verify(player).addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 21 * 20, 2));
     }
 
@@ -161,7 +159,6 @@ public class AsynchronousUnregisterTest {
         verify(teleportationService).teleportOnJoin(player);
         verifyCalledUnregisterEventFor(player);
         verify(commandManager).runCommandsOnUnregister(player);
-        verify(bungeeSender).sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
         verify(player, never()).addPotionEffect(any(PotionEffect.class));
     }
 
@@ -191,7 +188,6 @@ public class AsynchronousUnregisterTest {
         verify(playerCache).removePlayer(name);
         verifyNoInteractions(teleportationService, limboService);
         verifyCalledUnregisterEventFor(player);
-        verify(bungeeSender).sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
         verify(commandManager).runCommandsOnUnregister(player);
     }
 
@@ -243,7 +239,6 @@ public class AsynchronousUnregisterTest {
         verify(playerCache).removePlayer(name);
         verifyNoInteractions(teleportationService);
         verifyCalledUnregisterEventFor(player);
-        verify(bungeeSender).sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
     }
 
     // Initiator known and Player object available
@@ -270,7 +265,6 @@ public class AsynchronousUnregisterTest {
         verify(teleportationService).teleportOnJoin(player);
         verifyCalledUnregisterEventFor(player);
         verify(commandManager).runCommandsOnUnregister(player);
-        verify(bungeeSender).sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
     }
 
     @Test
@@ -287,7 +281,6 @@ public class AsynchronousUnregisterTest {
         verify(playerCache).removePlayer(name);
         verifyNoInteractions(teleportationService);
         verifyCalledUnregisterEventFor(null);
-        verify(bungeeSender).sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
     }
 
     @Test

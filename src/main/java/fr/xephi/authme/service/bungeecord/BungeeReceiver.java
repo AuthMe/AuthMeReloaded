@@ -5,7 +5,6 @@ import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.ProxySessionManager;
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.process.Management;
@@ -27,29 +26,27 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
     private final BukkitService bukkitService;
     private final ProxySessionManager proxySessionManager;
     private final Management management;
-    private final DataSource dataSource;
 
     private boolean isEnabled;
 
     @Inject
     BungeeReceiver(AuthMe plugin, BukkitService bukkitService, ProxySessionManager proxySessionManager,
-                   Management management, DataSource dataSource, Settings settings) {
+                   Management management, Settings settings) {
         this.plugin = plugin;
         this.bukkitService = bukkitService;
         this.proxySessionManager = proxySessionManager;
         this.management = management;
-        this.dataSource = dataSource;
         reload(settings);
     }
 
     @Override
-    public void reload(final Settings settings) {
+    public void reload(Settings settings) {
         this.isEnabled = settings.getProperty(HooksSettings.BUNGEECORD);
         if (this.isEnabled) {
             this.isEnabled = bukkitService.isBungeeCordConfiguredForSpigot().orElse(false);
         }
         if (this.isEnabled) {
-            final Messenger messenger = plugin.getServer().getMessenger();
+            Messenger messenger = plugin.getServer().getMessenger();
             if (!messenger.isIncomingChannelRegistered(plugin, "BungeeCord")) {
                 messenger.registerIncomingPluginChannel(plugin, "BungeeCord", this);
             }
@@ -61,23 +58,23 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
      *
      * @param in the input to handle
      */
-    private void handleBroadcast(final ByteArrayDataInput in) {
+    private void handleBroadcast(ByteArrayDataInput in) {
         // Read data byte array
-        final short dataLength = in.readShort();
-        final byte[] dataBytes = new byte[dataLength];
+        short dataLength = in.readShort();
+        byte[] dataBytes = new byte[dataLength];
         in.readFully(dataBytes);
-        final ByteArrayDataInput dataIn = ByteStreams.newDataInput(dataBytes);
+        ByteArrayDataInput dataIn = ByteStreams.newDataInput(dataBytes);
 
         // Parse type
-        final String typeId = dataIn.readUTF();
-        final Optional<MessageType> type = MessageType.fromId(typeId);
+        String typeId = dataIn.readUTF();
+        Optional<MessageType> type = MessageType.fromId(typeId);
         if (!type.isPresent()) {
             logger.debug("Received unsupported forwarded bungeecord message type! ({0})", typeId);
             return;
         }
 
         // Parse argument
-        final String argument;
+        String argument;
         try {
             argument = dataIn.readUTF();
         } catch (IllegalStateException e) {
@@ -88,14 +85,9 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
 
         // Handle type
         switch (type.get()) {
-            case UNREGISTER:
-                dataSource.invalidateCache(argument);
-                break;
-            case REFRESH_PASSWORD:
-            case REFRESH_QUITLOC:
-            case REFRESH_EMAIL:
-            case REFRESH:
-                dataSource.refreshCache(argument);
+            case LOGIN:
+            case LOGOUT:
+                // TODO: unused
                 break;
             default:
         }
@@ -108,15 +100,15 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
      */
     private void handle(ByteArrayDataInput in) {
         // Parse type
-        final String typeId = in.readUTF();
-        final Optional<MessageType> type = MessageType.fromId(typeId);
+        String typeId = in.readUTF();
+        Optional<MessageType> type = MessageType.fromId(typeId);
         if (!type.isPresent()) {
             logger.debug("Received unsupported bungeecord message type! ({0})", typeId);
             return;
         }
 
         // Parse argument
-        final String argument;
+        String argument;
         try {
             argument = in.readUTF();
         } catch (IllegalStateException e) {
@@ -135,15 +127,15 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
     }
 
     @Override
-    public void onPluginMessageReceived(final String channel, final Player player, final byte[] data) {
+    public void onPluginMessageReceived(String channel, Player player, byte[] data) {
         if (!isEnabled) {
             return;
         }
 
-        final ByteArrayDataInput in = ByteStreams.newDataInput(data);
+        ByteArrayDataInput in = ByteStreams.newDataInput(data);
 
         // Check subchannel
-        final String subChannel = in.readUTF();
+        String subChannel = in.readUTF();
         if ("AuthMe.v2.Broadcast".equals(subChannel)) {
             handleBroadcast(in);
         } else if ("AuthMe.v2".equals(subChannel)) {
@@ -151,7 +143,7 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
         }
     }
 
-    private void performLogin(final String name) {
+    private void performLogin(String name) {
         Player player = bukkitService.getPlayerExact(name);
         if (player != null && player.isOnline()) {
             management.forceLogin(player, true);

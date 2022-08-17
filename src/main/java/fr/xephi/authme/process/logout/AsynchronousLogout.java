@@ -51,7 +51,7 @@ public class AsynchronousLogout implements AsynchronousProcess {
      * @param player the player wanting to log out
      */
     public void logout(Player player) {
-        final String name = player.getName().toLowerCase();
+        String name = player.getName().toLowerCase();
         if (!playerCache.isAuthenticated(name)) {
             service.send(player, MessageKey.NOT_LOGGED_IN);
             return;
@@ -59,18 +59,18 @@ public class AsynchronousLogout implements AsynchronousProcess {
 
         PlayerAuth auth = playerCache.getAuth(name);
         database.updateSession(auth);
-        bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_SESSION, name);
+        // TODO: send an update when a messaging service will be implemented (SESSION)
         if (service.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
             auth.setQuitLocation(player.getLocation());
             database.updateQuitLoc(auth);
-            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, name);
+            // TODO: send an update when a messaging service will be implemented (QUITLOC)
         }
 
         playerCache.removePlayer(name);
         codeManager.unverify(name);
         database.setUnlogged(name);
         sessionService.revokeSession(name);
-        bungeeSender.sendAuthMeBungeecordMessage(MessageType.LOGOUT, name);
+        bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.LOGOUT);
         syncProcessManager.processSyncPlayerLogout(player);
     }
 }

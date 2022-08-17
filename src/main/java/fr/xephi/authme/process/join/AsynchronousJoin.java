@@ -89,9 +89,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
      *
      * @param player the player to process
      */
-    public void processJoin(final Player player) {
-        final String name = player.getName().toLowerCase();
-        final String ip = PlayerUtils.getPlayerIp(player);
+    public void processJoin(Player player) {
+        String name = player.getName().toLowerCase();
+        String ip = PlayerUtils.getPlayerIp(player);
 
         if (!validationService.fulfillsNameRestrictions(player)) {
             handlePlayerWithUnmetNameRestriction(player, ip);
@@ -116,7 +116,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             return;
         }
 
-        final boolean isAuthAvailable = database.isAuthAvailable(name);
+        boolean isAuthAvailable = database.isAuthAvailable(name);
 
         if (isAuthAvailable) {
             // Protect inventory
@@ -153,7 +153,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             });
 
             // Skip if registration is optional
-            bungeeSender.sendAuthMeBungeecordMessage(MessageType.LOGIN, name);
+            bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.LOGIN);
             return;
         }
 
@@ -177,7 +177,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
      * @param isAuthAvailable true if the player is registered, false otherwise
      */
     private void processJoinSync(Player player, boolean isAuthAvailable) {
-        final int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
+        int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
 
         bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
             limboService.createLimboPlayer(player, isAuthAvailable);
@@ -204,7 +204,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
      *
      * @return true if the verification is OK (no infraction), false if player has been kicked
      */
-    private boolean validatePlayerCountForIp(final Player player, String ip) {
+    private boolean validatePlayerCountForIp(Player player, String ip) {
         if (service.getProperty(RestrictionSettings.MAX_JOIN_PER_IP) > 0
             && !service.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
             && !InternetProtocolUtils.isLoopbackAddress(ip)

@@ -153,7 +153,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
      *         (e.g. because he is already logged in)
      */
     private PlayerAuth getPlayerAuth(Player player, boolean quiet) {
-        final String name = player.getName().toLowerCase();
+        String name = player.getName().toLowerCase();
         if (playerCache.isAuthenticated(name)) {
             if (!quiet) {
                 service.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
@@ -179,7 +179,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             return null;
         }
 
-        final String ip = PlayerUtils.getPlayerIp(player);
+        String ip = PlayerUtils.getPlayerIp(player);
         if (hasReachedMaxLoggedInPlayersForIp(player, ip)) {
             if (!quiet) {
                 service.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
@@ -206,7 +206,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
      *         false otherwise
      */
     private boolean checkPlayerInfo(Player player, PlayerAuth auth, String password) {
-        final String name = player.getName().toLowerCase();
+        String name = player.getName().toLowerCase();
 
         // If captcha is required send a message to the player and deny to log in
         if (loginCaptchaManager.isCaptchaRequired(name)) {
@@ -214,7 +214,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             return false;
         }
 
-        final String ip = PlayerUtils.getPlayerIp(player);
+        String ip = PlayerUtils.getPlayerIp(player);
 
         // Increase the counts here before knowing the result of the login.
         loginCaptchaManager.increaseLoginFailureCount(name);
@@ -266,18 +266,19 @@ public class AsynchronousLogin implements AsynchronousProcess {
      */
     public void performLogin(Player player, PlayerAuth auth) {
         if (player.isOnline()) {
-            final boolean isFirstLogin = (auth.getLastLogin() == null);
+            boolean isFirstLogin = (auth.getLastLogin() == null);
 
             // Update auth to reflect this new login
-            final String ip = PlayerUtils.getPlayerIp(player);
+            String ip = PlayerUtils.getPlayerIp(player);
             auth.setRealName(player.getName());
             auth.setLastLogin(System.currentTimeMillis());
             auth.setLastIp(ip);
             dataSource.updateSession(auth);
-            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_SESSION, player.getName());
+
+            // TODO: send an update when a messaging service will be implemented (SESSION)
 
             // Successful login, so reset the captcha & temp ban count
-            final String name = player.getName();
+            String name = player.getName();
             loginCaptchaManager.resetLoginFailureCount(name);
             tempbanManager.resetCount(ip, name);
             player.setNoDamageTicks(0);
@@ -288,7 +289,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             List<String> auths = dataSource.getAllAuthsByIp(auth.getLastIp());
             displayOtherAccounts(auths, player);
 
-            final String email = auth.getEmail();
+            String email = auth.getEmail();
             if (service.getProperty(EmailSettings.RECALL_PLAYERS) && Utils.isEmailEmpty(email)) {
                 service.send(player, MessageKey.ADD_EMAIL_MESSAGE);
             }
@@ -299,7 +300,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             playerCache.updatePlayer(auth);
             dataSource.setLogged(name);
             sessionService.grantSession(name);
-            bungeeSender.sendAuthMeBungeecordMessage(MessageType.LOGIN, name);
+            bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.LOGIN);
 
             // As the scheduling executes the Task most likely after the current
             // task, we schedule it in the end
@@ -368,7 +369,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         }
 
         // Count logged in players with same IP address
-        final String name = player.getName();
+        String name = player.getName();
         int count = 0;
         for (Player onlinePlayer : bukkitService.getOnlinePlayers()) {
             if (ip.equalsIgnoreCase(PlayerUtils.getPlayerIp(onlinePlayer))

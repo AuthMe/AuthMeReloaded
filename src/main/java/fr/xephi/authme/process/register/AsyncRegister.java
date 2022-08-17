@@ -12,8 +12,6 @@ import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.process.register.executors.RegistrationParameters;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
-import fr.xephi.authme.service.bungeecord.BungeeSender;
-import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.InternetProtocolUtils;
@@ -40,8 +38,6 @@ public class AsyncRegister implements AsynchronousProcess {
     private CommonService service;
     @Inject
     private SingletonStore<RegistrationExecutor> registrationExecutorFactory;
-    @Inject
-    private BungeeSender bungeeSender;
 
     AsyncRegister() {
     }
@@ -71,7 +67,7 @@ public class AsyncRegister implements AsynchronousProcess {
      * @return true if the checks are successful and the event hasn't marked the action as denied, false otherwise.
      */
     private boolean preRegisterCheck(RegistrationMethod<?> variant, Player player) {
-        final String name = player.getName().toLowerCase();
+        String name = player.getName().toLowerCase();
         if (playerCache.isAuthenticated(name)) {
             service.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
             return false;
@@ -104,7 +100,6 @@ public class AsyncRegister implements AsynchronousProcess {
         PlayerAuth auth = executor.buildPlayerAuth(parameters);
         if (database.saveAuth(auth)) {
             executor.executePostPersistAction(parameters);
-            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REGISTER, parameters.getPlayerName());
         } else {
             service.send(parameters.getPlayer(), MessageKey.ERROR);
         }
@@ -118,8 +113,8 @@ public class AsyncRegister implements AsynchronousProcess {
      * @return true if registration may take place, false otherwise (IP check failed)
      */
     private boolean isPlayerIpAllowedToRegister(Player player) {
-        final int maxRegPerIp = service.getProperty(RestrictionSettings.MAX_REGISTRATION_PER_IP);
-        final String ip = PlayerUtils.getPlayerIp(player);
+        int maxRegPerIp = service.getProperty(RestrictionSettings.MAX_REGISTRATION_PER_IP);
+        String ip = PlayerUtils.getPlayerIp(player);
         if (maxRegPerIp > 0
             && !InternetProtocolUtils.isLoopbackAddress(ip)
             && !service.hasPermission(player, ALLOW_MULTIPLE_ACCOUNTS)) {

@@ -1,6 +1,5 @@
 package fr.xephi.authme.service;
 
-import com.google.common.collect.Iterables;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.settings.Settings;
@@ -299,15 +298,13 @@ public class BukkitService implements SettingsDependent {
     }
 
     /**
-     * Send the specified message to bungeecord using the first available player connection.
+     * Send the specified bytes to bungeecord using the specified player connection.
      *
+     * @param player the player
      * @param bytes the message
      */
-    public void sendBungeeMessage(byte[] bytes) {
-        Player player = Iterables.getFirst(getOnlinePlayers(), null);
-        if (player != null) {
-            player.sendPluginMessage(authMe, "BungeeCord", bytes);
-        }
+    public void sendBungeeMessage(Player player, byte[] bytes) {
+        player.sendPluginMessage(authMe, "BungeeCord", bytes);
     }
 
     /**
