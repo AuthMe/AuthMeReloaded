@@ -14,9 +14,11 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.TeleportationService;
+import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -53,6 +55,9 @@ public class AsynchronousUnregister implements AsynchronousProcess {
 
     @Inject
     private CommandManager commandManager;
+
+    @Inject
+    private BungeeSender bungeeSender;
 
     AsynchronousUnregister() {
     }
@@ -112,6 +117,9 @@ public class AsynchronousUnregister implements AsynchronousProcess {
      * @param player the according Player object (nullable)
      */
     private void performPostUnregisterActions(String name, Player player) {
+        if (player != null && playerCache.isAuthenticated(name)) {
+            bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.LOGOUT);
+        }
         playerCache.removePlayer(name);
 
         // TODO: send an update when a messaging service will be implemented (UNREGISTER)

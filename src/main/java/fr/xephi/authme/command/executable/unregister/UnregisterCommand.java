@@ -31,7 +31,7 @@ public class UnregisterCommand extends PlayerCommand {
     @Override
     public void runCommand(Player player, List<String> arguments) {
         String playerPass = arguments.get(0);
-        final String playerName = player.getName();
+        String playerName = player.getName();
 
         // Make sure the player is authenticated
         if (!playerCache.isAuthenticated(playerName)) {
