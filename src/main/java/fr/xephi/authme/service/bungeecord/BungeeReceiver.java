@@ -46,7 +46,7 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
             this.isEnabled = bukkitService.isBungeeCordConfiguredForSpigot().orElse(false);
         }
         if (this.isEnabled) {
-            Messenger messenger = plugin.getServer().getMessenger();
+            final Messenger messenger = plugin.getServer().getMessenger();
             if (!messenger.isIncomingChannelRegistered(plugin, "BungeeCord")) {
                 messenger.registerIncomingPluginChannel(plugin, "BungeeCord", this);
             }

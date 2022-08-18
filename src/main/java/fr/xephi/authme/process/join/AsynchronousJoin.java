@@ -153,7 +153,13 @@ public class AsynchronousJoin implements AsynchronousProcess {
             });
 
             // Skip if registration is optional
-            bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.LOGIN);
+
+            if (bungeeSender.isEnabled()) {
+                // As described at https://www.spigotmc.org/wiki/bukkit-bungee-plugin-messaging-channel/
+                // "Keep in mind that you can't send plugin messages directly after a player joins."
+                bukkitService.scheduleSyncDelayedTask(() ->
+                    bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.LOGIN), 10L);
+            }
             return;
         }
 

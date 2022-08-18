@@ -300,7 +300,13 @@ public class AsynchronousLogin implements AsynchronousProcess {
             playerCache.updatePlayer(auth);
             dataSource.setLogged(name);
             sessionService.grantSession(name);
-            bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.LOGIN);
+
+            if (bungeeSender.isEnabled()) {
+                // As described at https://www.spigotmc.org/wiki/bukkit-bungee-plugin-messaging-channel/
+                // "Keep in mind that you can't send plugin messages directly after a player joins."
+                bukkitService.scheduleSyncDelayedTask(() ->
+                    bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.LOGIN), 10L);
+            }
 
             // As the scheduling executes the Task most likely after the current
             // task, we schedule it in the end

@@ -308,7 +308,7 @@ public class BukkitService implements SettingsDependent {
     }
 
     /**
-     * Adds a ban to the this list. If a previous ban exists, this will
+     * Adds a ban to the list. If a previous ban exists, this will
      * update the previous entry.
      *
      * @param ip the ip of the ban
