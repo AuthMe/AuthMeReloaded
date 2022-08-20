@@ -28,6 +28,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -457,7 +458,7 @@ public class AuthMeApiTest {
         String name = "Marco";
         String password = "myP4ss";
         HashedPassword hashedPassword = new HashedPassword("0395872SLKDFJOWEIUTEJSD");
-        given(passwordSecurity.computeHash(password, name.toLowerCase())).willReturn(hashedPassword);
+        given(passwordSecurity.computeHash(password, name.toLowerCase(Locale.ROOT))).willReturn(hashedPassword);
         given(dataSource.saveAuth(any(PlayerAuth.class))).willReturn(true);
 
         // when
@@ -465,10 +466,10 @@ public class AuthMeApiTest {
 
         // then
         assertThat(result, equalTo(true));
-        verify(passwordSecurity).computeHash(password, name.toLowerCase());
+        verify(passwordSecurity).computeHash(password, name.toLowerCase(Locale.ROOT));
         ArgumentCaptor<PlayerAuth> authCaptor = ArgumentCaptor.forClass(PlayerAuth.class);
         verify(dataSource).saveAuth(authCaptor.capture());
-        assertThat(authCaptor.getValue().getNickname(), equalTo(name.toLowerCase()));
+        assertThat(authCaptor.getValue().getNickname(), equalTo(name.toLowerCase(Locale.ROOT)));
         assertThat(authCaptor.getValue().getRealName(), equalTo(name));
         assertThat(authCaptor.getValue().getPassword(), equalTo(hashedPassword));
     }

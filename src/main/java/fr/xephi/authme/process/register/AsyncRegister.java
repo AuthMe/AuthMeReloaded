@@ -20,6 +20,7 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Locale;
 
 import static fr.xephi.authme.permission.PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS;
 
@@ -67,7 +68,7 @@ public class AsyncRegister implements AsynchronousProcess {
      * @return true if the checks are successful and the event hasn't marked the action as denied, false otherwise.
      */
     private boolean preRegisterCheck(RegistrationMethod<?> variant, Player player) {
-        String name = player.getName().toLowerCase();
+        String name = player.getName().toLowerCase(Locale.ROOT);
         if (playerCache.isAuthenticated(name)) {
             service.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
             return false;

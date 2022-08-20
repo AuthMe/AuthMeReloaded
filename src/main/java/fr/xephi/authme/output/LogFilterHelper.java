@@ -6,6 +6,7 @@ import fr.xephi.authme.util.StringUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Service class for the log filters.
@@ -35,7 +36,7 @@ final class LogFilterHelper {
         if (message == null) {
             return false;
         }
-        String lowerMessage = message.toLowerCase();
+        String lowerMessage = message.toLowerCase(Locale.ROOT);
         return lowerMessage.contains(ISSUED_COMMAND_TEXT) && StringUtils.containsAny(lowerMessage, COMMANDS_TO_SKIP);
     }
 

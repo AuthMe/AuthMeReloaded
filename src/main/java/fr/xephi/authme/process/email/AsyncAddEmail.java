@@ -15,6 +15,7 @@ import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.util.Locale;
 
 /**
  * Async task to add an email to an account.
@@ -48,7 +49,7 @@ public class AsyncAddEmail implements AsynchronousProcess {
      * @param email the email to add
      */
     public void addEmail(Player player, String email) {
-        String playerName = player.getName().toLowerCase();
+        String playerName = player.getName().toLowerCase(Locale.ROOT);
 
         if (playerCache.isAuthenticated(playerName)) {
             PlayerAuth auth = playerCache.getAuth(playerName);

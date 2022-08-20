@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.getNullableLong;
@@ -257,7 +258,7 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
     }
 
     private boolean isColumnMissing(DatabaseMetaData metaData, String columnName) throws SQLException {
-        try (ResultSet rs = metaData.getColumns(null, null, tableName, columnName.toLowerCase())) {
+        try (ResultSet rs = metaData.getColumns(null, null, tableName, columnName.toLowerCase(Locale.ROOT))) {
             return !rs.next();
         }
     }
@@ -267,7 +268,7 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
         String sql = "SELECT * FROM " + tableName + " WHERE " + col.NAME + "=?;";
         PlayerAuth auth;
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, user.toLowerCase());
+            pst.setString(1, user.toLowerCase(Locale.ROOT));
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     int id = rs.getInt(col.ID);
@@ -335,11 +336,11 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
 
     @Override
     public boolean removeAuth(String user) {
-        user = user.toLowerCase();
+        user = user.toLowerCase(Locale.ROOT);
         String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             sqlExtension.removeAuth(user, con);
-            pst.setString(1, user.toLowerCase());
+            pst.setString(1, user.toLowerCase(Locale.ROOT));
             pst.executeUpdate();
             return true;
         } catch (SQLException ex) {
@@ -360,7 +361,7 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
         String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             for (String name : toPurge) {
-                pst.setString(1, name.toLowerCase());
+                pst.setString(1, name.toLowerCase(Locale.ROOT));
                 pst.executeUpdate();
             }
         } catch (SQLException ex) {
@@ -428,7 +429,7 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
         String sql = "UPDATE " + tableName + " SET " + col.TOTP_KEY + " = ? WHERE " + col.NAME + " = ?";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, totpKey);
-            pst.setString(2, user.toLowerCase());
+            pst.setString(2, user.toLowerCase(Locale.ROOT));
             pst.executeUpdate();
             return true;
         } catch (SQLException e) {

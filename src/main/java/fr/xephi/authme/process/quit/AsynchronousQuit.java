@@ -18,6 +18,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.util.Locale;
 
 /**
  * Async process called when a player quits the server.
@@ -63,7 +64,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
         if (player == null || validationService.isUnrestricted(player.getName())) {
             return;
         }
-        String name = player.getName().toLowerCase();
+        String name = player.getName().toLowerCase(Locale.ROOT);
         boolean wasLoggedIn = playerCache.isAuthenticated(name);
 
         if (wasLoggedIn) {

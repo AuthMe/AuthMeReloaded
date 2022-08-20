@@ -8,6 +8,7 @@ import fr.xephi.authme.util.expiring.TimedCounter;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -36,14 +37,14 @@ public class LoginCaptchaManager implements CaptchaManager, SettingsDependent, H
      */
     public void increaseLoginFailureCount(String name) {
         if (isEnabled) {
-            String playerLower = name.toLowerCase();
+            String playerLower = name.toLowerCase(Locale.ROOT);
             playerCounts.increment(playerLower);
         }
     }
 
     @Override
     public boolean isCaptchaRequired(String playerName) {
-        return isEnabled && playerCounts.get(playerName.toLowerCase()) >= threshold;
+        return isEnabled && playerCounts.get(playerName.toLowerCase(Locale.ROOT)) >= threshold;
     }
 
     @Override
@@ -53,7 +54,7 @@ public class LoginCaptchaManager implements CaptchaManager, SettingsDependent, H
 
     @Override
     public boolean checkCode(Player player, String code) {
-        String nameLower = player.getName().toLowerCase();
+        String nameLower = player.getName().toLowerCase(Locale.ROOT);
         boolean isCodeCorrect = captchaCodeStorage.checkCode(nameLower, code);
         if (isCodeCorrect) {
             playerCounts.remove(nameLower);
@@ -68,7 +69,7 @@ public class LoginCaptchaManager implements CaptchaManager, SettingsDependent, H
      */
     public void resetLoginFailureCount(String name) {
         if (isEnabled) {
-            playerCounts.remove(name.toLowerCase());
+            playerCounts.remove(name.toLowerCase(Locale.ROOT));
         }
     }
 

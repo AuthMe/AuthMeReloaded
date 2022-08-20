@@ -5,6 +5,8 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.entity.Player;
 
+import java.util.Locale;
+
 /**
  * Helper for constructing PlayerAuth objects.
  */
@@ -23,7 +25,7 @@ final class PlayerAuthBuilderHelper {
      */
     static PlayerAuth createPlayerAuth(Player player, HashedPassword hashedPassword, String email) {
         return PlayerAuth.builder()
-            .name(player.getName().toLowerCase())
+            .name(player.getName().toLowerCase(Locale.ROOT))
             .realName(player.getName())
             .password(hashedPassword)
             .email(email)

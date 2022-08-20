@@ -15,6 +15,7 @@ import org.bukkit.Server;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.Collection;
+import java.util.Locale;
 
 import static fr.xephi.authme.util.FileUtils.makePath;
 
@@ -80,7 +81,7 @@ public class PurgeExecutor {
         }
 
         for (String file : dataFolder.list()) {
-            if (cleared.contains(file.toLowerCase())) {
+            if (cleared.contains(file.toLowerCase(Locale.ROOT))) {
                 File playerFile = new File(dataFolder, file);
                 if (playerFile.exists() && playerFile.delete()) {
                     i++;
@@ -137,7 +138,7 @@ public class PurgeExecutor {
             if (name.equals(file)) {
                 continue;
             }
-            if (cleared.contains(name.toLowerCase())) {
+            if (cleared.contains(name.toLowerCase(Locale.ROOT))) {
                 File dataFile = new File(dataFolder, file);
                 if (dataFile.exists() && dataFile.delete()) {
                     i++;

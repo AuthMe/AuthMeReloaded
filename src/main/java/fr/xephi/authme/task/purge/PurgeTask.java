@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -74,7 +75,7 @@ class PurgeTask extends BukkitRunnable {
             }
 
             OfflinePlayer offlinePlayer = offlinePlayers[nextPosition];
-            if (offlinePlayer.getName() != null && toPurge.remove(offlinePlayer.getName().toLowerCase())) {
+            if (offlinePlayer.getName() != null && toPurge.remove(offlinePlayer.getName().toLowerCase(Locale.ROOT))) {
                 if (!permissionsManager.loadUserData(offlinePlayer)) {
                     logger.warning("Unable to check if the user " + offlinePlayer.getName() + " can be purged!");
                     continue;

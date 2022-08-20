@@ -4,6 +4,7 @@ import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.util.expiring.ExpiringSet;
 
 import javax.inject.Inject;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class ProxySessionManager implements HasCleanup {
@@ -21,7 +22,7 @@ public class ProxySessionManager implements HasCleanup {
      * @param name the player's name
      */
     private void setActiveSession(String name) {
-        activeProxySessions.add(name.toLowerCase());
+        activeProxySessions.add(name.toLowerCase(Locale.ROOT));
     }
 
     /**

@@ -15,6 +15,7 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.util.Locale;
 
 /**
  * Async task when a player wants to log out.
@@ -51,7 +52,7 @@ public class AsynchronousLogout implements AsynchronousProcess {
      * @param player the player wanting to log out
      */
     public void logout(Player player) {
-        String name = player.getName().toLowerCase();
+        String name = player.getName().toLowerCase(Locale.ROOT);
         if (!playerCache.isAuthenticated(name)) {
             service.send(player, MessageKey.NOT_LOGGED_IN);
             return;

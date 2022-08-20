@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.Messenger;
 
 import javax.inject.Inject;
+import java.util.Locale;
 
 public class BungeeSender implements SettingsDependent {
 
@@ -103,9 +104,9 @@ public class BungeeSender implements SettingsDependent {
             return;
         }
         if (type.isBroadcast()) {
-            sendForwardedBungeecordMessage(player, "AuthMe.v2.Broadcast", type.getId(), player.getName().toLowerCase());
+            sendForwardedBungeecordMessage(player, "AuthMe.v2.Broadcast", type.getId(), player.getName().toLowerCase(Locale.ROOT));
         } else {
-            sendBungeecordMessage(player, "AuthMe.v2", type.getId(), player.getName().toLowerCase());
+            sendBungeecordMessage(player, "AuthMe.v2", type.getId(), player.getName().toLowerCase(Locale.ROOT));
         }
     }
 

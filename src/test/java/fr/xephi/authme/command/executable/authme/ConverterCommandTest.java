@@ -17,6 +17,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -129,7 +130,7 @@ public class ConverterCommandTest {
         setBukkitServiceToRunTaskAsynchronously(bukkitService);
 
         // when
-        command.executeCommand(sender, Collections.singletonList(converterName.toUpperCase()));
+        command.executeCommand(sender, Collections.singletonList(converterName.toUpperCase(Locale.ROOT)));
 
         // then
         verify(converter).execute(sender);

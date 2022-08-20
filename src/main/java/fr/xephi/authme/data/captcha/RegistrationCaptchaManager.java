@@ -8,6 +8,7 @@ import fr.xephi.authme.util.expiring.ExpiringSet;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -31,7 +32,7 @@ public class RegistrationCaptchaManager implements CaptchaManager, SettingsDepen
 
     @Override
     public boolean isCaptchaRequired(String name) {
-        return isEnabled && !verifiedNamesForRegistration.contains(name.toLowerCase());
+        return isEnabled && !verifiedNamesForRegistration.contains(name.toLowerCase(Locale.ROOT));
     }
 
     @Override
@@ -41,7 +42,7 @@ public class RegistrationCaptchaManager implements CaptchaManager, SettingsDepen
 
     @Override
     public boolean checkCode(Player player, String code) {
-        String nameLower = player.getName().toLowerCase();
+        String nameLower = player.getName().toLowerCase(Locale.ROOT);
         boolean isCodeCorrect = captchaCodeStorage.checkCode(nameLower, code);
         if (isCodeCorrect) {
             verifiedNamesForRegistration.add(nameLower);

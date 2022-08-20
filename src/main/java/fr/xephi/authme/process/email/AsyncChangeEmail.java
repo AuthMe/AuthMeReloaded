@@ -14,6 +14,7 @@ import fr.xephi.authme.service.ValidationService;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.util.Locale;
 
 /**
  * Async task for changing the email.
@@ -48,7 +49,7 @@ public class AsyncChangeEmail implements AsynchronousProcess {
      * @param newEmail provided new email
      */
     public void changeEmail(Player player, String oldEmail, String newEmail) {
-        String playerName = player.getName().toLowerCase();
+        String playerName = player.getName().toLowerCase(Locale.ROOT);
         if (playerCache.isAuthenticated(playerName)) {
             PlayerAuth auth = playerCache.getAuth(playerName);
             String currentEmail = auth.getEmail();

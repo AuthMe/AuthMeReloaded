@@ -16,6 +16,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Collections.emptyList;
@@ -125,7 +126,7 @@ public class DebugCommandTest {
 
         CommandSender sender = mock(CommandSender.class);
         given(permissionsManager.hasPermission(sender, section.getRequiredPermission())).willReturn(true);
-        List<String> arguments = Arrays.asList(section.getName().toUpperCase(), "test", "toast");
+        List<String> arguments = Arrays.asList(section.getName().toUpperCase(Locale.ROOT), "test", "toast");
 
         // when
         command.executeCommand(sender, arguments);
@@ -144,7 +145,7 @@ public class DebugCommandTest {
 
         CommandSender sender = mock(CommandSender.class);
         given(permissionsManager.hasPermission(sender, section.getRequiredPermission())).willReturn(false);
-        List<String> arguments = Arrays.asList(section.getName().toUpperCase(), "test");
+        List<String> arguments = Arrays.asList(section.getName().toUpperCase(Locale.ROOT), "test");
 
         // when
         command.executeCommand(sender, arguments);

@@ -22,6 +22,7 @@ import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -71,7 +72,7 @@ public class ConverterCommand implements ExecutableCommand {
     private static Class<? extends Converter> getConverterClassFromArgs(List<String> arguments) {
         return arguments.isEmpty()
             ? null
-            : CONVERTERS.get(arguments.get(0).toLowerCase());
+            : CONVERTERS.get(arguments.get(0).toLowerCase(Locale.ROOT));
     }
 
     /**

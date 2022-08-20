@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Admin command to register a user.
@@ -45,7 +46,7 @@ public class RegisterAdminCommand implements ExecutableCommand {
         // Get the player name and password
         final String playerName = arguments.get(0);
         final String playerPass = arguments.get(1);
-        final String playerNameLowerCase = playerName.toLowerCase();
+        final String playerNameLowerCase = playerName.toLowerCase(Locale.ROOT);
 
         // Command logic
         ValidationResult passwordValidation = validationService.validatePassword(playerPass, playerName);

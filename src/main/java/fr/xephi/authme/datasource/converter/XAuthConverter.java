@@ -18,6 +18,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static fr.xephi.authme.util.FileUtils.makePath;
 
@@ -66,7 +67,7 @@ public class XAuthConverter implements Converter {
             String psw = getPassword(id);
             if (psw != null && !psw.isEmpty() && pl != null) {
                 PlayerAuth auth = PlayerAuth.builder()
-                    .name(pl.toLowerCase())
+                    .name(pl.toLowerCase(Locale.ROOT))
                     .realName(pl)
                     .password(psw, null).build();
                 database.saveAuth(auth);
@@ -89,7 +90,7 @@ public class XAuthConverter implements Converter {
             if (!rs.next()) {
                 return null;
             }
-            realPass = rs.getString("playername").toLowerCase();
+            realPass = rs.getString("playername").toLowerCase(Locale.ROOT);
         } catch (SQLException e) {
             xAuthLog.severe("Failed to retrieve name for account: " + id, e);
             return null;

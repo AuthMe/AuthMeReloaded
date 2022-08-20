@@ -14,6 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.util.Locale;
 
 /**
  * Saves all players' data when the plugin shuts down.
@@ -48,7 +49,7 @@ public class OnShutdownPlayerSaver {
     }
 
     private void savePlayer(Player player) {
-        String name = player.getName().toLowerCase();
+        String name = player.getName().toLowerCase(Locale.ROOT);
         if (PlayerUtils.isNpc(player) || validationService.isUnrestricted(name)) {
             return;
         }
@@ -64,7 +65,7 @@ public class OnShutdownPlayerSaver {
         if (settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
             Location loc = spawnLoader.getPlayerLocationOrSpawn(player);
             PlayerAuth auth = PlayerAuth.builder()
-                .name(player.getName().toLowerCase())
+                .name(player.getName().toLowerCase(Locale.ROOT))
                 .realName(player.getName())
                 .location(loc).build();
             dataSource.updateQuitLoc(auth);

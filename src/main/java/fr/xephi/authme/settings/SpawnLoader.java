@@ -19,6 +19,7 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 /**
  * Manager for spawn points. It loads spawn definitions from AuthMe and third-party plugins
@@ -177,7 +178,7 @@ public class SpawnLoader implements Reloadable {
         World world = player.getWorld();
         Location spawnLoc = null;
         for (String priority : spawnPriority) {
-            switch (priority.toLowerCase().trim()) {
+            switch (priority.toLowerCase(Locale.ROOT).trim()) {
                 case "default":
                     if (world.getSpawnLocation() != null) {
                         if (!isValidSpawnPoint(world.getSpawnLocation())) {

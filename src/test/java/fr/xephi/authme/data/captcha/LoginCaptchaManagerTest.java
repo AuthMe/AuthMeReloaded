@@ -7,6 +7,8 @@ import fr.xephi.authme.util.expiring.TimedCounter;
 import org.bukkit.entity.Player;
 import org.junit.Test;
 
+import java.util.Locale;
+
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
@@ -34,7 +36,7 @@ public class LoginCaptchaManagerTest {
         // then
         assertThat(manager.isCaptchaRequired(player), equalTo(false));
         manager.increaseLoginFailureCount(player);
-        assertThat(manager.isCaptchaRequired(player.toUpperCase()), equalTo(true));
+        assertThat(manager.isCaptchaRequired(player.toUpperCase(Locale.ROOT)), equalTo(true));
         assertThat(manager.isCaptchaRequired("otherPlayer"), equalTo(false));
     }
 
@@ -167,6 +169,6 @@ public class LoginCaptchaManagerTest {
     private static void assertHasCount(LoginCaptchaManager manager, String player, Integer count) {
         TimedCounter<String> playerCounts = ReflectionTestUtils
             .getFieldValue(LoginCaptchaManager.class, manager, "playerCounts");
-        assertThat(playerCounts.get(player.toLowerCase()), equalTo(count));
+        assertThat(playerCounts.get(player.toLowerCase(Locale.ROOT)), equalTo(count));
     }
 }

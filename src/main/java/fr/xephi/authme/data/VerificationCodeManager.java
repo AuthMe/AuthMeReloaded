@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -82,7 +83,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      * @return true if the player has been verified, false otherwise
      */
     private boolean isPlayerVerified(String name) {
-        return verifiedPlayers.contains(name.toLowerCase());
+        return verifiedPlayers.contains(name.toLowerCase(Locale.ROOT));
     }
 
     /**
@@ -92,7 +93,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      * @return true if the code exists, false otherwise
      */
     public boolean hasCode(String name) {
-        return (verificationCodes.get(name.toLowerCase()) != null);
+        return (verificationCodes.get(name.toLowerCase(Locale.ROOT)) != null);
     }
 
     /**
@@ -135,7 +136,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
             final String email = emailResult.getValue();
             if (!Utils.isEmailEmpty(email)) {
                 String code = RandomStringUtils.generateNum(6); // 6 digits code
-                verificationCodes.put(name.toLowerCase(), code);
+                verificationCodes.put(name.toLowerCase(Locale.ROOT), code);
                 emailService.sendVerificationMail(name, email, code);
             }
         }
@@ -150,7 +151,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      */
     public boolean checkCode(String name, String code) {
         boolean correct = false;
-        if (code.equals(verificationCodes.get(name.toLowerCase()))) {
+        if (code.equals(verificationCodes.get(name.toLowerCase(Locale.ROOT)))) {
             verify(name);
             correct = true;
         }
@@ -163,7 +164,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      * @param name the name of the player to generate a code for
      */
     public void verify(String name) {
-        verifiedPlayers.add(name.toLowerCase());
+        verifiedPlayers.add(name.toLowerCase(Locale.ROOT));
     }
 
     /**
@@ -172,7 +173,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      * @param name the name of the player to generate a code for
      */
     public void unverify(String name){
-        verifiedPlayers.remove(name.toLowerCase());
+        verifiedPlayers.remove(name.toLowerCase(Locale.ROOT));
     }
 
     @Override

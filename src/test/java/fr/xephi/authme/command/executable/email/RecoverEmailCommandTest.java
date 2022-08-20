@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
 import java.util.Collections;
+import java.util.Locale;
 
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskAsynchronously;
 import static org.hamcrest.Matchers.equalTo;
@@ -187,7 +188,7 @@ public class RecoverEmailCommandTest {
         setBukkitServiceToRunTaskAsynchronously(bukkitService);
 
         // when
-        command.executeCommand(sender, Collections.singletonList(email.toUpperCase()));
+        command.executeCommand(sender, Collections.singletonList(email.toUpperCase(Locale.ROOT)));
 
         // then
         verify(emailService).hasAllInformation();

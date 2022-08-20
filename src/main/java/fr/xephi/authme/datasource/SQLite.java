@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.getNullableLong;
@@ -268,7 +269,7 @@ public class SQLite extends AbstractSqlDataSource {
         String delete = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (PreparedStatement deletePst = con.prepareStatement(delete)) {
             for (String name : toPurge) {
-                deletePst.setString(1, name.toLowerCase());
+                deletePst.setString(1, name.toLowerCase(Locale.ROOT));
                 deletePst.executeUpdate();
             }
         } catch (SQLException ex) {
@@ -280,7 +281,7 @@ public class SQLite extends AbstractSqlDataSource {
     public boolean removeAuth(String user) {
         String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, user.toLowerCase());
+            pst.setString(1, user.toLowerCase(Locale.ROOT));
             pst.executeUpdate();
             return true;
         } catch (SQLException ex) {
@@ -355,7 +356,7 @@ public class SQLite extends AbstractSqlDataSource {
         String sql = "UPDATE " + tableName + " SET " + col.TOTP_KEY + " = ? WHERE " + col.NAME + " = ?";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, totpKey);
-            pst.setString(2, user.toLowerCase());
+            pst.setString(2, user.toLowerCase(Locale.ROOT));
             pst.executeUpdate();
             return true;
         } catch (SQLException e) {

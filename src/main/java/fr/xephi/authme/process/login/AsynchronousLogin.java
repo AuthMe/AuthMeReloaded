@@ -40,6 +40,7 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Asynchronous task for a player login.
@@ -153,7 +154,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
      *         (e.g. because he is already logged in)
      */
     private PlayerAuth getPlayerAuth(Player player, boolean quiet) {
-        String name = player.getName().toLowerCase();
+        String name = player.getName().toLowerCase(Locale.ROOT);
         if (playerCache.isAuthenticated(name)) {
             if (!quiet) {
                 service.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
@@ -206,7 +207,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
      *         false otherwise
      */
     private boolean checkPlayerInfo(Player player, PlayerAuth auth, String password) {
-        String name = player.getName().toLowerCase();
+        String name = player.getName().toLowerCase(Locale.ROOT);
 
         // If captcha is required send a message to the player and deny to log in
         if (loginCaptchaManager.isCaptchaRequired(name)) {
@@ -380,7 +381,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         for (Player onlinePlayer : bukkitService.getOnlinePlayers()) {
             if (ip.equalsIgnoreCase(PlayerUtils.getPlayerIp(onlinePlayer))
                 && !onlinePlayer.getName().equals(name)
-                && dataSource.isLogged(onlinePlayer.getName().toLowerCase())) {
+                && dataSource.isLogged(onlinePlayer.getName().toLowerCase(Locale.ROOT))) {
                 ++count;
             }
         }

@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import static fr.xephi.authme.command.TestCommandsUtil.getCommandWithLabel;
@@ -446,19 +447,19 @@ public class HelpProviderTest {
         given(helpMessagesService.buildLocalizedDescription(any(CommandDescription.class)))
             .willAnswer(new ReturnsArgumentAt(0));
         for (HelpMessage key : HelpMessage.values()) {
-            String text = key.name().replace("_", " ").toLowerCase();
+            String text = key.name().replace("_", " ").toLowerCase(Locale.ROOT);
             given(helpMessagesService.getMessage(key))
-                .willReturn(text.substring(0, 1).toUpperCase() + text.substring(1));
+                .willReturn(text.substring(0, 1).toUpperCase(Locale.ROOT) + text.substring(1));
         }
         for (DefaultPermission permission : DefaultPermission.values()) {
-            String text = permission.name().replace("_", " ").toLowerCase();
+            String text = permission.name().replace("_", " ").toLowerCase(Locale.ROOT);
             given(helpMessagesService.getMessage(permission))
-                .willReturn(text.substring(0, 1).toUpperCase() + text.substring(1));
+                .willReturn(text.substring(0, 1).toUpperCase(Locale.ROOT) + text.substring(1));
         }
         for (HelpSection section : HelpSection.values()) {
-            String text = section.name().replace("_", " ").toLowerCase();
+            String text = section.name().replace("_", " ").toLowerCase(Locale.ROOT);
             given(helpMessagesService.getMessage(section))
-                .willReturn(text.substring(0, 1).toUpperCase() + text.substring(1));
+                .willReturn(text.substring(0, 1).toUpperCase(Locale.ROOT) + text.substring(1));
         }
     }
 

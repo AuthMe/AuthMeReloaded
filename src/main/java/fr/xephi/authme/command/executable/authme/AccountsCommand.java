@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Shows all accounts registered by the same IP address for the given player name or IP address.
@@ -44,7 +45,7 @@ public class AccountsCommand implements ExecutableCommand {
             });
         } else {
             bukkitService.runTaskAsynchronously(() -> {
-                PlayerAuth auth = dataSource.getAuth(playerName.toLowerCase());
+                PlayerAuth auth = dataSource.getAuth(playerName.toLowerCase(Locale.ROOT));
                 if (auth == null) {
                     commonService.send(sender, MessageKey.UNKNOWN_USER);
                     return;

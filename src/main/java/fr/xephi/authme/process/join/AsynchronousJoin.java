@@ -32,6 +32,8 @@ import org.bukkit.potion.PotionEffectType;
 
 import javax.inject.Inject;
 
+import java.util.Locale;
+
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 
@@ -90,7 +92,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
      * @param player the player to process
      */
     public void processJoin(Player player) {
-        String name = player.getName().toLowerCase();
+        String name = player.getName().toLowerCase(Locale.ROOT);
         String ip = PlayerUtils.getPlayerIp(player);
 
         if (!validationService.fulfillsNameRestrictions(player)) {

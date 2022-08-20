@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * The command for a player to change his password with.
@@ -35,7 +36,7 @@ public class ChangePasswordCommand extends PlayerCommand {
 
     @Override
     public void runCommand(Player player, List<String> arguments) {
-        String name = player.getName().toLowerCase();
+        String name = player.getName().toLowerCase(Locale.ROOT);
 
         if (!playerCache.isAuthenticated(name)) {
             commonService.send(player, MessageKey.NOT_LOGGED_IN);

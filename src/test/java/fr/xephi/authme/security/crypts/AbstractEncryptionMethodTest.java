@@ -8,6 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -154,13 +155,13 @@ public abstract class AbstractEncryptionMethodTest {
                 method.comparePassword(password, hashedPassword, USERNAME));
             assumeThat(SKIP_LONG_TESTS, equalTo(false));
 
-            if (!password.equals(password.toLowerCase())) {
+            if (!password.equals(password.toLowerCase(Locale.ROOT))) {
                 assertFalse("Lower-case of '" + password + "' should not match generated hash '" + hash + "'",
-                    method.comparePassword(password.toLowerCase(), hashedPassword, USERNAME));
+                    method.comparePassword(password.toLowerCase(Locale.ROOT), hashedPassword, USERNAME));
             }
-            if (!password.equals(password.toUpperCase())) {
+            if (!password.equals(password.toUpperCase(Locale.ROOT))) {
                 assertFalse("Upper-case of '" + password + "' should not match generated hash '" + hash + "'",
-                    method.comparePassword(password.toUpperCase(), hashedPassword, USERNAME));
+                    method.comparePassword(password.toUpperCase(Locale.ROOT), hashedPassword, USERNAME));
             }
         }
     }

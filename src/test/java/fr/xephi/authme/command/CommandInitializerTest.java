@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -90,7 +91,7 @@ public class CommandInitializerTest {
             @Override
             public void accept(CommandDescription command, Integer depth) {
                 for (String label : command.getLabels()) {
-                    if (!label.equals(label.toLowerCase())) {
+                    if (!label.equals(label.toLowerCase(Locale.ROOT))) {
                         fail("Label '" + label + "' should be lowercase");
                     } else if (invalidPattern.matcher(label).matches()) {
                         fail("Label '" + label + "' has whitespace");

@@ -21,6 +21,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -217,7 +218,7 @@ public class AuthMeApi {
      * @return true if player is registered, false otherwise
      */
     public boolean isRegistered(String playerName) {
-        String player = playerName.toLowerCase();
+        String player = playerName.toLowerCase(Locale.ROOT);
         return dataSource.isAuthAvailable(player);
     }
 
@@ -241,7 +242,7 @@ public class AuthMeApi {
      * @return true if the player was registered successfully
      */
     public boolean registerPlayer(String playerName, String password) {
-        String name = playerName.toLowerCase();
+        String name = playerName.toLowerCase(Locale.ROOT);
         if (isRegistered(name)) {
             return false;
         }

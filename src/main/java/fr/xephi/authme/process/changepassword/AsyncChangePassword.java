@@ -14,6 +14,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.util.Locale;
 
 public class AsyncChangePassword implements AsynchronousProcess {
     
@@ -42,7 +43,7 @@ public class AsyncChangePassword implements AsynchronousProcess {
      * @param newPassword the new password chosen by the player
      */
     public void changePassword(Player player, String oldPassword, String newPassword) {
-        String name = player.getName().toLowerCase();
+        String name = player.getName().toLowerCase(Locale.ROOT);
         PlayerAuth auth = playerCache.getAuth(name);
         if (passwordSecurity.comparePassword(oldPassword, auth.getPassword(), player.getName())) {
             HashedPassword hashedPassword = passwordSecurity.computeHash(newPassword, name);
@@ -71,7 +72,7 @@ public class AsyncChangePassword implements AsynchronousProcess {
      * @param newPassword the new password chosen for the player
      */
     public void changePasswordAsAdmin(CommandSender sender, String playerName, String newPassword) {
-        String lowerCaseName = playerName.toLowerCase();
+        String lowerCaseName = playerName.toLowerCase(Locale.ROOT);
         if (!(playerCache.isAuthenticated(lowerCaseName) || dataSource.isAuthAvailable(lowerCaseName))) {
             if (sender == null) {
                 logger.warning("Tried to change password for user " + lowerCaseName + " but it doesn't exist!");

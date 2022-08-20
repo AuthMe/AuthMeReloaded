@@ -14,6 +14,7 @@ import fr.xephi.authme.settings.properties.DatabaseSettings;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Locale;
 
 import static ch.jalu.datasourcecolumns.sqlimplementation.SqlColumnsHandlerConfig.forConnectionPool;
 import static ch.jalu.datasourcecolumns.sqlimplementation.SqlColumnsHandlerConfig.forSingleConnection;
@@ -78,7 +79,7 @@ public final class AuthMeColumnsHandler {
      */
     public <T> boolean update(String name, DataSourceColumn<T> column, T value) {
         try {
-            return internalHandler.update(name.toLowerCase(), column, value);
+            return internalHandler.update(name.toLowerCase(Locale.ROOT), column, value);
         } catch (SQLException e) {
             logSqlException(e);
             return false;
@@ -110,7 +111,7 @@ public final class AuthMeColumnsHandler {
      */
     public boolean update(String name, UpdateValues<ColumnContext> updateValues) {
         try {
-            return internalHandler.update(name.toLowerCase(), updateValues);
+            return internalHandler.update(name.toLowerCase(Locale.ROOT), updateValues);
         } catch (SQLException e) {
             logSqlException(e);
             return false;
@@ -145,7 +146,7 @@ public final class AuthMeColumnsHandler {
      * @throws SQLException .
      */
     public <T> DataSourceValue<T> retrieve(String name, DataSourceColumn<T> column) throws SQLException {
-        return internalHandler.retrieve(name.toLowerCase(), column);
+        return internalHandler.retrieve(name.toLowerCase(Locale.ROOT), column);
     }
 
     /**
@@ -157,7 +158,7 @@ public final class AuthMeColumnsHandler {
      * @throws SQLException .
      */
     public DataSourceValues retrieve(String name, DataSourceColumn<?>... columns) throws SQLException {
-        return internalHandler.retrieve(name.toLowerCase(), columns);
+        return internalHandler.retrieve(name.toLowerCase(Locale.ROOT), columns);
     }
 
     /**
