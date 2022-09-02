@@ -56,7 +56,7 @@ public class AntiBotService implements SettingsDependent {
         duration = settings.getProperty(ProtectionSettings.ANTIBOT_DURATION);
         int sensibility = settings.getProperty(ProtectionSettings.ANTIBOT_SENSIBILITY);
         int interval = settings.getProperty(ProtectionSettings.ANTIBOT_INTERVAL);
-        flaggedCounter = new AtomicIntervalCounter(sensibility, interval);
+        flaggedCounter = new AtomicIntervalCounter(sensibility, interval * 1000);
 
         // Stop existing protection
         stopProtection();
