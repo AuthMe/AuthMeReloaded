@@ -533,8 +533,8 @@
 
         <!-- EssentialsX Repo -->
         <repository>
-            <id>enderzone-repo</id>
-            <url>https://ci.ender.zone/plugin/repository/everything/</url>
+            <id>essentialsx-repo</id>
+            <url>https://repo.essentialsx.net/releases/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
