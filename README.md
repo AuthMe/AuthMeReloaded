@@ -116,16 +116,16 @@ You can also create your own translation file and, if you want, you can share it
 ## Requirements
 
 ##### Compiling requirements:
->- JDK 8 (JDK 17 is recommended)
+>- JDK 11 (JDK 17 is recommended)
 >- Maven
 >- Git/Github (Optional)
 
 ##### How to compile the project:
->- Clone the project with Git/Github
+>- Clone the project with Git/GitHub
 >- Execute command "mvn clean package"
 
 ##### Running requirements:
->- Java 8 (Java 11 is recommended)
+>- Java 8 (Java 17 is recommended)
 >- Paper or Spigot (1.8.X and up)<br>
    (In case you use Thermos, Cauldron or similar, you have to update the SpecialSource library to support Java 8 plugins.
    HowTo: https://github.com/games647/FastLogin/issues/111#issuecomment-272331347)
