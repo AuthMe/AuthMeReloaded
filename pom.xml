@@ -403,8 +403,8 @@
                             <shadedPattern>fr.xephi.authme.libs.de.mkammerer</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>com.warrenstrange</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.com.warrenstrange</shadedPattern>
+                            <pattern>com.user4302</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.com.user4302</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>javax.inject</pattern>
@@ -706,7 +706,7 @@
 
         <!-- TOTP client -->
         <dependency>
-            <groupId>com.warrenstrange</groupId>
+            <groupId>com.user4302</groupId>
             <artifactId>googleauth</artifactId>
             <version>1.5.0</version>
             <optional>true</optional>

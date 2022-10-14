@@ -1,7 +1,7 @@
 package fr.xephi.authme.security.totp;
 
 import com.google.common.collect.Table;
-import com.warrenstrange.googleauth.IGoogleAuthenticator;
+import com.user4302.googleauth.IGoogleAuthenticator;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.security.totp.TotpAuthenticator.TotpGenerationResult;
