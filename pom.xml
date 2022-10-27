@@ -67,7 +67,7 @@
         <maven.minimumVersion>3.6.3</maven.minimumVersion>
 
         <!-- Dependencies versions -->
-        <spigot.version>1.19-R0.1-SNAPSHOT</spigot.version>
+        <spigot.version>1.19.2-R0.1-SNAPSHOT</spigot.version>
 
         <!-- Versioning properties -->
         <project.outputName>AuthMe</project.outputName>
@@ -649,7 +649,7 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.5</version>
+            <version>2.8.1</version> <!-- Log4J version bundled in 1.12.2 -->
             <scope>provided</scope>
         </dependency>
 
@@ -657,7 +657,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>4.0.3</version>
+            <version>4.0.3</version> <!-- Latest java 8 release -->
             <optional>true</optional>
             <exclusions>
                 <exclusion>
@@ -670,7 +670,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.36</version>
+            <version>1.7.36</version> <!-- We can't update to 2.x as long as we use HikariCP for java 8 -->
             <optional>true</optional>
         </dependency>
 
@@ -684,9 +684,9 @@
 
         <!-- MySQL connector, shaded into the legacy jar -->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.30</version>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>8.0.31</version>
             <optional>true</optional>
         </dependency>
         <dependency>

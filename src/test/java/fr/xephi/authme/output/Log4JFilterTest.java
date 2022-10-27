@@ -4,8 +4,11 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.Filter.Result;
 import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.message.Message;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -134,7 +137,7 @@ public class Log4JFilterTest {
 	@Test
 	public void shouldFilterSensitiveObjectMessage() {
 		// given / when
-		Result result = log4JFilter.filter(null, null, null, SENSITIVE_COMMAND, new Exception());
+		Result result = log4JFilter.filter(null, null, null, (Object) SENSITIVE_COMMAND, new Exception());
 		
 		// then
 		assertThat(result, equalTo(Result.DENY));
@@ -152,7 +155,7 @@ public class Log4JFilterTest {
 	@Test
 	public void shouldNotFilterIrrelevantMessage() {
 		// given / when
-		Result result = log4JFilter.filter(null, null, null, OTHER_COMMAND, new Exception());
+		Result result = log4JFilter.filter(null, null, null, (Object) OTHER_COMMAND, new Exception());
 		
 		// then
 		assertThat(result, equalTo(Result.NEUTRAL));
@@ -161,7 +164,7 @@ public class Log4JFilterTest {
 	@Test
 	public void shouldNotFilterNonSensitiveCommand() {
 		// given / when
-		Result result = log4JFilter.filter(null, null, null, NORMAL_COMMAND, new Exception());
+		Result result = log4JFilter.filter(null, null, null, (Object) NORMAL_COMMAND, new Exception());
 		
 		// then
 		assertThat(result, equalTo(Result.NEUTRAL));
@@ -209,7 +212,7 @@ public class Log4JFilterTest {
 	@Test
 	public void shouldNotFilterNullMessage() {
 		// given / when
-		Result result = log4JFilter.filter(null, null, null, null, new Exception());
+		Result result = log4JFilter.filter(null, null, null, (Object) null, new Exception());
 		
 		// then
 		assertThat(result, equalTo(Result.NEUTRAL));
