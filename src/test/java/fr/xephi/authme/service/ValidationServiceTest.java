@@ -58,6 +58,8 @@ public class ValidationServiceTest {
         given(settings.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH)).willReturn(3);
         given(settings.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)).willReturn(20);
         given(settings.getProperty(SecuritySettings.UNSAFE_PASSWORDS)).willReturn(newHashSet("unsafe", "other-unsafe"));
+        given(settings.getProperty(SecuritySettings.HAVE_I_BEEN_PWNED_CHECK)).willReturn(true);
+        given(settings.getProperty(SecuritySettings.HAVE_I_BEEN_PWNED_LIMIT)).willReturn(0);
         given(settings.getProperty(EmailSettings.MAX_REG_PER_EMAIL)).willReturn(3);
         given(settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(newHashSet("name01", "npc"));
         given(settings.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)).willReturn(false);
