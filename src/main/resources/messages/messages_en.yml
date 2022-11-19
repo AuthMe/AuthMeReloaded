@@ -18,7 +18,7 @@ password:
   match_error: '&cPasswords didn''t match, check them again!'
   name_in_password: '&cYou can''t use your name as password, please choose another one...'
   unsafe_password: '&cThe chosen password isn''t safe, please choose another one...'
-  pwned_password: '&cYour chosen password is not secure. It was used %pwned_count times already! Please use a strong password...'
+  pwned_password: '&cYour chosen password is not secure. It was used %pwned_count times already! Please use a stronger password...'
   forbidden_characters: '&4Your password contains illegal characters. Allowed chars: %valid_chars'
   wrong_length: '&cYour password is too short or too long! Please try with another one!'
 

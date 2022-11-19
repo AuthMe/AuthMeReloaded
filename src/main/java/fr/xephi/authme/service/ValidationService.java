@@ -254,7 +254,6 @@ public class ValidationService implements Reloadable {
             connection.setRequestProperty("User-Agent", "AuthMeReloaded");
             connection.setConnectTimeout(5000);
             connection.setReadTimeout(5000);
-            connection.setDoOutput(true);
             connection.setDoInput(true);
             StringBuilder outStr = new StringBuilder();
 
@@ -264,13 +263,9 @@ public class ValidationService implements Reloadable {
             }
 
             String[] hashes = outStr.toString().split("\n");
-            System.out.println(Arrays.toString(hashes));
             for (String hashSuffix : hashes) {
                 String[] hashSuffixParts = hashSuffix.trim().split(":");
-                System.out.println(Arrays.toString(hashSuffixParts));
                 if (hashSuffixParts[0].equalsIgnoreCase(hash.substring(5))) {
-                    System.out.println("Found match");
-                    System.out.println(hashSuffixParts[1]);
                     return new HaveIBeenPwnedResults(true, Integer.parseInt(hashSuffixParts[1]));
                 }
             }
