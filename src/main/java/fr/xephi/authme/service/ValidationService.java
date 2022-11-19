@@ -27,7 +27,6 @@ import javax.inject.Inject;
 import java.io.DataInputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -258,8 +257,9 @@ public class ValidationService implements Reloadable {
             StringBuilder outStr = new StringBuilder();
 
             try (DataInputStream input = new DataInputStream(connection.getInputStream())) {
-                for (int c = input.read(); c != -1; c = input.read())
+                for (int c = input.read(); c != -1; c = input.read()) {
                     outStr.append((char) c);
+                }
             }
 
             String[] hashes = outStr.toString().split("\n");
