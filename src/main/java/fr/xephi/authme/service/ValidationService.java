@@ -6,10 +6,11 @@ import com.google.common.collect.Multimap;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.Reloadable;
-import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
+import fr.xephi.authme.security.HashUtils;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
@@ -23,6 +24,9 @@ import org.bukkit.entity.Player;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.io.DataInputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -35,7 +39,7 @@ import static fr.xephi.authme.util.StringUtils.isInsideString;
  * Validation service.
  */
 public class ValidationService implements Reloadable {
-    
+
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(ValidationService.class);
 
     @Inject
@@ -80,7 +84,16 @@ public class ValidationService implements Reloadable {
             return new ValidationResult(MessageKey.INVALID_PASSWORD_LENGTH);
         } else if (settings.getProperty(SecuritySettings.UNSAFE_PASSWORDS).contains(passLow)) {
             return new ValidationResult(MessageKey.PASSWORD_UNSAFE_ERROR);
+        } else if (settings.getProperty(SecuritySettings.HAVE_I_BEEN_PWNED_CHECK)) {
+            HaveIBeenPwnedResults results = validatePasswordHaveIBeenPwned(password);
+
+            if (results != null
+                && results.isPwned()
+                && results.getPwnCount() > settings.getProperty(SecuritySettings.HAVE_I_BEEN_PWNED_LIMIT)) {
+                return new ValidationResult(MessageKey.PASSWORD_PWNED_ERROR, String.valueOf(results.getPwnCount()));
+            }
         }
+
         return new ValidationResult();
     }
 
@@ -103,7 +116,7 @@ public class ValidationService implements Reloadable {
      * Queries the database whether the email is still free for registration, i.e. whether the given
      * command sender may use the email to register a new account (as defined by settings and permissions).
      *
-     * @param email the email to verify
+     * @param email  the email to verify
      * @param sender the command sender
      * @return true if the email may be used, false otherwise (registration threshold has been exceeded)
      */
@@ -178,7 +191,7 @@ public class ValidationService implements Reloadable {
      * Whitelist has precedence over blacklist: if a whitelist is set, the value is rejected if not present
      * in the whitelist.
      *
-     * @param value the value to verify
+     * @param value     the value to verify
      * @param whitelist the whitelist property
      * @param blacklist the blacklist property
      * @return true if the value is admitted by the lists, false otherwise
@@ -222,6 +235,49 @@ public class ValidationService implements Reloadable {
         return restrictions;
     }
 
+    /**
+     * Check haveibeenpwned.com for the given password.
+     *
+     * @param password password to check for
+     * @return Results of the check
+     */
+    public HaveIBeenPwnedResults validatePasswordHaveIBeenPwned(String password) {
+        String hash = HashUtils.sha1(password);
+
+        String hashPrefix = hash.substring(0, 5);
+
+        try {
+            String url = String.format("https://api.pwnedpasswords.com/range/%s", hashPrefix);
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("User-Agent", "AuthMeReloaded");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+            connection.setDoInput(true);
+            StringBuilder outStr = new StringBuilder();
+
+            try (DataInputStream input = new DataInputStream(connection.getInputStream())) {
+                for (int c = input.read(); c != -1; c = input.read()) {
+                    outStr.append((char) c);
+                }
+            }
+
+            String[] hashes = outStr.toString().split("\n");
+            for (String hashSuffix : hashes) {
+                String[] hashSuffixParts = hashSuffix.trim().split(":");
+                if (hashSuffixParts[0].equalsIgnoreCase(hash.substring(5))) {
+                    return new HaveIBeenPwnedResults(true, Integer.parseInt(hashSuffixParts[1]));
+                }
+            }
+
+            return new HaveIBeenPwnedResults(false, 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public static final class ValidationResult {
         private final MessageKey messageKey;
         private final String[] args;
@@ -238,7 +294,7 @@ public class ValidationService implements Reloadable {
          * Constructor for a failed validation.
          *
          * @param messageKey message key of the validation error
-         * @param args arguments for the message key
+         * @param args       arguments for the message key
          */
         public ValidationResult(MessageKey messageKey, String... args) {
             this.messageKey = messageKey;
@@ -260,6 +316,24 @@ public class ValidationService implements Reloadable {
 
         public String[] getArgs() {
             return args;
+        }
+    }
+
+    public static final class HaveIBeenPwnedResults {
+        private final boolean isPwned;
+        private final int pwnCount;
+
+        public HaveIBeenPwnedResults(boolean isPwned, int pwnCount) {
+            this.isPwned = isPwned;
+            this.pwnCount = pwnCount;
+        }
+
+        public boolean isPwned() {
+            return isPwned;
+        }
+
+        public int getPwnCount() {
+            return pwnCount;
         }
     }
 }

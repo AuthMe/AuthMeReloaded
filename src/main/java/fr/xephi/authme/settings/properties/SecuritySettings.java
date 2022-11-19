@@ -89,6 +89,15 @@ public final class SecuritySettings implements SettingsHolder {
         newLowercaseStringSetProperty("settings.security.unsafePasswords",
             "123456", "password", "qwerty", "12345", "54321", "123456789", "help");
 
+    @Comment({"Query haveibeenpwned.com with a hashed version of the password.",
+        "This is used to check whether it is safe."})
+    public static final Property<Boolean> HAVE_I_BEEN_PWNED_CHECK =
+        newProperty("settings.security.haveIBeenPwned.check", true);
+
+    @Comment({"If the password is used more than this number of times, it is considered unsafe."})
+    public static final Property<Integer> HAVE_I_BEEN_PWNED_LIMIT =
+        newProperty("settings.security.haveIBeenPwned.limit", 0);
+
     @Comment("Tempban a user's IP address if they enter the wrong password too many times")
     public static final Property<Boolean> TEMPBAN_ON_MAX_LOGINS =
         newProperty("Security.tempban.enableTempban", false);
