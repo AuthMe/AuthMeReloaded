@@ -80,7 +80,7 @@ public enum MessageKey {
     /** The chosen password isn't safe, please choose another one... */
     PASSWORD_UNSAFE_ERROR("password.unsafe_password"),
 
-    /** Your chosen password is not secure. It was used %pwned_count times already! Please use a stronger password... */
+    /** Your chosen password is not secure. It has been seen %pwned_count times before! Please use a stronger password... */
     PASSWORD_PWNED_ERROR("password.pwned_password", "%pwned_count"),
 
     /** Your password contains illegal characters. Allowed chars: %valid_chars */
