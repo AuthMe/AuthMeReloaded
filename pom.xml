@@ -670,7 +670,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.36</version> <!-- We can't update to 2.x as long as we use HikariCP for java 8 -->
+            <version>2.0.5</version> <!-- We can't update to 2.x as long as we use HikariCP for java 8 -->
             <optional>true</optional>
         </dependency>
 
