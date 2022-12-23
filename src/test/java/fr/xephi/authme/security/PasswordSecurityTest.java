@@ -34,7 +34,7 @@ import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -119,11 +119,11 @@ public class PasswordSecurityTest {
         HashedPassword password = new HashedPassword("$TEST$10$SOME_HASH", null);
         String playerName = "Tester";
         // Calls to EncryptionMethod are always with the lower-case version of the name
-        String playerLowerCase = playerName.toLowerCase(Locale.ROOT);
+        // String playerLowerCase = playerName.toLowerCase(Locale.ROOT);
         String clearTextPass = "myPassTest";
 
         given(dataSource.getPassword(playerName)).willReturn(password);
-        given(method.comparePassword(clearTextPass, password, playerLowerCase)).willReturn(true);
+        given(method.comparePassword(clearTextPass, password, playerName)).willReturn(true);
 
         // when
         boolean result = passwordSecurity.comparePassword(clearTextPass, playerName);
@@ -132,7 +132,7 @@ public class PasswordSecurityTest {
         assertThat(result, equalTo(true));
         verify(dataSource).getPassword(playerName);
         verify(pluginManager).callEvent(any(PasswordEncryptionEvent.class));
-        verify(method).comparePassword(clearTextPass, password, playerLowerCase);
+        verify(method).comparePassword(clearTextPass, password, playerName);
     }
 
     @Test
@@ -140,11 +140,10 @@ public class PasswordSecurityTest {
         // given
         HashedPassword password = new HashedPassword("$TEST$10$SOME_HASH", null);
         String playerName = "My_PLayer";
-        String playerLowerCase = playerName.toLowerCase(Locale.ROOT);
         String clearTextPass = "passw0Rd1";
 
         given(dataSource.getPassword(playerName)).willReturn(password);
-        given(method.comparePassword(clearTextPass, password, playerLowerCase)).willReturn(false);
+        given(method.comparePassword(clearTextPass, password, playerName)).willReturn(false);
 
         // when
         boolean result = passwordSecurity.comparePassword(clearTextPass, playerName);
@@ -153,7 +152,7 @@ public class PasswordSecurityTest {
         assertThat(result, equalTo(false));
         verify(dataSource).getPassword(playerName);
         verify(pluginManager).callEvent(any(PasswordEncryptionEvent.class));
-        verify(method).comparePassword(clearTextPass, password, playerLowerCase);
+        verify(method).comparePassword(clearTextPass, password, playerName);
     }
 
     @Test
@@ -179,14 +178,13 @@ public class PasswordSecurityTest {
         HashedPassword password =
             new HashedPassword("$2y$10$2e6d2193f43501c926e25elvWlPmWczmrfrnbZV0dUZGITjYjnkkW");
         String playerName = "somePlayer";
-        String playerLowerCase = playerName.toLowerCase(Locale.ROOT);
         String clearTextPass = "Test";
         // MD5 hash for "Test"
         HashedPassword newPassword = new HashedPassword("0cbc6611f5540bd0809a388dc95a615b");
 
         given(dataSource.getPassword(argThat(equalToIgnoringCase(playerName)))).willReturn(password);
-        given(method.comparePassword(clearTextPass, password, playerLowerCase)).willReturn(false);
-        given(method.computeHash(clearTextPass, playerLowerCase)).willReturn(newPassword);
+        given(method.comparePassword(clearTextPass, password, playerName)).willReturn(false);
+        given(method.computeHash(clearTextPass, playerName)).willReturn(newPassword);
         given(settings.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.MD5);
         given(settings.getProperty(SecuritySettings.LEGACY_HASHES)).willReturn(newHashSet(HashAlgorithm.BCRYPT));
         passwordSecurity.reload();
@@ -201,8 +199,8 @@ public class PasswordSecurityTest {
         // should only be invoked with all lower-case names. Data source is case-insensitive itself, so this is fine.
         verify(dataSource).getPassword(argThat(equalToIgnoringCase(playerName)));
         verify(pluginManager, times(2)).callEvent(any(PasswordEncryptionEvent.class));
-        verify(method).comparePassword(clearTextPass, password, playerLowerCase);
-        verify(dataSource).updatePassword(playerLowerCase, newPassword);
+        verify(method).comparePassword(clearTextPass, password, playerName);
+        verify(dataSource).updatePassword(playerName, newPassword);
     }
 
     @Test
