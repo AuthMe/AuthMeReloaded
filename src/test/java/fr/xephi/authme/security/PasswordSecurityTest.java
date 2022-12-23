@@ -119,7 +119,6 @@ public class PasswordSecurityTest {
         HashedPassword password = new HashedPassword("$TEST$10$SOME_HASH", null);
         String playerName = "Tester";
         // Calls to EncryptionMethod are always with the lower-case version of the name
-        // String playerLowerCase = playerName.toLowerCase(Locale.ROOT);
         String clearTextPass = "myPassTest";
 
         given(dataSource.getPassword(playerName)).willReturn(password);
