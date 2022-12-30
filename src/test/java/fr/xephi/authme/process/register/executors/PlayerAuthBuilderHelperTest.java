@@ -25,7 +25,7 @@ public class PlayerAuthBuilderHelperTest {
         Player player = mock(Player.class);
         given(player.getName()).willReturn("Noah");
         String ip = "192.168.34.47";
-        TestHelper.mockPlayerIp(player, ip);
+        TestHelper.mockIpAddressToPlayer(player, ip);
         HashedPassword hashedPassword = new HashedPassword("myHash0001");
         String email = "test@example.org";
 

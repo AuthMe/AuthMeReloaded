@@ -110,7 +110,7 @@ public class EmailRegisterExecutorTest {
         given(passwordSecurity.computeHash(anyString(), anyString())).willAnswer(
             invocation -> new HashedPassword(invocation.getArgument(0)));
         Player player = mock(Player.class);
-        TestHelper.mockPlayerIp(player, "123.45.67.89");
+        TestHelper.mockIpAddressToPlayer(player, "123.45.67.89");
         given(player.getName()).willReturn("Veronica");
         EmailRegisterParams params = EmailRegisterParams.of(player, "test@example.com");
 

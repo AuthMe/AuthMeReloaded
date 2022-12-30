@@ -97,7 +97,7 @@ public class PasswordRegisterExecutorTest {
         given(passwordSecurity.computeHash(anyString(), anyString())).willAnswer(
             invocation -> new HashedPassword(invocation.getArgument(0)));
         Player player = mockPlayerWithName("S1m0N");
-        TestHelper.mockPlayerIp(player, "123.45.67.89");
+        TestHelper.mockIpAddressToPlayer(player, "123.45.67.89");
         PasswordRegisterParams params = PasswordRegisterParams.of(player, "pass", "mail@example.org");
 
         // when
