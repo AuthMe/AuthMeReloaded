@@ -93,7 +93,7 @@ public class ConverterCommandTest {
         // when / then
         for (Map.Entry<String, Class<? extends Converter>> entry : ConverterCommand.CONVERTERS.entrySet()) {
             assertThat("Name is not null or empty",
-                StringUtils.isEmpty(entry.getKey()), equalTo(false));
+                StringUtils.isBlank(entry.getKey()), equalTo(false));
 
             assertThat("Converter class is unique for each entry",
                 classes.add(entry.getValue()), equalTo(true));

@@ -105,6 +105,6 @@ public final class Utils {
      * @return true if the email is empty
      */
     public static boolean isEmailEmpty(String email) {
-        return StringUtils.isEmpty(email) || "your@email.com".equalsIgnoreCase(email);
+        return StringUtils.isBlank(email) || "your@email.com".equalsIgnoreCase(email);
     }
 }

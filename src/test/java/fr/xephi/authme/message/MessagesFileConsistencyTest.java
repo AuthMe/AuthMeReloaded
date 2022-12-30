@@ -40,7 +40,7 @@ public class MessagesFileConsistencyTest {
         final String key = messageKey.getKey();
         final String message = reader.getString(key);
 
-        if (StringUtils.isEmpty(message)) {
+        if (StringUtils.isBlank(message)) {
             errors.add("Messages file should have message for key '" + key + "'");
             return;
         }

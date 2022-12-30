@@ -226,8 +226,8 @@ public class CommandDescription {
          */
         public CommandDescription build() {
             checkArgument(!Utils.isCollectionEmpty(labels), "Labels may not be empty");
-            checkArgument(!StringUtils.isEmpty(description), "Description may not be empty");
-            checkArgument(!StringUtils.isEmpty(detailedDescription), "Detailed description may not be empty");
+            checkArgument(!StringUtils.isBlank(description), "Description may not be empty");
+            checkArgument(!StringUtils.isBlank(detailedDescription), "Detailed description may not be empty");
             checkArgument(executableCommand != null, "Executable command must be set");
             // parents and permissions may be null; arguments may be empty
 

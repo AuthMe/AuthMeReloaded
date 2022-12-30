@@ -14,12 +14,11 @@ public final class StringUtils {
     }
 
     /**
-     * Get the difference of two strings.
+     * Calculates the difference of two strings.
      *
-     * @param first  First string
-     * @param second Second string
-     *
-     * @return The difference value
+     * @param first  first string
+     * @param second second string
+     * @return the difference value
      */
     public static double getDifference(String first, String second) {
         // Make sure the strings are valid.
@@ -35,12 +34,11 @@ public final class StringUtils {
     }
 
     /**
-     * Return whether the given string contains any of the provided elements.
+     * Returns whether the given string contains any of the provided elements.
      *
-     * @param str    The string to analyze
-     * @param pieces The items to check the string for
-     *
-     * @return True if the string contains at least one of the items
+     * @param str    the string to analyze
+     * @param pieces the items to check the string for
+     * @return true if the string contains at least one of the items
      */
     public static boolean containsAny(String str, Iterable<String> pieces) {
         if (str == null) {
@@ -58,21 +56,19 @@ public final class StringUtils {
      * Null-safe method for checking whether a string is empty. Note that the string
      * is trimmed, so this method also considers a string with whitespace as empty.
      *
-     * @param str The string to verify
-     *
-     * @return True if the string is empty, false otherwise
+     * @param str the string to verify
+     * @return true if the string is empty, false otherwise
      */
-    public static boolean isEmpty(String str) {
+    public static boolean isBlank(String str) {
         return str == null || str.trim().isEmpty();
     }
 
     /**
-     * Check that the given needle is in the middle of the haystack, i.e. that the haystack
+     * Checks that the given needle is in the middle of the haystack, i.e. that the haystack
      * contains the needle and that it is not at the very start or end.
      *
      * @param needle the needle to search for
      * @param haystack the haystack to search in
-     *
      * @return true if the needle is in the middle of the word, false otherwise
      */
     // Note ljacqu 20170314: `needle` is restricted to char type intentionally because something like
