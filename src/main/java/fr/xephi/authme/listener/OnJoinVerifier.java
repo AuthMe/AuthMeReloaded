@@ -160,7 +160,7 @@ public class OnJoinVerifier implements Reloadable {
         if (auth != null && settings.getProperty(RegistrationSettings.PREVENT_OTHER_CASE)) {
             String realName = auth.getRealName(); // might be null or "Player"
 
-            if (StringUtils.isEmpty(realName) || "Player".equals(realName)) {
+            if (StringUtils.isBlank(realName) || "Player".equals(realName)) {
                 dataSource.updateRealName(connectingName.toLowerCase(Locale.ROOT), connectingName);
             } else if (!realName.equals(connectingName)) {
                 throw new FailedVerificationException(MessageKey.INVALID_NAME_CASE, realName, connectingName);

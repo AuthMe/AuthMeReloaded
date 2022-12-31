@@ -1,6 +1,7 @@
 package fr.xephi.authme.service;
 
 import ch.jalu.configme.properties.Property;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import fr.xephi.authme.ConsoleLogger;
@@ -23,6 +24,7 @@ import org.bukkit.entity.Player;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -156,7 +158,7 @@ public class ValidationService implements Reloadable {
         }
 
         String ip = PlayerUtils.getPlayerIp(player);
-        String domain = player.getAddress().getHostName();
+        String domain = getHostName(player.getAddress());
         for (String restriction : restrictions) {
             if (restriction.startsWith("regex:")) {
                 restriction = restriction.replace("regex:", "");
@@ -171,6 +173,11 @@ public class ValidationService implements Reloadable {
             }
         }
         return false;
+    }
+
+    @VisibleForTesting
+    protected String getHostName(InetSocketAddress inetSocketAddr) {
+        return inetSocketAddr.getHostName();
     }
 
     /**

@@ -21,7 +21,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 
+import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.logging.Logger;
 
@@ -30,7 +32,9 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -358,18 +362,23 @@ public class ValidationServiceTest {
         Player gabriel2 = mockPlayer("Gabriel", "93.23.33.34");
         Player emanuel = mockPlayer("emanuel", "94.65.24.10");
         Player emanuel2 = mockPlayer("emanuel", "94.65.60.10");
-        Player imyourisp = mockPlayer("imyourisp", "bazinga.yourisp.net");
+        Player imYourIsp = mockPlayer("imyourisp", "65.65.65.65");
         Player notRestricted = mockPlayer("notRestricted", "0.0.0.0");
 
+        ValidationService validationServiceSpy = Mockito.spy(validationService);
+        willReturn("bogus.tld").given(validationServiceSpy).getHostName(any(InetSocketAddress.class));
+        InetSocketAddress imYourIspSocketAddr = imYourIsp.getAddress();
+        willReturn("bazinga.yourisp.net").given(validationServiceSpy).getHostName(imYourIspSocketAddr);
+
         // when
-        boolean isBobbyAdmitted = validationService.fulfillsNameRestrictions(bobby);
-        boolean isTamaraAdmitted = validationService.fulfillsNameRestrictions(tamara);
-        boolean isGabrielAdmitted = validationService.fulfillsNameRestrictions(gabriel);
-        boolean isGabriel2Admitted = validationService.fulfillsNameRestrictions(gabriel2);
-        boolean isEmanuelAdmitted = validationService.fulfillsNameRestrictions(emanuel);
-        boolean isEmanuel2Admitted = validationService.fulfillsNameRestrictions(emanuel2);
-        boolean isImyourispAdmitted = validationService.fulfillsNameRestrictions(imyourisp);
-        boolean isNotRestrictedAdmitted = validationService.fulfillsNameRestrictions(notRestricted);
+        boolean isBobbyAdmitted = validationServiceSpy.fulfillsNameRestrictions(bobby);
+        boolean isTamaraAdmitted = validationServiceSpy.fulfillsNameRestrictions(tamara);
+        boolean isGabrielAdmitted = validationServiceSpy.fulfillsNameRestrictions(gabriel);
+        boolean isGabriel2Admitted = validationServiceSpy.fulfillsNameRestrictions(gabriel2);
+        boolean isEmanuelAdmitted = validationServiceSpy.fulfillsNameRestrictions(emanuel);
+        boolean isEmanuel2Admitted = validationServiceSpy.fulfillsNameRestrictions(emanuel2);
+        boolean isImYourIspAdmitted = validationServiceSpy.fulfillsNameRestrictions(imYourIsp);
+        boolean isNotRestrictedAdmitted = validationServiceSpy.fulfillsNameRestrictions(notRestricted);
 
         // then
         assertThat(isBobbyAdmitted, equalTo(true));
@@ -378,7 +387,7 @@ public class ValidationServiceTest {
         assertThat(isGabriel2Admitted, equalTo(false));
         assertThat(isEmanuelAdmitted, equalTo(true));
         assertThat(isEmanuel2Admitted, equalTo(false));
-        assertThat(isImyourispAdmitted, equalTo(true));
+        assertThat(isImYourIspAdmitted, equalTo(true));
         assertThat(isNotRestrictedAdmitted, equalTo(true));
     }
 
@@ -402,8 +411,7 @@ public class ValidationServiceTest {
     private static Player mockPlayer(String name, String ip) {
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
-        TestHelper.mockPlayerIp(player, ip);
-        given(player.getAddress().getHostName()).willReturn("--");
+        TestHelper.mockIpAddressToPlayer(player, ip);
         return player;
     }
 

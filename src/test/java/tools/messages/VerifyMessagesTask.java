@@ -44,7 +44,7 @@ public final class VerifyMessagesTask implements ToolTask {
         boolean addMissingKeys = "y".equalsIgnoreCase(scanner.nextLine());
 
         List<File> messageFiles;
-        if (StringUtils.isEmpty(inputFile)) {
+        if (StringUtils.isBlank(inputFile)) {
             messageFiles = getMessagesFiles();
         } else {
             File customFile = new File(MAIN_RESOURCES_ROOT, MessagePathHelper.createMessageFilePath(inputFile));

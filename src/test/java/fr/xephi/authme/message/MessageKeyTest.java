@@ -27,7 +27,7 @@ public class MessageKeyTest {
             String key = messageKey.getKey();
             if (!keys.add(key)) {
                 fail("Found key '" + messageKey.getKey() + "' twice!");
-            } else if (StringUtils.isEmpty(key)) {
+            } else if (StringUtils.isBlank(key)) {
                 fail("Key for message key '" + messageKey + "' is empty");
             }
         }

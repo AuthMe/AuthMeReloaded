@@ -89,7 +89,7 @@ class PlayerAuthViewer implements DebugSection {
      *         or empty string if the string is null or empty
      */
     private static String safeSubstring(String str, int length) {
-        if (StringUtils.isEmpty(str)) {
+        if (StringUtils.isBlank(str)) {
             return "";
         } else if (str.length() < length) {
             return str.substring(0, str.length() / 2) + "...";

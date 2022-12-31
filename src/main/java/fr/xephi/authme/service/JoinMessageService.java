@@ -38,7 +38,7 @@ public class JoinMessageService {
      */
     public void sendMessage(String playerName) {
         String joinMessage = joinMessages.remove(playerName);
-        if (!StringUtils.isEmpty(joinMessage)) {
+        if (!StringUtils.isBlank(joinMessage)) {
             bukkitService.broadcastMessage(joinMessage);
         }
     }
