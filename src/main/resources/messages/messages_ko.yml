@@ -33,6 +33,12 @@ login:
 
 # Errors
 error:
+    # TODO missing_base_command: '&4Failed to parse %plugin_name command!'
+    # TODO unknown_command: '&4Unknown command!'
+    # TODO suggest_command: '&eDid you mean &6%command&e?'
+    # TODO suggest_command_help: '&eUse the command &6/%command help &eto view help.'
+    # TODO incorrect_arguments: '&4Incorrect command arguments!'
+    # TODO suggest_command_detailed_help: '&6Detailed help: &f/%parent help %child'
     denied_command: '&c이 명령어를 사용하려면 로그인해야 합니다!'
     denied_chat: '&c채팅을 하려면 로그인해야 합니다!'
     unregistered_user: '&c이 유저는 등록되지 않았습니다!'

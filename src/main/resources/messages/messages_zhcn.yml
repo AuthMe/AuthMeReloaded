@@ -31,6 +31,12 @@ login:
 
 # Errors
 error:
+    # TODO missing_base_command: '&4Failed to parse %plugin_name command!'
+    # TODO unknown_command: '&4Unknown command!'
+    # TODO suggest_command: '&eDid you mean &6%command&e?'
+    # TODO suggest_command_help: '&eUse the command &6/%command help &eto view help.'
+    # TODO incorrect_arguments: '&4Incorrect command arguments!'
+    # TODO suggest_command_detailed_help: '&6Detailed help: &f/%parent help %child'
     denied_command: '&c您需要先通过验证才能使用该命令！'
     denied_chat: '&c您需要先通过验证才能聊天！'
     unregistered_user: '&8[&6玩家系统&8] &c此用户名还未注册过'

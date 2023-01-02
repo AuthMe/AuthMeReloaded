@@ -3,6 +3,7 @@ package fr.xephi.authme.command;
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.factory.Factory;
 import com.google.common.collect.Sets;
+import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.TestCommandsUtil.TestLoginCommand;
 import fr.xephi.authme.command.TestCommandsUtil.TestRegisterCommand;
 import fr.xephi.authme.command.TestCommandsUtil.TestUnregisterCommand;
@@ -163,7 +164,7 @@ public class CommandHandlerTest {
 
         // then
         verify(commandMapper).mapPartsToCommand(sender, asList("unreg", "testPlayer"));
-        verify(sender, atLeastOnce()).sendMessage(argThat(containsString("Incorrect command arguments")));
+        verify(messages, atLeastOnce()).send(sender, MessageKey.INCORRECT_ARGUMENTS);
     }
 
     @Test
@@ -225,7 +226,7 @@ public class CommandHandlerTest {
         // then
         verify(commandMapper).mapPartsToCommand(sender, asList("unreg", "testPlayer"));
         verify(command, never()).getExecutableCommand();
-        verify(sender).sendMessage(argThat(containsString("Failed to parse")));
+        verify(messages).send(sender, MessageKey.MISSING_BASE_COMMAND, AuthMe.getPluginName());
     }
 
     @Test
@@ -245,13 +246,10 @@ public class CommandHandlerTest {
         // then
         verify(commandMapper).mapPartsToCommand(sender, asList("unreg", "testPlayer"));
         verify(command, never()).getExecutableCommand();
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(sender, times(3)).sendMessage(captor.capture());
-        assertThat(captor.getAllValues().get(0), containsString("Unknown command"));
-        assertThat(captor.getAllValues().get(1), containsString("Did you mean"));
-        assertThat(captor.getAllValues().get(1), containsString("/test_cmd"));
-        assertThat(captor.getAllValues().get(2), containsString("Use the command"));
-        assertThat(captor.getAllValues().get(2), containsString("to view help"));
+        verify(messages).send(sender, MessageKey.UNKNOWN_COMMAND);
+        verify(messages).send(sender, MessageKey.SUGGEST_COMMAND, CommandUtils.constructCommandPath(command));
+        verify(messages).send(sender, MessageKey.SUGGEST_COMMAND_HELP, "unreg");
+
     }
 
     @Test
@@ -270,11 +268,8 @@ public class CommandHandlerTest {
         // then
         verify(commandMapper).mapPartsToCommand(sender, asList("unreg", "testPlayer"));
         verify(command, never()).getExecutableCommand();
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(sender, times(2)).sendMessage(captor.capture());
-        assertThat(captor.getAllValues().get(0), containsString("Unknown command"));
-        assertThat(captor.getAllValues().get(1), containsString("Use the command"));
-        assertThat(captor.getAllValues().get(1), containsString("to view help"));
+        verify(messages).send(sender, MessageKey.UNKNOWN_COMMAND);
+        verify(messages).send(sender, MessageKey.SUGGEST_COMMAND_HELP, "unreg");
     }
 
     @Test

@@ -4,7 +4,6 @@ package fr.xephi.authme.message;
  * Keys for translatable messages managed by {@link Messages}.
  */
 public enum MessageKey {
-
     /** In order to use this command you must be authenticated! */
     DENIED_COMMAND("error.denied_command"),
 
@@ -49,6 +48,24 @@ public enum MessageKey {
 
     /** You don't have the permission to perform this action! */
     NO_PERMISSION("error.no_permission"),
+
+    /** Failed to parse %plugin_name command! */
+    MISSING_BASE_COMMAND("error.missing_base_command", "%plugin_name"),
+
+    /** Unknown command! */
+    UNKNOWN_COMMAND("error.unknown_command"),
+
+    /** Incorrect command arguments! */
+    INCORRECT_ARGUMENTS("error.incorrect_arguments"),
+
+    /** Did you mean %command? */
+    SUGGEST_COMMAND("error.suggest_command", "%command"),
+
+    /** Use the command /%command help to view help. */
+    SUGGEST_COMMAND_HELP("error.suggest_command_help", "%command"),
+
+    /** Detailed help: /%parent help %child */
+    SUGGEST_COMMAND_DETAILED_HELP("error.suggest_command_detailed_help", "%parent", "%child"),
 
     /** An unexpected error occurred, please contact an administrator! */
     ERROR("error.unexpected_error"),

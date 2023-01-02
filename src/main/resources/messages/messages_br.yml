@@ -34,6 +34,12 @@ login:
 
 # Erros
 error:
+    # TODO missing_base_command: '&4Failed to parse %plugin_name command!'
+    # TODO unknown_command: '&4Unknown command!'
+    # TODO suggest_command: '&eDid you mean &6%command&e?'
+    # TODO suggest_command_help: '&eUse the command &6/%command help &eto view help.'
+    # TODO incorrect_arguments: '&4Incorrect command arguments!'
+    # TODO suggest_command_detailed_help: '&6Detailed help: &f/%parent help %child'
     unregistered_user: '&cEste usuário não está registrado!'
     denied_command: '&cPara utilizar este comando é necessário estar logado!'
     denied_chat: '&cPara utilizar o chat é necessário estar logado!'
