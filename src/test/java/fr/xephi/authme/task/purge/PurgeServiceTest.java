@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -189,7 +190,7 @@ public class PurgeServiceTest {
 
     private void verifyScheduledPurgeTask(UUID senderUuid, Set<String> names) {
         ArgumentCaptor<PurgeTask> captor = ArgumentCaptor.forClass(PurgeTask.class);
-        verify(bukkitService).runTaskTimerAsynchronously(captor.capture(), eq(0L), eq(1L));
+        verify(bukkitService).runOnAsyncSchedulerAtFixedRate(captor.capture(), eq(0L), eq(1L), eq(TimeUnit.SECONDS));
         PurgeTask task = captor.getValue();
 
         Object senderInTask = ReflectionTestUtils.getFieldValue(PurgeTask.class, task, "sender");

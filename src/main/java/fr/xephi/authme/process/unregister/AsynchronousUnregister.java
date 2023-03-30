@@ -127,16 +127,16 @@ public class AsynchronousUnregister implements AsynchronousProcess {
         if (player == null || !player.isOnline()) {
             return;
         }
-        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() ->
-            commandManager.runCommandsOnUnregister(player));
+        bukkitService.executeOptionallyOnEntityScheduler(player, () -> commandManager.runCommandsOnUnregister(player),
+            () -> logger.info("Can't run commands on unregister because the player " + name + " is currently unavailable"));
 
         if (service.getProperty(RegistrationSettings.FORCE)) {
             teleportationService.teleportOnJoin(player);
 
-            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
+            bukkitService.executeOptionallyOnEntityScheduler(player, () -> {
                 limboService.createLimboPlayer(player, false);
                 applyBlindEffect(player);
-            });
+            }, () -> logger.info("Can't create limbo player, because the player " + name + " is currently unavailable"));
         }
         service.send(player, MessageKey.UNREGISTERED_SUCCESS);
     }

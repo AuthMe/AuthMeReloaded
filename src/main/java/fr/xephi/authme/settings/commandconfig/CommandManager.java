@@ -128,20 +128,22 @@ public class CommandManager implements Reloadable {
         for (T cmd : commands) {
             if (predicate.test(cmd)) {
                 long delay = cmd.getDelay();
-                if (delay > 0) {
-                    bukkitService.scheduleSyncDelayedTask(() -> dispatchCommand(player, cmd), delay);
+                if (Executor.CONSOLE.equals(cmd.getExecutor())) {
+                    if (delay > 0) {
+                        bukkitService.runOnGlobalRegionSchedulerDelayed(task ->
+                            bukkitService.dispatchConsoleCommand(cmd.getCommand()), delay);
+                    } else {
+                        bukkitService.dispatchConsoleCommand(cmd.getCommand());
+                    }
                 } else {
-                    dispatchCommand(player, cmd);
+                    if (delay > 0) {
+                        bukkitService.runOnEntitySchedulerDelayed(player, task ->
+                                bukkitService.dispatchCommand(player, cmd.getCommand()), null, delay);
+                    } else {
+                        bukkitService.dispatchCommand(player, cmd.getCommand());
+                    }
                 }
             }
-        }
-    }
-
-    private void dispatchCommand(Player player, Command command) {
-        if (Executor.CONSOLE.equals(command.getExecutor())) {
-            bukkitService.dispatchConsoleCommand(command.getCommand());
-        } else {
-            bukkitService.dispatchCommand(player, command.getCommand());
         }
     }
 

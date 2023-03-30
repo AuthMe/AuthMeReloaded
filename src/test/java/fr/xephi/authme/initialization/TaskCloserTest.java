@@ -56,7 +56,7 @@ public class TaskCloserTest {
         given(server.getScheduler()).willReturn(bukkitScheduler);
         ReflectionTestUtils.setField(JavaPlugin.class, authMe, "server", server);
         given(authMe.getLogger()).willReturn(logger);
-        taskCloser = spy(new TaskCloser(authMe, dataSource));
+        taskCloser = spy(new TaskCloser(authMe));
     }
 
     @Test
@@ -71,6 +71,7 @@ public class TaskCloserTest {
 
         // when
         taskCloser.run();
+        dataSource.closeConnection();
 
         // then
         verify(bukkitScheduler, times(3)).isQueued(anyInt());
@@ -92,6 +93,7 @@ public class TaskCloserTest {
 
         // when
         taskCloser.run();
+        dataSource.closeConnection();
 
         // then
         verify(bukkitScheduler, times(3)).isQueued(anyInt());
@@ -120,7 +122,7 @@ public class TaskCloserTest {
     /** Test implementation for {@link #shouldStopForInterruptedThread()}. */
     private void shouldStopForInterruptedThread0() throws InterruptedException {
         // given
-        taskCloser = spy(new TaskCloser(authMe, null));
+        taskCloser = spy(new TaskCloser(authMe));
         // First two times do nothing, third time throw exception when we sleep
         doNothing().doNothing().doThrow(InterruptedException.class).when(taskCloser).sleep();
         mockActiveWorkers();

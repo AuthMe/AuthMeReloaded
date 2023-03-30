@@ -9,9 +9,11 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.task.CancellableTask;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -79,10 +81,10 @@ public class LimboPlayerTaskManagerTest {
         limboPlayerTaskManager.registerMessageTask(player, limboPlayer, LimboMessageType.REGISTER);
 
         // then
-        verify(limboPlayer).setMessageTask(any(MessageTask.class));
+        verify(limboPlayer).setMessageTask(any(MessageTask.class), any(CancellableTask.class));
         verify(messages).retrieveSingle(player, key);
         verify(bukkitService).runTaskTimer(
-            any(MessageTask.class), eq(2L * TICKS_PER_SECOND), eq((long) interval * TICKS_PER_SECOND));
+            any(BukkitRunnable.class), eq(2L * TICKS_PER_SECOND), eq((long) interval * TICKS_PER_SECOND));
     }
 
     @Test
@@ -108,7 +110,8 @@ public class LimboPlayerTaskManagerTest {
         given(player.getName()).willReturn(name);
         LimboPlayer limboPlayer = new LimboPlayer(null, true, Collections.singletonList(new UserGroup("grp")), false, 0.1f, 0.0f);
         MessageTask existingMessageTask = mock(MessageTask.class);
-        limboPlayer.setMessageTask(existingMessageTask);
+        CancellableTask existingMessageCancellableTask = mock(CancellableTask.class);
+        limboPlayer.setMessageTask(existingMessageTask, existingMessageCancellableTask);
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(8);
         given(messages.retrieveSingle(player, MessageKey.REGISTER_MESSAGE)).willReturn("Please register!");
 
@@ -120,7 +123,7 @@ public class LimboPlayerTaskManagerTest {
         assertThat(limboPlayer.getMessageTask(), not(sameInstance(existingMessageTask)));
         verify(registrationCaptchaManager).isCaptchaRequired(name);
         verify(messages).retrieveSingle(player, MessageKey.REGISTER_MESSAGE);
-        verify(existingMessageTask).cancel();
+        verify(existingMessageCancellableTask).cancel();
     }
 
     @Test
@@ -150,8 +153,9 @@ public class LimboPlayerTaskManagerTest {
         Player player = mock(Player.class);
         LimboPlayer limboPlayer = mock(LimboPlayer.class);
         given(settings.getProperty(RestrictionSettings.TIMEOUT)).willReturn(30);
-        BukkitTask bukkitTask = mock(BukkitTask.class);
-        given(bukkitService.runTaskLater(any(TimeoutTask.class), anyLong())).willReturn(bukkitTask);
+        CancellableTask bukkitTask = mock(CancellableTask.class);
+        TimeoutTask timeoutTask = mock(TimeoutTask.class);
+        given(bukkitService.runOnGlobalRegionSchedulerDelayed(eq(t -> timeoutTask.run()), anyLong())).willReturn(bukkitTask);
 
         // when
         limboPlayerTaskManager.registerTimeoutTask(player, limboPlayer);
@@ -181,7 +185,7 @@ public class LimboPlayerTaskManagerTest {
         // given
         Player player = mock(Player.class);
         LimboPlayer limboPlayer = new LimboPlayer(null, false, Collections.emptyList(), true, 0.3f, 0.1f);
-        BukkitTask existingTask = mock(BukkitTask.class);
+        CancellableTask existingTask = mock(CancellableTask.class);
         limboPlayer.setTimeoutTask(existingTask);
         given(settings.getProperty(RestrictionSettings.TIMEOUT)).willReturn(18);
         BukkitTask bukkitTask = mock(BukkitTask.class);

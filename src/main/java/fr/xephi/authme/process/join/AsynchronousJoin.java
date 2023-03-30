@@ -107,7 +107,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
         if (service.getProperty(RestrictionSettings.FORCE_SURVIVAL_MODE)
             && player.getGameMode() != GameMode.SURVIVAL
             && !service.hasPermission(player, PlayerStatePermission.BYPASS_FORCE_SURVIVAL)) {
-            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> player.setGameMode(GameMode.SURVIVAL));
+            bukkitService.executeOptionallyOnEntityScheduler(player, () -> player.setGameMode(GameMode.SURVIVAL),
+                () -> logger.info("Can't set gamemode of player " + player.getName() + " because it's not available"));
         }
 
         if (service.getProperty(HooksSettings.DISABLE_SOCIAL_SPY)) {
@@ -135,32 +136,38 @@ public class AsynchronousJoin implements AsynchronousProcess {
             if (sessionService.canResumeSession(player)) {
                 service.send(player, MessageKey.SESSION_RECONNECTION);
                 // Run commands
-                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(
-                    () -> commandManager.runCommandsOnSessionLogin(player));
+                bukkitService.executeOptionallyOnEntityScheduler(player, () -> commandManager.runCommandsOnSessionLogin(player),
+                    () -> logger.info("Can't run commands on session login for player "
+                        + name + " because the player is currently unavailable"));
                 bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
                 return;
             } else if (proxySessionManager.shouldResumeSession(name)) {
                 service.send(player, MessageKey.SESSION_RECONNECTION);
                 // Run commands
-                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(
-                    () -> commandManager.runCommandsOnSessionLogin(player));
+                bukkitService.executeOptionallyOnEntityScheduler(player,
+                    () -> commandManager.runCommandsOnSessionLogin(player),
+                    () -> logger.info("Can't run commands on session login for player "
+                        + name + " because the player is currently unavailable"));
                 bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
                 logger.info("The user " + player.getName() + " has been automatically logged in, "
                     + "as present in autologin queue.");
                 return;
             }
         } else if (!service.getProperty(RegistrationSettings.FORCE)) {
-            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
-                welcomeMessageConfiguration.sendWelcomeMessage(player);
-            });
+            bukkitService.executeOptionallyOnEntityScheduler(player,
+                () -> welcomeMessageConfiguration.sendWelcomeMessage(player),
+                () -> logger.info("Can't send welcome message for player "
+                    + name + " because the player is currently unavailable"));
 
             // Skip if registration is optional
 
             if (bungeeSender.isEnabled()) {
                 // As described at https://www.spigotmc.org/wiki/bukkit-bungee-plugin-messaging-channel/
                 // "Keep in mind that you can't send plugin messages directly after a player joins."
-                bukkitService.scheduleSyncDelayedTask(() ->
-                    bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.LOGIN), 5L);
+                bukkitService.runOnEntitySchedulerDelayed(player, task ->
+                    bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.LOGIN),
+                    () -> logger.info("Can't send authme bungeecord message to player "
+                        + name + " because the player is currently not available"), 5L);
             }
             return;
         }
@@ -169,8 +176,10 @@ public class AsynchronousJoin implements AsynchronousProcess {
     }
 
     private void handlePlayerWithUnmetNameRestriction(Player player, String ip) {
-        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
-            player.kickPlayer(service.retrieveSingleMessage(player, MessageKey.NOT_OWNER_ERROR));
+        bukkitService.executeOptionallyOnEntityScheduler(player,
+            () -> player.kickPlayer(service.retrieveSingleMessage(player, MessageKey.NOT_OWNER_ERROR)),
+            () -> logger.info("Can't kick player " + player + " with ip " + ip + " because the player is currently unavailable"));
+        bukkitService.executeOptionallyOnGlobalRegionScheduler(() -> {
             if (service.getProperty(RestrictionSettings.BAN_UNKNOWN_IP)) {
                 server.banIP(ip);
             }
@@ -187,7 +196,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private void processJoinSync(Player player, boolean isAuthAvailable) {
         int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
 
-        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
+        bukkitService.executeOptionallyOnEntityScheduler(player, () -> {
             limboService.createLimboPlayer(player, isAuthAvailable);
 
             player.setNoDamageTicks(registrationTimeout);
@@ -200,7 +209,8 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, blindTimeOut, 2));
             }
             commandManager.runCommandsOnJoin(player);
-        });
+        }, () -> logger.info("Can't process unauthenticated player join because the player "
+            + player.getName() + " is currently unavailable"));
     }
 
     /**
@@ -218,8 +228,10 @@ public class AsynchronousJoin implements AsynchronousProcess {
             && !InternetProtocolUtils.isLoopbackAddress(ip)
             && countOnlinePlayersByIp(ip) > service.getProperty(RestrictionSettings.MAX_JOIN_PER_IP)) {
 
-            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(
-                () -> player.kickPlayer(service.retrieveSingleMessage(player, MessageKey.SAME_IP_ONLINE)));
+            bukkitService.executeOptionallyOnEntityScheduler(player,
+                () -> player.kickPlayer(service.retrieveSingleMessage(player, MessageKey.SAME_IP_ONLINE)),
+                () -> logger.info("Can't kick player "
+                    + player.getName() + " with ip " + ip + " because it's currently unavailable"));
             return false;
         }
         return true;

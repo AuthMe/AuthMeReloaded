@@ -4,6 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
+import fr.xephi.authme.task.CancellableTask;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -15,8 +16,10 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
-class PurgeTask extends BukkitRunnable {
+class PurgeTask implements Consumer<CancellableTask> {
 
     //how many players we should check for each tick
     private static final int INTERVAL_CHECK = 5;
@@ -58,10 +61,10 @@ class PurgeTask extends BukkitRunnable {
     }
 
     @Override
-    public void run() {
+    public void accept(CancellableTask cancellableTask) {
         if (toPurge.isEmpty()) {
             //everything was removed
-            finish();
+            finish(cancellableTask);
             return;
         }
 
@@ -107,8 +110,8 @@ class PurgeTask extends BukkitRunnable {
         }
     }
 
-    private void finish() {
-        cancel();
+    private void finish(CancellableTask cancellableTask) {
+        cancellableTask.cancel();
 
         // Show a status message
         sendMessage(ChatColor.GREEN + "[AuthMe] Database has been purged successfully");

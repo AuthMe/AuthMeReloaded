@@ -32,7 +32,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
- * Test for {@link BukkitService}.
+ * Test for {@link FoliaBukkitService}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class BukkitServiceTest {
@@ -56,7 +56,7 @@ public class BukkitServiceTest {
         given(server.getScheduler()).willReturn(scheduler);
         given(server.getPluginManager()).willReturn(pluginManager);
         given(settings.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(true);
-        bukkitService = new BukkitService(authMe, settings);
+        bukkitService = new FoliaBukkitService(authMe, settings);
     }
 
     @Test

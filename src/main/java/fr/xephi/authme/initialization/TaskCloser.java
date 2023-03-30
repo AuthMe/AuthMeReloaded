@@ -21,19 +21,16 @@ public class TaskCloser implements Runnable {
     private final BukkitScheduler scheduler;
     private final Logger logger;
     private final AuthMe plugin;
-    private final DataSource dataSource;
 
     /**
      * Constructor.
      *
      * @param plugin the plugin instance
-     * @param dataSource the data source (nullable)
      */
-    public TaskCloser(AuthMe plugin, DataSource dataSource) {
+    public TaskCloser(AuthMe plugin) {
         this.scheduler = plugin.getServer().getScheduler();
         this.logger = plugin.getLogger();
         this.plugin = plugin;
-        this.dataSource = dataSource;
     }
 
     @Override
@@ -67,10 +64,6 @@ public class TaskCloser implements Runnable {
             }
 
             tries--;
-        }
-
-        if (dataSource != null) {
-            dataSource.closeConnection();
         }
     }
 

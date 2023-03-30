@@ -85,8 +85,10 @@ public class BungeeSender implements SettingsDependent {
             return;
         }
         // Add a small delay, just in case...
-        bukkitService.scheduleSyncDelayedTask(() ->
-            sendBungeecordMessage(player, "Connect", destinationServerOnLogin), 10L);
+        bukkitService.runOnEntitySchedulerDelayed(player, task ->
+            sendBungeecordMessage(player, "Connect", destinationServerOnLogin),
+            () -> logger.info("Can't send bungeecord message to player "
+                + player.getName() + " because the player is currently not available"), 10L);
     }
 
     /**

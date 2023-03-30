@@ -17,6 +17,7 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -182,12 +183,12 @@ public class TeleportationService implements Reloadable {
      * @param event  the event to emit and according to which to teleport
      */
     private void performTeleportation(final Player player, final AbstractTeleportEvent event) {
-        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
+        bukkitService.executeOptionallyOnEntityScheduler(player, () -> {
             bukkitService.callEvent(event);
             if (player.isOnline() && isEventValid(event)) {
-                player.teleport(event.getTo());
+                player.teleportAsync(event.getTo(), PlayerTeleportEvent.TeleportCause.PLUGIN);
             }
-        });
+        }, () -> logger.info("Can't teleport player " + player.getName() + " because it's currently unavailable"));
     }
 
     private static boolean isEventValid(AbstractTeleportEvent event) {
