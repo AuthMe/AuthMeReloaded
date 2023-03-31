@@ -59,19 +59,23 @@ public class SyncProcessManager {
     }
 
     public void processSyncPlayerQuit(Player player, boolean wasLoggedIn) {
-        runTask("PlayerQuit", player, () -> processSyncPlayerQuit.processSyncQuit(player, wasLoggedIn));
+        runTask("PlayerQuit", null, () -> processSyncPlayerQuit.processSyncQuit(player, wasLoggedIn));
     }
 
     private void runTask(String taskName, Entity entity, Runnable runnable) {
-        bukkitService.executeOptionallyOnEntityScheduler(entity, runnable, () -> {
-            String entityName;
-            try {
-                entityName = entity.getName();
-            } catch (Exception ex) {
-                entityName = "<none>";
-            }
-            // todo: should the tasks be executed anyway or not? I left this warning message to remind about this doubt.
-            logger.warning("Task " + taskName + " has not been executed because the entity " + entityName + " is not available anymore.");
-        });
+        if (entity == null) {
+            bukkitService.runOnGlobalRegionScheduler(task -> runnable.run());
+        } else {
+            bukkitService.executeOptionallyOnEntityScheduler(entity, runnable, () -> {
+                String entityName;
+                try {
+                    entityName = entity.getName();
+                } catch (Exception ex) {
+                    entityName = "<none>";
+                }
+                // todo: should the tasks be executed anyway or not? I left this warning message to remind about this doubt.
+                logger.warning("Task " + taskName + " has not been executed because the entity " + entityName + " is not available anymore.");
+            });
+        }
     }
 }
