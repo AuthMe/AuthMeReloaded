@@ -346,7 +346,7 @@ public class PlayerListener implements Listener {
 
         if (!settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)) {
             // "cancel" the event
-            event.setTo(event.getFrom());
+            event.setCancelled(true);
             return;
         }
 
