@@ -17,7 +17,7 @@ public class SpawnCommand extends PlayerCommand {
         if (spawnLoader.getSpawn() == null) {
             player.sendMessage("[AuthMe] Spawn has failed, please try to define the spawn");
         } else {
-            player.teleport(spawnLoader.getSpawn());
+            player.teleportAsync(spawnLoader.getSpawn());
         }
     }
 }

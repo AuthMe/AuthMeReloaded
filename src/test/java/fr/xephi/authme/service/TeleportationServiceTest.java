@@ -95,7 +95,7 @@ public class TeleportationServiceTest {
         teleportationService.teleportNewPlayerToFirstSpawn(player);
 
         // then
-        verify(player).teleport(firstSpawn);
+        verify(player).teleportAsync(firstSpawn);
         verify(bukkitService).callEvent(any(FirstSpawnTeleportEvent.class));
         verify(spawnLoader).getFirstSpawn();
         verify(spawnLoader, never()).getSpawnLocation(any(Player.class));
@@ -115,7 +115,7 @@ public class TeleportationServiceTest {
         teleportationService.teleportOnJoin(player);
 
         // then
-        verify(player).teleport(spawn);
+        verify(player).teleportAsync(spawn);
         verify(bukkitService).callEvent(any(SpawnTeleportEvent.class));
         verify(spawnLoader).getSpawnLocation(player);
     }
@@ -131,7 +131,7 @@ public class TeleportationServiceTest {
         teleportationService.teleportNewPlayerToFirstSpawn(player);
 
         // then
-        verify(player, never()).teleport(any(Location.class));
+        verify(player, never()).teleportAsync(any(Location.class));
         verify(spawnLoader).getFirstSpawn();
         verify(spawnLoader, never()).getSpawnLocation(any(Player.class));
         verifyNoInteractions(bukkitService);
@@ -147,7 +147,7 @@ public class TeleportationServiceTest {
         teleportationService.teleportNewPlayerToFirstSpawn(player);
 
         // then
-        verify(player, never()).teleport(any(Location.class));
+        verify(player, never()).teleportAsync(any(Location.class));
         verifyNoInteractions(bukkitService);
     }
 
@@ -161,7 +161,7 @@ public class TeleportationServiceTest {
         teleportationService.teleportNewPlayerToFirstSpawn(player);
 
         // then
-        verify(player, never()).teleport(any(Location.class));
+        verify(player, never()).teleportAsync(any(Location.class));
         verifyNoInteractions(bukkitService);
     }
 
@@ -185,7 +185,7 @@ public class TeleportationServiceTest {
 
         // then
         verify(bukkitService).callEvent(any(SpawnTeleportEvent.class));
-        verify(player, never()).teleport(any(Location.class));
+        verify(player, never()).teleportAsync(any(Location.class));
     }
 
     @Test
@@ -208,7 +208,7 @@ public class TeleportationServiceTest {
 
         // then
         verify(bukkitService).callEvent(any(SpawnTeleportEvent.class));
-        verify(player, never()).teleport(any(Location.class));
+        verify(player, never()).teleportAsync(any(Location.class));
     }
 
     // ---------
@@ -248,7 +248,7 @@ public class TeleportationServiceTest {
         teleportationService.teleportOnLogin(player, auth, limbo);
 
         // then
-        verify(player).teleport(spawn);
+        verify(player).teleportAsync(spawn);
     }
 
     @Test
@@ -269,7 +269,7 @@ public class TeleportationServiceTest {
         teleportationService.teleportOnLogin(player, auth, limbo);
 
         // then
-        verify(player, never()).teleport(spawn);
+        verify(player, never()).teleportAsync(spawn);
         verifyNoInteractions(bukkitService, spawnLoader);
     }
 
@@ -296,7 +296,7 @@ public class TeleportationServiceTest {
 
         // then
         ArgumentCaptor<Location> locationCaptor = ArgumentCaptor.forClass(Location.class);
-        verify(player).teleport(locationCaptor.capture());
+        verify(player).teleportAsync(locationCaptor.capture());
         assertCorrectLocation(locationCaptor.getValue(), auth, world);
     }
 
@@ -324,7 +324,7 @@ public class TeleportationServiceTest {
 
         // then
         ArgumentCaptor<Location> locationCaptor = ArgumentCaptor.forClass(Location.class);
-        verify(player).teleport(locationCaptor.capture());
+        verify(player).teleportAsync(locationCaptor.capture());
         assertCorrectLocation(locationCaptor.getValue(), auth, world);
     }
 
@@ -348,7 +348,7 @@ public class TeleportationServiceTest {
         teleportationService.teleportOnLogin(player, auth, limbo);
 
         // then
-        verify(player).teleport(location);
+        verify(player).teleportAsync(location);
         verify(bukkitService, never()).getWorld(anyString());
     }
 
@@ -370,7 +370,7 @@ public class TeleportationServiceTest {
         teleportationService.teleportOnLogin(player, auth, limbo);
 
         // then
-        verify(player).teleport(location);
+        verify(player).teleportAsync(location);
     }
 
     @Test

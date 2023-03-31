@@ -43,7 +43,7 @@ public class FirstSpawnCommandTest {
         command.executeCommand(player, Collections.emptyList());
 
         // then
-        verify(player).teleport(firstSpawn);
+        verify(player).teleportAsync(firstSpawn);
         verify(spawnLoader, atLeastOnce()).getFirstSpawn();
     }
 
@@ -58,6 +58,6 @@ public class FirstSpawnCommandTest {
 
         // then
         verify(player).sendMessage(argThat(containsString("spawn has failed")));
-        verify(player, never()).teleport(any(Location.class));
+        verify(player, never()).teleportAsync(any(Location.class));
     }
 }

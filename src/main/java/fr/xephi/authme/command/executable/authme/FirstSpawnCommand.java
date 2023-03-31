@@ -20,7 +20,7 @@ public class FirstSpawnCommand extends PlayerCommand {
         if (spawnLoader.getFirstSpawn() == null) {
             player.sendMessage("[AuthMe] First spawn has failed, please try to define the first spawn");
         } else {
-            player.teleport(spawnLoader.getFirstSpawn());
+            player.teleportAsync(spawnLoader.getFirstSpawn());
         }
     }
 }
