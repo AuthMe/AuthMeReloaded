@@ -6,8 +6,10 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.BukkitCancellableTask;
 import fr.xephi.authme.task.CancellableTask;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -165,6 +167,11 @@ public class SpigotBukkitService extends BukkitService {
         DeferredCancellableTask result = new DeferredCancellableTask(task);
         Bukkit.getScheduler().runTaskTimer(authMe, result.getConsumer(), initialDelayTicks, periodTicks);
         return result;
+    }
+
+    @Override
+    public void teleport(Player player, Location location) {
+        player.teleport(location);
     }
 
     @Override

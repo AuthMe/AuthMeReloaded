@@ -8,6 +8,7 @@ import fr.xephi.authme.task.CancellableTask;
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -311,6 +312,14 @@ public abstract class BukkitService implements SettingsDependent {
                                                                             long periodTicks);
 
     public abstract void waitAllTasks();
+
+    /**
+     * Teleports this entity to the given location. If this entity is riding a
+     * vehicle, it will be dismounted prior to teleportation.
+     *
+     * @param location New location to teleport this entity to
+     */
+    public abstract void teleport(Player player, Location location);
 
     /**
      * <b>Deprecated, use:

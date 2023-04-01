@@ -3,6 +3,7 @@ package fr.xephi.authme.initialization;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.FoliaBukkitService;
+import fr.xephi.authme.service.PaperBukkitService;
 import fr.xephi.authme.service.SpigotBukkitService;
 import fr.xephi.authme.settings.Settings;
 
@@ -27,8 +28,13 @@ public class BukkitServiceProvider implements Provider<BukkitService> {
         try {
             Class.forName("io.papermc.paper.threadedregions.scheduler.AsyncScheduler");
             return new FoliaBukkitService(authMe, settings);
-        } catch (ClassNotFoundException e) {
-            return new SpigotBukkitService(authMe, settings);
+        } catch (ClassNotFoundException ignored) {
+            try {
+                Class.forName("io.papermc.paper.util.Tick");
+                return new PaperBukkitService(authMe, settings);
+            } catch (ClassNotFoundException ignored2) {
+                return new SpigotBukkitService(authMe, settings);
+            }
         }
     }
 }

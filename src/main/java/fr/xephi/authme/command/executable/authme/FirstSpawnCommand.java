@@ -1,6 +1,7 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.command.PlayerCommand;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.SpawnLoader;
 import org.bukkit.entity.Player;
 
@@ -13,6 +14,8 @@ import java.util.List;
 public class FirstSpawnCommand extends PlayerCommand {
 
     @Inject
+    private BukkitService bukkitService;
+    @Inject
     private SpawnLoader spawnLoader;
 
     @Override
@@ -20,7 +23,7 @@ public class FirstSpawnCommand extends PlayerCommand {
         if (spawnLoader.getFirstSpawn() == null) {
             player.sendMessage("[AuthMe] First spawn has failed, please try to define the first spawn");
         } else {
-            player.teleportAsync(spawnLoader.getFirstSpawn());
+            bukkitService.teleport(player, spawnLoader.getFirstSpawn());
         }
     }
 }

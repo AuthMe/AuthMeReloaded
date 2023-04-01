@@ -186,7 +186,7 @@ public class TeleportationService implements Reloadable {
         bukkitService.executeOptionallyOnEntityScheduler(player, () -> {
             bukkitService.callEvent(event);
             if (player.isOnline() && isEventValid(event)) {
-                player.teleportAsync(event.getTo(), PlayerTeleportEvent.TeleportCause.PLUGIN);
+                bukkitService.teleport(player, event.getTo());
             }
         }, () -> logger.info("Can't teleport player " + player.getName() + " because it's currently unavailable"));
     }

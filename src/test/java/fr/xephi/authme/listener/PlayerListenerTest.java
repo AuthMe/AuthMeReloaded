@@ -478,7 +478,7 @@ public class PlayerListenerTest {
 
         // then
         verify(listenerService).shouldCancelEvent(player);
-        verify(player).teleportAsync(spawn);
+        verify(player).teleport(spawn);
         verify(spawnLoader).getSpawnLocation(player);
         verifyNoModifyingCalls(event);
     }
@@ -506,7 +506,7 @@ public class PlayerListenerTest {
 
         // then
         verify(listenerService).shouldCancelEvent(player);
-        verify(player, never()).teleportAsync(any(Location.class));
+        verify(player, never()).teleport(any(Location.class));
         verify(spawnLoader).getSpawnLocation(player);
         verifyNoModifyingCalls(event);
     }
@@ -534,7 +534,7 @@ public class PlayerListenerTest {
 
         // then
         verify(listenerService).shouldCancelEvent(player);
-        verify(player).teleportAsync(spawn);
+        verify(player).teleport(spawn);
         verify(spawnLoader).getSpawnLocation(player);
         verifyNoModifyingCalls(event);
     }
