@@ -648,7 +648,7 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.20.0</version> <!-- Log4J version bundled in 1.12.2 -->
+            <version>2.8.1</version> <!-- Log4J version bundled in 1.12.2 -->
             <scope>provided</scope>
         </dependency>
 
@@ -656,7 +656,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>5.0.1</version>
+            <version>4.0.3</version> <!-- Latest java 8 release -->
             <optional>true</optional>
             <exclusions>
                 <exclusion>
@@ -669,7 +669,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>2.0.7</version>
+            <version>1.7.36</version> <!-- We can't update to 2.x as long as we use HikariCP for java 8 -->
             <optional>true</optional>
         </dependency>
 
@@ -691,7 +691,7 @@
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
-            <version>3.1.2</version>
+            <version>3.0.8</version>
             <optional>true</optional>
         </dependency>
 
@@ -731,7 +731,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>31.1-jre</version>
+            <version>31.0.1-jre</version>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
@@ -969,7 +969,7 @@
         <dependency>
             <groupId>at.favre.lib</groupId>
             <artifactId>bcrypt</artifactId>
-            <version>0.10.2</version>
+            <version>0.9.0</version>
             <optional>true</optional>
         </dependency>
 
@@ -991,7 +991,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.5.4</version>
+            <version>42.5.0</version>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
@@ -1034,7 +1034,7 @@
         <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
-            <version>3.32.0</version>
+            <version>3.26.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -1042,7 +1042,7 @@
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>3.40.1.0</version>
+            <version>3.39.3.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
