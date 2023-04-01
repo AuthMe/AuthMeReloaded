@@ -20,7 +20,8 @@ public class SpawnCommand extends PlayerCommand {
         if (spawnLoader.getSpawn() == null) {
             player.sendMessage("[AuthMe] Spawn has failed, please try to define the spawn");
         } else {
-            bukkitService.teleport(player, spawnLoader.getSpawn());
+            bukkitService.executeOptionallyOnEntityScheduler(player,
+                () -> bukkitService.teleport(player, spawnLoader.getSpawn()), null);
         }
     }
 }

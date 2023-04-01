@@ -23,7 +23,8 @@ public class FirstSpawnCommand extends PlayerCommand {
         if (spawnLoader.getFirstSpawn() == null) {
             player.sendMessage("[AuthMe] First spawn has failed, please try to define the first spawn");
         } else {
-            bukkitService.teleport(player, spawnLoader.getFirstSpawn());
+            bukkitService.executeOptionallyOnEntityScheduler(player,
+                () -> bukkitService.teleport(player, spawnLoader.getFirstSpawn()), null);
         }
     }
 }
