@@ -170,6 +170,8 @@ public class FoliaBukkitService extends BukkitService {
 
     @Override
     public void teleport(Player player, Location location) {
-        player.teleportAsync(location);
+        // player.teleportAsync(location);
+        // todo: remove the following line when https://github.com/PaperMC/Folia/issues/26 is fixed
+        player.getScheduler().run(authMe, task -> player.teleportAsync(location), null);
     }
 }
