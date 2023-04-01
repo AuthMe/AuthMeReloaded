@@ -1,7 +1,6 @@
 package fr.xephi.authme.service;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.initialization.TaskCloser;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.CancellableTask;
 import org.bukkit.Bukkit;
@@ -58,12 +57,8 @@ public class FoliaBukkitService extends BukkitService {
     }
 
     @Override
-    public void executeOptionallyOnRegionScheduler(@NotNull World world, int chunkX, int chunkZ, @NotNull Runnable run) {
-        if (Bukkit.isOwnedByCurrentRegion(world, chunkX, chunkZ)) {
-            run.run();
-        } else {
-            executeOnRegionScheduler(world, chunkX, chunkZ, run);
-        }
+    public boolean isOwnedByCurrentRegion(@NotNull World world, int chunkX, int chunkZ) {
+        return Bukkit.isOwnedByCurrentRegion(world, chunkX, chunkZ);
     }
 
     @Override
@@ -101,12 +96,8 @@ public class FoliaBukkitService extends BukkitService {
     }
 
     @Override
-    public void executeOptionallyOnGlobalRegionScheduler(@NotNull Runnable run) {
-        if (Bukkit.isGlobalTickThread()) {
-            run.run();
-        } else {
-            executeOnGlobalRegionScheduler(run);
-        }
+    public boolean isGlobalTickThread() {
+        return Bukkit.isGlobalTickThread();
     }
 
     @Override
@@ -143,13 +134,8 @@ public class FoliaBukkitService extends BukkitService {
     }
 
     @Override
-    public boolean executeOptionallyOnEntityScheduler(@NotNull Entity entity, @NotNull Runnable run, @Nullable Runnable retired) {
-        if (Bukkit.isOwnedByCurrentRegion(entity)) {
-            run.run();
-            return true;
-        } else {
-            return executeOnEntityScheduler(entity, run, retired, 0L);
-        }
+    public boolean isOwnedByCurrentRegion(@NotNull Entity entity) {
+        return Bukkit.isOwnedByCurrentRegion(entity);
     }
 
     @Override

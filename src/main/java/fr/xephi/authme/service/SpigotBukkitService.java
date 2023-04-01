@@ -59,12 +59,8 @@ public class SpigotBukkitService extends BukkitService {
     }
 
     @Override
-    public void executeOptionallyOnRegionScheduler(@NotNull World world, int chunkX, int chunkZ, @NotNull Runnable run) {
-        if (Bukkit.isPrimaryThread()) {
-            run.run();
-        } else {
-            executeOnRegionScheduler(world, chunkX, chunkZ, run);
-        }
+    public boolean isOwnedByCurrentRegion(@NotNull World world, int chunkX, int chunkZ) {
+        return Bukkit.isPrimaryThread();
     }
 
     @Override
@@ -94,12 +90,8 @@ public class SpigotBukkitService extends BukkitService {
     }
 
     @Override
-    public void executeOptionallyOnGlobalRegionScheduler(@NotNull Runnable run) {
-        if (Bukkit.isPrimaryThread()) {
-            run.run();
-        } else {
-            executeOnGlobalRegionScheduler(run);
-        }
+    public boolean isGlobalTickThread() {
+        return Bukkit.isPrimaryThread();
     }
 
     @Override
@@ -139,13 +131,8 @@ public class SpigotBukkitService extends BukkitService {
     }
 
     @Override
-    public boolean executeOptionallyOnEntityScheduler(@NotNull Entity entity, @NotNull Runnable run, @Nullable Runnable retired) {
-        if (Bukkit.isPrimaryThread()) {
-            run.run();
-            return true;
-        } else {
-            return executeOnEntityScheduler(entity, run, retired, 0L);
-        }
+    public boolean isOwnedByCurrentRegion(@NotNull Entity entity) {
+        return Bukkit.isPrimaryThread();
     }
 
     @Override

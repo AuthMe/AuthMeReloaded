@@ -105,6 +105,17 @@ public abstract class BukkitService implements SettingsDependent {
     public abstract void executeOnRegionScheduler(@NotNull World world, int chunkX, int chunkZ, @NotNull Runnable run);
 
     /**
+     * Returns whether the current thread is ticking a region and that the region being ticked
+     * owns the chunk at the specified world and chunk position.
+     * @param world Specified world.
+     * @param chunkX Specified x-coordinate of the chunk position.
+     * @param chunkZ Specified z-coordinate of the chunk position.
+     *
+     * @see #executeOptionallyOnRegionScheduler
+     */
+    public abstract boolean isOwnedByCurrentRegion(@NotNull World world, int chunkX, int chunkZ);
+
+    /**
      * Schedules a task to be executed on the scheduler that owns the location.
      * It may run immediately.
      * @param world  The world of the region that owns the task
@@ -112,10 +123,13 @@ public abstract class BukkitService implements SettingsDependent {
      * @param chunkZ The chunk Z coordinate of the region that owns the task
      * @param run    The task to execute
      */
-    public abstract void executeOptionallyOnRegionScheduler(@NotNull World world,
-                                                            int chunkX,
-                                                            int chunkZ,
-                                                            @NotNull Runnable run);
+    public final void executeOptionallyOnRegionScheduler(@NotNull World world, int chunkX, int chunkZ, @NotNull Runnable run) {
+        if (isOwnedByCurrentRegion(world, chunkX, chunkZ)) {
+            run.run();
+        } else {
+            executeOnRegionScheduler(world, chunkX, chunkZ, run);
+        }
+    }
 
     /**
      * Schedules a task to be executed on the region which owns the location on the next tick.
@@ -173,11 +187,24 @@ public abstract class BukkitService implements SettingsDependent {
     public abstract void executeOnGlobalRegionScheduler(@NotNull Runnable run);
 
     /**
+     * Returns whether the current thread is ticking the global region.
+     *
+     * @see #executeOptionallyOnGlobalRegionScheduler
+     */
+    public abstract boolean isGlobalTickThread();
+
+    /**
      * Schedules a task to be executed on the global region.
      * It may run immediately.
      * @param run The task to execute
      */
-    public abstract void executeOptionallyOnGlobalRegionScheduler(@NotNull Runnable run);
+    public final void executeOptionallyOnGlobalRegionScheduler(@NotNull Runnable run) {
+        if (isGlobalTickThread()) {
+            run.run();
+        } else {
+            executeOnGlobalRegionScheduler(run);
+        }
+    }
 
     /**
      * Schedules a task to be executed on the global region on the next tick.
@@ -236,6 +263,17 @@ public abstract class BukkitService implements SettingsDependent {
                                                      long delay);
 
     /**
+     * Returns whether the current thread is ticking a region and that the region being ticked
+     * owns the specified entity. Note that this function is the only appropriate method of checking
+     * for ownership of an entity, as retrieving the entity's location is undefined unless the entity is owned
+     * by the current region.
+     * @param entity Specified entity.
+     *
+     * @see #executeOptionallyOnEntityScheduler
+     */
+    public abstract boolean isOwnedByCurrentRegion(@NotNull Entity entity);
+
+    /**
      * Schedules a task to be executed on the entity scheduler.
      * It may run immediately.
      * @param run The task to execute
@@ -244,9 +282,14 @@ public abstract class BukkitService implements SettingsDependent {
      *         will be invoked (but never both), or {@code false} indicating neither the run nor retired function will be invoked
      *         since the scheduler has been retired.
      */
-    public abstract boolean executeOptionallyOnEntityScheduler(@NotNull Entity entity,
-                                                            @NotNull Runnable run,
-                                                            @Nullable Runnable retired);
+    public final boolean executeOptionallyOnEntityScheduler(@NotNull Entity entity, @NotNull Runnable run, @Nullable Runnable retired) {
+        if (isOwnedByCurrentRegion(entity)) {
+            run.run();
+            return true;
+        } else {
+            return executeOnEntityScheduler(entity, run, retired, 0L);
+        }
+    }
 
     /**
      * Schedules a task to execute on the next tick. If the task failed to schedule because the scheduler is retired (entity
