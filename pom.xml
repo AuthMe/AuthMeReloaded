@@ -1027,7 +1027,7 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
-            <version>4.8.1</version>
+            <version>5.4.0</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hamcrest-core</artifactId>
