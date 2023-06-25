@@ -70,6 +70,11 @@ public class GeoIpService {
         this.dataFile = dataFolder.toPath().resolve(DATABASE_FILE);
         this.settings = settings;
 
+        // If this feature is disabled, just stop
+        if (!settings.getProperty(ProtectionSettings.ENABLE_GEO_IP)) {
+            return;
+        }
+
         // Fires download of recent data or the initialization of the look up service
         isDataAvailable();
     }

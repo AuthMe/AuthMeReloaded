@@ -20,6 +20,10 @@ public final class ProtectionSettings implements SettingsHolder {
     public static final Property<Boolean> ENABLE_PROTECTION_REGISTERED =
         newProperty("Protection.enableProtectionRegistered", true);
 
+    @Comment("Enable GeoIp database")
+    public static final Property<Boolean> ENABLE_GEO_IP =
+        newProperty("Protection.geoIpDatabase.enableGeoIp", true);
+
     @Comment({"The MaxMind clientId used to download the GeoIp database,",
         "get one at https://www.maxmind.com/en/accounts/current/license-key",
         "The EssentialsX project has a very useful tutorial on how to generate",
