@@ -289,7 +289,9 @@ public class GeoIpService {
      *         or "--" if it cannot be fetched.
      */
     public String getCountryCode(String ip) {
-        if (!enabled) return "--";
+        if (!enabled) {
+            return "--";
+        }
         if (InternetProtocolUtils.isLocalAddress(ip)) {
             return "LOCALHOST";
         }
@@ -303,7 +305,9 @@ public class GeoIpService {
      * @return The name of the country, "LocalHost" for local addresses, or "N/A" if it cannot be fetched.
      */
     public String getCountryName(String ip) {
-        if (!enabled) return "N/A";
+        if (!enabled) {
+            return "N/A";
+        }
         if (InternetProtocolUtils.isLocalAddress(ip)) {
             return "LocalHost";
         }
