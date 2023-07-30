@@ -124,7 +124,7 @@ captcha:
 
 # Verification code
 verification:
-    code_required: '&3Kad naudotumete šią komanda turi patvirtinti savo el.pašto adresą! Sekite instrukcijas savo el.pašte.'
+    code_required: '&3Kad galėtumėte naudoti šią komandą turite patvirtinti savo el.pašto adresą! Sekite instrukcijas savo el.pašte.'
     command_usage: '&cNaudojimas: /verification <kodas>'
     incorrect_code: '&cNeteisingas kodas, naudokite "/verification <kodas>" įvesdami kodą gautą savo el.pašte'
     success: '&2Jūsų paskyra patvirtinta! Jūs galite naudoti visas komandas!'
