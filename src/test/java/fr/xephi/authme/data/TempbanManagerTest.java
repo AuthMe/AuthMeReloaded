@@ -147,7 +147,7 @@ class TempbanManagerTest {
         // given
         Player player = mock(Player.class);
         String ip = "123.45.67.89";
-        TestHelper.mockPlayerIp(player, ip);
+        TestHelper.mockIpAddressToPlayer(player, ip);
         String banReason = "IP ban too many logins";
         given(messages.retrieveSingle(player, MessageKey.TEMPBAN_MAX_LOGINS)).willReturn(banReason);
         Settings settings = mockSettings(2, 100, "");
@@ -175,7 +175,7 @@ class TempbanManagerTest {
         Player player = mock(Player.class);
         given(player.getName()).willReturn("Bob");
         String ip = "143.45.77.89";
-        TestHelper.mockPlayerIp(player, ip);
+        TestHelper.mockIpAddressToPlayer(player, ip);
         String banCommand = "banip %ip% 15d IP ban too many logins";
         Settings settings = mockSettings(2, 100, banCommand);
         TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
@@ -193,7 +193,7 @@ class TempbanManagerTest {
         // given
         Player player = mock(Player.class);
         String ip = "22.44.66.88";
-        TestHelper.mockPlayerIp(player, ip);
+        TestHelper.mockIpAddressToPlayer(player, ip);
         String banReason = "kick msg";
         given(messages.retrieveSingle(player, MessageKey.TEMPBAN_MAX_LOGINS)).willReturn(banReason);
         Settings settings = mockSettings(10, 60, "");

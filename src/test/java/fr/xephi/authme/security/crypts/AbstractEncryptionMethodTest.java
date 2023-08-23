@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -152,11 +153,11 @@ public abstract class AbstractEncryptionMethodTest {
                 method.comparePassword(password, hashedPassword, USERNAME), equalTo(true));
             assumeFalse(SKIP_LONG_TESTS);
 
-            if (!password.equals(password.toLowerCase())) {
+            if (!password.equals(password.toLowerCase(Locale.ROOT))) {
                 assertThat("Lower-case of '" + password + "' should not match generated hash '" + hash + "'",
                     method.comparePassword(password.toLowerCase(), hashedPassword, USERNAME), equalTo(false));
             }
-            if (!password.equals(password.toUpperCase())) {
+            if (!password.equals(password.toUpperCase(Locale.ROOT))) {
                 assertThat("Upper-case of '" + password + "' should not match generated hash '" + hash + "'",
                     method.comparePassword(password.toUpperCase(), hashedPassword, USERNAME), equalTo(false));
             }

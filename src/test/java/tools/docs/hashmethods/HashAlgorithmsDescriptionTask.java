@@ -7,6 +7,7 @@ import tools.utils.TagValue.NestedTagValue;
 import tools.utils.TagValueHolder;
 import tools.utils.ToolsConstants;
 
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -83,7 +84,7 @@ public class HashAlgorithmsDescriptionTask implements AutoToolTask {
         // Get the enum name and replace something like "DO_NOT_USE" to "Do not use"
         String enumName = value.toString().replace("_", " ");
         return enumName.length() > 2
-            ? enumName.substring(0, 1) + enumName.substring(1).toLowerCase()
+            ? enumName.substring(0, 1) + enumName.substring(1).toLowerCase(Locale.ROOT)
             : enumName;
     }
 

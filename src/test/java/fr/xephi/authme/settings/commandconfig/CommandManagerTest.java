@@ -66,7 +66,7 @@ class CommandManagerTest {
 
         @BeforeEach
         void setup() {
-            TestHelper.mockPlayerIp(player, "127.0.0.3");
+            TestHelper.mockIpAddressToPlayer(player, "127.0.0.3");
         }
 
         @Test

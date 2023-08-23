@@ -32,6 +32,8 @@ import org.bukkit.potion.PotionEffectType;
 
 import javax.inject.Inject;
 
+import java.util.Locale;
+
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 
@@ -89,9 +91,14 @@ public class AsynchronousJoin implements AsynchronousProcess {
      *
      * @param player the player to process
      */
-    public void processJoin(final Player player) {
-        final String name = player.getName().toLowerCase();
-        final String ip = PlayerUtils.getPlayerIp(player);
+    public void processJoin(Player player) {
+        String name = player.getName().toLowerCase(Locale.ROOT);
+        String ip = PlayerUtils.getPlayerIp(player);
+
+        if (!validationService.fulfillsNameRestrictions(player)) {
+            handlePlayerWithUnmetNameRestriction(player, ip);
+            return;
+        }
 
         if (service.getProperty(RestrictionSettings.UNRESTRICTED_NAMES).contains(name)) {
             return;
@@ -107,16 +114,11 @@ public class AsynchronousJoin implements AsynchronousProcess {
             pluginHookService.setEssentialsSocialSpyStatus(player, false);
         }
 
-        if (!validationService.fulfillsNameRestrictions(player)) {
-            handlePlayerWithUnmetNameRestriction(player, ip);
-            return;
-        }
-
         if (!validatePlayerCountForIp(player, ip)) {
             return;
         }
 
-        final boolean isAuthAvailable = database.isAuthAvailable(name);
+        boolean isAuthAvailable = database.isAuthAvailable(name);
 
         if (isAuthAvailable) {
             // Protect inventory
@@ -153,7 +155,13 @@ public class AsynchronousJoin implements AsynchronousProcess {
             });
 
             // Skip if registration is optional
-            bungeeSender.sendAuthMeBungeecordMessage(MessageType.LOGIN, name);
+
+            if (bungeeSender.isEnabled()) {
+                // As described at https://www.spigotmc.org/wiki/bukkit-bungee-plugin-messaging-channel/
+                // "Keep in mind that you can't send plugin messages directly after a player joins."
+                bukkitService.scheduleSyncDelayedTask(() ->
+                    bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.LOGIN), 5L);
+            }
             return;
         }
 
@@ -177,7 +185,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
      * @param isAuthAvailable true if the player is registered, false otherwise
      */
     private void processJoinSync(Player player, boolean isAuthAvailable) {
-        final int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
+        int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
 
         bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
             limboService.createLimboPlayer(player, isAuthAvailable);
@@ -204,7 +212,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
      *
      * @return true if the verification is OK (no infraction), false if player has been kicked
      */
-    private boolean validatePlayerCountForIp(final Player player, String ip) {
+    private boolean validatePlayerCountForIp(Player player, String ip) {
         if (service.getProperty(RestrictionSettings.MAX_JOIN_PER_IP) > 0
             && !service.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
             && !InternetProtocolUtils.isLoopbackAddress(ip)

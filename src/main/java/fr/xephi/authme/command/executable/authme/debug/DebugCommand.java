@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -45,7 +46,7 @@ public class DebugCommand implements ExecutableCommand {
         if (arguments.isEmpty()) {
             return null;
         }
-        return getSections().get(arguments.get(0).toLowerCase());
+        return getSections().get(arguments.get(0).toLowerCase(Locale.ROOT));
     }
 
     private void sendAvailableSections(CommandSender sender) {

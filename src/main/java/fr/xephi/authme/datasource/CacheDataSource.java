@@ -18,6 +18,7 @@ import fr.xephi.authme.util.Utils;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -86,7 +87,7 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public HashedPassword getPassword(String user) {
-        user = user.toLowerCase();
+        user = user.toLowerCase(Locale.ROOT);
         Optional<PlayerAuth> pAuthOpt = cachedAuths.getIfPresent(user);
         if (pAuthOpt != null && pAuthOpt.isPresent()) {
             return pAuthOpt.get().getPassword();
@@ -96,7 +97,7 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public PlayerAuth getAuth(String user) {
-        user = user.toLowerCase();
+        user = user.toLowerCase(Locale.ROOT);
         return cachedAuths.getUnchecked(user).orElse(null);
     }
 
@@ -120,7 +121,7 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public boolean updatePassword(String user, HashedPassword password) {
-        user = user.toLowerCase();
+        user = user.toLowerCase(Locale.ROOT);
         boolean result = source.updatePassword(user, password);
         if (result) {
             cachedAuths.refresh(user);
@@ -153,7 +154,7 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public boolean removeAuth(String name) {
-        name = name.toLowerCase();
+        name = name.toLowerCase(Locale.ROOT);
         boolean result = source.removeAuth(name);
         if (result) {
             cachedAuths.invalidate(name);
@@ -210,12 +211,12 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public void setLogged(final String user) {
-        source.setLogged(user.toLowerCase());
+        source.setLogged(user.toLowerCase(Locale.ROOT));
     }
 
     @Override
     public void setUnlogged(final String user) {
-        source.setUnlogged(user.toLowerCase());
+        source.setUnlogged(user.toLowerCase(Locale.ROOT));
     }
 
     @Override

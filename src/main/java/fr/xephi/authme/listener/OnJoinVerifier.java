@@ -25,6 +25,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
@@ -159,8 +160,8 @@ public class OnJoinVerifier implements Reloadable {
         if (auth != null && settings.getProperty(RegistrationSettings.PREVENT_OTHER_CASE)) {
             String realName = auth.getRealName(); // might be null or "Player"
 
-            if (StringUtils.isEmpty(realName) || "Player".equals(realName)) {
-                dataSource.updateRealName(connectingName.toLowerCase(), connectingName);
+            if (StringUtils.isBlank(realName) || "Player".equals(realName)) {
+                dataSource.updateRealName(connectingName.toLowerCase(Locale.ROOT), connectingName);
             } else if (!realName.equals(connectingName)) {
                 throw new FailedVerificationException(MessageKey.INVALID_NAME_CASE, realName, connectingName);
             }

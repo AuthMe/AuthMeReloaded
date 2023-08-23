@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Locale;
 
 import static fr.xephi.authme.util.Utils.logAndSendMessage;
 import static fr.xephi.authme.util.Utils.logAndSendWarning;
@@ -151,7 +152,7 @@ public class BackupService {
      * @return True if the path is correct, false if it is incorrect or the OS is not Windows
      */
     private boolean useWindowsCommand(String windowsPath) {
-        String isWin = System.getProperty("os.name").toLowerCase();
+        String isWin = System.getProperty("os.name").toLowerCase(Locale.ROOT);
         if (isWin.contains("win")) {
             if (new File(windowsPath + "\\bin\\mysqldump.exe").exists()) {
                 return true;

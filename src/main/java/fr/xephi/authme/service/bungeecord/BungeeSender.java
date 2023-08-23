@@ -4,7 +4,6 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.service.BukkitService;
@@ -14,13 +13,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.Messenger;
 
 import javax.inject.Inject;
+import java.util.Locale;
 
 public class BungeeSender implements SettingsDependent {
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(BungeeSender.class);
     private final AuthMe plugin;
     private final BukkitService bukkitService;
-    private final DataSource dataSource;
 
     private boolean isEnabled;
     private String destinationServerOnLogin;
@@ -29,21 +28,19 @@ public class BungeeSender implements SettingsDependent {
      * Constructor.
      */
     @Inject
-    BungeeSender(final AuthMe plugin, final BukkitService bukkitService, final DataSource dataSource,
-                 final Settings settings) {
+    BungeeSender(AuthMe plugin, BukkitService bukkitService, Settings settings) {
         this.plugin = plugin;
         this.bukkitService = bukkitService;
-        this.dataSource = dataSource;
         reload(settings);
     }
 
     @Override
-    public void reload(final Settings settings) {
+    public void reload(Settings settings) {
         this.isEnabled = settings.getProperty(HooksSettings.BUNGEECORD);
         this.destinationServerOnLogin = settings.getProperty(HooksSettings.BUNGEECORD_SERVER);
 
         if (this.isEnabled) {
-            final Messenger messenger = plugin.getServer().getMessenger();
+            Messenger messenger = plugin.getServer().getMessenger();
             if (!messenger.isOutgoingChannelRegistered(plugin, "BungeeCord")) {
                 messenger.registerOutgoingPluginChannel(plugin, "BungeeCord");
             }
@@ -54,27 +51,27 @@ public class BungeeSender implements SettingsDependent {
         return isEnabled;
     }
 
-    private void sendBungeecordMessage(final String... data) {
-        final ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        for (final String element : data) {
+    private void sendBungeecordMessage(Player player, String... data) {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        for (String element : data) {
             out.writeUTF(element);
         }
-        bukkitService.sendBungeeMessage(out.toByteArray());
+        bukkitService.sendBungeeMessage(player, out.toByteArray());
     }
 
-    private void sendForwardedBungeecordMessage(final String subChannel, final String... data) {
-        final ByteArrayDataOutput out = ByteStreams.newDataOutput();
+    private void sendForwardedBungeecordMessage(Player player, String subChannel, String... data) {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("Forward");
         out.writeUTF("ONLINE");
         out.writeUTF(subChannel);
-        final ByteArrayDataOutput dataOut = ByteStreams.newDataOutput();
-        for (final String element : data) {
+        ByteArrayDataOutput dataOut = ByteStreams.newDataOutput();
+        for (String element : data) {
             dataOut.writeUTF(element);
         }
-        final byte[] dataBytes = dataOut.toByteArray();
+        byte[] dataBytes = dataOut.toByteArray();
         out.writeShort(dataBytes.length);
         out.write(dataBytes);
-        bukkitService.sendBungeeMessage(out.toByteArray());
+        bukkitService.sendBungeeMessage(player, out.toByteArray());
     }
 
     /**
@@ -83,33 +80,33 @@ public class BungeeSender implements SettingsDependent {
      *
      * @param player The player to send.
      */
-    public void connectPlayerOnLogin(final Player player) {
-        if (isEnabled && !destinationServerOnLogin.isEmpty()) {
-            bukkitService.scheduleSyncDelayedTask(() ->
-                sendBungeecordMessage("ConnectOther", player.getName(), destinationServerOnLogin), 5L);
+    public void connectPlayerOnLogin(Player player) {
+        if (!isEnabled || destinationServerOnLogin.isEmpty()) {
+            return;
         }
+        // Add a small delay, just in case...
+        bukkitService.scheduleSyncDelayedTask(() ->
+            sendBungeecordMessage(player, "Connect", destinationServerOnLogin), 10L);
     }
 
     /**
      * Sends a message to the AuthMe plugin messaging channel, if enabled.
      *
+     * @param player     The player related to the message
      * @param type       The message type, See {@link MessageType}
-     * @param playerName the player related to the message
      */
-    public void sendAuthMeBungeecordMessage(final MessageType type, final String playerName) {
-        if (isEnabled) {
-            if (!plugin.isEnabled()) {
-                logger.debug("Tried to send a " + type + " bungeecord message but the plugin was disabled!");
-                return;
-            }
-            if (type.isRequiresCaching() && !dataSource.isCached()) {
-                return;
-            }
-            if (type.isBroadcast()) {
-                sendForwardedBungeecordMessage("AuthMe.v2.Broadcast", type.getId(), playerName.toLowerCase());
-            } else {
-                sendBungeecordMessage("AuthMe.v2", type.getId(), playerName.toLowerCase());
-            }
+    public void sendAuthMeBungeecordMessage(Player player, MessageType type) {
+        if (!isEnabled) {
+            return;
+        }
+        if (!plugin.isEnabled()) {
+            logger.debug("Tried to send a " + type + " bungeecord message but the plugin was disabled!");
+            return;
+        }
+        if (type.isBroadcast()) {
+            sendForwardedBungeecordMessage(player, "AuthMe.v2.Broadcast", type.getId(), player.getName().toLowerCase(Locale.ROOT));
+        } else {
+            sendBungeecordMessage(player, "AuthMe.v2", type.getId(), player.getName().toLowerCase(Locale.ROOT));
         }
     }
 

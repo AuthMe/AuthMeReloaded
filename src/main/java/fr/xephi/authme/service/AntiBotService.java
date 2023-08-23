@@ -11,6 +11,7 @@ import fr.xephi.authme.util.AtomicIntervalCounter;
 import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
+import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_MINUTE;
@@ -55,7 +56,7 @@ public class AntiBotService implements SettingsDependent {
         duration = settings.getProperty(ProtectionSettings.ANTIBOT_DURATION);
         int sensibility = settings.getProperty(ProtectionSettings.ANTIBOT_SENSIBILITY);
         int interval = settings.getProperty(ProtectionSettings.ANTIBOT_INTERVAL);
-        flaggedCounter = new AtomicIntervalCounter(sensibility, interval);
+        flaggedCounter = new AtomicIntervalCounter(sensibility, interval * 1000);
 
         // Stop existing protection
         stopProtection();
@@ -176,7 +177,7 @@ public class AntiBotService implements SettingsDependent {
      * @return true if the given name has been kicked because of Antibot
      */
     public boolean wasPlayerKicked(String name) {
-        return antibotKicked.contains(name.toLowerCase());
+        return antibotKicked.contains(name.toLowerCase(Locale.ROOT));
     }
 
     /**
@@ -186,7 +187,7 @@ public class AntiBotService implements SettingsDependent {
      * @param name the name to add
      */
     public void addPlayerKick(String name) {
-        antibotKicked.addIfAbsent(name.toLowerCase());
+        antibotKicked.addIfAbsent(name.toLowerCase(Locale.ROOT));
     }
 
     public enum AntiBotStatus {

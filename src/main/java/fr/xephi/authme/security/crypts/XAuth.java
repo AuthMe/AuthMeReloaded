@@ -3,6 +3,8 @@ package fr.xephi.authme.security.crypts;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.Usage;
 
+import java.util.Locale;
+
 import static fr.xephi.authme.security.HashUtils.isEqual;
 
 @Recommendation(Usage.RECOMMENDED)
@@ -19,7 +21,7 @@ public class XAuth extends HexSaltedMethod {
 
     @Override
     public String computeHash(String password, String salt, String name) {
-        String hash = getWhirlpool(salt + password).toLowerCase();
+        String hash = getWhirlpool(salt + password).toLowerCase(Locale.ROOT);
         int saltPos = password.length() >= hash.length() ? hash.length() - 1 : password.length();
         return hash.substring(0, saltPos) + salt + hash.substring(saltPos);
     }

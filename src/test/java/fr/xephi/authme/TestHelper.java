@@ -12,13 +12,13 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.logging.Logger;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
 /**
  * AuthMe test utilities.
@@ -99,11 +99,14 @@ public final class TestHelper {
      * @param player the player mock
      * @param ip the ip address it should return
      */
-    public static void mockPlayerIp(Player player, String ip) {
-        InetAddress inetAddress = mock(InetAddress.class);
-        given(inetAddress.getHostAddress()).willReturn(ip);
-        InetSocketAddress inetSocketAddress = new InetSocketAddress(inetAddress, 8093);
-        given(player.getAddress()).willReturn(inetSocketAddress);
+    public static void mockIpAddressToPlayer(Player player, String ip) {
+        try {
+            InetAddress inetAddress = InetAddress.getByName(ip);
+            InetSocketAddress inetSocketAddress = new InetSocketAddress(inetAddress, 8093);
+            given(player.getAddress()).willReturn(inetSocketAddress);
+        } catch (UnknownHostException e) {
+            throw new IllegalStateException("Invalid IP address: " + ip, e);
+        }
     }
 
     /**

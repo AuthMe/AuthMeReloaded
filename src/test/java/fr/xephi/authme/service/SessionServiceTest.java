@@ -240,7 +240,7 @@ class SessionServiceTest {
     private static Player mockPlayerWithNameAndIp(String name, String ip) {
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
-        TestHelper.mockPlayerIp(player, ip);
+        TestHelper.mockIpAddressToPlayer(player, ip);
         return player;
     }
 }

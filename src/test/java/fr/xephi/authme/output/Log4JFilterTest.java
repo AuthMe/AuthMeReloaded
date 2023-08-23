@@ -134,7 +134,7 @@ class Log4JFilterTest {
 	@Test
     void shouldFilterSensitiveObjectMessage() {
 		// given / when
-		Result result = log4JFilter.filter(null, null, null, SENSITIVE_COMMAND, new Exception());
+		Result result = log4JFilter.filter(null, null, null, (Object) SENSITIVE_COMMAND, new Exception());
 		
 		// then
 		assertThat(result, equalTo(Result.DENY));
@@ -152,7 +152,7 @@ class Log4JFilterTest {
 	@Test
     void shouldNotFilterIrrelevantMessage() {
 		// given / when
-		Result result = log4JFilter.filter(null, null, null, OTHER_COMMAND, new Exception());
+		Result result = log4JFilter.filter(null, null, null, (Object) OTHER_COMMAND, new Exception());
 		
 		// then
 		assertThat(result, equalTo(Result.NEUTRAL));
@@ -161,7 +161,7 @@ class Log4JFilterTest {
 	@Test
     void shouldNotFilterNonSensitiveCommand() {
 		// given / when
-		Result result = log4JFilter.filter(null, null, null, NORMAL_COMMAND, new Exception());
+		Result result = log4JFilter.filter(null, null, null, (Object) NORMAL_COMMAND, new Exception());
 		
 		// then
 		assertThat(result, equalTo(Result.NEUTRAL));
@@ -209,7 +209,7 @@ class Log4JFilterTest {
 	@Test
     void shouldNotFilterNullMessage() {
 		// given / when
-		Result result = log4JFilter.filter(null, null, null, null, new Exception());
+		Result result = log4JFilter.filter(null, null, null, (Object) null, new Exception());
 		
 		// then
 		assertThat(result, equalTo(Result.NEUTRAL));

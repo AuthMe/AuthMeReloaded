@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import static com.google.common.collect.Sets.newHashSet;
@@ -67,7 +68,7 @@ class PurgeBannedPlayersCommandTest {
     private static Set<String> asLowerCaseSet(String... items) {
         Set<String> result = new HashSet<>(items.length);
         for (String item : items) {
-            result.add(item.toLowerCase());
+            result.add(item.toLowerCase(Locale.ROOT));
         }
         return result;
     }

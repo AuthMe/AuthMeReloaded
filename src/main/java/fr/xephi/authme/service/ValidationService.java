@@ -1,6 +1,7 @@
 package fr.xephi.authme.service;
 
 import ch.jalu.configme.properties.Property;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import fr.xephi.authme.ConsoleLogger;
@@ -23,8 +24,10 @@ import org.bukkit.entity.Player;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -69,7 +72,7 @@ public class ValidationService implements Reloadable {
      * @return the validation result
      */
     public ValidationResult validatePassword(String password, String username) {
-        String passLow = password.toLowerCase();
+        String passLow = password.toLowerCase(Locale.ROOT);
         if (!passwordRegex.matcher(passLow).matches()) {
             return new ValidationResult(MessageKey.PASSWORD_CHARACTERS_ERROR, passwordRegex.pattern());
         } else if (passLow.equalsIgnoreCase(username)) {
@@ -139,7 +142,7 @@ public class ValidationService implements Reloadable {
      * @return true if unrestricted, false otherwise
      */
     public boolean isUnrestricted(String name) {
-        return settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES).contains(name.toLowerCase());
+        return settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES).contains(name.toLowerCase(Locale.ROOT));
     }
 
     /**
@@ -149,13 +152,13 @@ public class ValidationService implements Reloadable {
      * @return true if the player may join, false if the player does not satisfy the name restrictions
      */
     public boolean fulfillsNameRestrictions(Player player) {
-        Collection<String> restrictions = restrictedNames.get(player.getName().toLowerCase());
+        Collection<String> restrictions = restrictedNames.get(player.getName().toLowerCase(Locale.ROOT));
         if (Utils.isCollectionEmpty(restrictions)) {
             return true;
         }
 
         String ip = PlayerUtils.getPlayerIp(player);
-        String domain = player.getAddress().getHostName();
+        String domain = getHostName(player.getAddress());
         for (String restriction : restrictions) {
             if (restriction.startsWith("regex:")) {
                 restriction = restriction.replace("regex:", "");
@@ -170,6 +173,11 @@ public class ValidationService implements Reloadable {
             }
         }
         return false;
+    }
+
+    @VisibleForTesting
+    protected String getHostName(InetSocketAddress inetSocketAddr) {
+        return inetSocketAddr.getHostName();
     }
 
     /**
@@ -212,7 +220,7 @@ public class ValidationService implements Reloadable {
         for (String restriction : configuredRestrictions) {
             if (isInsideString(';', restriction)) {
                 String[] data = restriction.split(";");
-                restrictions.put(data[0].toLowerCase(), data[1]);
+                restrictions.put(data[0].toLowerCase(Locale.ROOT), data[1]);
             } else {
                 logger.warning("Restricted user rule must have a ';' separating name from restriction,"
                     + " but found: '" + restriction + "'");

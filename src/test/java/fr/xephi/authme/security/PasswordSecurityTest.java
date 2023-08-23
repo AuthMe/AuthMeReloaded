@@ -27,6 +27,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Set;
 
 import static com.google.common.collect.Sets.newHashSet;
@@ -118,7 +119,7 @@ class PasswordSecurityTest {
         HashedPassword password = new HashedPassword("$TEST$10$SOME_HASH", null);
         String playerName = "Tester";
         // Calls to EncryptionMethod are always with the lower-case version of the name
-        String playerLowerCase = playerName.toLowerCase();
+        String playerLowerCase = playerName.toLowerCase(Locale.ROOT);
         String clearTextPass = "myPassTest";
 
         given(dataSource.getPassword(playerName)).willReturn(password);
@@ -139,7 +140,7 @@ class PasswordSecurityTest {
         // given
         HashedPassword password = new HashedPassword("$TEST$10$SOME_HASH", null);
         String playerName = "My_PLayer";
-        String playerLowerCase = playerName.toLowerCase();
+        String playerLowerCase = playerName.toLowerCase(Locale.ROOT);
         String clearTextPass = "passw0Rd1";
 
         given(dataSource.getPassword(playerName)).willReturn(password);
@@ -178,7 +179,7 @@ class PasswordSecurityTest {
         HashedPassword password =
             new HashedPassword("$2y$10$2e6d2193f43501c926e25elvWlPmWczmrfrnbZV0dUZGITjYjnkkW");
         String playerName = "somePlayer";
-        String playerLowerCase = playerName.toLowerCase();
+        String playerLowerCase = playerName.toLowerCase(Locale.ROOT);
         String clearTextPass = "Test";
         // MD5 hash for "Test"
         HashedPassword newPassword = new HashedPassword("0cbc6611f5540bd0809a388dc95a615b");
@@ -230,7 +231,7 @@ class PasswordSecurityTest {
         // given
         String password = "MyP@ssword";
         String username = "theUserInTest";
-        String usernameLowerCase = username.toLowerCase();
+        String usernameLowerCase = username.toLowerCase(Locale.ROOT);
         HashedPassword hashedPassword = new HashedPassword("$T$est#Hash", "__someSalt__");
         given(method.computeHash(password, usernameLowerCase)).willReturn(hashedPassword);
         given(settings.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.JOOMLA);

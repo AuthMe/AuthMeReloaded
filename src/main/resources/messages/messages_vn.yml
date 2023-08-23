@@ -6,7 +6,7 @@
 # Registration
 registration:
     disabled: '&cKhông cho phép đăng ký tài khoản trong máy chủ!'
-    name_taken: '&cBạn có thể đăng ký với tên tài khoản này!'
+    name_taken: '&cTài khoản này đã được đăng ký!'
     register_request: '&2Xin vui lòng đăng ký tài khoản với lệnh "/register <mật khẩu> <nhập lại mật khẩu>"'
     command_usage: '&cSử dụng: /register <mật khẩu> <nhập lại mật khẩu>'
     reg_only: '&4Chỉ có thành viên mới có thể tham gia máy chủ, vui lòng truy cập trang web http://example.com để đăng ký thành viên!'
@@ -15,7 +15,7 @@ registration:
 
 # Password errors on registration
 password:
-    match_error: '&cMật khẩu không hợp, xin vui lòng kiểm tra lại!'
+    match_error: '&cMật khẩu không đúng, vui lòng kiểm tra lại!'
     name_in_password: '&cBạn không thể đặt mật khẩu bằng tên của mình, vui lòng đặt lại...'
     unsafe_password: '&cMật khẩu của bạn vừa đặt không an toàn, vui lòng đặt lại...'
     forbidden_characters: '&4Mật khẩu của bạn chứa ký tự không hợp lệ. Các ký tự cho phép: %valid_chars'
@@ -31,17 +31,17 @@ login:
 
 # Errors
 error:
-    denied_command: '&cĐể được sử dụng lệnh bạn phải hoàn thành xác thực tài khoản đã!'
-    denied_chat: '&cĐể được chát bạn phải hoàn thành xác thực tài khoản đã!'
-    unregistered_user: '&cNgười dùng này đã được đăng ký!'
+    denied_command: '&cBạn phải đăng nhập trước rồi mới có thể dùng lệnh này!'
+    denied_chat: '&cBạn phải đăng nhập trước rồi mới có thể chat!'
+    unregistered_user: '&cNgười dùng này chưa được đăng ký!'
     not_logged_in: '&cBạn chưa đăng nhập!'
-    no_permission: '&4Bạn không có quyền truy cập lệnh này!'
-    unexpected_error: '&4Lỗi! Vui lòng liên hệ quản trị viên hoặc admin'
-    max_registration: '&cBạn đã vượt quá giới hạn tối đa đăng ký tài khoản (%reg_count/%max_acc %reg_names) cho những lần kết nối tài khoản!'
-    logged_in: '&cBạn đã đăng nhập!'
+    no_permission: '&4Bạn không có quyền dùng cập lệnh này!'
+    unexpected_error: '&4Lỗi! Vui lòng liên hệ quản trị viên.'
+    max_registration: '&cBạn đã vượt quá giới hạn tối đa đăng ký tài khoản (%reg_count/%max_acc %reg_names) trên đường truyền của bạn!'
+    logged_in: '&cBạn đã đăng nhập rồi!'
     kick_for_vip: '&eChỉ có thành viên VIP mới được tham gia khi máy chủ đầy!'
-    kick_unresolved_hostname: '&cLôi đã xảy ra: Không thể phân giải hostname!'
-    tempban_max_logins: '&cBạn đã bị tạm thời khóa truy cập do đăng nhập sai nhiều lần.'
+    kick_unresolved_hostname: '&cLỗi đã xảy ra: Không thể phân giải hostname của người chơi!'
+    tempban_max_logins: '&cBạn đã bị chặn tạm thời do đăng nhập sai quá nhiều lần.'
 
 # AntiBot
 antibot:
@@ -59,7 +59,7 @@ misc:
     account_not_activated: '&cTài khoản của bạn chưa được kích hoạt, vui lòng kiểm tra email!'
     password_changed: '&2Thay đổi mật khẩu thành công!'
     logout: '&2Bạn đã đăng xuất!'
-    reload: '&2Cấu hình và cơ sở dử liệu đã được nạp lại!'
+    reload: '&2Cấu hình và cơ sở dử liệu đã được tải lại thành công!'
     usage_change_password: '&cSử dụng: /changepassword <mật khẩu cũ> <mật khẩu mới>'
     accounts_owned_self: 'Bạn sở hữu %count tài khoản:'
     accounts_owned_other: 'Người chơi %name có %count tài khoản:'
@@ -71,7 +71,7 @@ session:
 
 # Error messages when joining
 on_join_validation:
-    same_ip_online: 'Một người chơi với cùng địa chỉ IP đã đang chơi!'
+    same_ip_online: 'Một người chơi với cùng địa chỉ IP đã kết nối vào máy chủ!'
     same_nick_online: '&4Tài khoản đang được sử dụng trên máy chủ!'
     name_length: '&4Tên đăng nhập của bạn quá ngắn hoặc quá dài!'
     characters_in_name: '&4Tên nhân vật có chứa ký tự không hợp lệ. Các ký tự được cho phép: %valid_chars'
@@ -79,7 +79,7 @@ on_join_validation:
     country_banned: '&4Quốc gia của bạn bị cấm tham gia máy chủ này!'
     not_owner_error: 'Bạn không phải là chủ sở hữu tài khoản này, hãy chọn tên khác!'
     invalid_name_case: 'Bạn nên vào máy chủ với tên đăng nhập là %valid, không phải là %invalid.'
-    quick_command: 'Bạn đang xài lệnh quá nhanh. Hãy thoát máy chủ và chờ một lúc trước khi sử dụng lệnh'
+    quick_command: 'Bạn đang xài lệnh quá nhanh. Hãy thoát máy chủ và chờ một lúc trước khi sử dụng lệnh.'
 
 # Email
 email:
@@ -89,24 +89,24 @@ email:
     new_email_invalid: '&cEmail mới không hợp lệ, vui lòng thử lại!'
     old_email_invalid: '&cEmail cũ không hợp lệ, vui lòng thử lại!'
     invalid: '&cĐại chỉ email không hợp lệ, vui lòng thử lại!'
-    added: '&2Địa chỉ email đã thêm vào tài khoản của bạn thành công!'
-    add_not_allowed: '&cViệc thêm email không được cho phép!'
+    added: '&2Địa chỉ email đã được thêm vào tài khoản của bạn.'
+    add_not_allowed: '&cKhông được phép thêm địa chỉ email!'
     request_confirmation: '&cVui lòng xác nhận địa chỉ email của bạn!'
     changed: '&2Địa chỉ email đã thay đổi!'
-    change_not_allowed: '&cViệc đổi địa chỉ email không được cho phép'
+    change_not_allowed: '&cKhông được phép thay đổi địa chỉ email!'
     email_show: '&2Địa chỉ email hiện tại của bạn là: &f%email'
     no_email_for_account: '&2Hiện tại bạn chưa liên kết bất kỳ email nào với tài khoản này.'
-    already_used: '&4Địa chỉ email đã được sử dụng'
-    incomplete_settings: 'Lỗi: các thiết lập để gửi thư không được cài đặt đầy đủ. Vui lòng liên hệ với quản trị viên để thông báo lỗi.'
+    already_used: '&4Địa chỉ email đã được sử dụng!'
+    incomplete_settings: 'Lỗi: các thiết lập để gửi thư không được cài đặt đúng cách. Vui lòng liên hệ với quản trị viên để báo lỗi.'
     send_failure: 'Không thể gửi thư. Vui lòng liên hệ với ban quản trị.'
-    change_password_expired: '&cBạn không thể thay đổi mật khẩu bằng lệnh này từ nay.'
-    email_cooldown_error: '&cMột bức thư đã được gửi gần đây. Bạn phải chờ %time trước khi có thể gửi một bức thư mới.'
+    change_password_expired: '&cBạn không thể thay đổi mật khẩu bằng lệnh này nữa.'
+    email_cooldown_error: '&cMột email đã được gửi gần đây. Bạn phải chờ %time trước khi có thể gửi một email mới.'
 
 # Password recovery by email
 recovery:
     forgot_password_hint: '&aBạn quên mật khẩu? Vui lòng gõ lệnh "/email recovery <email>"'
     command_usage: '&cSử dụng: /email recovery <email>'
-    email_sent: '&2Email phục hồi đã được gửi thành công! Vui lòng kiểm tra hộp thư đến trong email của bạn.'
+    email_sent: '&2Email khôi phục đã được gửi thành công! Vui lòng kiểm tra hộp thư đến trong email của bạn.'
     code:
         code_sent: 'Một mã khôi phục mật khẩu đã được gửi đến địa chỉ email của bạn.'
         incorrect: 'Mã khôi phục không đúng! Dùng lệnh /email recovery [email] để tạo một mã mới'
@@ -116,20 +116,20 @@ recovery:
 
 # Captcha
 captcha:
-    usage_captcha: '&eĐể đăng nhập vui lòng hãy nhập mã Captcha, gõ lệnh "/captcha %captcha_code"'
+    usage_captcha: '&eĐể đăng nhập, hãy nhập mã Captcha, Vui lòng gõ lệnh "/captcha %captcha_code"'
     wrong_captcha: '&cSai mã captcha, Vui lòng gõ lệnh "/captcha %captcha_code"!'
-    valid_captcha: '&2Mã captcha đã được xác nhận!'
-    # TODO captcha_for_registration: 'To register you have to solve a captcha first, please use the command: /captcha %captcha_code'
-    # TODO register_captcha_valid: '&2Valid captcha! You may now register with /register'
+    valid_captcha: '&2Đã xác minh captcha!'
+    captcha_for_registration: 'Để đăng ký, hãy nhập mã Captcha trước. Vui lòng gõ lệnh "/captcha %captcha_code"'
+    register_captcha_valid: '&2Đã xác minh captcha! Bây giờ bạn có thể đăng ký với lệnh "/register"'
 
 # Verification code
 verification:
-    # TODO code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+    code_required: '&3Lệnh này nhạy cảm và yêu cầu xác minh email! Vui lòng iểm tra hộp thư đến của bạn và làm theo hướng dẫn trong email.'
     command_usage: '&cLệnh: /verification <code>'
-    # TODO incorrect_code: '&cIncorrect code, please type "/verification <code>" into the chat, using the code you received by email'
-    success: '&2Danh tính của bạn đã được xác minh! Bạn đã có thể sử dụng các lệnh trong phiên đăng nhập này'
-    # TODO already_verified: '&2You can already execute every sensitive command within the current session!'
-    # TODO code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
+    incorrect_code: '&cMã xác minh không chính xác, vui lòng nhập "/verify <code>" với mã bạn nhận được qua email.'
+    success: '&2Xác minh thành công! Bạn đã có thể sử dụng các lệnh trong phiên đăng nhập này.'
+    already_verified: '&2Bạn đã có thể thực hiện mọi lệnh nhạy cảm trong phiên hiện tại!'
+    code_expired: '&3Mã xác minh đã hết han! Hãy sử dụng một lệnh nhạy cảm để lấy mã mới.'
     email_needed: '&3Để xác định danh tính của bạn, bạn cần kết nối tài khoản này với 1 email!'
 
 # Time units
@@ -147,7 +147,7 @@ time:
 two_factor:
     code_created: '&2Mã bí mật của bạn là %code. Bạn có thể quét nó tại đây %url'
     confirmation_required: 'Hãy xác thực mã của bạn bằng lệnh /2fa confirm <mã>'
-    code_required: 'Hãy gửi đi mã xác thực 2 lớp của bạn bằng lệnh /2fa code <mã>'
+    code_required: 'Hãy nhập mã xác thực 2 lớp của bạn bằng lệnh /2fa code <mã>'
     already_enabled: 'Xác thực 2 lớp đã được kích hoạt trên tài khoản của bạn!'
     enable_error_no_code: 'Không có mã xác thực nào đã được tạo cho tài khoản của bạn hoặc nó đã hết hạn. Hãy sử dụng lệnh /2fa add'
     enable_success: 'Đã thành công kích hoạt xác thực 2 lớp cho tài khoản của bạn!'

@@ -11,11 +11,10 @@ import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
-import fr.xephi.authme.service.bungeecord.BungeeSender;
-import fr.xephi.authme.service.bungeecord.MessageType;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.util.Locale;
 
 /**
  * Async task for changing the email.
@@ -37,9 +36,6 @@ public class AsyncChangeEmail implements AsynchronousProcess {
     private ValidationService validationService;
 
     @Inject
-    private BungeeSender bungeeSender;
-
-    @Inject
     private BukkitService bukkitService;
 
     AsyncChangeEmail() {
@@ -53,10 +49,10 @@ public class AsyncChangeEmail implements AsynchronousProcess {
      * @param newEmail provided new email
      */
     public void changeEmail(Player player, String oldEmail, String newEmail) {
-        String playerName = player.getName().toLowerCase();
+        String playerName = player.getName().toLowerCase(Locale.ROOT);
         if (playerCache.isAuthenticated(playerName)) {
             PlayerAuth auth = playerCache.getAuth(playerName);
-            final String currentEmail = auth.getEmail();
+            String currentEmail = auth.getEmail();
 
             if (currentEmail == null) {
                 service.send(player, MessageKey.USAGE_ADD_EMAIL);
@@ -94,7 +90,7 @@ public class AsyncChangeEmail implements AsynchronousProcess {
         auth.setEmail(newEmail);
         if (dataSource.updateEmail(auth)) {
             playerCache.updatePlayer(auth);
-            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_EMAIL, player.getName());
+            // TODO: send an update when a messaging service will be implemented (CHANGE_MAIL)
             service.send(player, MessageKey.EMAIL_CHANGED_SUCCESS);
         } else {
             service.send(player, MessageKey.ERROR);

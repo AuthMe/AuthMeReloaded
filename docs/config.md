@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Dec 25 15:40:26 CET 2021. See docs/config/config.tpl.md -->
+<!-- File auto-generated on Thu Jul 28 18:11:22 CEST 2022. See docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder,
@@ -9,7 +9,7 @@ the generated config.yml file.
 ```yml
 DataSource:
     # What type of database do you want to use?
-    # Valid values: SQLITE, MYSQL, POSTGRESQL
+    # Valid values: SQLITE, MARIADB, MYSQL, POSTGRESQL
     backend: SQLITE
     # Enable the database caching system, should be disabled on bungeecord environments
     # or when a website integration is being used.
@@ -24,15 +24,13 @@ DataSource:
     # We would not recommend to set this option to false.
     # Set this option to false at your own risk if and only if you know what you're doing
     mySQLCheckServerCertificate: true
+    # Authorize client to retrieve RSA server public key.
+    # Advanced option, ignore if you don't know what it means.
+    mySQLAllowPublicKeyRetrieval: true
     # Username to connect to the MySQL database
     mySQLUsername: authme
     # Password to connect to the MySQL database
     mySQLPassword: '12345'
-    # Driver Name of the MySQL database.
-    # Built-in drivers:
-    #     MySQL: 'fr.xephi.authme.libs.com.mysql.cj.jdbc.Driver'
-    #     MariaDB: 'fr.xephi.authme.libs.org.mariadb.jdbc.Driver'
-    mySQLDriverClassName: fr.xephi.authme.libs.com.mysql.cj.jdbc.Driver
     # Database Name, use with converters or as SQLITE database name
     mySQLDatabase: authme
     # Table of the database
@@ -590,4 +588,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat Dec 25 15:40:26 CET 2021
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Thu Jul 28 18:11:22 CEST 2022

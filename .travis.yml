@@ -1,13 +1,35 @@
-sudo: false
-dist: trusty
+dist: focal
+
 language: java
-jdk:
-  - openjdk16
+
+matrix:
+  include:
+  - env:
+    - JDK_VERSION=8
+  - env:
+    - JDK_VERSION=11
+  - env:
+    - JDK_VERSION=17
+
 before_install:
-  - wget https://downloads.apache.org/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz
-  - tar xzvf apache-maven-3.8.4-bin.tar.gz
-  - export PATH=`pwd`/apache-maven-3.8.4/bin:$PATH
+  - "[[ -d $HOME/.sdkman/ ]] && [[ -d $HOME/.sdkman/bin/ ]] || rm -rf $HOME/.sdkman/"
+  - curl -s "https://get.sdkman.io" | bash
+  - mkdir -p "$HOME/.sdkman/etc/"
+  - echo sdkman_auto_answer=true > "$HOME/.sdkman/etc/config"
+  - echo sdkman_auto_selfupdate=true >> "$HOME/.sdkman/etc/config"
+  - source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+install:
+  - sdk install java $(sdk list java | grep -o "$JDK_VERSION\.[0-9]*\.[0-9]*\-open" | head -1)
+  - sdk install maven
+  - export JAVA_HOME="$HOME/.sdkman/candidates/java/current"
+  - export PATH=${JAVA_HOME}/bin:${PATH}
+  - export MAVEN_HOME="$HOME/.sdkman/candidates/maven/current"
+  - export M2_HOME="$MAVEN_HOME"
+  - export PATH=${M2_HOME}/bin:${PATH}
+  - env
   - mvn -v
+
 cache:
   directories:
-    - '$HOME/.m2/repository'
+    - $HOME/.m2/repository

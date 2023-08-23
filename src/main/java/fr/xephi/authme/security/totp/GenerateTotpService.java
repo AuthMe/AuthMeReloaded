@@ -6,6 +6,7 @@ import fr.xephi.authme.util.expiring.ExpiringMap;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -32,7 +33,7 @@ public class GenerateTotpService implements HasCleanup {
      */
     public TotpGenerationResult generateTotpKey(Player player) {
         TotpGenerationResult credentials = totpAuthenticator.generateTotpKey(player);
-        totpKeys.put(player.getName().toLowerCase(), credentials);
+        totpKeys.put(player.getName().toLowerCase(Locale.ROOT), credentials);
         return credentials;
     }
 
@@ -43,11 +44,11 @@ public class GenerateTotpService implements HasCleanup {
      * @return TOTP generation result
      */
     public TotpGenerationResult getGeneratedTotpKey(Player player) {
-        return totpKeys.get(player.getName().toLowerCase());
+        return totpKeys.get(player.getName().toLowerCase(Locale.ROOT));
     }
 
     public void removeGenerateTotpKey(Player player) {
-        totpKeys.remove(player.getName().toLowerCase());
+        totpKeys.remove(player.getName().toLowerCase(Locale.ROOT));
     }
 
     /**
@@ -58,7 +59,7 @@ public class GenerateTotpService implements HasCleanup {
      * @return true if the input code is correct, false if the code is invalid or no unexpired totp key is available
      */
     public boolean isTotpCodeCorrectForGeneratedTotpKey(Player player, String totpCode) {
-        TotpGenerationResult totpDetails = totpKeys.get(player.getName().toLowerCase());
+        TotpGenerationResult totpDetails = totpKeys.get(player.getName().toLowerCase(Locale.ROOT));
         return totpDetails != null && totpAuthenticator.checkCode(player.getName(), totpDetails.getTotpKey(), totpCode);
     }
 

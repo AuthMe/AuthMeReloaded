@@ -1,6 +1,7 @@
 package fr.xephi.authme.data.auth;
 
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,7 +21,7 @@ public class PlayerCache {
      * @param auth the player auth object to save
      */
     public void updatePlayer(PlayerAuth auth) {
-        cache.put(auth.getNickname().toLowerCase(), auth);
+        cache.put(auth.getNickname().toLowerCase(Locale.ROOT), auth);
     }
 
     /**
@@ -29,7 +30,7 @@ public class PlayerCache {
      * @param user name of the player to remove
      */
     public void removePlayer(String user) {
-        cache.remove(user.toLowerCase());
+        cache.remove(user.toLowerCase(Locale.ROOT));
     }
 
     /**
@@ -40,7 +41,7 @@ public class PlayerCache {
      * @return true if player is logged in, false otherwise.
      */
     public boolean isAuthenticated(String user) {
-        return cache.containsKey(user.toLowerCase());
+        return cache.containsKey(user.toLowerCase(Locale.ROOT));
     }
 
     /**
@@ -51,7 +52,7 @@ public class PlayerCache {
      * @return the associated auth object, or null if not available
      */
     public PlayerAuth getAuth(String user) {
-        return cache.get(user.toLowerCase());
+        return cache.get(user.toLowerCase(Locale.ROOT));
     }
 
     /**

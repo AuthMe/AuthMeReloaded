@@ -23,14 +23,14 @@ class HelpMessageAndHelpSectionConsistencyTest {
         // when / then
         for (HelpMessage message : HelpMessage.values()) {
             assertThat("Key for message '" + message + "' is empty",
-                StringUtils.isEmpty(message.getKey()), equalTo(false));
+                StringUtils.isBlank(message.getKey()), equalTo(false));
             if (!keys.add(message.getKey())) {
                 fail("Key for message '" + message + "' is already used elsewhere");
             }
         }
         for (HelpSection section : HelpSection.values()) {
             assertThat("Key for section '" + section + "' is empty",
-                StringUtils.isEmpty(section.getKey()), equalTo(false));
+                StringUtils.isBlank(section.getKey()), equalTo(false));
             if (!keys.add(section.getKey())) {
                 fail("Key for section '" + section + "' is already used elsewhere");
             }

@@ -11,6 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Locale;
+
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskAsynchronously;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskOptionallyAsync;
 import static java.util.Arrays.asList;
@@ -71,7 +73,7 @@ class PurgePlayerCommandTest {
 
         // then
         verify(dataSource).isAuthAvailable(name);
-        verify(purgeExecutor).executePurge(singletonList(player), singletonList(name.toLowerCase()));
+        verify(purgeExecutor).executePurge(singletonList(player), singletonList(name.toLowerCase(Locale.ROOT)));
     }
 
     @Test
@@ -87,6 +89,6 @@ class PurgePlayerCommandTest {
         command.executeCommand(sender, asList(name, "force"));
 
         // then
-        verify(purgeExecutor).executePurge(singletonList(player), singletonList(name.toLowerCase()));
+        verify(purgeExecutor).executePurge(singletonList(player), singletonList(name.toLowerCase(Locale.ROOT)));
     }
 }

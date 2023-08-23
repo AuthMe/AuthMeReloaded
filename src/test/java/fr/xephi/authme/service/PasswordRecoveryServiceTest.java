@@ -78,15 +78,15 @@ class PasswordRecoveryServiceTest {
     void shouldKeepTrackOfSuccessfulRecoversByIp() {
         // given
         Player bobby = mock(Player.class);
-        TestHelper.mockPlayerIp(bobby, "192.168.8.8");
+        TestHelper.mockIpAddressToPlayer(bobby, "192.168.8.8");
         given(bobby.getName()).willReturn("bobby");
 
         Player bobby2 = mock(Player.class);
-        TestHelper.mockPlayerIp(bobby2, "127.0.0.1");
+        TestHelper.mockIpAddressToPlayer(bobby2, "127.0.0.1");
         given(bobby2.getName()).willReturn("bobby");
 
         Player other = mock(Player.class);
-        TestHelper.mockPlayerIp(other, "192.168.8.8");
+        TestHelper.mockIpAddressToPlayer(other, "192.168.8.8");
         given(other.getName()).willReturn("other");
 
         // when
@@ -102,12 +102,12 @@ class PasswordRecoveryServiceTest {
     void shouldRemovePlayerFromSuccessfulRecovers() {
         // given
         Player bobby = mock(Player.class);
-        TestHelper.mockPlayerIp(bobby, "192.168.8.8");
+        TestHelper.mockIpAddressToPlayer(bobby, "192.168.8.8");
         given(bobby.getName()).willReturn("bobby");
         recoveryService.addSuccessfulRecovery(bobby);
 
         Player other = mock(Player.class);
-        TestHelper.mockPlayerIp(other, "8.8.8.8");
+        TestHelper.mockIpAddressToPlayer(other, "8.8.8.8");
         given(other.getName()).willReturn("other");
         recoveryService.addSuccessfulRecovery(other);
 

@@ -192,6 +192,12 @@
         <module name="MissingOverride"/>
         <module name="EqualsHashCode"/>
         <module name="EqualsAvoidNull"/>
+        <module name="Regexp">
+            <property name="format" value="\.to(Lower|Upper)Case\(\)"/>
+            <property name="illegalPattern" value="true"/>
+            <property name="ignoreComments" value="true"/>
+            <property name="message" value="Use toLowerCase/toUpperCase with Locale"/>
+        </module>
     </module>
     <module name="FileTabCharacter"/>
 </module>

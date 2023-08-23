@@ -6,6 +6,7 @@ import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.properties.convertresult.PropertyValue;
 import ch.jalu.configme.resource.PropertyReader;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.output.LogLevel;
@@ -65,10 +66,10 @@ public class SettingsMigrationService extends PlainMigrationService {
             configurationData.setValue(ALLOWED_NICKNAME_CHARACTERS, "[a-zA-Z0-9_]*");
             changes = true;
         }
-        String driverClass = reader.getString(DatabaseSettings.MYSQL_DRIVER_CLASS_NAME.getPath());
-        if ("com.mysql.jdbc.Driver".equals(driverClass) || "com.mysql.cj.jdbc.Driver".equals(driverClass)) {
-            configurationData.setValue(DatabaseSettings.MYSQL_DRIVER_CLASS_NAME,
-                DatabaseSettings.MYSQL_DRIVER_CLASS_NAME.getDefaultValue());
+
+        String driverClass = reader.getString("DataSource.mySQLDriverClassName");
+        if ("fr.xephi.authme.libs.org.mariadb.jdbc.Driver".equals(driverClass)) {
+            configurationData.setValue(DatabaseSettings.BACKEND, DataSourceType.MARIADB);
             changes = true;
         }
 
@@ -100,7 +101,7 @@ public class SettingsMigrationService extends PlainMigrationService {
             "settings.restrictions.keepCollisionsDisabled", "settings.forceCommands", "settings.forceCommandsAsConsole",
             "settings.forceRegisterCommands", "settings.forceRegisterCommandsAsConsole",
             "settings.sessions.sessionExpireOnIpChange", "settings.restrictions.otherAccountsCmd",
-            "settings.restrictions.otherAccountsCmdThreshold"};
+            "settings.restrictions.otherAccountsCmdThreshold, DataSource.mySQLDriverClassName"};
         for (String deprecatedPath : deprecatedProperties) {
             if (reader.contains(deprecatedPath)) {
                 return true;
@@ -113,7 +114,7 @@ public class SettingsMigrationService extends PlainMigrationService {
     // Old other accounts
     // --------
     public boolean hasOldOtherAccountsCommand() {
-        return !StringUtils.isEmpty(oldOtherAccountsCommand);
+        return !StringUtils.isBlank(oldOtherAccountsCommand);
     }
 
     public String getOldOtherAccountsCommand() {

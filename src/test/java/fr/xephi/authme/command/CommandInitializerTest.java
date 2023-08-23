@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -90,7 +91,7 @@ class CommandInitializerTest {
             @Override
             public void accept(CommandDescription command, Integer depth) {
                 for (String label : command.getLabels()) {
-                    if (!label.equals(label.toLowerCase())) {
+                    if (!label.equals(label.toLowerCase(Locale.ROOT))) {
                         fail("Label '" + label + "' should be lowercase");
                     } else if (invalidPattern.matcher(label).matches()) {
                         fail("Label '" + label + "' has whitespace");
@@ -137,11 +138,11 @@ class CommandInitializerTest {
                 String forCommandText = " for command with labels '" + command.getLabels() + "'";
 
                 assertThat("has description" + forCommandText,
-                    StringUtils.isEmpty(command.getDescription()), equalTo(false));
+                    StringUtils.isBlank(command.getDescription()), equalTo(false));
                 assertThat("short description doesn't end in '.'" + forCommandText,
                     command.getDescription().endsWith("."), equalTo(false));
                 assertThat("has detailed description" + forCommandText,
-                    StringUtils.isEmpty(command.getDetailedDescription()), equalTo(false));
+                    StringUtils.isBlank(command.getDetailedDescription()), equalTo(false));
                 assertThat("detailed description ends in '.'" + forCommandText,
                     command.getDetailedDescription().endsWith("."), equalTo(true));
             }

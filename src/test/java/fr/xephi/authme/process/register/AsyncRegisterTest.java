@@ -128,7 +128,7 @@ class AsyncRegisterTest {
         // given
         String name = "edbert";
         Player player = mockPlayerWithName(name);
-        TestHelper.mockPlayerIp(player, "33.44.55.66");
+        TestHelper.mockIpAddressToPlayer(player, "33.44.55.66");
         given(playerCache.isAuthenticated(name)).willReturn(false);
         given(commonService.getProperty(RegistrationSettings.IS_ENABLED)).willReturn(true);
         given(commonService.getProperty(RestrictionSettings.MAX_REGISTRATION_PER_IP)).willReturn(0);

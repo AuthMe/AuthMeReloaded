@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 import static fr.xephi.authme.AuthMeMatchers.equalToHash;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -118,7 +119,7 @@ class MigrationServiceTest {
     private static void setSha256MockToUppercase(Sha256 sha256) {
         given(sha256.computeHash(anyString(), anyString())).willAnswer(invocation -> {
             String plainPassword = invocation.getArgument(0);
-            return new HashedPassword(plainPassword.toUpperCase(), null);
+            return new HashedPassword(plainPassword.toUpperCase(Locale.ROOT), null);
         });
     }
 }

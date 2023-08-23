@@ -52,6 +52,7 @@ import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.InventoryView;
 
 import javax.inject.Inject;
+import java.util.Locale;
 import java.util.Set;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOWED_MOVEMENT_RADIUS;
@@ -214,7 +215,7 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        String name = player.getName().toLowerCase();
+        String name = player.getName().toLowerCase(Locale.ROOT);
         String joinMsg = event.getJoinMessage();
 
         // Remove the join message while the player isn't logging in
@@ -292,7 +293,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        String cmd = event.getMessage().split(" ")[0].toLowerCase();
+        String cmd = event.getMessage().split(" ")[0].toLowerCase(Locale.ROOT);
         if (settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD) && "/motd".equals(cmd)) {
             return;
         }
@@ -482,7 +483,7 @@ public class PlayerListener implements Listener {
             return false;
         }
         Set<String> whitelist = settings.getProperty(RestrictionSettings.UNRESTRICTED_INVENTORIES);
-        return whitelist.contains(ChatColor.stripColor(inventory.getTitle()).toLowerCase());
+        return whitelist.contains(ChatColor.stripColor(inventory.getTitle()).toLowerCase(Locale.ROOT));
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)

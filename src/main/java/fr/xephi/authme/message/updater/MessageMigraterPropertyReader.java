@@ -4,13 +4,13 @@ import ch.jalu.configme.exception.ConfigMeException;
 import ch.jalu.configme.resource.PropertyReader;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +36,8 @@ final class MessageMigraterPropertyReader implements PropertyReader {
      * @param file the file to load
      * @return the created property reader
      */
-    public static MessageMigraterPropertyReader loadFromFile(File file) {
-        try (InputStream is = new FileInputStream(file)) {
+    public static MessageMigraterPropertyReader loadFromFile(Path file) {
+        try (InputStream is = Files.newInputStream(file)) {
             return loadFromStream(is);
         } catch (IOException e) {
             throw new IllegalStateException("Error while reading file '" + file + "'", e);

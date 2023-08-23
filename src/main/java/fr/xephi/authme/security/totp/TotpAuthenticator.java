@@ -15,6 +15,8 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 
+import java.util.Locale;
+
 import static fr.xephi.authme.util.Utils.MILLIS_PER_MINUTE;
 
 /**
@@ -54,7 +56,7 @@ public class TotpAuthenticator implements HasCleanup {
      * @return true if code is valid, false otherwise
      */
     public boolean checkCode(String playerName, String totpKey, String inputCode) {
-        String nameLower = playerName.toLowerCase();
+        String nameLower = playerName.toLowerCase(Locale.ROOT);
         Integer totpCode = Ints.tryParse(inputCode);
         if (totpCode != null && !usedCodes.contains(nameLower, totpCode)
             && authenticator.authorize(totpKey, totpCode)) {

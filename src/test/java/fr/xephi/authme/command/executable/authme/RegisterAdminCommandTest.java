@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskOptionallyAsync;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask;
@@ -179,7 +180,7 @@ class RegisterAdminCommandTest {
 
     private void assertAuthHasInfo(PlayerAuth auth, String name, HashedPassword hashedPassword) {
         assertThat(auth.getRealName(), equalTo(name));
-        assertThat(auth.getNickname(), equalTo(name.toLowerCase()));
+        assertThat(auth.getNickname(), equalTo(name.toLowerCase(Locale.ROOT)));
         assertThat(auth.getPassword(), equalTo(hashedPassword));
     }
 }

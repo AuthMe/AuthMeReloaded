@@ -7,6 +7,8 @@ import fr.xephi.authme.security.crypts.description.SaltType;
 import fr.xephi.authme.security.crypts.description.Usage;
 import fr.xephi.authme.util.RandomStringUtils;
 
+import java.util.Locale;
+
 import static fr.xephi.authme.security.HashUtils.isEqual;
 
 /**
@@ -29,7 +31,7 @@ public class Smf implements EncryptionMethod {
 
     @Override
     public String computeHash(String password, String salt, String name) {
-        return HashUtils.sha1(name.toLowerCase() + password);
+        return HashUtils.sha1(name.toLowerCase(Locale.ROOT) + password);
     }
 
     @Override

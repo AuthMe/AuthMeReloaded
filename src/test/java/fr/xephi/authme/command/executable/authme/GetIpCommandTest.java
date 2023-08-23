@@ -100,7 +100,7 @@ class GetIpCommandTest {
     private static Player mockPlayer(String name, String ip) {
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
-        TestHelper.mockPlayerIp(player, ip);
+        TestHelper.mockIpAddressToPlayer(player, ip);
         return player;
     }
 }

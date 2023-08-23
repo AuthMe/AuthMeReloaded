@@ -11,12 +11,11 @@ import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
-import fr.xephi.authme.service.bungeecord.BungeeSender;
-import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.util.Locale;
 
 /**
  * Async task to add an email to an account.
@@ -38,9 +37,6 @@ public class AsyncAddEmail implements AsynchronousProcess {
     private ValidationService validationService;
 
     @Inject
-    private BungeeSender bungeeSender;
-
-    @Inject
     private BukkitService bukkitService;
 
     AsyncAddEmail() {
@@ -53,11 +49,11 @@ public class AsyncAddEmail implements AsynchronousProcess {
      * @param email the email to add
      */
     public void addEmail(Player player, String email) {
-        String playerName = player.getName().toLowerCase();
+        String playerName = player.getName().toLowerCase(Locale.ROOT);
 
         if (playerCache.isAuthenticated(playerName)) {
             PlayerAuth auth = playerCache.getAuth(playerName);
-            final String currentEmail = auth.getEmail();
+            String currentEmail = auth.getEmail();
 
             if (!Utils.isEmailEmpty(currentEmail)) {
                 service.send(player, MessageKey.USAGE_CHANGE_EMAIL);
@@ -76,7 +72,7 @@ public class AsyncAddEmail implements AsynchronousProcess {
                 auth.setEmail(email);
                 if (dataSource.updateEmail(auth)) {
                     playerCache.updatePlayer(auth);
-                    bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_EMAIL, playerName);
+                    // TODO: send an update when a messaging service will be implemented (ADD_MAIL)
                     service.send(player, MessageKey.EMAIL_ADDED_SUCCESS);
                 } else {
                     logger.warning("Could not save email for player '" + player + "'");

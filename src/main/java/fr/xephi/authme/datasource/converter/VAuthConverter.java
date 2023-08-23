@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -48,12 +49,12 @@ public class VAuthConverter implements Converter {
                         continue;
                     }
                     auth = PlayerAuth.builder()
-                        .name(pname.toLowerCase())
+                        .name(pname.toLowerCase(Locale.ROOT))
                         .realName(pname)
                         .password(password, null).build();
                 } else {
                     auth = PlayerAuth.builder()
-                        .name(name.toLowerCase())
+                        .name(name.toLowerCase(Locale.ROOT))
                         .realName(name)
                         .password(password, null).build();
                 }

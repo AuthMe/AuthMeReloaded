@@ -13,6 +13,7 @@ import org.bukkit.plugin.PluginManager;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Collection;
+import java.util.Locale;
 
 /**
  * Manager class for password-related operations.
@@ -54,7 +55,7 @@ public class PasswordSecurity implements Reloadable {
      * @return The password hash
      */
     public HashedPassword computeHash(String password, String playerName) {
-        String playerLowerCase = playerName.toLowerCase();
+        String playerLowerCase = playerName.toLowerCase(Locale.ROOT);
         return encryptionMethod.computeHash(password, playerLowerCase);
     }
 
@@ -81,7 +82,7 @@ public class PasswordSecurity implements Reloadable {
      * @return True if the password matches, false otherwise
      */
     public boolean comparePassword(String password, HashedPassword hashedPassword, String playerName) {
-        String playerLowerCase = playerName.toLowerCase();
+        String playerLowerCase = playerName.toLowerCase(Locale.ROOT);
         return methodMatches(encryptionMethod, password, hashedPassword, playerLowerCase)
             || compareWithLegacyHashes(password, hashedPassword, playerLowerCase);
     }

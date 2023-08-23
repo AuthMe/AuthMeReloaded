@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Locale;
 
 /**
  * Converter for CrazyLogin to AuthMe.
@@ -70,7 +71,7 @@ public class CrazyLoginConverter implements Converter {
         String password = args[1];
         if (password != null) {
             PlayerAuth auth = PlayerAuth.builder()
-                .name(playerName.toLowerCase())
+                .name(playerName.toLowerCase(Locale.ROOT))
                 .realName(playerName)
                 .password(password, null)
                 .build();

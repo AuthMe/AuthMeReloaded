@@ -3,6 +3,7 @@ package fr.xephi.authme.data.captcha;
 import fr.xephi.authme.util.RandomStringUtils;
 import fr.xephi.authme.util.expiring.ExpiringMap;
 
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -51,7 +52,7 @@ public class CaptchaCodeStorage {
      * @return the code the player is required to enter
      */
     public String getCodeOrGenerateNew(String name) {
-        String code = captchaCodes.get(name.toLowerCase());
+        String code = captchaCodes.get(name.toLowerCase(Locale.ROOT));
         return code == null ? generateCode(name) : code;
     }
 
@@ -63,7 +64,7 @@ public class CaptchaCodeStorage {
      */
     private String generateCode(String name) {
         String code = RandomStringUtils.generate(captchaLength);
-        captchaCodes.put(name.toLowerCase(), code);
+        captchaCodes.put(name.toLowerCase(Locale.ROOT), code);
         return code;
     }
 
@@ -76,7 +77,7 @@ public class CaptchaCodeStorage {
      * @return true if the code matches, false otherwise
      */
     public boolean checkCode(String name, String code) {
-        String nameLowerCase = name.toLowerCase();
+        String nameLowerCase = name.toLowerCase(Locale.ROOT);
         String savedCode = captchaCodes.get(nameLowerCase);
         if (savedCode != null && savedCode.equalsIgnoreCase(code)) {
             captchaCodes.remove(nameLowerCase);

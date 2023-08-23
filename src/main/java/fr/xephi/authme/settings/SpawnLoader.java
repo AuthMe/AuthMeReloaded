@@ -19,6 +19,7 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 /**
  * Manager for spawn points. It loads spawn definitions from AuthMe and third-party plugins
@@ -177,7 +178,7 @@ public class SpawnLoader implements Reloadable {
         World world = player.getWorld();
         Location spawnLoc = null;
         for (String priority : spawnPriority) {
-            switch (priority.toLowerCase().trim()) {
+            switch (priority.toLowerCase(Locale.ROOT).trim()) {
                 case "default":
                     if (world.getSpawnLocation() != null) {
                         if (!isValidSpawnPoint(world.getSpawnLocation())) {
@@ -292,7 +293,7 @@ public class SpawnLoader implements Reloadable {
             String prefix = pathPrefix + ".";
             String worldName = configuration.getString(prefix + "world");
             World world = Bukkit.getWorld(worldName);
-            if (!StringUtils.isEmpty(worldName) && world != null) {
+            if (!StringUtils.isBlank(worldName) && world != null) {
                 return new Location(world, configuration.getDouble(prefix + "x"),
                     configuration.getDouble(prefix + "y"), configuration.getDouble(prefix + "z"),
                     getFloat(configuration, prefix + "yaw"), getFloat(configuration, prefix + "pitch"));
@@ -314,7 +315,7 @@ public class SpawnLoader implements Reloadable {
             String prefix = pathPrefix + ".";
             String worldName = configuration.getString(prefix + "World");
             World world = Bukkit.getWorld(worldName);
-            if (!StringUtils.isEmpty(worldName) && world != null) {
+            if (!StringUtils.isBlank(worldName) && world != null) {
                 return new Location(world, configuration.getDouble(prefix + "X"),
                     configuration.getDouble(prefix + "Y"), configuration.getDouble(prefix + "Z"),
                     getFloat(configuration, prefix + "Yaw"), getFloat(configuration, prefix + "Pitch"));

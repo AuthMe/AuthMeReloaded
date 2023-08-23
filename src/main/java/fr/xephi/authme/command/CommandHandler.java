@@ -131,7 +131,7 @@ public class CommandHandler {
     private static List<String> skipEmptyArguments(String[] args) {
         List<String> cleanArguments = new ArrayList<>();
         for (String argument : args) {
-            if (!StringUtils.isEmpty(argument)) {
+            if (!StringUtils.isBlank(argument)) {
                 cleanArguments.add(argument);
             }
         }

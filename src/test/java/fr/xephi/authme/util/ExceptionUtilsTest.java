@@ -40,10 +40,10 @@ class ExceptionUtilsTest {
     @Test
     void shouldHandleCircularCausesGracefully() {
         // given
-        IllegalStateException ise = new IllegalStateException();
-        UnsupportedOperationException uoe = new UnsupportedOperationException(ise);
+        ExceptionWithSettableCause exceptionWithSettableCause = new ExceptionWithSettableCause();
+        UnsupportedOperationException uoe = new UnsupportedOperationException(exceptionWithSettableCause);
         ReflectiveOperationException roe = new ReflectiveOperationException(uoe);
-        ReflectionTestUtils.setField(Throwable.class, ise, "cause", roe);
+        exceptionWithSettableCause.cause = roe;
 
         // when
         NullPointerException resultNpe = ExceptionUtils.findThrowableInCause(NullPointerException.class, uoe);
@@ -64,5 +64,15 @@ class ExceptionUtilsTest {
 
         // then
         assertThat(result, equalTo("[MalformedURLException]: Unrecognized URL format"));
+    }
+
+    private static final class ExceptionWithSettableCause extends Exception {
+
+        Exception cause;
+
+        @Override
+        public synchronized Throwable getCause() {
+            return cause;
+        }
     }
 }

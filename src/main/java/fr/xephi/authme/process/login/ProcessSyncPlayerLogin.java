@@ -22,6 +22,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Locale;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 
@@ -76,7 +77,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
      * @param authsWithSameIp registered names with the same IP address as the player's
      */
     public void processPlayerLogin(Player player, boolean isFirstLogin, List<String> authsWithSameIp) {
-        final String name = player.getName().toLowerCase();
+        final String name = player.getName().toLowerCase(Locale.ROOT);
         final LimboPlayer limbo = limboService.getLimboPlayer(name);
 
         // Limbo contains the State of the Player before /login

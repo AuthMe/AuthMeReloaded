@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,7 +56,7 @@ public class LimboService {
      * @param isRegistered whether or not the player is registered
      */
     public void createLimboPlayer(Player player, boolean isRegistered) {
-        final String name = player.getName().toLowerCase();
+        final String name = player.getName().toLowerCase(Locale.ROOT);
 
         LimboPlayer limboFromDisk = persistence.getLimboPlayer(player);
         if (limboFromDisk != null) {
@@ -89,7 +90,7 @@ public class LimboService {
      * @return the associated limbo player, or null if none available
      */
     public LimboPlayer getLimboPlayer(String name) {
-        return entries.get(name.toLowerCase());
+        return entries.get(name.toLowerCase(Locale.ROOT));
     }
 
     /**
@@ -99,7 +100,7 @@ public class LimboService {
      * @return true if present, false otherwise
      */
     public boolean hasLimboPlayer(String name) {
-        return entries.containsKey(name.toLowerCase());
+        return entries.containsKey(name.toLowerCase(Locale.ROOT));
     }
 
     /**
@@ -111,7 +112,7 @@ public class LimboService {
      * @param player the player whose data should be restored
      */
     public void restoreData(Player player) {
-        String lowerName = player.getName().toLowerCase();
+        String lowerName = player.getName().toLowerCase(Locale.ROOT);
         LimboPlayer limbo = entries.remove(lowerName);
 
         if (limbo == null) {
@@ -178,7 +179,7 @@ public class LimboService {
      * @return Optional with the limbo player
      */
     private Optional<LimboPlayer> getLimboOrLogError(Player player, String context) {
-        LimboPlayer limbo = entries.get(player.getName().toLowerCase());
+        LimboPlayer limbo = entries.get(player.getName().toLowerCase(Locale.ROOT));
         if (limbo == null) {
             logger.debug("No LimboPlayer found for `{0}`. Action: {1}", player.getName(), context);
         }

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -39,11 +40,11 @@ public class MySQL extends AbstractSqlDataSource {
 
     private boolean useSsl;
     private boolean serverCertificateVerification;
+    private boolean allowPublicKeyRetrieval;
     private String host;
     private String port;
     private String username;
     private String password;
-    private String className;
     private String database;
     private String tableName;
     private int poolSize;
@@ -90,6 +91,15 @@ public class MySQL extends AbstractSqlDataSource {
     }
 
     /**
+     * Returns the path of the Driver class to use when connecting to the database.
+     *
+     * @return the dotted path of the SQL driver class to be used
+     */
+    protected String getDriverClassName() {
+        return "com.mysql.cj.jdbc.Driver";
+    }
+
+    /**
      * Retrieves various settings.
      *
      * @param settings the settings to read properties from
@@ -100,14 +110,6 @@ public class MySQL extends AbstractSqlDataSource {
         this.port = settings.getProperty(DatabaseSettings.MYSQL_PORT);
         this.username = settings.getProperty(DatabaseSettings.MYSQL_USERNAME);
         this.password = settings.getProperty(DatabaseSettings.MYSQL_PASSWORD);
-        this.className = settings.getProperty(DatabaseSettings.MYSQL_DRIVER_CLASS_NAME);
-        try {
-            Class.forName(this.className);
-        } catch (ClassNotFoundException e) {
-            this.className = DatabaseSettings.MYSQL_DRIVER_CLASS_NAME.getDefaultValue();
-            logger.info("Driver class '" + this.className + "' not found! Falling back to the built-in MySQL driver ("
-                + this.className + ")");
-        }
         this.database = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
         this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
         this.columnOthers = settings.getProperty(HooksSettings.MYSQL_OTHER_USERNAME_COLS);
@@ -118,6 +120,7 @@ public class MySQL extends AbstractSqlDataSource {
         this.maxLifetime = settings.getProperty(DatabaseSettings.MYSQL_CONNECTION_MAX_LIFETIME);
         this.useSsl = settings.getProperty(DatabaseSettings.MYSQL_USE_SSL);
         this.serverCertificateVerification = settings.getProperty(DatabaseSettings.MYSQL_CHECK_SERVER_CERTIFICATE);
+        this.allowPublicKeyRetrieval = settings.getProperty(DatabaseSettings.MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL);
     }
 
     /**
@@ -132,14 +135,14 @@ public class MySQL extends AbstractSqlDataSource {
         ds.setMaxLifetime(maxLifetime * 1000L);
 
         // Database URL
-        ds.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
+        ds.setJdbcUrl(this.getJdbcUrl(this.host, this.port, this.database));
 
         // Auth
         ds.setUsername(this.username);
         ds.setPassword(this.password);
         
         // Driver
-        ds.setDriverClassName(this.className);
+        ds.setDriverClassName(this.getDriverClassName());
 
         // Request mysql over SSL
         ds.addDataSourceProperty("useSSL", String.valueOf(useSsl));
@@ -147,6 +150,9 @@ public class MySQL extends AbstractSqlDataSource {
         // Disabling server certificate verification on need
         if (!serverCertificateVerification) {
             ds.addDataSourceProperty("verifyServerCertificate", String.valueOf(false));
+        }        // Disabling server certificate verification on need
+        if (allowPublicKeyRetrieval) {
+            ds.addDataSourceProperty("allowPublicKeyRetrieval", String.valueOf(true));
         }
 
         // Encoding
@@ -294,7 +300,7 @@ public class MySQL extends AbstractSqlDataSource {
     }
 
     private boolean isColumnMissing(DatabaseMetaData metaData, String columnName) throws SQLException {
-        try (ResultSet rs = metaData.getColumns(null, null, tableName, columnName)) {
+        try (ResultSet rs = metaData.getColumns(database, null, tableName, columnName)) {
             return !rs.next();
         }
     }
@@ -304,7 +310,7 @@ public class MySQL extends AbstractSqlDataSource {
         String sql = "SELECT * FROM " + tableName + " WHERE " + col.NAME + "=?;";
         PlayerAuth auth;
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, user.toLowerCase());
+            pst.setString(1, user.toLowerCase(Locale.ROOT));
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     int id = rs.getInt(col.ID);
@@ -344,6 +350,11 @@ public class MySQL extends AbstractSqlDataSource {
     }
 
     @Override
+    String getJdbcUrl(String host, String port, String database) {
+        return "jdbc:mysql://" + host + ":" + port + "/" + database;
+    }
+
+    @Override
     public Set<String> getRecordsToPurge(long until) {
         Set<String> list = new HashSet<>();
         String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE GREATEST("
@@ -367,11 +378,11 @@ public class MySQL extends AbstractSqlDataSource {
 
     @Override
     public boolean removeAuth(String user) {
-        user = user.toLowerCase();
+        user = user.toLowerCase(Locale.ROOT);
         String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             sqlExtension.removeAuth(user, con);
-            pst.setString(1, user.toLowerCase());
+            pst.setString(1, user.toLowerCase(Locale.ROOT));
             pst.executeUpdate();
             return true;
         } catch (SQLException ex) {
@@ -392,7 +403,7 @@ public class MySQL extends AbstractSqlDataSource {
         String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             for (String name : toPurge) {
-                pst.setString(1, name.toLowerCase());
+                pst.setString(1, name.toLowerCase(Locale.ROOT));
                 pst.executeUpdate();
             }
         } catch (SQLException ex) {
@@ -460,7 +471,7 @@ public class MySQL extends AbstractSqlDataSource {
         String sql = "UPDATE " + tableName + " SET " + col.TOTP_KEY + " = ? WHERE " + col.NAME + " = ?";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, totpKey);
-            pst.setString(2, user.toLowerCase());
+            pst.setString(2, user.toLowerCase(Locale.ROOT));
             pst.executeUpdate();
             return true;
         } catch (SQLException e) {

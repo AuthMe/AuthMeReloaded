@@ -3,6 +3,7 @@ package fr.xephi.authme.data.auth;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import org.bukkit.Location;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -54,7 +55,7 @@ public class PlayerAuth {
 
 
     public void setNickname(String nickname) {
-        this.nickname = nickname.toLowerCase();
+        this.nickname = nickname.toLowerCase(Locale.ROOT);
     }
 
     public String getNickname() {
@@ -239,7 +240,7 @@ public class PlayerAuth {
          */
         public PlayerAuth build() {
             PlayerAuth auth = new PlayerAuth();
-            auth.nickname = checkNotNull(name).toLowerCase();
+            auth.nickname = checkNotNull(name).toLowerCase(Locale.ROOT);
             auth.realName = Optional.ofNullable(realName).orElse("Player");
             auth.password = Optional.ofNullable(password).orElse(new HashedPassword(""));
             auth.totpKey = totpKey;

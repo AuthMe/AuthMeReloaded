@@ -14,11 +14,11 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.TeleportationService;
-import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -70,8 +70,8 @@ public class AsynchronousUnregister implements AsynchronousProcess {
      * @param password the input password to check before unregister
      */
     public void unregister(Player player, String password) {
-        final String name = player.getName();
-        final PlayerAuth cachedAuth = playerCache.getAuth(name);
+        String name = player.getName();
+        PlayerAuth cachedAuth = playerCache.getAuth(name);
         if (passwordSecurity.comparePassword(password, cachedAuth.getPassword(), name)) {
             if (dataSource.removeAuth(name)) {
                 performPostUnregisterActions(name, player);
@@ -117,8 +117,12 @@ public class AsynchronousUnregister implements AsynchronousProcess {
      * @param player the according Player object (nullable)
      */
     private void performPostUnregisterActions(String name, Player player) {
+        if (player != null && playerCache.isAuthenticated(name)) {
+            bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.LOGOUT);
+        }
         playerCache.removePlayer(name);
-        bungeeSender.sendAuthMeBungeecordMessage(MessageType.UNREGISTER, name);
+
+        // TODO: send an update when a messaging service will be implemented (UNREGISTER)
 
         if (player == null || !player.isOnline()) {
             return;
@@ -137,7 +141,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
         service.send(player, MessageKey.UNREGISTERED_SUCCESS);
     }
 
-    private void applyBlindEffect(final Player player) {
+    private void applyBlindEffect(Player player) {
         if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
             int timeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeout, 2));

@@ -6,8 +6,6 @@ import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.ValidationService;
-import fr.xephi.authme.service.bungeecord.BungeeSender;
-import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -16,6 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.util.Locale;
 
 /**
  * Saves all players' data when the plugin shuts down.
@@ -36,8 +35,6 @@ public class OnShutdownPlayerSaver {
     private PlayerCache playerCache;
     @Inject
     private LimboService limboService;
-    @Inject
-    private BungeeSender bungeeSender;
 
     OnShutdownPlayerSaver() {
     }
@@ -52,7 +49,7 @@ public class OnShutdownPlayerSaver {
     }
 
     private void savePlayer(Player player) {
-        final String name = player.getName().toLowerCase();
+        String name = player.getName().toLowerCase(Locale.ROOT);
         if (PlayerUtils.isNpc(player) || validationService.isUnrestricted(name)) {
             return;
         }
@@ -67,12 +64,12 @@ public class OnShutdownPlayerSaver {
     private void saveLoggedinPlayer(Player player) {
         if (settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
             Location loc = spawnLoader.getPlayerLocationOrSpawn(player);
-            final PlayerAuth auth = PlayerAuth.builder()
-                .name(player.getName().toLowerCase())
+            PlayerAuth auth = PlayerAuth.builder()
+                .name(player.getName().toLowerCase(Locale.ROOT))
                 .realName(player.getName())
                 .location(loc).build();
             dataSource.updateQuitLoc(auth);
-            bungeeSender.sendAuthMeBungeecordMessage(MessageType.REFRESH_QUITLOC, player.getName());
+            // TODO: send an update when a messaging service will be implemented (QUITLOC)
         }
     }
 }

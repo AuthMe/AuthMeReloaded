@@ -5,13 +5,13 @@
 
 # Registration
 registration:
+    disabled: '&cRegistracija v igri je onemogočena!'
+    name_taken: '&cTo uporabniško ime ste ze registrirali!'
     register_request: '&3Registrirajte se z ukazom "/register <geslo> <PotrdiGeslo>"'
     command_usage: '&cUporaba: /register <geslo> <PotrdiGeslo>'
     reg_only: '&4Samo registrirani uporabniki se lahko povezejo! Obiscite http://example.com , da se registrirate!'
-    kicked_admin_registered: 'Administrator vas je registriral; prosimo, da se prijavite.'
     success: '&2Uspešno registriran!'
-    disabled: '&cRegistracija v igri je onemogočena!'
-    name_taken: '&cTo uporabniško ime ste ze registrirali!'
+    kicked_admin_registered: 'Administrator vas je registriral; prosimo, da se prijavite.'
 
 # Password errors on registration
 password:
@@ -40,6 +40,7 @@ error:
     max_registration: '&cPresegli ste največjo stevilo registracij (%reg_count/%max_acc %reg_names) za vašo povezavo!'
     logged_in: '&cSte že povezani!'
     kick_for_vip: '&3VIP igralec se je pridruzil serverju, ko je bil poln!'
+    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
     tempban_max_logins: '&cBil si začasno izločen zaradi preveč neuspešnih prijav.'
 
 # AntiBot
@@ -131,6 +132,17 @@ verification:
     code_expired: '&3Your code has expired! Execute another sensitive command to get a new code!'
     email_needed: '&3To verify your identity you need to link an email address with your account!'
 
+# Time units
+time:
+    second: 'sekunda'
+    seconds: 'sekund'
+    minute: 'minuta'
+    minutes: 'minut'
+    hour: 'ur'
+    hours: 'ure'
+    day: 'dan'
+    days: 'dni'
+
 # Two-factor authentication
 two_factor:
     code_created: '&2Vasa skrivna koda je %code. Lahko je skenirate tu %url!'
@@ -143,15 +155,3 @@ two_factor:
     not_enabled_error: 'Dvo stopična prijava ni vključena za vaš račun. Uporabite /2fa add'
     removed_success: 'Usprešno ste odstranili dvo stopično prijavo za vaš račun.'
     invalid_code: 'Nepravilna koda!'
-
-# Time units
-time:
-    second: 'sekunda'
-    seconds: 'sekund'
-    minute: 'minuta'
-    minutes: 'minut'
-    hour: 'ur'
-    hours: 'ure'
-    day: 'dan'
-    days: 'dni'
-    

@@ -25,7 +25,7 @@ class PlayerUtilsTest {
         // given
         Player player = mock(Player.class);
         String ip = "124.86.248.62";
-        TestHelper.mockPlayerIp(player, ip);
+        TestHelper.mockIpAddressToPlayer(player, ip);
 
         // when
         String result = PlayerUtils.getPlayerIp(player);
