@@ -24,6 +24,7 @@ import fr.xephi.authme.security.crypts.Sha256;
 import fr.xephi.authme.service.BackupService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.MigrationService;
+import fr.xephi.authme.service.SpectateLoginService;
 import fr.xephi.authme.service.bungeecord.BungeeReceiver;
 import fr.xephi.authme.service.yaml.YamlParseException;
 import fr.xephi.authme.settings.Settings;
@@ -69,6 +70,7 @@ public class AuthMe extends JavaPlugin {
     private Injector injector;
     private BackupService backupService;
     private ConsoleLogger logger;
+    private SpectateLoginService spectateLoginService;
 
     /**
      * Constructor.
@@ -246,6 +248,7 @@ public class AuthMe extends JavaPlugin {
         bukkitService = injector.getSingleton(BukkitService.class);
         commandHandler = injector.getSingleton(CommandHandler.class);
         backupService = injector.getSingleton(BackupService.class);
+        spectateLoginService = injector.getSingleton(SpectateLoginService.class);
 
         // Trigger instantiation (class not used elsewhere)
         injector.getSingleton(BungeeReceiver.class);
@@ -315,6 +318,8 @@ public class AuthMe extends JavaPlugin {
 
         // Wait for tasks and close data source
         new TaskCloser(this, database).run();
+
+        spectateLoginService.removeArmorstands();
 
         // Disabled correctly
         Consumer<String> infoLogMethod = logger == null ? getLogger()::info : logger::info;

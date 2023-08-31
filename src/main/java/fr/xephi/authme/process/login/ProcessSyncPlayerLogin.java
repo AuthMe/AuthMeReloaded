@@ -12,11 +12,13 @@ import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.JoinMessageService;
+import fr.xephi.authme.service.SpectateLoginService;
 import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.settings.WelcomeMessageConfiguration;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
+import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
@@ -58,6 +60,9 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
     @Inject
     private PermissionsManager permissionsManager;
 
+    @Inject
+    private SpectateLoginService spectateLoginService;
+
     ProcessSyncPlayerLogin() {
     }
 
@@ -97,6 +102,11 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
         if (commonService.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
             player.removePotionEffect(PotionEffectType.BLINDNESS);
+        }
+
+        if (commonService.getProperty(RestrictionSettings.SPECTATE_STAND_LOGIN)
+            || spectateLoginService.hasStand(player)) {
+            spectateLoginService.removeStand(player);
         }
 
         // The Login event now fires (as intended) after everything is processed
