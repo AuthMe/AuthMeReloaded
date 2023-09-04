@@ -201,11 +201,11 @@ public final class RestrictionSettings implements SettingsHolder {
     public static final Property<Boolean> SPECTATE_STAND_LOGIN =
         newProperty("settings.restrictions.spectateStandLogin.enabled", false);
 
-    @Comment("Head Yaw position for 'spectateStandLogin'.")
+    @Comment("Head Yaw position (rotation of X head) for 'spectateStandLogin'.")
     public static final Property<Double> HEAD_YAW =
         newProperty("settings.restrictions.spectateStandLogin.headYaw", 0.0f);
 
-    @Comment("Head Pitch position for 'spectateStandLogin'.")
+    @Comment("Head Pitch position (rotation of Y head) for 'spectateStandLogin'.")
     public static final Property<Double> HEAD_PITCH =
         newProperty("settings.restrictions.spectateStandLogin.headPitch", 0.0f);
 

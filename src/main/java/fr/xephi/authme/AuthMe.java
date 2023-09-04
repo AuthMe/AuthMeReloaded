@@ -319,7 +319,7 @@ public class AuthMe extends JavaPlugin {
         // Wait for tasks and close data source
         new TaskCloser(this, database).run();
 
-        spectateLoginService.removeArmorstands();
+        injector.createIfHasDependencies(SpectateLoginService.class).removeArmorstands();
 
         // Disabled correctly
         Consumer<String> infoLogMethod = logger == null ? getLogger()::info : logger::info;

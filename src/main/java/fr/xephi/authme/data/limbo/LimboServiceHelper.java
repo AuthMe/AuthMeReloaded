@@ -6,6 +6,7 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.LimboSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -44,6 +45,7 @@ class LimboServiceHelper {
         boolean flyEnabled = player.getAllowFlight();
         float walkSpeed = player.getWalkSpeed();
         float flySpeed = player.getFlySpeed();
+        GameMode gameMode = player.getGameMode();
         Collection<UserGroup> playerGroups = permissionsManager.hasGroupSupport()
             ? permissionsManager.getGroups(player) : Collections.emptyList();
 
@@ -52,7 +54,7 @@ class LimboServiceHelper {
             .collect(toList());
 
         logger.debug("Player `{0}` has groups `{1}`", player.getName(), String.join(", ", groupNames));
-        return new LimboPlayer(location, isOperator, playerGroups, flyEnabled, walkSpeed, flySpeed);
+        return new LimboPlayer(location, isOperator, playerGroups, flyEnabled, walkSpeed, flySpeed, gameMode);
     }
 
     /**
@@ -97,10 +99,11 @@ class LimboServiceHelper {
         boolean canFly = newLimbo.isCanFly() || oldLimbo.isCanFly();
         float flySpeed = Math.max(newLimbo.getFlySpeed(), oldLimbo.getFlySpeed());
         float walkSpeed = Math.max(newLimbo.getWalkSpeed(), oldLimbo.getWalkSpeed());
+        GameMode gameMode = oldLimbo.getGameMode();
         Collection<UserGroup> groups = getLimboGroups(oldLimbo.getGroups(), newLimbo.getGroups());
         Location location = firstNotNull(oldLimbo.getLocation(), newLimbo.getLocation());
 
-        return new LimboPlayer(location, isOperator, groups, canFly, walkSpeed, flySpeed);
+        return new LimboPlayer(location, isOperator, groups, canFly, walkSpeed, flySpeed, gameMode);
     }
 
     private static Location firstNotNull(Location first, Location second) {

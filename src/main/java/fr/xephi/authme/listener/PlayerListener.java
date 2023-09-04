@@ -383,10 +383,7 @@ public class PlayerListener implements Listener {
             event.setRespawnLocation(spawn);
         }
 
-        if (settings.getProperty(RestrictionSettings.SPECTATE_STAND_LOGIN)
-            || spectateLoginService.hasStand(event.getPlayer())) {
-            // If a player is dead, no stand will be created for him
-            // therefore we can be sure that there will not be two stands
+        if (settings.getProperty(RestrictionSettings.SPECTATE_STAND_LOGIN)) {
             bukkitService.runTaskLater(() -> spectateLoginService.createStand(event.getPlayer()), 1L);
         }
     }

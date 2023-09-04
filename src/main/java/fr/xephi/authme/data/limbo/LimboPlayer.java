@@ -1,6 +1,7 @@
 package fr.xephi.authme.data.limbo;
 
 import fr.xephi.authme.task.MessageTask;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -22,18 +23,20 @@ public class LimboPlayer {
     private final Location loc;
     private final float walkSpeed;
     private final float flySpeed;
+    private final GameMode gameMode;
     private BukkitTask timeoutTask = null;
     private MessageTask messageTask = null;
     private LimboPlayerState state = LimboPlayerState.PASSWORD_REQUIRED;
 
     public LimboPlayer(Location loc, boolean operator, Collection<UserGroup> groups, boolean fly, float walkSpeed,
-                       float flySpeed) {
+                       float flySpeed, GameMode gameMode) {
         this.loc = loc;
         this.operator = operator;
         this.groups = new ArrayList<>(groups); // prevent bug #2413
         this.canFly = fly;
         this.walkSpeed = walkSpeed;
         this.flySpeed = flySpeed;
+        this.gameMode = gameMode;
     }
 
     /**
@@ -44,6 +47,13 @@ public class LimboPlayer {
     public Location getLocation() {
         return loc;
     }
+
+    /**
+     * Return the player's original gamemode.
+     *
+     * @return The player's gamemode
+     */
+    public GameMode getGameMode() {return gameMode;}
 
     /**
      * Return whether the player is an operator or not (i.e. whether he is an OP).
