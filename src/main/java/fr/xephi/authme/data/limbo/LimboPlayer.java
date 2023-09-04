@@ -53,7 +53,9 @@ public class LimboPlayer {
      *
      * @return The player's gamemode
      */
-    public GameMode getGameMode() {return gameMode;}
+    public GameMode getGameMode() {
+        return gameMode;
+    }
 
     /**
      * Return whether the player is an operator or not (i.e. whether he is an OP).
