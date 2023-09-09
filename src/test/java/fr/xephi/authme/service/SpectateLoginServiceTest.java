@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Test for {@link CommonService}.
+ * Test for {@link SpectateLoginService}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SpectateLoginServiceTest {
@@ -63,7 +63,7 @@ public class SpectateLoginServiceTest {
 
     @Test
     public void testUpdateTargetNoStand() {
-        when(mockPlayer.isDead()).thenReturn(false); // Ensure the player is not dead
+        when(mockPlayer.isDead()).thenReturn(false);
 
         spectateLoginService.updateTarget(mockPlayer);
 
