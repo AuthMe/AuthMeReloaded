@@ -85,9 +85,9 @@ public class SpectateLoginService {
         return armorStands.containsKey(player);
     }
 
-    private ArmorStand spawnStand(Location loc) {
-        double pitch = service.getProperty(RestrictionSettings.HEAD_PITCH);
-        double yaw = service.getProperty(RestrictionSettings.HEAD_YAW);
+    protected ArmorStand spawnStand(Location loc) {
+        double pitch = service.getProperty(RestrictionSettings.SPECTATE_HEAD_PITCH);
+        double yaw = service.getProperty(RestrictionSettings.SPECTATE_HEAD_YAW);
         Location location = new Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getBlockZ(),
             (float) yaw, (float) pitch);
 

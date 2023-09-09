@@ -70,7 +70,6 @@ public class AuthMe extends JavaPlugin {
     private Injector injector;
     private BackupService backupService;
     private ConsoleLogger logger;
-    private SpectateLoginService spectateLoginService;
 
     /**
      * Constructor.
@@ -248,7 +247,6 @@ public class AuthMe extends JavaPlugin {
         bukkitService = injector.getSingleton(BukkitService.class);
         commandHandler = injector.getSingleton(CommandHandler.class);
         backupService = injector.getSingleton(BackupService.class);
-        spectateLoginService = injector.getSingleton(SpectateLoginService.class);
 
         // Trigger instantiation (class not used elsewhere)
         injector.getSingleton(BungeeReceiver.class);
@@ -319,7 +317,7 @@ public class AuthMe extends JavaPlugin {
         // Wait for tasks and close data source
         new TaskCloser(this, database).run();
 
-        injector.createIfHasDependencies(SpectateLoginService.class).removeArmorstands();
+        injector.getIfAvailable(SpectateLoginService.class).removeArmorstands();
 
         // Disabled correctly
         Consumer<String> infoLogMethod = logger == null ? getLogger()::info : logger::info;

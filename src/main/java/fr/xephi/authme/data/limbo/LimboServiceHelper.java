@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static fr.xephi.authme.util.Utils.isCollectionEmpty;
 import static java.util.stream.Collectors.toList;
@@ -99,7 +100,7 @@ class LimboServiceHelper {
         boolean canFly = newLimbo.isCanFly() || oldLimbo.isCanFly();
         float flySpeed = Math.max(newLimbo.getFlySpeed(), oldLimbo.getFlySpeed());
         float walkSpeed = Math.max(newLimbo.getWalkSpeed(), oldLimbo.getWalkSpeed());
-        GameMode gameMode = oldLimbo.getGameMode();
+        GameMode gameMode = Objects.isNull(newLimbo.getGameMode()) ? oldLimbo.getGameMode() : newLimbo.getGameMode();
         Collection<UserGroup> groups = getLimboGroups(oldLimbo.getGroups(), newLimbo.getGroups());
         Location location = firstNotNull(oldLimbo.getLocation(), newLimbo.getLocation());
 

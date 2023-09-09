@@ -383,7 +383,8 @@ public class PlayerListener implements Listener {
             event.setRespawnLocation(spawn);
         }
 
-        if (settings.getProperty(RestrictionSettings.SPECTATE_STAND_LOGIN)) {
+        if (settings.getProperty(RestrictionSettings.SPECTATE_STAND_LOGIN)
+            && spectateLoginService.hasStand(event.getPlayer())) {
             bukkitService.runTaskLater(() -> spectateLoginService.createStand(event.getPlayer()), 1L);
         }
     }
