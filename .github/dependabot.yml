@@ -10,3 +10,5 @@ updates:
   - dependency-name: com.google.guava:guava
   - dependency-name: org.apache.logging.log4j:log4j-core
   - dependency-name: com.zaxxer:HikariCP
+  - dependency-name: "org.mockito:mockito-core" # Mockito 5 requires Java 11
+    versions: ">= 5"
