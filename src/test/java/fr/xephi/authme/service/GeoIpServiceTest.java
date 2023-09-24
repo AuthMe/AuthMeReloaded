@@ -3,12 +3,8 @@ package fr.xephi.authme.service;
 import com.maxmind.db.GeoIp2Provider;
 import com.maxmind.db.model.Country;
 import com.maxmind.db.model.CountryResponse;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.InetAddress;
-
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.ProtectionSettings;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,14 +13,18 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
+import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link GeoIpService}.
@@ -65,6 +65,7 @@ public class GeoIpServiceTest {
         CountryResponse response = mock(CountryResponse.class);
         given(response.getCountry()).willReturn(country);
         given(lookupService.getCountry(ip)).willReturn(response);
+        given(settings.getProperty(ProtectionSettings.ENABLE_GEOIP)).willReturn(true);
 
         // when
         String result = geoIpService.getCountryCode(ip.getHostAddress());
@@ -99,6 +100,7 @@ public class GeoIpServiceTest {
         CountryResponse response = mock(CountryResponse.class);
         given(response.getCountry()).willReturn(country);
         given(lookupService.getCountry(ip)).willReturn(response);
+        given(settings.getProperty(ProtectionSettings.ENABLE_GEOIP)).willReturn(true);
 
         // when
         String result = geoIpService.getCountryName(ip.getHostAddress());
@@ -119,5 +121,19 @@ public class GeoIpServiceTest {
         // then
         assertThat(result, equalTo("LocalHost"));
         verify(lookupService, never()).getCountry(ip);
+    }
+
+    @Test
+    public void shouldNotLookUpCountryNameIfDisabled() throws Exception {
+        // given
+        InetAddress ip = InetAddress.getByName("24.45.167.89");
+        given(settings.getProperty(ProtectionSettings.ENABLE_GEOIP)).willReturn(false);
+
+        // when
+        String result = geoIpService.getCountryName(ip.getHostAddress());
+
+        // then
+        assertThat(result, equalTo("N/A"));
+        verifyNoInteractions(lookupService);
     }
 }
