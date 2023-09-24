@@ -64,6 +64,8 @@ public class GeoIpService {
     private GeoIp2Provider databaseReader;
     private volatile boolean downloading;
 
+    private boolean enabled = true;
+
     @Inject
     GeoIpService(@DataFolder File dataFolder, BukkitService bukkitService, Settings settings) {
         this.bukkitService = bukkitService;
@@ -89,6 +91,13 @@ public class GeoIpService {
      * @return True if the data is available, false otherwise.
      */
     private synchronized boolean isDataAvailable() {
+
+        // If this feature is disabled, just stop
+        if (!settings.getProperty(ProtectionSettings.ENABLE_GEOIP)) {
+            enabled = false;
+            return false;
+        }
+
         if (downloading) {
             // we are currently downloading the database
             return false;
@@ -280,6 +289,9 @@ public class GeoIpService {
      *         or "--" if it cannot be fetched.
      */
     public String getCountryCode(String ip) {
+        if (!enabled) {
+            return "--";
+        }
         if (InternetProtocolUtils.isLocalAddress(ip)) {
             return "LOCALHOST";
         }
@@ -293,6 +305,9 @@ public class GeoIpService {
      * @return The name of the country, "LocalHost" for local addresses, or "N/A" if it cannot be fetched.
      */
     public String getCountryName(String ip) {
+        if (!enabled) {
+            return "N/A";
+        }
         if (InternetProtocolUtils.isLocalAddress(ip)) {
             return "LocalHost";
         }
