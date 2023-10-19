@@ -11,7 +11,6 @@ import fr.xephi.authme.process.register.AsyncRegister;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.process.register.executors.RegistrationParameters;
 import fr.xephi.authme.process.unregister.AsynchronousUnregister;
-import fr.xephi.authme.service.BukkitService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -23,7 +22,7 @@ import javax.inject.Inject;
 public class Management {
 
     @Inject
-    private BukkitService bukkitService;
+    private AsyncUserScheduler asyncUserScheduler;
 
     // Processes
     @Inject
@@ -50,11 +49,11 @@ public class Management {
 
 
     public void performLogin(Player player, String password) {
-        runTask(() -> asynchronousLogin.login(player, password));
+        runTask(player, () -> asynchronousLogin.login(player, password));
     }
 
     public void forceLogin(Player player) {
-        runTask(() -> asynchronousLogin.forceLogin(player));
+        runTask(player, () -> asynchronousLogin.forceLogin(player));
     }
 
     public void forceLogin(Player player, boolean quiet) {
@@ -62,46 +61,50 @@ public class Management {
     }
 
     public void performLogout(Player player) {
-        runTask(() -> asynchronousLogout.logout(player));
+        runTask(player, () -> asynchronousLogout.logout(player));
     }
 
     public <P extends RegistrationParameters> void performRegister(RegistrationMethod<P> variant, P parameters) {
-        runTask(() -> asyncRegister.register(variant, parameters));
+        runTask(parameters.getPlayer(), () -> asyncRegister.register(variant, parameters));
     }
 
     public void performUnregister(Player player, String password) {
-        runTask(() -> asynchronousUnregister.unregister(player, password));
+        runTask(player, () -> asynchronousUnregister.unregister(player, password));
     }
 
     public void performUnregisterByAdmin(CommandSender initiator, String name, Player player) {
-        runTask(() -> asynchronousUnregister.adminUnregister(initiator, name, player));
+        runTask(name, () -> asynchronousUnregister.adminUnregister(initiator, name, player));
     }
 
     public void performJoin(Player player) {
-        runTask(() -> asynchronousJoin.processJoin(player));
+        runTask(player, () -> asynchronousJoin.processJoin(player));
     }
 
     public void performQuit(Player player) {
-        runTask(() -> asynchronousQuit.processQuit(player));
+        runTask(player, () -> asynchronousQuit.processQuit(player));
     }
 
     public void performAddEmail(Player player, String newEmail) {
-        runTask(() -> asyncAddEmail.addEmail(player, newEmail));
+        runTask(player, () -> asyncAddEmail.addEmail(player, newEmail));
     }
 
     public void performChangeEmail(Player player, String oldEmail, String newEmail) {
-        runTask(() -> asyncChangeEmail.changeEmail(player, oldEmail, newEmail));
+        runTask(player, () -> asyncChangeEmail.changeEmail(player, oldEmail, newEmail));
     }
 
     public void performPasswordChange(Player player, String oldPassword, String newPassword) {
-        runTask(() -> asyncChangePassword.changePassword(player, oldPassword, newPassword));
+        runTask(player, () -> asyncChangePassword.changePassword(player, oldPassword, newPassword));
     }
 
-    public void performPasswordChangeAsAdmin(CommandSender sender, String playerName, String newPassword) {
-        runTask(() -> asyncChangePassword.changePasswordAsAdmin(sender, playerName, newPassword));
+    public void performPasswordChangeAsAdmin(CommandSender sender, String name, String newPassword) {
+        runTask(name, () -> asyncChangePassword.changePasswordAsAdmin(sender, name, newPassword));
     }
 
-    private void runTask(Runnable runnable) {
-        bukkitService.runTaskOptionallyAsync(runnable);
+    private void runTask(Player player, Runnable runnable) {
+        runTask(player.getName(), runnable);
+    }
+
+    private void runTask(String playerName, Runnable runnable) {
+        asyncUserScheduler.runTask(playerName.toLowerCase(), runnable);
     }
 }

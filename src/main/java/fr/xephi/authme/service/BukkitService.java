@@ -344,4 +344,13 @@ public class BukkitService implements SettingsDependent {
     public String getIp() {
         return Bukkit.getServer().getIp();
     }
+
+    /**
+     * Returns if async tasks are enabled.
+     *
+     * @return true if async tasks are enabled.
+     */
+    public boolean isUseAsyncTasks() {
+        return useAsyncTasks;
+    }
 }
