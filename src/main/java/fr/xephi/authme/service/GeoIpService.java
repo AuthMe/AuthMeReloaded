@@ -89,6 +89,12 @@ public class GeoIpService {
      * @return True if the data is available, false otherwise.
      */
     private synchronized boolean isDataAvailable() {
+
+        // If this feature is disabled, just stop
+        if (!settings.getProperty(ProtectionSettings.ENABLE_GEOIP)) {
+            return false;
+        }
+
         if (downloading) {
             // we are currently downloading the database
             return false;
