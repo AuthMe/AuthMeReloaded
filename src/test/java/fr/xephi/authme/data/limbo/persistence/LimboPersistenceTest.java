@@ -59,7 +59,7 @@ class LimboPersistenceTest {
     void setUpMocks() {
         given(settings.getProperty(LimboSettings.LIMBO_PERSISTENCE_TYPE)).willReturn(LimboPersistenceType.DISABLED);
         given(handlerFactory.newInstance(any(Class.class)))
-            .willAnswer(invocation -> mock(invocation.getArgument(0)));
+            .willAnswer(invocation -> mock((Class<?>) invocation.getArgument(0)));
     }
 
     @Test

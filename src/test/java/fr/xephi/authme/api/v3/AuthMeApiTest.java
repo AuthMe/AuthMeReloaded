@@ -243,9 +243,12 @@ class AuthMeApiTest {
     }
 
     @Test
-    public void testGetLastLoginMillis() {
-        AuthMeApi result = AuthMeApi.getInstance();
-        assertThat(result.getLastLoginTime("notAPlayer"), nullValue());
+    void shouldReturnNullLastLoginForUnknownPlayer() {
+        // given / when
+        Instant result = api.getLastLoginTime("notAPlayer");
+
+        // then
+        assertThat(result, nullValue());
     }
 
     @Test

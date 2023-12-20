@@ -120,7 +120,7 @@ class GeoIpServiceTest {
     }
 
     @Test
-    public void shouldNotLookUpCountryNameIfDisabled() throws Exception {
+    void shouldNotLookUpCountryNameIfDisabled() throws Exception {
         // given
         InetAddress ip = InetAddress.getByName("24.45.167.89");
         given(settings.getProperty(ProtectionSettings.ENABLE_GEOIP)).willReturn(false);

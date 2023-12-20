@@ -1,6 +1,5 @@
 package fr.xephi.authme.settings;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.service.BukkitService;
@@ -60,7 +59,8 @@ class SettingsWarnerTest {
     }
 
     @Test
-    public void shouldWarnBungeeWithoutSpigot() {
+    void shouldWarnBungeeWithoutSpigot() {
+        // given
         Logger logger = TestHelper.setupLogger();
 
         // this cannot be covered above, because it's conflicting with the other settings
@@ -81,6 +81,7 @@ class SettingsWarnerTest {
 
     @Test
     void shouldNotLogAnyWarning() {
+        // given
         Logger logger = TestHelper.setupLogger();
         given(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)).willReturn(true);
         given(settings.getProperty(EmailSettings.SMTP_PORT)).willReturn(25);
