@@ -305,10 +305,7 @@ class MessagesIntegrationTest {
         Settings settings = mock(Settings.class);
         given(settings.getProperty(PluginSettings.MESSAGES_LANGUAGE)).willReturn("test");
 
-        MessagesFileHandler messagesFileHandler = new MessagesFileHandler();
-        ReflectionTestUtils.setField(AbstractMessageFileHandler.class, messagesFileHandler, "settings", settings);
-        ReflectionTestUtils.setField(AbstractMessageFileHandler.class, messagesFileHandler, "dataFolder", dataFolder);
-        ReflectionTestUtils.setField(MessagesFileHandler.class, messagesFileHandler, "messageUpdater", mock(MessageUpdater.class));
+        MessagesFileHandler messagesFileHandler = new MessagesFileHandler(dataFolder, settings, mock(MessageUpdater.class));
         ReflectionTestUtils.invokePostConstructMethods(messagesFileHandler);
         return messagesFileHandler;
     }

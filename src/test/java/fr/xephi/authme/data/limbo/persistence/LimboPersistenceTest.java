@@ -1,9 +1,6 @@
 package fr.xephi.authme.data.limbo.persistence;
 
 import ch.jalu.injector.factory.Factory;
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionExtension;
-import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.limbo.LimboPlayer;
@@ -12,9 +9,11 @@ import fr.xephi.authme.settings.properties.LimboSettings;
 import org.bukkit.entity.Player;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.logging.Logger;
 
@@ -37,10 +36,9 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link LimboPersistence}.
  */
-@ExtendWith(DelayedInjectionExtension.class)
+@ExtendWith(MockitoExtension.class)
 class LimboPersistenceTest {
 
-    @InjectDelayed
     private LimboPersistence limboPersistence;
 
     @Mock
@@ -54,12 +52,13 @@ class LimboPersistenceTest {
         TestHelper.setupLogger();
     }
 
-    @BeforeInjecting
+    @BeforeEach
     @SuppressWarnings("unchecked")
-    void setUpMocks() {
+    void setUpMocksAndLimboPersistence() {
         given(settings.getProperty(LimboSettings.LIMBO_PERSISTENCE_TYPE)).willReturn(LimboPersistenceType.DISABLED);
         given(handlerFactory.newInstance(any(Class.class)))
             .willAnswer(invocation -> mock((Class<?>) invocation.getArgument(0)));
+        limboPersistence = new LimboPersistence(settings, handlerFactory);
     }
 
     @Test

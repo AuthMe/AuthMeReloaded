@@ -1,19 +1,18 @@
 package fr.xephi.authme.datasource.converter;
 
-import ch.jalu.injector.testing.DelayedInjectionExtension;
-import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ConverterSettings;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.util.List;
@@ -32,10 +31,9 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link CrazyLoginConverter}.
  */
-@ExtendWith(DelayedInjectionExtension.class)
+@ExtendWith(MockitoExtension.class)
 class CrazyLoginConverterTest {
 
-    @InjectDelayed
     private CrazyLoginConverter crazyLoginConverter;
 
     @Mock
@@ -44,12 +42,16 @@ class CrazyLoginConverterTest {
     @Mock
     private Settings settings;
 
-    @DataFolder
     private File dataFolder = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "/datasource/converter/");
 
     @BeforeAll
     static void initializeLogger() {
         TestHelper.setupLogger();
+    }
+
+    @BeforeEach
+    void initConverter() {
+        crazyLoginConverter = new CrazyLoginConverter(dataFolder, dataSource, settings);
     }
 
     @Test

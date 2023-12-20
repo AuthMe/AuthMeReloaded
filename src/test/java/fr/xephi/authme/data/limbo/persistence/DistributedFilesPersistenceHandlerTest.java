@@ -1,13 +1,9 @@
 package fr.xephi.authme.data.limbo.persistence;
 
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionExtension;
-import ch.jalu.injector.testing.InjectDelayed;
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.data.limbo.UserGroup;
-import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.LimboSettings;
@@ -16,10 +12,12 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,12 +35,13 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 
 /**
  * Test for {@link DistributedFilesPersistenceHandler}.
  */
-@ExtendWith(DelayedInjectionExtension.class)
+@ExtendWith(MockitoExtension.class)
 class DistributedFilesPersistenceHandlerTest {
 
     /** Player is in seg32-10110 and should be migrated into seg16-f. */
@@ -72,7 +71,6 @@ class DistributedFilesPersistenceHandlerTest {
     private static final UUID UNKNOWN_UUID2 = fromString("84d1cc0b-8f12-d04a-e7ba-a067d05cdc39");
 
 
-    @InjectDelayed
     private DistributedFilesPersistenceHandler persistenceHandler;
 
     @Mock
@@ -80,7 +78,6 @@ class DistributedFilesPersistenceHandlerTest {
     @Mock
     private BukkitService bukkitService;
     @TempDir
-    @DataFolder
     File dataFolder;
     private File playerDataFolder;
 
@@ -89,7 +86,7 @@ class DistributedFilesPersistenceHandlerTest {
         TestHelper.setupLogger();
     }
 
-    @BeforeInjecting
+    @BeforeEach
     void setUpClasses() throws IOException {
         given(settings.getProperty(LimboSettings.DISTRIBUTION_SIZE)).willReturn(SegmentSize.SIXTEEN);
         playerDataFolder = new File(dataFolder, "playerdata");
@@ -104,9 +101,11 @@ class DistributedFilesPersistenceHandlerTest {
         given(bukkitService.getWorld(anyString()))
             .willAnswer(invocation -> {
                 World world = mock(World.class);
-                given(world.getName()).willReturn(invocation.getArgument(0));
+                lenient().when(world.getName()).thenReturn(invocation.getArgument(0));
                 return world;
             });
+
+        persistenceHandler = new DistributedFilesPersistenceHandler(dataFolder, bukkitService, settings);
     }
 
     // Note ljacqu 20170314: These tests are a little slow to set up; therefore we sometimes

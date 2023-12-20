@@ -1,20 +1,18 @@
 package fr.xephi.authme.settings;
 
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionExtension;
-import ch.jalu.injector.testing.InjectDelayed;
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,10 +25,9 @@ import static org.mockito.Mockito.mock;
 /**
  * Test for {@link SpawnLoader}.
  */
-@ExtendWith(DelayedInjectionExtension.class)
+@ExtendWith(MockitoExtension.class)
 class SpawnLoaderTest {
 
-    @InjectDelayed
     private SpawnLoader spawnLoader;
 
     @Mock
@@ -39,11 +36,10 @@ class SpawnLoaderTest {
     @Mock
     private PluginHookService pluginHookService;
 
-    @DataFolder
     @TempDir
     File testFolder;
 
-    @BeforeInjecting
+    @BeforeEach
     void setup() throws IOException {
         // Copy test config into a new temporary folder
         File source = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "settings/spawn-firstspawn.yml");
@@ -53,6 +49,7 @@ class SpawnLoaderTest {
         // Create a settings mock with default values
         given(settings.getProperty(RestrictionSettings.SPAWN_PRIORITY))
             .willReturn("authme, essentials, multiverse, default");
+        spawnLoader = new SpawnLoader(testFolder, settings, pluginHookService);
     }
 
     @Test
@@ -73,5 +70,4 @@ class SpawnLoaderTest {
         assertThat(configuration.getDouble("spawn.z"), equalTo(-67.89));
         assertThat(configuration.getString("spawn.world"), equalTo("new_world"));
     }
-
 }

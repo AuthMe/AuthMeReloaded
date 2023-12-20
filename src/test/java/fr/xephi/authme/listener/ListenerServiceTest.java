@@ -1,8 +1,5 @@
 package fr.xephi.authme.listener;
 
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionExtension;
-import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.service.ValidationService;
@@ -13,9 +10,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityEvent;
 import org.bukkit.event.player.PlayerEvent;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -27,10 +26,9 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link ListenerService}.
  */
-@ExtendWith(DelayedInjectionExtension.class)
+@ExtendWith(MockitoExtension.class)
 class ListenerServiceTest {
 
-    @InjectDelayed
     private ListenerService listenerService;
 
     @Mock
@@ -45,9 +43,10 @@ class ListenerServiceTest {
     @Mock
     private ValidationService validationService;
 
-    @BeforeInjecting
-    void initializeDefaultSettings() {
+    @BeforeEach
+    void setUpMocksAndService() {
         given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
+        listenerService = new ListenerService(settings, dataSource, playerCache, validationService);
     }
 
     @Test

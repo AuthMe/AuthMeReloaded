@@ -1,21 +1,19 @@
 package fr.xephi.authme.data.limbo.persistence;
 
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionExtension;
-import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.data.limbo.UserGroup;
-import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.util.FileUtils;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,30 +32,30 @@ import static org.mockito.Mockito.mock;
 /**
  * Test for {@link IndividualFilesPersistenceHandler}.
  */
-@ExtendWith(DelayedInjectionExtension.class)
+@ExtendWith(MockitoExtension.class)
 class IndividualFilesPersistenceHandlerTest {
 
     private static final UUID SAMPLE_UUID = UUID.nameUUIDFromBytes("PersistenceTest".getBytes());
     private static final String SOURCE_FOLDER = TestHelper.PROJECT_ROOT + "data/backup/";
 
-    @InjectDelayed
     private IndividualFilesPersistenceHandler handler;
 
     @Mock
     private BukkitService bukkitService;
 
-    @DataFolder
     @TempDir
     File dataFolder;
 
-    @BeforeInjecting
-    void copyTestFiles() throws IOException {
+    @BeforeEach
+    void copyTestFilesAndInitHandler() throws IOException {
         File playerFolder = new File(dataFolder, FileUtils.makePath("playerdata", SAMPLE_UUID.toString()));
         if (!playerFolder.mkdirs()) {
             throw new IllegalStateException("Cannot create '" + playerFolder.getAbsolutePath() + "'");
         }
         Files.copy(TestHelper.getJarPath(FileUtils.makePath(SOURCE_FOLDER, "sample-folder", "data.json")),
             new File(playerFolder, "data.json").toPath());
+
+        handler = new IndividualFilesPersistenceHandler(dataFolder, bukkitService);
     }
 
     @Test

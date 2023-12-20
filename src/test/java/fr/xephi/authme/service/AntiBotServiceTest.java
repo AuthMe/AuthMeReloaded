@@ -1,8 +1,5 @@
 package fr.xephi.authme.service;
 
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionExtension;
-import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.AdminPermission;
@@ -11,10 +8,12 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,10 +34,9 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link AntiBotService}.
  */
-@ExtendWith(DelayedInjectionExtension.class)
+@ExtendWith(MockitoExtension.class)
 class AntiBotServiceTest {
 
-    @InjectDelayed
     private AntiBotService antiBotService;
 
     @Mock
@@ -50,14 +48,15 @@ class AntiBotServiceTest {
     @Mock
     private BukkitService bukkitService;
 
-    @BeforeInjecting
-    void initSettings() {
+    @BeforeEach
+    void initSettingsAndService() {
         given(settings.getProperty(ProtectionSettings.ANTIBOT_DURATION)).willReturn(10);
         given(settings.getProperty(ProtectionSettings.ANTIBOT_INTERVAL)).willReturn(5);
         given(settings.getProperty(ProtectionSettings.ANTIBOT_SENSIBILITY)).willReturn(5);
         given(settings.getProperty(ProtectionSettings.ENABLE_ANTIBOT)).willReturn(true);
         given(settings.getProperty(ProtectionSettings.ANTIBOT_DELAY)).willReturn(8);
         setBukkitServiceToScheduleSyncDelayedTaskWithDelay(bukkitService);
+        antiBotService = new AntiBotService(settings, messages, permissionsManager, bukkitService);
     }
 
     @Test

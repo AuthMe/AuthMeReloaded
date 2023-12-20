@@ -1,15 +1,12 @@
 package fr.xephi.authme.service;
 
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionExtension;
-import ch.jalu.injector.testing.InjectDelayed;
 import com.google.common.io.Files;
+import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.CommandInitializer;
 import fr.xephi.authme.command.help.HelpMessage;
 import fr.xephi.authme.command.help.HelpMessagesService;
 import fr.xephi.authme.command.help.HelpSection;
-import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.message.HelpMessagesFileHandler;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
@@ -17,10 +14,12 @@ import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,19 +34,11 @@ import static org.mockito.BDDMockito.given;
 /**
  * Integration test for {@link HelpTranslationGenerator}.
  */
-@ExtendWith(DelayedInjectionExtension.class)
+@ExtendWith(MockitoExtension.class)
 class HelpTranslationGeneratorIntegrationTest {
 
-    @InjectDelayed
     private HelpTranslationGenerator helpTranslationGenerator;
-    @InjectDelayed
-    private HelpMessagesService helpMessagesService;
-    @InjectDelayed
-    private HelpMessagesFileHandler helpMessagesFileHandler;
-    @InjectDelayed
-    private CommandInitializer commandInitializer;
 
-    @DataFolder
     @TempDir
     File dataFolder;
     private File helpMessagesFile;
@@ -60,13 +51,19 @@ class HelpTranslationGeneratorIntegrationTest {
         TestHelper.setupLogger();
     }
 
-    @BeforeInjecting
+    @BeforeEach
     void setUpClasses() throws IOException {
         File messagesFolder = new File(dataFolder, "messages");
         messagesFolder.mkdir();
         helpMessagesFile = new File(messagesFolder, "help_test.yml");
         Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/help_test.yml"), helpMessagesFile);
         given(settings.getProperty(PluginSettings.MESSAGES_LANGUAGE)).willReturn("test");
+
+        CommandInitializer commandInitializer = new CommandInitializer();
+        HelpMessagesFileHandler helpMessagesFileHandler = new HelpMessagesFileHandler(dataFolder, settings);
+        HelpMessagesService helpMessagesService = new HelpMessagesService(helpMessagesFileHandler);
+        helpTranslationGenerator = new HelpTranslationGenerator(commandInitializer, helpMessagesService, settings, dataFolder);
+        ReflectionTestUtils.invokePostConstructMethods(helpMessagesFileHandler);
     }
 
     @Test

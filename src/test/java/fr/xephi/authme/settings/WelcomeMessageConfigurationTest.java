@@ -1,11 +1,8 @@
 package fr.xephi.authme.settings;
 
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionExtension;
-import ch.jalu.injector.testing.InjectDelayed;
+import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.GeoIpService;
@@ -14,10 +11,13 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,10 +36,10 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link WelcomeMessageConfiguration}.
  */
-@ExtendWith(DelayedInjectionExtension.class)
+@ExtendWith(MockitoExtension.class)
 class WelcomeMessageConfigurationTest {
 
-    @InjectDelayed
+    @InjectMocks
     private WelcomeMessageConfiguration welcomeMessageConfiguration;
     @Mock
     private Server server;
@@ -51,17 +51,17 @@ class WelcomeMessageConfigurationTest {
     private PlayerCache playerCache;
     @Mock
     private CommonService service;
-    @DataFolder
     @TempDir
     File testPluginFolder;
 
     private File welcomeFile;
 
-    @BeforeInjecting
-    void createPluginFolder() throws IOException {
+    @BeforeEach
+    void createWelcomeFileAndSetPluginFolder() throws IOException {
         welcomeFile = new File(testPluginFolder, "welcome.txt");
         welcomeFile.createNewFile();
         given(service.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)).willReturn(true);
+        ReflectionTestUtils.setField(welcomeMessageConfiguration, "pluginFolder", testPluginFolder);
     }
 
     @Test

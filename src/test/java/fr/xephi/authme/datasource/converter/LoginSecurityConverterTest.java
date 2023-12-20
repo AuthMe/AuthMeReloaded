@@ -1,21 +1,20 @@
 package fr.xephi.authme.datasource.converter;
 
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionExtension;
-import ch.jalu.injector.testing.InjectDelayed;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ConverterSettings;
 import org.bukkit.command.CommandSender;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,23 +38,27 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link LoginSecurityConverter}.
  */
-@ExtendWith(DelayedInjectionExtension.class)
+@ExtendWith(MockitoExtension.class)
 class LoginSecurityConverterTest {
 
-    @InjectDelayed
     private LoginSecurityConverter converter;
 
     @Mock
     private DataSource dataSource;
     @Mock
     private Settings settings;
-    @DataFolder
+
     private File dataFolder = new File("."); // not used but required for injection
 
-    @BeforeInjecting
-    void initMocks() {
+    @BeforeAll
+    static void initLogger() {
         TestHelper.setupLogger();
+    }
+
+    @BeforeEach
+    void setUpConverter() {
         given(settings.getProperty(ConverterSettings.LOGINSECURITY_USE_SQLITE)).willReturn(true);
+        converter = new LoginSecurityConverter(dataFolder, dataSource, settings);
     }
 
     @Test

@@ -3,9 +3,6 @@ package fr.xephi.authme.security;
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
 import ch.jalu.injector.factory.Factory;
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionExtension;
-import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.DataSource;
@@ -20,10 +17,13 @@ import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 
 import java.util.Collections;
@@ -48,10 +48,10 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link PasswordSecurity}.
  */
-@ExtendWith(DelayedInjectionExtension.class)
+@ExtendWith(MockitoExtension.class)
 class PasswordSecurityTest {
 
-    @InjectDelayed
+    @InjectMocks
     private PasswordSecurity passwordSecurity;
 
     @Mock
@@ -76,7 +76,7 @@ class PasswordSecurityTest {
         TestHelper.setupLogger();
     }
 
-    @BeforeInjecting
+    @BeforeEach
     void setUpMocks() {
         caughtClassInEvent = null;
 
@@ -111,6 +111,8 @@ class PasswordSecurityTest {
                 }
                 return o;
         });
+
+        ReflectionTestUtils.invokePostConstructMethods(passwordSecurity);
     }
 
     @Test

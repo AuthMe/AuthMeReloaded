@@ -1,7 +1,5 @@
 package fr.xephi.authme.data.limbo;
 
-import ch.jalu.injector.testing.DelayedInjectionExtension;
-import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.limbo.persistence.LimboPersistence;
@@ -16,10 +14,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
@@ -31,6 +31,7 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
@@ -39,13 +40,13 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link LimboService}, and {@link LimboServiceHelper}.
  */
-@ExtendWith(DelayedInjectionExtension.class)
+@ExtendWith(MockitoExtension.class)
 class LimboServiceTest {
 
-    @InjectDelayed
+    @InjectMocks
     private LimboService limboService;
 
-    @InjectDelayed
+    @InjectMocks
     private LimboServiceHelper limboServiceHelper;
 
     @Mock
@@ -73,7 +74,7 @@ class LimboServiceTest {
 
     @BeforeEach
     void mockSettings() {
-        given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
+        ReflectionTestUtils.setField(limboService, "helper", limboServiceHelper);
     }
 
     @Test
@@ -85,6 +86,7 @@ class LimboServiceTest {
         given(permissionsManager.hasGroupSupport()).willReturn(true);
         given(permissionsManager.getGroups(player)).willReturn(Collections.singletonList(new UserGroup("permgrwp")));
         given(settings.getProperty(LimboSettings.RESTORE_ALLOW_FLIGHT)).willReturn(AllowFlightRestoreType.ENABLE);
+        given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
 
         // when
         limboService.createLimboPlayer(player, true);
@@ -116,6 +118,7 @@ class LimboServiceTest {
         given(spawnLoader.getPlayerLocationOrSpawn(player)).willReturn(playerLoc);
         given(permissionsManager.hasGroupSupport()).willReturn(false);
         given(settings.getProperty(LimboSettings.RESTORE_ALLOW_FLIGHT)).willReturn(AllowFlightRestoreType.RESTORE);
+        given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
 
         // when
         limboService.createLimboPlayer(player, false);
@@ -146,6 +149,7 @@ class LimboServiceTest {
         getLimboMap().put("carlos", existingLimbo);
         Player player = newPlayer("Carlos");
         given(settings.getProperty(LimboSettings.RESTORE_ALLOW_FLIGHT)).willReturn(AllowFlightRestoreType.ENABLE);
+        given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
 
         // when
         limboService.createLimboPlayer(player, false);
@@ -161,8 +165,7 @@ class LimboServiceTest {
     @Test
     void shouldRestoreData() {
         // given
-        LimboPlayer limbo = Mockito.spy(convertToLimboPlayer(
-            newPlayer("John", true, 0.4f, false, 0.0f), null, Collections.emptyList()));
+        LimboPlayer limbo = Mockito.spy(newLimboPlayer(null, true, true, 0.4f, 0.0f));
         getLimboMap().put("john", limbo);
         Player player = newPlayer("John", false, 0.2f, false, 0.7f);
 
@@ -234,16 +237,16 @@ class LimboServiceTest {
 
     private static Player newPlayer(String name, boolean isOp, float walkSpeed, boolean canFly, float flySpeed) {
         Player player = newPlayer(name);
-        given(player.isOp()).willReturn(isOp);
-        given(player.getWalkSpeed()).willReturn(walkSpeed);
-        given(player.getAllowFlight()).willReturn(canFly);
-        given(player.getFlySpeed()).willReturn(flySpeed);
+        lenient().when(player.isOp()).thenReturn(isOp);
+        lenient().when(player.getWalkSpeed()).thenReturn(walkSpeed);
+        lenient().when(player.getAllowFlight()).thenReturn(canFly);
+        lenient().when(player.getFlySpeed()).thenReturn(flySpeed);
         return player;
     }
 
-    private static LimboPlayer convertToLimboPlayer(Player player, Location location, Collection<UserGroup> groups) {
-        return new LimboPlayer(location, player.isOp(), groups, player.getAllowFlight(),
-            player.getWalkSpeed(), player.getFlySpeed());
+    private static LimboPlayer newLimboPlayer(Location location, boolean isOp,
+                                              boolean allowFlight, float walkSpeed, float flySpeed, UserGroup... groups) {
+        return new LimboPlayer(location, isOp, Arrays.asList(groups), allowFlight, walkSpeed, flySpeed);
     }
 
     private Map<String, LimboPlayer> getLimboMap() {

@@ -1,15 +1,14 @@
 package fr.xephi.authme.service;
 
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionExtension;
-import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.expiring.ExpiringMap;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -20,20 +19,21 @@ import static org.mockito.BDDMockito.given;
 /**
  * Test for {@link RecoveryCodeService}.
  */
-@ExtendWith(DelayedInjectionExtension.class)
+@ExtendWith(MockitoExtension.class)
 class RecoveryCodeServiceTest {
 
-    @InjectDelayed
     private RecoveryCodeService recoveryCodeService;
 
     @Mock
     private Settings settings;
 
-    @BeforeInjecting
-    void initSettings() {
+    @BeforeEach
+    void initService() {
         given(settings.getProperty(SecuritySettings.RECOVERY_CODE_HOURS_VALID)).willReturn(4);
         given(settings.getProperty(SecuritySettings.RECOVERY_CODE_LENGTH)).willReturn(5);
         given(settings.getProperty(SecuritySettings.RECOVERY_CODE_MAX_TRIES)).willReturn(3);
+
+        recoveryCodeService = new RecoveryCodeService(settings);
     }
 
     @Test

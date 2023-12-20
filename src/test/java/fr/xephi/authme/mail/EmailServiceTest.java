@@ -1,10 +1,6 @@
 package fr.xephi.authme.mail;
 
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionExtension;
-import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
@@ -12,11 +8,13 @@ import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 
@@ -35,17 +33,15 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link EmailService}.
  */
-@ExtendWith(DelayedInjectionExtension.class)
+@ExtendWith(MockitoExtension.class)
 class EmailServiceTest {
 
-    @InjectDelayed
     private EmailService emailService;
 
     @Mock
     private Settings settings;
     @Mock
     private SendMailSsl sendMailSsl;
-    @DataFolder
     @TempDir
     File dataFolder;
 
@@ -54,17 +50,17 @@ class EmailServiceTest {
         TestHelper.setupLogger();
     }
 
-    @BeforeInjecting
-    void initFields() {
-        given(settings.getProperty(PluginSettings.SERVER_NAME)).willReturn("serverName");
-        given(settings.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("mail@example.org");
-        given(settings.getProperty(EmailSettings.MAIL_PASSWORD)).willReturn("pass1234");
-        given(sendMailSsl.hasAllInformation()).willReturn(true);
+    @BeforeEach
+    void initFieldsAndService() {
+        emailService = new EmailService(dataFolder, settings, sendMailSsl);
     }
 
     @Test
     void shouldHaveAllInformation() {
-        // given / when / then
+        // given
+        given(sendMailSsl.hasAllInformation()).willReturn(true);
+
+        // when / then
         assertThat(emailService.hasAllInformation(), equalTo(true));
     }
 
@@ -74,7 +70,9 @@ class EmailServiceTest {
         given(settings.getPasswordEmailMessage())
             .willReturn("Hi <playername />, your new password for <servername /> is <generatedpass />");
         given(settings.getProperty(EmailSettings.PASSWORD_AS_IMAGE)).willReturn(false);
+        given(settings.getProperty(PluginSettings.SERVER_NAME)).willReturn("serverName");
         HtmlEmail email = mock(HtmlEmail.class);
+        given(sendMailSsl.hasAllInformation()).willReturn(true);
         given(sendMailSsl.initializeMail(anyString())).willReturn(email);
         given(sendMailSsl.sendEmail(anyString(), eq(email))).willReturn(true);
 
@@ -93,6 +91,7 @@ class EmailServiceTest {
     @Test
     void shouldHandleMailCreationError() throws EmailException {
         // given
+        given(sendMailSsl.hasAllInformation()).willReturn(true);
         doThrow(EmailException.class).when(sendMailSsl).initializeMail(anyString());
 
         // when
@@ -107,8 +106,10 @@ class EmailServiceTest {
     @Test
     void shouldHandleMailSendingFailure() throws EmailException {
         // given
+        given(sendMailSsl.hasAllInformation()).willReturn(true);
         given(settings.getPasswordEmailMessage()).willReturn("Hi <playername />, your new pass is <generatedpass />");
         given(settings.getProperty(EmailSettings.PASSWORD_AS_IMAGE)).willReturn(false);
+        given(settings.getProperty(PluginSettings.SERVER_NAME)).willReturn("serverName");
         HtmlEmail email = mock(HtmlEmail.class);
         given(sendMailSsl.initializeMail(anyString())).willReturn(email);
         given(sendMailSsl.sendEmail(anyString(), any(HtmlEmail.class))).willReturn(false);
@@ -128,6 +129,7 @@ class EmailServiceTest {
     void shouldSendRecoveryCode() throws EmailException {
         // given
         given(settings.getProperty(SecuritySettings.RECOVERY_CODE_HOURS_VALID)).willReturn(7);
+        given(settings.getProperty(PluginSettings.SERVER_NAME)).willReturn("serverName");
         given(settings.getRecoveryCodeEmailMessage())
             .willReturn("Hi <playername />, your code on <servername /> is <recoverycode /> (valid <hoursvalid /> hours)");
         HtmlEmail email = mock(HtmlEmail.class);
@@ -163,7 +165,8 @@ class EmailServiceTest {
     void shouldHandleFailureToSendRecoveryCode() throws EmailException {
         // given
         given(settings.getProperty(SecuritySettings.RECOVERY_CODE_HOURS_VALID)).willReturn(7);
-        given(settings.getRecoveryCodeEmailMessage()).willReturn("Hi <playername />, your code is <recoverycode />");
+        given(settings.getProperty(PluginSettings.SERVER_NAME)).willReturn("Server? I barely know her!");
+        given(settings.getRecoveryCodeEmailMessage()).willReturn("Hi <playername />, your code is <recoverycode /> for <servername />");
         EmailService sendMailSpy = spy(emailService);
         HtmlEmail email = mock(HtmlEmail.class);
         given(sendMailSsl.initializeMail(anyString())).willReturn(email);
@@ -177,7 +180,6 @@ class EmailServiceTest {
         verify(sendMailSsl).initializeMail("user@example.com");
         ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
         verify(sendMailSsl).sendEmail(messageCaptor.capture(), eq(email));
-        assertThat(messageCaptor.getValue(), equalTo("Hi John, your code is 1DEF77"));
+        assertThat(messageCaptor.getValue(), equalTo("Hi John, your code is 1DEF77 for Server? I barely know her!"));
     }
-
 }

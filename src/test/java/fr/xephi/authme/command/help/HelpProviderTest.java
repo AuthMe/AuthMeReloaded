@@ -1,8 +1,5 @@
 package fr.xephi.authme.command.help;
 
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionExtension;
-import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.FoundCommandResult;
 import fr.xephi.authme.command.FoundResultStatus;
@@ -13,11 +10,13 @@ import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.internal.stubbing.answers.ReturnsArgumentAt;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,6 +43,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -51,12 +51,11 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link HelpProvider}.
  */
-@ExtendWith(DelayedInjectionExtension.class)
+@ExtendWith(MockitoExtension.class)
 class HelpProviderTest {
 
     private static Collection<CommandDescription> commands;
 
-    @InjectDelayed
     private HelpProvider helpProvider;
     @Mock
     private PermissionsManager permissionsManager;
@@ -70,9 +69,10 @@ class HelpProviderTest {
         commands = TestCommandsUtil.generateCommands();
     }
 
-    @BeforeInjecting
-    void setInitialSettings() {
+    @BeforeEach
+    void initializeHelpProvider() {
         setDefaultHelpMessages(helpMessagesService);
+        helpProvider = new HelpProvider(permissionsManager, helpMessagesService);
     }
 
     @Test
@@ -444,22 +444,22 @@ class HelpProviderTest {
     }
 
     private static void setDefaultHelpMessages(HelpMessagesService helpMessagesService) {
-        given(helpMessagesService.buildLocalizedDescription(any(CommandDescription.class)))
-            .willAnswer(new ReturnsArgumentAt(0));
+        lenient().when(helpMessagesService.buildLocalizedDescription(any(CommandDescription.class)))
+            .thenAnswer(new ReturnsArgumentAt(0));
         for (HelpMessage key : HelpMessage.values()) {
             String text = key.name().replace("_", " ").toLowerCase(Locale.ROOT);
-            given(helpMessagesService.getMessage(key))
-                .willReturn(text.substring(0, 1).toUpperCase(Locale.ROOT) + text.substring(1));
+            lenient().when(helpMessagesService.getMessage(key))
+                .thenReturn(text.substring(0, 1).toUpperCase(Locale.ROOT) + text.substring(1));
         }
         for (DefaultPermission permission : DefaultPermission.values()) {
             String text = permission.name().replace("_", " ").toLowerCase(Locale.ROOT);
-            given(helpMessagesService.getMessage(permission))
-                .willReturn(text.substring(0, 1).toUpperCase(Locale.ROOT) + text.substring(1));
+            lenient().when(helpMessagesService.getMessage(permission))
+                .thenReturn(text.substring(0, 1).toUpperCase(Locale.ROOT) + text.substring(1));
         }
         for (HelpSection section : HelpSection.values()) {
             String text = section.name().replace("_", " ").toLowerCase(Locale.ROOT);
-            given(helpMessagesService.getMessage(section))
-                .willReturn(text.substring(0, 1).toUpperCase(Locale.ROOT) + text.substring(1));
+            lenient().when(helpMessagesService.getMessage(section))
+                .thenReturn(text.substring(0, 1).toUpperCase(Locale.ROOT) + text.substring(1));
         }
     }
 
