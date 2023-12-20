@@ -5,7 +5,6 @@ import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.properties.convertresult.PropertyValue;
 import ch.jalu.configme.resource.PropertyReader;
 import fr.xephi.authme.message.MessageKey;
-import fr.xephi.authme.message.updater.MessageUpdater.MessageKeyProperty;
 
 import java.util.List;
 import java.util.Map;
@@ -40,19 +39,15 @@ public class MessageKeyConfigurationData extends ConfigurationDataImpl {
     }
 
     @SuppressWarnings("unchecked")
-    public List<MessageKeyProperty> getAllMessageProperties() {
+    public List<Property<String>> getAllMessageProperties() {
         return (List) getProperties();
     }
 
     public String getMessage(MessageKey messageKey) {
-        return getValue(new MessageKeyProperty(messageKey));
-    }
-
-    public String getMessage(MessageKeyProperty property) {
-        return (String) getValues().get(property.getPath());
+        return getValue(new MessageUpdater.MessageKeyProperty(messageKey));
     }
 
     public void setMessage(MessageKey messageKey, String message) {
-        setValue(new MessageKeyProperty(messageKey), message);
+        setValue(new MessageUpdater.MessageKeyProperty(messageKey), message);
     }
 }

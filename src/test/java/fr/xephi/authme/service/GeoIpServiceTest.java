@@ -4,6 +4,7 @@ import com.maxmind.db.GeoIp2Provider;
 import com.maxmind.db.model.Country;
 import com.maxmind.db.model.CountryResponse;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.ProtectionSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +22,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link GeoIpService}.
@@ -59,6 +61,7 @@ class GeoIpServiceTest {
         CountryResponse response = mock(CountryResponse.class);
         given(response.getCountry()).willReturn(country);
         given(lookupService.getCountry(ip)).willReturn(response);
+        given(settings.getProperty(ProtectionSettings.ENABLE_GEOIP)).willReturn(true);
 
         // when
         String result = geoIpService.getCountryCode(ip.getHostAddress());
@@ -93,6 +96,7 @@ class GeoIpServiceTest {
         CountryResponse response = mock(CountryResponse.class);
         given(response.getCountry()).willReturn(country);
         given(lookupService.getCountry(ip)).willReturn(response);
+        given(settings.getProperty(ProtectionSettings.ENABLE_GEOIP)).willReturn(true);
 
         // when
         String result = geoIpService.getCountryName(ip.getHostAddress());
@@ -113,5 +117,19 @@ class GeoIpServiceTest {
         // then
         assertThat(result, equalTo("LocalHost"));
         verify(lookupService, never()).getCountry(ip);
+    }
+
+    @Test
+    public void shouldNotLookUpCountryNameIfDisabled() throws Exception {
+        // given
+        InetAddress ip = InetAddress.getByName("24.45.167.89");
+        given(settings.getProperty(ProtectionSettings.ENABLE_GEOIP)).willReturn(false);
+
+        // when
+        String result = geoIpService.getCountryName(ip.getHostAddress());
+
+        // then
+        assertThat(result, equalTo("N/A"));
+        verifyNoInteractions(lookupService);
     }
 }

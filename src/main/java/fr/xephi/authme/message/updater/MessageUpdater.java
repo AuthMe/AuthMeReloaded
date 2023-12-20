@@ -2,6 +2,7 @@ package fr.xephi.authme.message.updater;
 
 import ch.jalu.configme.configurationdata.ConfigurationData;
 import ch.jalu.configme.configurationdata.PropertyListBuilder;
+import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.properties.StringProperty;
 import ch.jalu.configme.properties.convertresult.ConvertErrorRecorder;
 import ch.jalu.configme.resource.PropertyReader;
@@ -9,8 +10,8 @@ import ch.jalu.configme.resource.PropertyResource;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
+import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.util.FileUtils;
 
 import java.io.File;
@@ -101,9 +102,9 @@ public class MessageUpdater {
 
     private boolean addMissingKeys(JarMessageSource jarMessageSource, MessageKeyConfigurationData configurationData) {
         List<String> addedKeys = new ArrayList<>();
-        for (MessageKeyProperty property : configurationData.getAllMessageProperties()) {
+        for (Property<String> property : configurationData.getAllMessageProperties()) {
             final String key = property.getPath();
-            if (configurationData.getMessage(property) == null) {
+            if (configurationData.getValue(property) == null) {
                 configurationData.setValue(property, jarMessageSource.getMessageFromJar(property));
                 addedKeys.add(key);
             }
