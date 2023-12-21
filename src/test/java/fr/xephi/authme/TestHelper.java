@@ -120,9 +120,20 @@ public final class TestHelper {
             .willAnswer(invocation -> ((Property<?>) invocation.getArgument(0)).getDefaultValue());
     }
 
+    /**
+     * Creates a file with the given name in the provided folder. Throws an exception if the file
+     * could not be created.
+     *
+     * @param folder the folder to create the file in
+     * @param filename the name of the file to create
+     * @return the created file
+     */
     public static File createFile(File folder, String filename) throws IOException {
         File file = new File(folder, filename);
-        file.createNewFile();
+        boolean created = file.createNewFile();
+        if (!created) {
+            throw new IllegalStateException("Could not create file '" + filename + "' in " + folder);
+        }
         return file;
     }
 }

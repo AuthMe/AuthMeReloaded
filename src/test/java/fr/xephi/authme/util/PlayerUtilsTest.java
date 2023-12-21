@@ -16,7 +16,7 @@ import static org.mockito.Mockito.mock;
 class PlayerUtilsTest {
 
     @BeforeAll
-    static void setAuthmeInstance() {
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
