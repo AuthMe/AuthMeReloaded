@@ -151,12 +151,14 @@ public class MySQL extends AbstractSqlDataSource {
             ds.addDataSourceProperty("sslMode", sslMode);
         }else {
             ds.addDataSourceProperty("useSSL", String.valueOf(useSsl));
+
+            // Disabling server certificate verification on need
+            if (!serverCertificateVerification) {
+                ds.addDataSourceProperty("verifyServerCertificate", String.valueOf(false));
+            }
         }
 
         // Disabling server certificate verification on need
-        if (!serverCertificateVerification) {
-            ds.addDataSourceProperty("verifyServerCertificate", String.valueOf(false));
-        }        // Disabling server certificate verification on need
         if (allowPublicKeyRetrieval) {
             ds.addDataSourceProperty("allowPublicKeyRetrieval", String.valueOf(true));
         }
