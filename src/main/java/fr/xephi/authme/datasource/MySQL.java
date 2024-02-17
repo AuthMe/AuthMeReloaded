@@ -41,6 +41,7 @@ public class MySQL extends AbstractSqlDataSource {
     private boolean useSsl;
     private boolean serverCertificateVerification;
     private boolean allowPublicKeyRetrieval;
+    private String sslMode;
     private String host;
     private String port;
     private String username;
@@ -121,6 +122,7 @@ public class MySQL extends AbstractSqlDataSource {
         this.useSsl = settings.getProperty(DatabaseSettings.MYSQL_USE_SSL);
         this.serverCertificateVerification = settings.getProperty(DatabaseSettings.MYSQL_CHECK_SERVER_CERTIFICATE);
         this.allowPublicKeyRetrieval = settings.getProperty(DatabaseSettings.MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL);
+        this.sslMode = settings.getProperty(DatabaseSettings.SSL_MODE);
     }
 
     /**
@@ -145,7 +147,11 @@ public class MySQL extends AbstractSqlDataSource {
         ds.setDriverClassName(this.getDriverClassName());
 
         // Request mysql over SSL
-        ds.addDataSourceProperty("useSSL", String.valueOf(useSsl));
+        if (this instanceof MariaDB) {
+            ds.addDataSourceProperty("sslMode", sslMode);
+        }else {
+            ds.addDataSourceProperty("useSSL", String.valueOf(useSsl));
+        }
 
         // Disabling server certificate verification on need
         if (!serverCertificateVerification) {
