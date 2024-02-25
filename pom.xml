@@ -67,7 +67,7 @@
         <maven.minimumVersion>3.6.3</maven.minimumVersion>
 
         <!-- Dependencies versions -->
-        <spigot.version>1.19.2-R0.1-SNAPSHOT</spigot.version>
+        <spigot.version>1.19.4-R0.1-SNAPSHOT</spigot.version>
 
         <!-- Versioning properties -->
         <project.outputName>AuthMe</project.outputName>
@@ -514,12 +514,11 @@
             </snapshots>
         </repository>
 
-        <!-- SpigotAPI Repo -->
         <repository>
-            <id>spigotmc-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
             <releases>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </releases>
             <snapshots>
                 <enabled>true</enabled>
@@ -712,20 +711,15 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Spigot API, https://www.spigotmc.org/ -->
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
+            <groupId>dev.folia</groupId>
+            <artifactId>folia-api</artifactId>
             <version>${spigot.version}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <artifactId>junit</artifactId>
                     <groupId>junit</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>bungeecord-chat</artifactId>
-                    <groupId>net.md-5</groupId>
                 </exclusion>
                 <exclusion>
                     <groupId>com.googlecode.json-simple</groupId>

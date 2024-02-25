@@ -5,7 +5,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 
 /**
- * Offers utility methods for testing involving a {@link BukkitService} mock.
+ * Offers utility methods for testing involving a {@link FoliaBukkitService} mock.
  */
 public final class BukkitServiceTestHelper {
 
@@ -14,7 +14,7 @@ public final class BukkitServiceTestHelper {
 
     /**
      * Sets a BukkitService mock to run any Runnable it is passed to its method
-     * {@link BukkitService#scheduleSyncTaskFromOptionallyAsyncTask}.
+     * {@link FoliaBukkitService#scheduleSyncTaskFromOptionallyAsyncTask}.
      *
      * @param bukkitService the mock to set behavior on
      */
@@ -28,7 +28,7 @@ public final class BukkitServiceTestHelper {
 
     /**
      * Sets a BukkitService mock to run any Runnable it is passed to its method
-     * {@link BukkitService#runTaskAsynchronously}.
+     * {@link FoliaBukkitService#runTaskAsynchronously}.
      *
      * @param bukkitService the mock to set behavior on
      */
@@ -42,7 +42,7 @@ public final class BukkitServiceTestHelper {
 
     /**
      * Sets a BukkitService mock to run any Runnable it is passed to its method
-     * {@link BukkitService#runTaskOptionallyAsync}.
+     * {@link FoliaBukkitService#runTaskOptionallyAsync}.
      *
      * @param bukkitService the mock to set behavior on
      */
@@ -56,7 +56,7 @@ public final class BukkitServiceTestHelper {
 
     /**
      * Sets a BukkitService mock to run any Runnable it is passed to its method
-     * {@link BukkitService#scheduleSyncDelayedTask(Runnable)}.
+     * {@link FoliaBukkitService#scheduleSyncDelayedTask(Runnable)}.
      *
      * @param bukkitService the mock to set behavior on
      */
@@ -70,7 +70,7 @@ public final class BukkitServiceTestHelper {
 
     /**
      * Sets a BukkitService mock to run any Runnable it is passed to its method
-     * {@link BukkitService#scheduleSyncDelayedTask(Runnable, long)}.
+     * {@link FoliaBukkitService#scheduleSyncDelayedTask(Runnable, long)}.
      *
      * @param bukkitService the mock to set behavior on
      */

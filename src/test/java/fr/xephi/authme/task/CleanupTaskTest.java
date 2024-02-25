@@ -34,7 +34,7 @@ public class CleanupTaskTest {
         given(hasCleanupStore.retrieveAllOfType()).willReturn(services);
 
         // when
-        cleanupTask.run();
+        cleanupTask.accept(mock(CancellableTask.class));
 
         // then
         verify(services.get(0)).performCleanup();

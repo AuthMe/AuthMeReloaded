@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static fr.xephi.authme.util.Utils.logAndSendMessage;
 
@@ -99,7 +100,7 @@ public class PurgeService {
 
         isPurging = true;
         PurgeTask purgeTask = new PurgeTask(this, permissionsManager, sender, names, players);
-        bukkitService.runTaskTimerAsynchronously(purgeTask, 0, 1);
+        bukkitService.runOnAsyncSchedulerAtFixedRate(purgeTask, 0, 50L, TimeUnit.MILLISECONDS);
     }
 
     /**

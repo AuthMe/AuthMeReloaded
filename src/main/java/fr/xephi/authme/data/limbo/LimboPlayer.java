@@ -1,8 +1,8 @@
 package fr.xephi.authme.data.limbo;
 
+import fr.xephi.authme.task.CancellableTask;
 import fr.xephi.authme.task.MessageTask;
 import org.bukkit.Location;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,8 +22,9 @@ public class LimboPlayer {
     private final Location loc;
     private final float walkSpeed;
     private final float flySpeed;
-    private BukkitTask timeoutTask = null;
+    private CancellableTask timeoutTask = null;
     private MessageTask messageTask = null;
+    private CancellableTask messageCancellableTask = null;
     private LimboPlayerState state = LimboPlayerState.PASSWORD_REQUIRED;
 
     public LimboPlayer(Location loc, boolean operator, Collection<UserGroup> groups, boolean fly, float walkSpeed,
@@ -81,7 +82,7 @@ public class LimboPlayer {
      *
      * @return The timeout task associated to the player
      */
-    public BukkitTask getTimeoutTask() {
+    public CancellableTask getTimeoutTask() {
         return timeoutTask;
     }
 
@@ -91,7 +92,7 @@ public class LimboPlayer {
      *
      * @param timeoutTask The task to set
      */
-    public void setTimeoutTask(BukkitTask timeoutTask) {
+    public void setTimeoutTask(CancellableTask timeoutTask) {
         if (this.timeoutTask != null) {
             this.timeoutTask.cancel();
         }
@@ -110,20 +111,22 @@ public class LimboPlayer {
     /**
      * Set the messages task responsible for telling the player to log in or register.
      *
-     * @param messageTask The message task to set
+     * @param messageTask            The message task to set
+     * @param messageCancellableTask The related cancellable task
      */
-    public void setMessageTask(MessageTask messageTask) {
-        if (this.messageTask != null) {
-            this.messageTask.cancel();
+    public void setMessageTask(MessageTask messageTask, CancellableTask messageCancellableTask) {
+        if (this.messageCancellableTask != null) {
+            this.messageCancellableTask.cancel();
         }
         this.messageTask = messageTask;
+        this.messageCancellableTask = messageCancellableTask;
     }
 
     /**
      * Clears all tasks associated to the player.
      */
     public void clearTasks() {
-        setMessageTask(null);
+        setMessageTask(null, messageCancellableTask);
         setTimeoutTask(null);
     }
 

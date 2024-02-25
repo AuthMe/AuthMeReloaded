@@ -6,12 +6,12 @@ import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.api.v3.AuthMeApi;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.initialization.BukkitServiceProvider;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.DataSourceProvider;
 import fr.xephi.authme.initialization.OnShutdownPlayerSaver;
 import fr.xephi.authme.initialization.OnStartupTasks;
 import fr.xephi.authme.initialization.SettingsProvider;
-import fr.xephi.authme.initialization.TaskCloser;
 import fr.xephi.authme.listener.BlockListener;
 import fr.xephi.authme.listener.EntityListener;
 import fr.xephi.authme.listener.PlayerListener;
@@ -39,12 +39,11 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import static fr.xephi.authme.service.BukkitService.TICKS_PER_MINUTE;
 import static fr.xephi.authme.util.Utils.isClassLoaded;
 
 /**
@@ -55,7 +54,7 @@ public class AuthMe extends JavaPlugin {
     // Constants
     private static final String PLUGIN_NAME = "AuthMeReloaded";
     private static final String LOG_FILENAME = "authme.log";
-    private static final int CLEANUP_INTERVAL = 5 * TICKS_PER_MINUTE;
+    private static final int CLEANUP_INTERVAL_MINUTES = 5;
 
     // Version and build number values
     private static String pluginVersion = "N/D";
@@ -161,7 +160,7 @@ public class AuthMe extends JavaPlugin {
 
         // Schedule clean up task
         CleanupTask cleanupTask = injector.getSingleton(CleanupTask.class);
-        cleanupTask.runTaskTimerAsynchronously(this, CLEANUP_INTERVAL, CLEANUP_INTERVAL);
+        bukkitService.runOnAsyncSchedulerAtFixedRate(cleanupTask, CLEANUP_INTERVAL_MINUTES, CLEANUP_INTERVAL_MINUTES, TimeUnit.MINUTES);
 
         // Do a backup on start
         backupService.doBackup(BackupService.BackupCause.START);
@@ -207,7 +206,7 @@ public class AuthMe extends JavaPlugin {
         injector.register(AuthMe.class, this);
         injector.register(Server.class, getServer());
         injector.register(PluginManager.class, getServer().getPluginManager());
-        injector.register(BukkitScheduler.class, getServer().getScheduler());
+        injector.registerProvider(BukkitService.class, BukkitServiceProvider.class);
         injector.provide(DataFolder.class, getDataFolder());
         injector.registerProvider(Settings.class, SettingsProvider.class);
         injector.registerProvider(DataSource.class, DataSourceProvider.class);
@@ -313,8 +312,13 @@ public class AuthMe extends JavaPlugin {
             backupService.doBackup(BackupService.BackupCause.STOP);
         }
 
-        // Wait for tasks and close data source
-        new TaskCloser(this, database).run();
+        // Wait for tasks
+        bukkitService.waitAllTasks();
+
+        // Close data source
+        if (database != null) {
+            database.closeConnection();
+        }
 
         // Disabled correctly
         Consumer<String> infoLogMethod = logger == null ? getLogger()::info : logger::info;

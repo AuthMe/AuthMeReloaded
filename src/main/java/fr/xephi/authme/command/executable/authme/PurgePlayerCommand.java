@@ -30,8 +30,7 @@ public class PurgePlayerCommand implements ExecutableCommand {
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments) {
         String option = arguments.size() > 1 ? arguments.get(1) : null;
-        bukkitService.runTaskAsynchronously(
-            () -> executeCommand(sender, arguments.get(0), option));
+        bukkitService.runOnAsyncSchedulerNow(task -> executeCommand(sender, arguments.get(0), option));
     }
 
     private void executeCommand(CommandSender sender, String name, String option) {

@@ -33,7 +33,7 @@ public class AccountsCommand implements ExecutableCommand {
 
         // Assumption: a player name cannot contain '.'
         if (playerName.contains(".")) {
-            bukkitService.runTaskAsynchronously(() -> {
+            bukkitService.runOnAsyncSchedulerNow(task -> {
                 List<String> accountList = dataSource.getAllAuthsByIp(playerName);
                 if (accountList.isEmpty()) {
                     sender.sendMessage("[AuthMe] This IP does not exist in the database.");
@@ -44,7 +44,7 @@ public class AccountsCommand implements ExecutableCommand {
                 }
             });
         } else {
-            bukkitService.runTaskAsynchronously(() -> {
+            bukkitService.runOnAsyncSchedulerNow(task -> {
                 PlayerAuth auth = dataSource.getAuth(playerName.toLowerCase(Locale.ROOT));
                 if (auth == null) {
                     commonService.send(sender, MessageKey.UNKNOWN_USER);

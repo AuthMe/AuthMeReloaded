@@ -127,7 +127,7 @@ public class GeoIpService {
 
         // File is outdated or doesn't exist - let's try to download the data file!
         // use bukkit's cached threads
-        bukkitService.runTaskAsynchronously(this::updateDatabase);
+        bukkitService.runOnAsyncSchedulerNow(task -> this.updateDatabase());
         return false;
     }
 

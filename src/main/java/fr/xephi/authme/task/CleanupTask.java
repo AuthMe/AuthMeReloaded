@@ -5,11 +5,12 @@ import fr.xephi.authme.initialization.HasCleanup;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.inject.Inject;
+import java.util.function.Consumer;
 
 /**
  * Task run periodically to invoke the cleanup task on services.
  */
-public class CleanupTask extends BukkitRunnable {
+public class CleanupTask implements Consumer<CancellableTask> {
 
     @Inject
     private SingletonStore<HasCleanup> hasCleanupStore;
@@ -18,7 +19,7 @@ public class CleanupTask extends BukkitRunnable {
     }
 
     @Override
-    public void run() {
+    public void accept(CancellableTask cancellableTask) {
         hasCleanupStore.retrieveAllOfType()
             .forEach(HasCleanup::performCleanup);
     }

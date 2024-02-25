@@ -14,7 +14,7 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.process.login.ProcessSyncPlayerLogin;
 import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.FoliaBukkitService;
 import fr.xephi.authme.service.bungeecord.BungeeReceiver;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.settings.Settings;
@@ -35,16 +35,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.logging.Logger;
 
 import static fr.xephi.authme.settings.properties.AuthMeSettingsRetriever.buildConfigurationData;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -107,7 +104,7 @@ public class AuthMeInitializationTest {
         injector.register(AuthMe.class, authMe);
         injector.register(Settings.class, settings);
         injector.register(DataSource.class, mock(DataSource.class));
-        injector.register(BukkitService.class, mock(BukkitService.class));
+        injector.register(FoliaBukkitService.class, mock(FoliaBukkitService.class));
 
         // when
         authMe.instantiateServices(injector);

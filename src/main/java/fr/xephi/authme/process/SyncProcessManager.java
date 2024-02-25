@@ -1,11 +1,14 @@
 package fr.xephi.authme.process;
 
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.process.login.ProcessSyncPlayerLogin;
 import fr.xephi.authme.process.logout.ProcessSyncPlayerLogout;
 import fr.xephi.authme.process.quit.ProcessSyncPlayerQuit;
 import fr.xephi.authme.process.register.ProcessSyncEmailRegister;
 import fr.xephi.authme.process.register.ProcessSyncPasswordRegister;
 import fr.xephi.authme.service.BukkitService;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -20,6 +23,9 @@ import java.util.List;
  * @see Management
  */
 public class SyncProcessManager {
+
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(SyncProcessManager.class);
 
     @Inject
     private BukkitService bukkitService;
@@ -37,26 +43,39 @@ public class SyncProcessManager {
 
 
     public void processSyncEmailRegister(Player player) {
-        runTask(() -> processSyncEmailRegister.processEmailRegister(player));
+        runTask("EmailRegister", player, () -> processSyncEmailRegister.processEmailRegister(player));
     }
 
     public void processSyncPasswordRegister(Player player) {
-        runTask(() -> processSyncPasswordRegister.processPasswordRegister(player));
+        runTask("PasswordRegister", player, () -> processSyncPasswordRegister.processPasswordRegister(player));
     }
 
     public void processSyncPlayerLogout(Player player) {
-        runTask(() -> processSyncPlayerLogout.processSyncLogout(player));
+        runTask("PlayerLogout", player, () -> processSyncPlayerLogout.processSyncLogout(player));
     }
 
     public void processSyncPlayerLogin(Player player, boolean isFirstLogin, List<String> authsWithSameIp) {
-        runTask(() -> processSyncPlayerLogin.processPlayerLogin(player, isFirstLogin, authsWithSameIp));
+        runTask("PlayerLogin", player, () -> processSyncPlayerLogin.processPlayerLogin(player, isFirstLogin, authsWithSameIp));
     }
 
     public void processSyncPlayerQuit(Player player, boolean wasLoggedIn) {
-        runTask(() -> processSyncPlayerQuit.processSyncQuit(player, wasLoggedIn));
+        runTask("PlayerQuit", null, () -> processSyncPlayerQuit.processSyncQuit(player, wasLoggedIn));
     }
 
-    private void runTask(Runnable runnable) {
-        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(runnable);
+    private void runTask(String taskName, Entity entity, Runnable runnable) {
+        if (entity == null) {
+            bukkitService.runOnGlobalRegionScheduler(task -> runnable.run());
+        } else {
+            bukkitService.executeOptionallyOnEntityScheduler(entity, runnable, () -> {
+                String entityName;
+                try {
+                    entityName = entity.getName();
+                } catch (Exception ex) {
+                    entityName = "<none>";
+                }
+                // todo: should the tasks be executed anyway or not? I left this warning message to remind about this doubt.
+                logger.warning("Task " + taskName + " has not been executed because the entity " + entityName + " is not available anymore.");
+            });
+        }
     }
 }

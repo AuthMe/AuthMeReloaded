@@ -56,7 +56,7 @@ public class ConverterCommand implements ExecutableCommand {
         final Converter converter = converterFactory.newInstance(converterClass);
 
         // Run the convert job
-        bukkitService.runTaskAsynchronously(() -> {
+        bukkitService.runOnAsyncSchedulerNow(task -> {
             try {
                 converter.execute(sender);
             } catch (Exception e) {

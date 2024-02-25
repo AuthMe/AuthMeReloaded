@@ -73,7 +73,7 @@ public class RecoverEmailCommand extends PlayerCommand {
             return;
         }
 
-        bukkitService.runTaskAsynchronously(() -> {
+        bukkitService.runOnAsyncSchedulerNow(task -> {
             if (recoveryCodeService.isRecoveryCodeNeeded()) {
                 // Recovery code is needed; generate and send one
                 recoveryService.createAndSendRecoveryCode(player, email);

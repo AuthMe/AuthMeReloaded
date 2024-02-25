@@ -357,9 +357,9 @@ public class PlayerListener implements Listener {
         Location spawn = spawnLoader.getSpawnLocation(player);
         if (spawn != null && spawn.getWorld() != null) {
             if (!player.getWorld().equals(spawn.getWorld())) {
-                player.teleport(spawn);
+                bukkitService.teleport(player, spawn);
             } else if (spawn.distance(player.getLocation()) > settings.getProperty(ALLOWED_MOVEMENT_RADIUS)) {
-                player.teleport(spawn);
+                bukkitService.teleport(player, spawn);
             }
         }
     }
@@ -498,7 +498,7 @@ public class PlayerListener implements Listener {
              * @note little hack cause InventoryOpenEvent cannot be cancelled for
              * real, cause no packet is sent to server by client for the main inv
              */
-            bukkitService.scheduleSyncDelayedTask(player::closeInventory, 1);
+            bukkitService.runOnEntitySchedulerDelayed(player, task -> player.closeInventory(), null, 1);
         }
     }
 

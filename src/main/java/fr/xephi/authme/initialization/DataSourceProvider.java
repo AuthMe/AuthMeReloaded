@@ -90,7 +90,7 @@ public class DataSourceProvider implements Provider<DataSource> {
     }
 
     private void checkDataSourceSize(DataSource dataSource) {
-        bukkitService.runTaskAsynchronously(() -> {
+        bukkitService.runOnAsyncSchedulerNow(task -> {
             int accounts = dataSource.getAccountsRegistered();
             if (accounts >= SQLITE_MAX_SIZE) {
                 logger.warning("YOU'RE USING THE SQLITE DATABASE WITH "
