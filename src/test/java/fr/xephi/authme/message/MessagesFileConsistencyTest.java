@@ -4,25 +4,25 @@ import ch.jalu.configme.resource.PropertyReader;
 import ch.jalu.configme.resource.YamlFileReader;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.util.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests that the project's default language file contains a text for all message keys.
  * <p>
  * Translators can change the file name in {@link #MESSAGES_FILE} to validate their translation.
  */
-public class MessagesFileConsistencyTest {
+class MessagesFileConsistencyTest {
 
     private static final String MESSAGES_FILE = MessagePathHelper.DEFAULT_MESSAGES_FILE;
 
     @Test
-    public void shouldHaveAllMessages() {
+    void shouldHaveAllMessages() {
         File file = TestHelper.getJarFile("/" + MESSAGES_FILE);
         PropertyReader reader = new YamlFileReader(file);
         List<String> errors = new ArrayList<>();

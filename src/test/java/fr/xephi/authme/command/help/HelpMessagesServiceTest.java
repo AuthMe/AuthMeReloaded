@@ -5,46 +5,42 @@ import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.TestCommandsUtil;
-import fr.xephi.authme.message.AbstractMessageFileHandler;
 import fr.xephi.authme.message.HelpMessagesFileHandler;
 import fr.xephi.authme.message.MessagePathHelper;
 import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 
 import static fr.xephi.authme.command.TestCommandsUtil.getCommandWithLabel;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
  * Test for {@link HelpMessagesService}.
  */
-public class HelpMessagesServiceTest {
+class HelpMessagesServiceTest {
 
     private static final String TEST_FILE = TestHelper.PROJECT_ROOT + "command/help/help_test.yml";
     private static final Collection<CommandDescription> COMMANDS = TestCommandsUtil.generateCommands();
 
     private HelpMessagesService helpMessagesService;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-    private File dataFolder;
+    @TempDir
+    File dataFolder;
 
-    @Before
-    public void initializeHandler() throws IOException {
-        dataFolder = temporaryFolder.newFolder();
+    @BeforeEach
+    void initializeHandler() throws IOException {
         new File(dataFolder, "messages").mkdirs();
         File messagesFile = new File(dataFolder, MessagePathHelper.createHelpMessageFilePath("test"));
         Files.copy(TestHelper.getJarFile(TEST_FILE), messagesFile);
@@ -54,7 +50,7 @@ public class HelpMessagesServiceTest {
     }
 
     @Test
-    public void shouldReturnLocalizedCommand() {
+    void shouldReturnLocalizedCommand() {
         // given
         CommandDescription command = getCommandWithLabel(COMMANDS, "authme", "register");
 
@@ -74,7 +70,7 @@ public class HelpMessagesServiceTest {
     }
 
     @Test
-    public void shouldReturnLocalizedCommandWithDefaults() {
+    void shouldReturnLocalizedCommandWithDefaults() {
         // given
         CommandDescription command = getCommandWithLabel(COMMANDS, "authme", "login");
 
@@ -90,7 +86,7 @@ public class HelpMessagesServiceTest {
     }
 
     @Test
-    public void shouldReturnSameCommandForNoLocalization() {
+    void shouldReturnSameCommandForNoLocalization() {
         // given
         CommandDescription command = getCommandWithLabel(COMMANDS, "email");
 
@@ -102,7 +98,7 @@ public class HelpMessagesServiceTest {
     }
 
     @Test
-    public void shouldKeepChildrenInLocalCommand() {
+    void shouldKeepChildrenInLocalCommand() {
         // given
         CommandDescription command = getCommandWithLabel(COMMANDS, "authme");
 
@@ -116,7 +112,7 @@ public class HelpMessagesServiceTest {
     }
 
     @Test
-    public void shouldGetTranslationsForSectionAndMessage() {
+    void shouldGetTranslationsForSectionAndMessage() {
         // given / when / then
         assertThat(helpMessagesService.getMessage(DefaultPermission.OP_ONLY), equalTo("only op"));
         assertThat(helpMessagesService.getMessage(HelpMessage.RESULT), equalTo("res."));
@@ -124,7 +120,7 @@ public class HelpMessagesServiceTest {
     }
 
     @Test
-    public void shouldGetLocalCommandDescription() {
+    void shouldGetLocalCommandDescription() {
         // given
         CommandDescription command = getCommandWithLabel(COMMANDS, "authme", "register");
 
@@ -136,7 +132,7 @@ public class HelpMessagesServiceTest {
     }
 
     @Test
-    public void shouldFallbackToDescriptionOnCommandObject() {
+    void shouldFallbackToDescriptionOnCommandObject() {
         // given
         CommandDescription command = getCommandWithLabel(COMMANDS, "unregister");
 
@@ -151,9 +147,7 @@ public class HelpMessagesServiceTest {
         Settings settings = mock(Settings.class);
         given(settings.getProperty(PluginSettings.MESSAGES_LANGUAGE)).willReturn("test");
 
-        HelpMessagesFileHandler messagesFileHandler = ReflectionTestUtils.newInstance(HelpMessagesFileHandler.class);
-        ReflectionTestUtils.setField(AbstractMessageFileHandler.class, messagesFileHandler, "settings", settings);
-        ReflectionTestUtils.setField(AbstractMessageFileHandler.class, messagesFileHandler, "dataFolder", dataFolder);
+        HelpMessagesFileHandler messagesFileHandler = new HelpMessagesFileHandler(dataFolder, settings);
         ReflectionTestUtils.invokePostConstructMethods(messagesFileHandler);
         return messagesFileHandler;
     }

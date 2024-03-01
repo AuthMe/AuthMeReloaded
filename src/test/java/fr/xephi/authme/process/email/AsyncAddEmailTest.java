@@ -11,12 +11,13 @@ import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import org.bukkit.entity.Player;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.util.function.Function;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -29,8 +30,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link AsyncAddEmail}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class AsyncAddEmailTest {
+@ExtendWith(MockitoExtension.class)
+class AsyncAddEmailTest {
 
     @InjectMocks
     private AsyncAddEmail asyncAddEmail;
@@ -56,13 +57,13 @@ public class AsyncAddEmailTest {
     @Mock
     private BukkitService bukkitService;
 
-    @BeforeClass
-    public static void setUp() {
+    @BeforeAll
+    static void setUp() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldAddEmail() {
+    void shouldAddEmail() {
         // given
         String email = "my.mail@example.org";
         given(player.getName()).willReturn("testEr");
@@ -87,7 +88,7 @@ public class AsyncAddEmailTest {
     }
 
     @Test
-    public void shouldReturnErrorWhenMailCannotBeSaved() {
+    void shouldReturnErrorWhenMailCannotBeSaved() {
         // given
         String email = "my.mail@example.org";
         given(player.getName()).willReturn("testEr");
@@ -110,7 +111,7 @@ public class AsyncAddEmailTest {
     }
 
     @Test
-    public void shouldNotAddMailIfPlayerAlreadyHasEmail() {
+    void shouldNotAddMailIfPlayerAlreadyHasEmail() {
         // given
         given(player.getName()).willReturn("my_Player");
         given(playerCache.isAuthenticated("my_player")).willReturn(true);
@@ -127,7 +128,7 @@ public class AsyncAddEmailTest {
     }
 
     @Test
-    public void shouldNotAddMailIfItIsInvalid() {
+    void shouldNotAddMailIfItIsInvalid() {
         // given
         String email = "invalid_mail";
         given(player.getName()).willReturn("my_Player");
@@ -146,7 +147,7 @@ public class AsyncAddEmailTest {
     }
 
     @Test
-    public void shouldNotAddMailIfAlreadyUsed() {
+    void shouldNotAddMailIfAlreadyUsed() {
         // given
         String email = "player@mail.tld";
         given(player.getName()).willReturn("TestName");
@@ -166,7 +167,7 @@ public class AsyncAddEmailTest {
     }
 
     @Test
-    public void shouldShowLoginMessage() {
+    void shouldShowLoginMessage() {
         // given
         given(player.getName()).willReturn("Username12");
         given(playerCache.isAuthenticated("username12")).willReturn(false);
@@ -181,7 +182,7 @@ public class AsyncAddEmailTest {
     }
 
     @Test
-    public void shouldShowRegisterMessage() {
+    void shouldShowRegisterMessage() {
         // given
         given(player.getName()).willReturn("user");
         given(playerCache.isAuthenticated("user")).willReturn(false);
@@ -196,7 +197,7 @@ public class AsyncAddEmailTest {
     }
 
     @Test
-    public void shouldNotAddOnCancelledEvent() {
+    void shouldNotAddOnCancelledEvent() {
         // given
         String email = "player@mail.tld";
         given(player.getName()).willReturn("TestName");

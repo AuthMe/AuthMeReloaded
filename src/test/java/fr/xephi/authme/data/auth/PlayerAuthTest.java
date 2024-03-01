@@ -1,19 +1,19 @@
 package fr.xephi.authme.data.auth;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test for {@link PlayerAuth} and its builder.
  */
-public class PlayerAuthTest {
+class PlayerAuthTest {
 
     @Test
-    public void shouldRemoveDatabaseDefaults() {
+    void shouldRemoveDatabaseDefaults() {
         // given / when
         PlayerAuth auth = PlayerAuth.builder()
             .name("Bobby")
@@ -32,7 +32,7 @@ public class PlayerAuthTest {
     }
 
     @Test
-    public void shouldThrowForMissingName() {
+    void shouldThrowForMissingName() {
         try {
             // given / when
             PlayerAuth.builder()
@@ -48,7 +48,7 @@ public class PlayerAuthTest {
     }
 
     @Test
-    public void shouldCreatePlayerAuthWithNullValues() {
+    void shouldCreatePlayerAuthWithNullValues() {
         // given / when
         PlayerAuth auth = PlayerAuth.builder()
             .name("Charlie")

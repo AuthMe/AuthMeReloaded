@@ -10,18 +10,18 @@ import fr.xephi.authme.service.ValidationService.ValidationResult;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
@@ -34,8 +34,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link ChangePasswordCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class ChangePasswordCommandTest {
+@ExtendWith(MockitoExtension.class)
+class ChangePasswordCommandTest {
 
     @InjectMocks
     private ChangePasswordCommand command;
@@ -56,7 +56,7 @@ public class ChangePasswordCommandTest {
     private Management management;
 
     @Test
-    public void shouldRejectNonPlayerSender() {
+    void shouldRejectNonPlayerSender() {
         // given
         CommandSender sender = mock(BlockCommandSender.class);
 
@@ -68,7 +68,7 @@ public class ChangePasswordCommandTest {
     }
 
     @Test
-    public void shouldRejectNotLoggedInPlayer() {
+    void shouldRejectNotLoggedInPlayer() {
         // given
         CommandSender sender = initPlayerWithName("name", false);
 
@@ -80,7 +80,7 @@ public class ChangePasswordCommandTest {
     }
 
     @Test
-    public void shouldRejectInvalidPassword() {
+    void shouldRejectInvalidPassword() {
         // given
         Player sender = initPlayerWithName("abc12", true);
         String password = "newPW";
@@ -97,7 +97,7 @@ public class ChangePasswordCommandTest {
     }
 
     @Test
-    public void shouldForwardTheDataForValidPassword() {
+    void shouldForwardTheDataForValidPassword() {
         // given
         String oldPass = "oldpass";
         String newPass = "abc123";
@@ -116,7 +116,7 @@ public class ChangePasswordCommandTest {
     }
 
     @Test
-    public void shouldDefineArgumentMismatchMessage() {
+    void shouldDefineArgumentMismatchMessage() {
         // given / when / then
         assertThat(command.getArgumentsMismatchMessage(), equalTo(MessageKey.USAGE_CHANGE_PASSWORD));
     }

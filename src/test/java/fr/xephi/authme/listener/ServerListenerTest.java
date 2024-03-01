@@ -9,12 +9,12 @@ import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.PluginEvent;
 import org.bukkit.plugin.Plugin;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -26,8 +26,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 /**
  * Test for {@link ServerListener}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class ServerListenerTest {
+@ExtendWith(MockitoExtension.class)
+class ServerListenerTest {
 
     private static final String ESSENTIALS = "Essentials";
     private static final String ESSENTIALS_SPAWN = "EssentialsSpawn";
@@ -50,13 +50,13 @@ public class ServerListenerTest {
     @Mock
     private SpawnLoader spawnLoader;
 
-    @BeforeClass
-    public static void initLogger() {
+    @BeforeAll
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldForwardPluginNameOnEnable() {
+    void shouldForwardPluginNameOnEnable() {
         checkEnableHandling(ESSENTIALS,       () -> verify(pluginHookService).tryHookToEssentials());
         checkEnableHandling(ESSENTIALS_SPAWN, () -> verify(spawnLoader).loadEssentialsSpawn());
         checkEnableHandling(CMI,              () -> {
@@ -69,7 +69,7 @@ public class ServerListenerTest {
     }
 
     @Test
-    public void shouldForwardPluginNameOnDisable() {
+    void shouldForwardPluginNameOnDisable() {
         checkDisableHandling(ESSENTIALS,       () -> verify(pluginHookService).unhookEssentials());
         checkDisableHandling(ESSENTIALS_SPAWN, () -> verify(spawnLoader).unloadEssentialsSpawn());
         checkDisableHandling(CMI,              () -> {

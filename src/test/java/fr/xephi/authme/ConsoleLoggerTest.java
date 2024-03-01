@@ -4,15 +4,14 @@ import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -22,13 +21,13 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -40,23 +39,22 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 /**
  * Test for {@link ConsoleLogger}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class ConsoleLoggerTest {
+@ExtendWith(MockitoExtension.class)
+class ConsoleLoggerTest {
 
     private ConsoleLogger consoleLogger;
 
     @Mock
     private Logger logger;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @TempDir
+    File tempFolder;
 
     private File logFile;
 
-    @Before
-    public void setMockLogger() throws IOException {
-        File folder = temporaryFolder.newFolder();
-        File logFile = new File(folder, "authme.log");
+    @BeforeEach
+    void setMockLogger() throws IOException {
+        File logFile = new File(tempFolder, "authme.log");
         if (!logFile.createNewFile()) {
             throw new IOException("Could not create file '" + logFile.getPath() + "'");
         }
@@ -65,8 +63,8 @@ public class ConsoleLoggerTest {
         this.consoleLogger = new ConsoleLogger("test");
     }
 
-    @After
-    public void closeFileHandlers() {
+    @AfterEach
+    void closeFileHandlers() {
         ConsoleLogger.closeFileWriter();
     }
 
@@ -75,13 +73,13 @@ public class ConsoleLoggerTest {
      * is that we no longer enable logging to a file as the log file we've supplied will no longer
      * be around after this test class has finished.
      */
-    @AfterClass
-    public static void resetConsoleToDefault() {
+    @AfterAll
+    static void resetConsoleToDefault() {
         ConsoleLogger.initializeSharedSettings(newSettings(false, LogLevel.INFO));
     }
 
     @Test
-    public void shouldLogToFile() throws IOException {
+    void shouldLogToFile() throws IOException {
         // given
         Settings settings = newSettings(true, LogLevel.FINE);
         ConsoleLogger.initializeSharedSettings(settings);
@@ -102,7 +100,7 @@ public class ConsoleLoggerTest {
     }
 
     @Test
-    public void shouldNotLogToFile() {
+    void shouldNotLogToFile() {
         // given
         Settings settings = newSettings(false, LogLevel.DEBUG);
         ConsoleLogger.initializeSharedSettings(settings);
@@ -120,9 +118,10 @@ public class ConsoleLoggerTest {
     }
 
     @Test
-    public void shouldLogStackTraceToFile() throws IOException {
+    void shouldLogStackTraceToFile() throws IOException {
         // given
-        Settings settings = newSettings(true, LogLevel.INFO);
+        Settings settings = mock(Settings.class);
+        given(settings.getProperty(SecuritySettings.USE_LOGGING)).willReturn(true);
         ConsoleLogger.initializeSharedSettings(settings);
         Exception e = new IllegalStateException("Test exception message");
 
@@ -146,7 +145,7 @@ public class ConsoleLoggerTest {
     }
 
     @Test
-    public void shouldSupportVariousDebugMethods() throws IOException {
+    void shouldSupportVariousDebugMethods() throws IOException {
         // given
         Settings settings = newSettings(true, LogLevel.DEBUG);
         ConsoleLogger.initializeSharedSettings(settings);
@@ -174,7 +173,7 @@ public class ConsoleLoggerTest {
     }
 
     @Test
-    public void shouldCloseFileWriterDespiteExceptionOnFlush() throws IOException {
+    void shouldCloseFileWriterDespiteExceptionOnFlush() throws IOException {
         // given
         FileWriter fileWriter = mock(FileWriter.class);
         doThrow(new IOException("Error during flush")).when(fileWriter).flush();
@@ -190,7 +189,7 @@ public class ConsoleLoggerTest {
     }
 
     @Test
-    public void shouldHandleExceptionOnFileWriterClose() throws IOException {
+    void shouldHandleExceptionOnFileWriterClose() throws IOException {
         // given
         FileWriter fileWriter = mock(FileWriter.class);
         doThrow(new IOException("Cannot close")).when(fileWriter).close();

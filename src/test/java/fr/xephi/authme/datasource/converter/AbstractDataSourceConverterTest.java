@@ -5,8 +5,8 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSourceType;
 import org.bukkit.command.CommandSender;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
@@ -28,15 +28,15 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link AbstractDataSourceConverter}.
  */
-public class AbstractDataSourceConverterTest {
+class AbstractDataSourceConverterTest {
 
-    @BeforeClass
-    public static void initLogger() {
+    @BeforeAll
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldThrowForDestinationTypeMismatch() {
+    void shouldThrowForDestinationTypeMismatch() {
         // given
         DataSource destination = mock(DataSource.class);
         given(destination.getType()).willReturn(DataSourceType.MYSQL);
@@ -55,7 +55,7 @@ public class AbstractDataSourceConverterTest {
     }
 
     @Test
-    public void shouldHandleSourceThrowingException() {
+    void shouldHandleSourceThrowingException() {
         // given
         DataSource source = mock(DataSource.class);
         DataSource destination = mock(DataSource.class);
@@ -76,7 +76,7 @@ public class AbstractDataSourceConverterTest {
     }
 
     @Test
-    public void shouldConvertAndSkipExistingPlayers() {
+    void shouldConvertAndSkipExistingPlayers() {
         // given
         DataSource source = mock(DataSource.class);
         DataSource destination = mock(DataSource.class);

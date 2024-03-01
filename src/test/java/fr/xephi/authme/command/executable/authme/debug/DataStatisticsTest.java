@@ -15,13 +15,13 @@ import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,9 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -40,8 +40,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link DataStatistics}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class DataStatisticsTest {
+@ExtendWith(MockitoExtension.class)
+class DataStatisticsTest {
 
     @InjectMocks
     private DataStatistics dataStatistics;
@@ -55,15 +55,15 @@ public class DataStatisticsTest {
     @Mock
     private SingletonStore<Object> singletonStore;
 
-    @Before
-    public void setUpLimboCacheMap() {
+    @BeforeEach
+    void setUpLimboCacheMap() {
         Map<String, LimboPlayer> limboMap = new HashMap<>();
         limboMap.put("test", mock(LimboPlayer.class));
         ReflectionTestUtils.setField(LimboService.class, limboService, "entries", limboMap);
     }
 
     @Test
-    public void shouldOutputStatistics() {
+    void shouldOutputStatistics() {
         // given
         CommandSender sender = mock(CommandSender.class);
         given(singletonStore.retrieveAllOfType()).willReturn(mockListOfSize(Object.class, 7));
@@ -96,7 +96,7 @@ public class DataStatisticsTest {
     }
 
     @Test
-    public void shouldOutputCachedDataSourceStatistics() {
+    void shouldOutputCachedDataSourceStatistics() {
         // given
         CacheDataSource cacheDataSource = mock(CacheDataSource.class);
         LoadingCache<String, Optional<PlayerAuth>> cache = mock(LoadingCache.class);

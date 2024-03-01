@@ -8,8 +8,8 @@ import fr.xephi.authme.TestHelper;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,12 +22,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static fr.xephi.authme.TestHelper.getJarFile;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests that the permissions listed in plugin.yml correspond to the ones in the code.
  */
-public class PermissionConsistencyTest {
+class PermissionConsistencyTest {
 
     /** Wildcard permissions (present in plugin.yml but not in the codebase). */
     private static final Set<String> PLUGIN_YML_PERMISSIONS_WILDCARDS =
@@ -45,8 +45,8 @@ public class PermissionConsistencyTest {
     /** All permissions listed in plugin.yml. */
     private static Map<String, PermissionDefinition> pluginYmlPermissions;
 
-    @BeforeClass
-    public static void gatherPermissionNodes() {
+    @BeforeAll
+    static void gatherPermissionNodes() {
         permissionClasses = new ClassCollector(TestHelper.SOURCES_FOLDER, TestHelper.PROJECT_ROOT + "permission")
             .collectClasses(PermissionNode.class).stream()
             .filter(clz -> !clz.isInterface())
@@ -56,7 +56,7 @@ public class PermissionConsistencyTest {
     }
 
     @Test
-    public void shouldHaveAllPermissionsInPluginYml() {
+    void shouldHaveAllPermissionsInPluginYml() {
         // given
         List<String> errors = new ArrayList<>();
 
@@ -77,7 +77,7 @@ public class PermissionConsistencyTest {
     }
 
     @Test
-    public void shouldNotHaveUnknownPermissionsInPluginYml() {
+    void shouldNotHaveUnknownPermissionsInPluginYml() {
         // given
         List<String> errors = new ArrayList<>();
 

@@ -6,12 +6,12 @@ import fr.xephi.authme.command.FoundCommandResult;
 import fr.xephi.authme.command.help.HelpProvider;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,8 +26,8 @@ import static fr.xephi.authme.command.help.HelpProvider.SHOW_COMMAND;
 import static fr.xephi.authme.command.help.HelpProvider.SHOW_DESCRIPTION;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -39,8 +39,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link HelpCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class HelpCommandTest {
+@ExtendWith(MockitoExtension.class)
+class HelpCommandTest {
 
     @InjectMocks
     private HelpCommand command;
@@ -52,7 +52,7 @@ public class HelpCommandTest {
     private HelpProvider helpProvider;
 
     @Test
-    public void shouldHandleMissingBaseCommand() {
+    void shouldHandleMissingBaseCommand() {
         // given
         List<String> arguments = asList("some", "command");
         CommandSender sender = mock(CommandSender.class);
@@ -68,7 +68,7 @@ public class HelpCommandTest {
     }
 
     @Test
-    public void shouldHandleWrongCommandWithSuggestion() {
+    void shouldHandleWrongCommandWithSuggestion() {
         // given
         List<String> arguments = asList("authme", "ragister", "test");
         CommandSender sender = mock(CommandSender.class);
@@ -88,7 +88,7 @@ public class HelpCommandTest {
     }
 
     @Test
-    public void shouldHandleWrongCommandWithoutSuggestion() {
+    void shouldHandleWrongCommandWithoutSuggestion() {
         List<String> arguments = asList("authme", "ragister", "test");
         CommandSender sender = mock(CommandSender.class);
         FoundCommandResult foundCommandResult = new FoundCommandResult(null, asList("authme", "ragister"),
@@ -106,7 +106,7 @@ public class HelpCommandTest {
     }
 
     @Test
-    public void shouldShowChildrenOfBaseCommand() {
+    void shouldShowChildrenOfBaseCommand() {
         List<String> arguments = singletonList("authme");
         CommandSender sender = mock(CommandSender.class);
         CommandDescription commandDescription = mock(CommandDescription.class);
@@ -125,7 +125,7 @@ public class HelpCommandTest {
     }
 
     @Test
-    public void shouldShowDetailedHelpForChildCommand() {
+    void shouldShowDetailedHelpForChildCommand() {
         List<String> arguments = asList("authme", "getpos");
         CommandSender sender = mock(CommandSender.class);
         CommandDescription commandDescription = mock(CommandDescription.class);

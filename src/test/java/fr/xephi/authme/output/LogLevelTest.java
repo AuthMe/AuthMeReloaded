@@ -1,18 +1,18 @@
 package fr.xephi.authme.output;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static java.lang.String.format;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link LogLevel}.
  */
-public class LogLevelTest {
+class LogLevelTest {
 
     @Test
-    public void shouldIncludeProperLevels() {
+    void shouldIncludeProperLevels() {
         checkLevelInclusion(LogLevel.INFO, true, false, false);
         checkLevelInclusion(LogLevel.FINE, true, true, false);
         checkLevelInclusion(LogLevel.DEBUG, true, true, true);

@@ -13,14 +13,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -31,7 +31,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link PluginHookService}.
  */
-public class PluginHookServiceTest {
+class PluginHookServiceTest {
 
     /** The plugin name of Essentials. */
     private static final String ESSENTIALS = "Essentials";
@@ -40,13 +40,13 @@ public class PluginHookServiceTest {
     /** The plugin name of Multiverse-Core. */
     private static final String MULTIVERSE = "Multiverse-Core";
 
-    @BeforeClass
-    public static void setLogger() {
+    @BeforeAll
+    static void setLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldHookIntoEssentials() {
+    void shouldHookIntoEssentials() {
         // given
         PluginManager pluginManager = mock(PluginManager.class);
         PluginHookService pluginHookService = new PluginHookService(pluginManager);
@@ -61,7 +61,7 @@ public class PluginHookServiceTest {
     }
 
     @Test
-    public void shouldHookIntoEssentialsAtInitialization() {
+    void shouldHookIntoEssentialsAtInitialization() {
         // given
         PluginManager pluginManager = mock(PluginManager.class);
         setPluginAvailable(pluginManager, ESSENTIALS, Essentials.class);
@@ -74,7 +74,7 @@ public class PluginHookServiceTest {
     }
 
     @Test
-    public void shouldHookIntoCmiAtInitialization() {
+    void shouldHookIntoCmiAtInitialization() {
         // given
         PluginManager pluginManager = mock(PluginManager.class);
         setPluginAvailable(pluginManager, CMI, Plugin.class);
@@ -87,7 +87,7 @@ public class PluginHookServiceTest {
     }
 
     @Test
-    public void shouldHookIntoMultiverseAtInitialization() {
+    void shouldHookIntoMultiverseAtInitialization() {
         // given
         PluginManager pluginManager = mock(PluginManager.class);
         setPluginAvailable(pluginManager, MULTIVERSE, MultiverseCore.class);
@@ -100,7 +100,7 @@ public class PluginHookServiceTest {
     }
 
     @Test
-    public void shouldReturnEssentialsDataFolder() {
+    void shouldReturnEssentialsDataFolder() {
         // given
         Essentials ess = mock(Essentials.class);
         File essDataFolder = new File("test/data-folder");
@@ -119,7 +119,7 @@ public class PluginHookServiceTest {
     }
 
     @Test
-    public void shouldReturnNullForUnhookedEssentials() {
+    void shouldReturnNullForUnhookedEssentials() {
         // given
         PluginManager pluginManager = mock(PluginManager.class);
         PluginHookService pluginHookService = new PluginHookService(pluginManager);
@@ -132,7 +132,7 @@ public class PluginHookServiceTest {
     }
 
     @Test
-    public void shouldSetSocialSpyStatus() {
+    void shouldSetSocialSpyStatus() {
         // given
         Player player = mock(Player.class);
 
@@ -153,7 +153,7 @@ public class PluginHookServiceTest {
     }
 
     @Test
-    public void shouldNotDoAnythingForUnhookedEssentials() {
+    void shouldNotDoAnythingForUnhookedEssentials() {
         // given
         PluginHookService pluginHookService = new PluginHookService(mock(PluginManager.class));
 
@@ -162,7 +162,7 @@ public class PluginHookServiceTest {
     }
 
     @Test
-    public void shouldUnhookEssentialsAndMultiverse() {
+    void shouldUnhookEssentialsAndMultiverse() {
         // given
         PluginManager pluginManager = mock(PluginManager.class);
         setPluginAvailable(pluginManager, ESSENTIALS, Essentials.class);
@@ -179,7 +179,7 @@ public class PluginHookServiceTest {
     }
 
     @Test
-    public void shouldHandlePluginRetrievalError() {
+    void shouldHandlePluginRetrievalError() {
         // given
         PluginManager pluginManager = mock(PluginManager.class);
         given(pluginManager.isPluginEnabled(anyString())).willReturn(true);
@@ -195,7 +195,7 @@ public class PluginHookServiceTest {
     }
 
     @Test
-    public void shouldReturnNullForUnavailableMultiverse() {
+    void shouldReturnNullForUnavailableMultiverse() {
         // given
         PluginManager pluginManager = mock(PluginManager.class);
         PluginHookService pluginHookService = new PluginHookService(pluginManager);
@@ -209,7 +209,7 @@ public class PluginHookServiceTest {
     }
 
     @Test
-    public void shouldGetMultiverseSpawn() {
+    void shouldGetMultiverseSpawn() {
         // given
         Location location = mock(Location.class);
         MultiverseWorld multiverseWorld = mock(MultiverseWorld.class);
@@ -237,7 +237,7 @@ public class PluginHookServiceTest {
     }
 
     @Test
-    public void shouldReturnNullForNonMvWorld() {
+    void shouldReturnNullForNonMvWorld() {
         // given
         World world = mock(World.class);
         MVWorldManager mvWorldManager = mock(MVWorldManager.class);

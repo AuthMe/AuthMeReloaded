@@ -9,12 +9,12 @@ import org.bukkit.plugin.PluginLogger;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitWorker;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,8 +22,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
@@ -35,8 +35,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link TaskCloser}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class TaskCloserTest {
+@ExtendWith(MockitoExtension.class)
+class TaskCloserTest {
 
     private static final int[] ACTIVE_WORKERS_ID = {2, 5};
 
@@ -50,8 +50,8 @@ public class TaskCloserTest {
     @Mock
     private DataSource dataSource;
 
-    @Before
-    public void initAuthMe() {
+    @BeforeEach
+    void initAuthMe() {
         Server server = mock(Server.class);
         given(server.getScheduler()).willReturn(bukkitScheduler);
         ReflectionTestUtils.setField(JavaPlugin.class, authMe, "server", server);
@@ -60,7 +60,7 @@ public class TaskCloserTest {
     }
 
     @Test
-    public void shouldWaitForTasksToClose() throws InterruptedException {
+    void shouldWaitForTasksToClose() throws InterruptedException {
         // given
         doNothing().when(taskCloser).sleep(); // avoid sleeping in tests
         mockActiveWorkers();
@@ -82,7 +82,7 @@ public class TaskCloserTest {
     }
 
     @Test
-    public void shouldAbortForNeverEndingTask() throws InterruptedException {
+    void shouldAbortForNeverEndingTask() throws InterruptedException {
         // given
         doNothing().when(taskCloser).sleep(); // avoid sleeping in tests
         mockActiveWorkers();
@@ -101,18 +101,15 @@ public class TaskCloserTest {
     }
 
     @Test
-    public void shouldStopForInterruptedThread() throws InterruptedException, ExecutionException {
+    void shouldStopForInterruptedThread() throws InterruptedException, ExecutionException {
         // Note ljacqu 20160827: This test must be run in its own thread because we throw an InterruptedException.
         // Somehow the java.nio.Files API used in tests that are run subsequently don't like this and fail otherwise.
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    shouldStopForInterruptedThread0();
-                } catch (Exception e) {
-                    throw new IllegalStateException(e);
-                }
+        executor.submit(() -> {
+            try {
+                shouldStopForInterruptedThread0();
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
             }
         }).get();
     }
@@ -137,19 +134,41 @@ public class TaskCloserTest {
     private void mockActiveWorkers() {
         Plugin otherOwner = mock(Plugin.class);
         List<BukkitWorker> tasks = Arrays.asList(
-            mockBukkitWorker(authMe, ACTIVE_WORKERS_ID[0], false),
-            mockBukkitWorker(otherOwner, 3, false),
-            mockBukkitWorker(authMe, ACTIVE_WORKERS_ID[1], false),
-            mockBukkitWorker(authMe, 7, true),
-            mockBukkitWorker(otherOwner, 11, true));
+            new BukkitWorkerTestImpl(authMe, ACTIVE_WORKERS_ID[0]),
+            new BukkitWorkerTestImpl(otherOwner, 3),
+            new BukkitWorkerTestImpl(authMe, ACTIVE_WORKERS_ID[1]),
+            new BukkitWorkerTestImpl(authMe, 7),
+            new BukkitWorkerTestImpl(otherOwner, 11));
         given(bukkitScheduler.getActiveWorkers()).willReturn(tasks);
+        given(bukkitScheduler.isQueued(anyInt())).willAnswer(invocation -> {
+            int taskId = invocation.getArgument(0);
+            return taskId == 7 || taskId == 11;
+        });
     }
 
-    private BukkitWorker mockBukkitWorker(Plugin owner, int taskId, boolean isQueued) {
-        BukkitWorker worker = mock(BukkitWorker.class);
-        given(worker.getOwner()).willReturn(owner);
-        given(worker.getTaskId()).willReturn(taskId);
-        given(bukkitScheduler.isQueued(taskId)).willReturn(isQueued);
-        return worker;
+    private static class BukkitWorkerTestImpl implements BukkitWorker {
+
+        private final Plugin owner;
+        private final int taskId;
+
+        BukkitWorkerTestImpl(Plugin owner, int taskId) {
+            this.owner = owner;
+            this.taskId = taskId;
+        }
+
+        @Override
+        public int getTaskId() {
+            return taskId;
+        }
+
+        @Override
+        public Plugin getOwner() {
+            return owner;
+        }
+
+        @Override
+        public Thread getThread() {
+            return null;
+        }
     }
 }

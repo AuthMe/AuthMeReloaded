@@ -6,11 +6,11 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import org.bukkit.command.CommandSender;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,8 +24,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link PurgeLastPositionCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class PurgeLastPositionCommandTest {
+@ExtendWith(MockitoExtension.class)
+class PurgeLastPositionCommandTest {
 
     @InjectMocks
     private PurgeLastPositionCommand command;
@@ -40,7 +40,7 @@ public class PurgeLastPositionCommandTest {
     private BungeeSender bungeeSender;
 
     @Test
-    public void shouldPurgeLastPosOfUser() {
+    void shouldPurgeLastPosOfUser() {
         // given
         String player = "_Bobby";
         PlayerAuth auth = mock(PlayerAuth.class);
@@ -57,7 +57,7 @@ public class PurgeLastPositionCommandTest {
     }
 
     @Test
-    public void shouldPurgePositionOfCommandSender() {
+    void shouldPurgePositionOfCommandSender() {
         // given
         String player = "_Bobby";
         CommandSender sender = mock(CommandSender.class);
@@ -75,7 +75,7 @@ public class PurgeLastPositionCommandTest {
     }
 
     @Test
-    public void shouldHandleNonExistentUser() {
+    void shouldHandleNonExistentUser() {
         // given
         String name = "invalidPlayer";
         CommandSender sender = mock(CommandSender.class);
@@ -89,7 +89,7 @@ public class PurgeLastPositionCommandTest {
     }
 
     @Test
-    public void shouldResetAllLastPositions() {
+    void shouldResetAllLastPositions() {
         // given
         PlayerAuth auth1 = mock(PlayerAuth.class);
         PlayerAuth auth2 = mock(PlayerAuth.class);

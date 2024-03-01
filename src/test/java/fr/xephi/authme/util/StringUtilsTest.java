@@ -1,21 +1,21 @@
 package fr.xephi.authme.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test for {@link StringUtils}.
  */
-public class StringUtilsTest {
+class StringUtilsTest {
 
     @Test
-    public void shouldFindContainedItem() {
+    void shouldFindContainedItem() {
         // given
         String text = "This is a test of containsAny()";
         String piece = "test";
@@ -28,7 +28,7 @@ public class StringUtilsTest {
     }
 
     @Test
-    public void shouldReturnFalseIfNoneFound() {
+    void shouldReturnFalseIfNoneFound() {
         // given
         String text = "This is a test string";
 
@@ -40,7 +40,7 @@ public class StringUtilsTest {
     }
 
     @Test
-    public void shouldReturnFalseForNullString() {
+    void shouldReturnFalseForNullString() {
         // given/when
         boolean result = StringUtils.containsAny(null, asList("some", "words", "to", "check"));
 
@@ -49,7 +49,7 @@ public class StringUtilsTest {
     }
 
     @Test
-    public void shouldCheckIfIsBlankString() {
+    void shouldCheckIfIsBlankString() {
         // Should be true for null/empty/whitespace
         assertTrue(StringUtils.isBlank(null));
         assertTrue(StringUtils.isBlank(""));
@@ -61,7 +61,7 @@ public class StringUtilsTest {
     }
 
     @Test
-    public void shouldGetDifferenceWithNullString() {
+    void shouldGetDifferenceWithNullString() {
         // given/when/then
         assertThat(StringUtils.getDifference(null, "test"), equalTo(1.0));
         assertThat(StringUtils.getDifference("test", null), equalTo(1.0));
@@ -69,7 +69,7 @@ public class StringUtilsTest {
     }
 
     @Test
-    public void shouldGetDifferenceBetweenTwoString() {
+    void shouldGetDifferenceBetweenTwoString() {
         // given/when/then
         assertThat(StringUtils.getDifference("test", "taste"), equalTo(0.4));
         assertThat(StringUtils.getDifference("test", "bear"), equalTo(0.75));
@@ -77,7 +77,7 @@ public class StringUtilsTest {
     }
 
     @Test
-    public void shouldCheckIfHasNeedleInWord() {
+    void shouldCheckIfHasNeedleInWord() {
         // given/when/then
         assertThat(StringUtils.isInsideString('@', "@hello"), equalTo(false));
         assertThat(StringUtils.isInsideString('?', "absent"), equalTo(false));

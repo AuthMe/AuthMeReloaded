@@ -6,12 +6,12 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import org.bukkit.command.CommandSender;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -25,8 +25,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link TotpViewStatusCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class TotpViewStatusCommandTest {
+@ExtendWith(MockitoExtension.class)
+class TotpViewStatusCommandTest {
 
     @InjectMocks
     private TotpViewStatusCommand command;
@@ -37,13 +37,13 @@ public class TotpViewStatusCommandTest {
     @Mock
     private Messages messages;
 
-    @BeforeClass
-    public static void initLogger() {
+    @BeforeAll
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldHandleUnknownUser() {
+    void shouldHandleUnknownUser() {
         // given
         CommandSender sender = mock(CommandSender.class);
         given(dataSource.getAuth("user")).willReturn(null);
@@ -57,7 +57,7 @@ public class TotpViewStatusCommandTest {
     }
 
     @Test
-    public void shouldInformForUserWithoutTotp() {
+    void shouldInformForUserWithoutTotp() {
         // given
         CommandSender sender = mock(CommandSender.class);
         PlayerAuth auth = PlayerAuth.builder()
@@ -74,7 +74,7 @@ public class TotpViewStatusCommandTest {
     }
 
     @Test
-    public void shouldInformForUserWithTotpEnabled() {
+    void shouldInformForUserWithTotpEnabled() {
         // given
         CommandSender sender = mock(CommandSender.class);
         PlayerAuth auth = PlayerAuth.builder()

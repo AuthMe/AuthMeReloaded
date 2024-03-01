@@ -5,20 +5,18 @@ import com.maxmind.db.model.Country;
 import com.maxmind.db.model.CountryResponse;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.InetAddress;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -29,11 +27,13 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link GeoIpService}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class GeoIpServiceTest {
+@ExtendWith(MockitoExtension.class)
+class GeoIpServiceTest {
 
     private GeoIpService geoIpService;
-    private File dataFolder;
+
+    @TempDir
+    File dataFolder;
 
     @Mock
     private GeoIp2Provider lookupService;
@@ -44,17 +44,13 @@ public class GeoIpServiceTest {
     @Mock
     private Settings settings;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    @Before
-    public void initializeGeoLiteApi() throws IOException {
-        dataFolder = temporaryFolder.newFolder();
+    @BeforeEach
+    void initializeGeoLiteApi() {
         geoIpService = new GeoIpService(dataFolder, bukkitService, settings, lookupService);
     }
 
     @Test
-    public void shouldGetCountry() throws Exception {
+    void shouldGetCountry() throws Exception {
         // given
         InetAddress ip = InetAddress.getByName("123.45.67.89");
         String countryCode = "XX";
@@ -76,7 +72,7 @@ public class GeoIpServiceTest {
     }
 
     @Test
-    public void shouldNotLookUpCountryForLocalhostIp() throws Exception  {
+    void shouldNotLookUpCountryForLocalhostIp() throws Exception  {
         // given
         String ip = "127.0.0.1";
 
@@ -89,7 +85,7 @@ public class GeoIpServiceTest {
     }
 
     @Test
-    public void shouldLookUpCountryName() throws Exception {
+    void shouldLookUpCountryName() throws Exception {
         // given
         InetAddress ip = InetAddress.getByName("24.45.167.89");
         String countryName = "Ecuador";
@@ -111,7 +107,7 @@ public class GeoIpServiceTest {
     }
 
     @Test
-    public void shouldNotLookUpCountryNameForLocalhostIp() throws Exception {
+    void shouldNotLookUpCountryNameForLocalhostIp() throws Exception {
         // given
         InetAddress ip = InetAddress.getByName("127.0.0.1");
 
@@ -124,7 +120,7 @@ public class GeoIpServiceTest {
     }
 
     @Test
-    public void shouldNotLookUpCountryNameIfDisabled() throws Exception {
+    void shouldNotLookUpCountryNameIfDisabled() throws Exception {
         // given
         InetAddress ip = InetAddress.getByName("24.45.167.89");
         given(settings.getProperty(ProtectionSettings.ENABLE_GEOIP)).willReturn(false);

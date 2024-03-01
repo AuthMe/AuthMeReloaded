@@ -1,19 +1,19 @@
 package fr.xephi.authme.security;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link HashUtils}.
  */
-public class HashUtilsTest {
+class HashUtilsTest {
 
     /**
      * List of passwords whose hash is provided to the class to test against.
@@ -21,7 +21,7 @@ public class HashUtilsTest {
     private static final String[] GIVEN_PASSWORDS = {"", "password", "PassWord1", "&^%te$t?Pw@_"};
 
     @Test
-    public void shouldHashMd5() {
+    void shouldHashMd5() {
         // given
         String[] correctHashes =  {
             "d41d8cd98f00b204e9800998ecf8427e", // empty string
@@ -41,7 +41,7 @@ public class HashUtilsTest {
     }
 
     @Test
-    public void shouldHashSha1() {
+    void shouldHashSha1() {
         // given
         String[] correctHashes =  {
             "da39a3ee5e6b4b0d3255bfef95601890afd80709", // empty string
@@ -61,7 +61,7 @@ public class HashUtilsTest {
     }
 
     @Test
-    public void shouldHashSha256() {
+    void shouldHashSha256() {
         // given
         String[] correctHashes =  {
             "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", // empty string
@@ -82,7 +82,7 @@ public class HashUtilsTest {
 
 
     @Test
-    public void shouldHashSha512() {
+    void shouldHashSha512() {
         // given
         String[] correctHashes =  {
             "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e", // empty string
@@ -102,7 +102,7 @@ public class HashUtilsTest {
     }
 
     @Test
-    public void shouldRetrieveMd5Instance() {
+    void shouldRetrieveMd5Instance() {
         // given
         MessageDigestAlgorithm algorithm = MessageDigestAlgorithm.MD5;
 
@@ -114,7 +114,7 @@ public class HashUtilsTest {
     }
 
     @Test
-    public void shouldCheckForValidBcryptHashStart() {
+    void shouldCheckForValidBcryptHashStart() {
         // given / when / then
         assertThat(HashUtils.isValidBcryptHash(""), equalTo(false));
         assertThat(HashUtils.isValidBcryptHash("$2"), equalTo(false));
@@ -125,7 +125,7 @@ public class HashUtilsTest {
     }
 
     @Test
-    public void shouldCompareStrings() {
+    void shouldCompareStrings() {
         // given / when / then
         assertThat(HashUtils.isEqual("test", "test"), equalTo(true));
         assertThat(HashUtils.isEqual("test", "Test"), equalTo(false));

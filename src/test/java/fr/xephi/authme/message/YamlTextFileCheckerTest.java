@@ -6,8 +6,8 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.help.HelpSection;
 import fr.xephi.authme.util.ExceptionUtils;
 import fr.xephi.authme.util.StringUtils;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -15,32 +15,32 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import static fr.xephi.authme.message.MessagePathHelper.MESSAGES_FOLDER;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static tools.utils.FileIoUtils.listFilesOrThrow;
 
 /**
  * Tests that all YML text files can be loaded.
  */
-public class YamlTextFileCheckerTest {
+class YamlTextFileCheckerTest {
 
     /** Contains all files of the MESSAGES_FOLDER. */
     private static File[] messageFiles;
 
-    @BeforeClass
-    public static void loadMessagesFiles() {
+    @BeforeAll
+    static void loadMessagesFiles() {
         File folder = TestHelper.getJarFile("/" + MESSAGES_FOLDER);
         messageFiles = listFilesOrThrow(folder);
     }
 
     @Test
-    public void testAllMessagesYmlFiles() {
+    void testAllMessagesYmlFiles() {
         checkFiles(
             MessagePathHelper::isMessagesFile,
             MessageKey.LOGIN_MESSAGE.getKey());
     }
 
     @Test
-    public void testAllHelpYmlFiles() {
+    void testAllHelpYmlFiles() {
         checkFiles(
             MessagePathHelper::isHelpFile,
             HelpSection.ALTERNATIVES.getKey());

@@ -1,8 +1,6 @@
 package fr.xephi.authme.service;
 
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
-import ch.jalu.injector.testing.InjectDelayed;
+import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.mail.EmailService;
@@ -11,12 +9,15 @@ import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -24,10 +25,10 @@ import static org.mockito.Mockito.verify;
 /**
  * Tests for {@link PasswordRecoveryService}.
  */
-@RunWith(DelayedInjectionRunner.class)
-public class PasswordRecoveryServiceTest {
+@ExtendWith(MockitoExtension.class)
+class PasswordRecoveryServiceTest {
 
-    @InjectDelayed
+    @InjectMocks
     private PasswordRecoveryService recoveryService;
 
     @Mock
@@ -48,14 +49,15 @@ public class PasswordRecoveryServiceTest {
     @Mock
     private Messages messages;
 
-    @BeforeInjecting
-    public void initSettings() {
+    @BeforeEach
+    void runPostConstructMethod() {
         given(commonService.getProperty(SecuritySettings.EMAIL_RECOVERY_COOLDOWN_SECONDS)).willReturn(40);
         given(commonService.getProperty(SecuritySettings.PASSWORD_CHANGE_TIMEOUT)).willReturn(2);
+        ReflectionTestUtils.invokePostConstructMethods(recoveryService);
     }
 
     @Test
-    public void shouldSendRecoveryCode() {
+    void shouldSendRecoveryCode() {
         // given
         Player player = mock(Player.class);
         String name = "Carl";
@@ -75,7 +77,7 @@ public class PasswordRecoveryServiceTest {
     }
 
     @Test
-    public void shouldKeepTrackOfSuccessfulRecoversByIp() {
+    void shouldKeepTrackOfSuccessfulRecoversByIp() {
         // given
         Player bobby = mock(Player.class);
         TestHelper.mockIpAddressToPlayer(bobby, "192.168.8.8");
@@ -99,7 +101,7 @@ public class PasswordRecoveryServiceTest {
     }
 
     @Test
-    public void shouldRemovePlayerFromSuccessfulRecovers() {
+    void shouldRemovePlayerFromSuccessfulRecovers() {
         // given
         Player bobby = mock(Player.class);
         TestHelper.mockIpAddressToPlayer(bobby, "192.168.8.8");

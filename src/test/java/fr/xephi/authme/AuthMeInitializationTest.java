@@ -25,13 +25,12 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,9 +38,9 @@ import java.util.Collections;
 import java.util.logging.Logger;
 
 import static fr.xephi.authme.settings.properties.AuthMeSettingsRetriever.buildConfigurationData;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -52,24 +51,18 @@ import static org.mockito.Mockito.verify;
  * Integration test verifying that all services can be initialized in {@link AuthMe}
  * with the {@link Injector}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class AuthMeInitializationTest {
+@ExtendWith(MockitoExtension.class)
+class AuthMeInitializationTest {
 
     @Mock
     private Server server;
 
-    @Mock
-    private PluginManager pluginManager;
-
     private AuthMe authMe;
-    private File dataFolder;
+    @TempDir
+    File dataFolder;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    @Before
-    public void initAuthMe() throws IOException {
-        dataFolder = temporaryFolder.newFolder();
+    @BeforeEach
+    void initAuthMe() throws IOException {
         File settingsFile = new File(dataFolder, "config.yml");
         given(server.getLogger()).willReturn(Logger.getAnonymousLogger());
         JavaPluginLoader pluginLoader = new JavaPluginLoader(server);
@@ -77,7 +70,6 @@ public class AuthMeInitializationTest {
 
         // Mock / wire various Bukkit components
         ReflectionTestUtils.setField(Bukkit.class, null, "server", server);
-        given(server.getPluginManager()).willReturn(pluginManager);
 
         // PluginDescriptionFile is final: need to create a sample one
         PluginDescriptionFile descriptionFile = new PluginDescriptionFile(
@@ -88,13 +80,15 @@ public class AuthMeInitializationTest {
     }
 
     @Test
-    public void shouldInitializeAllServices() {
+    void shouldInitializeAllServices() {
         // given
         PropertyReader reader = mock(PropertyReader.class);
         PropertyResource resource = mock(PropertyResource.class);
         given(resource.createReader()).willReturn(reader);
         Settings settings = new Settings(dataFolder, resource, null, buildConfigurationData());
 
+        PluginManager pluginManager = mock(PluginManager.class);
+        given(server.getPluginManager()).willReturn(pluginManager);
         TestHelper.setupLogger();
 
         Injector injector = new InjectorBuilder()
@@ -128,7 +122,7 @@ public class AuthMeInitializationTest {
     }
 
     @Test
-    public void shouldHandlePrematureShutdownGracefully() {
+    void shouldHandlePrematureShutdownGracefully() {
         // given
         BukkitScheduler scheduler = mock(BukkitScheduler.class);
         given(server.getScheduler()).willReturn(scheduler);

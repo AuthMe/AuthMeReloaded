@@ -3,7 +3,7 @@ package fr.xephi.authme.command;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,10 +18,10 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link PlayerCommand}.
  */
-public class PlayerCommandTest {
+class PlayerCommandTest {
 
     @Test
-    public void shouldRejectNonPlayerSender() {
+    void shouldRejectNonPlayerSender() {
         // given
         CommandSender sender = mock(BlockCommandSender.class);
         PlayerCommandImpl command = new PlayerCommandImpl();
@@ -34,7 +34,7 @@ public class PlayerCommandTest {
     }
 
     @Test
-    public void shouldCallRunCommandForPlayer() {
+    void shouldCallRunCommandForPlayer() {
         // given
         Player player = mock(Player.class);
         List<String> arguments = Arrays.asList("arg1", "testarg2");
@@ -48,7 +48,7 @@ public class PlayerCommandTest {
     }
 
     @Test
-    public void shouldRejectNonPlayerAndSendAlternative() {
+    void shouldRejectNonPlayerAndSendAlternative() {
         // given
         CommandSender sender = mock(CommandSender.class);
         PlayerCommandWithAlt command = new PlayerCommandWithAlt();

@@ -1,43 +1,43 @@
 package fr.xephi.authme.service;
 
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
-import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.expiring.ExpiringMap;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
  * Test for {@link RecoveryCodeService}.
  */
-@RunWith(DelayedInjectionRunner.class)
-public class RecoveryCodeServiceTest {
+@ExtendWith(MockitoExtension.class)
+class RecoveryCodeServiceTest {
 
-    @InjectDelayed
     private RecoveryCodeService recoveryCodeService;
 
     @Mock
     private Settings settings;
 
-    @BeforeInjecting
-    public void initSettings() {
+    @BeforeEach
+    void initService() {
         given(settings.getProperty(SecuritySettings.RECOVERY_CODE_HOURS_VALID)).willReturn(4);
         given(settings.getProperty(SecuritySettings.RECOVERY_CODE_LENGTH)).willReturn(5);
         given(settings.getProperty(SecuritySettings.RECOVERY_CODE_MAX_TRIES)).willReturn(3);
+
+        recoveryCodeService = new RecoveryCodeService(settings);
     }
 
     @Test
-    public void shouldBeDisabledForNonPositiveLength() {
+    void shouldBeDisabledForNonPositiveLength() {
         assertThat(recoveryCodeService.isRecoveryCodeNeeded(), equalTo(true));
 
         // given
@@ -51,7 +51,7 @@ public class RecoveryCodeServiceTest {
     }
 
     @Test
-    public void shouldGenerateAndStoreCode() {
+    void shouldGenerateAndStoreCode() {
         // given
         String name = "Bobbers";
 
@@ -64,7 +64,7 @@ public class RecoveryCodeServiceTest {
     }
 
     @Test
-    public void playerHasTriesLeft() {
+    void playerHasTriesLeft() {
         // given
         String player = "Dusty";
         recoveryCodeService.generateCode(player);
@@ -77,7 +77,7 @@ public class RecoveryCodeServiceTest {
     }
 
     @Test
-    public void playerHasNoTriesLeft() {
+    void playerHasNoTriesLeft() {
         // given
         String player = "Dusty";
         recoveryCodeService.generateCode(player);
@@ -93,7 +93,7 @@ public class RecoveryCodeServiceTest {
     }
 
     @Test
-    public void shouldRecognizeCorrectCode() {
+    void shouldRecognizeCorrectCode() {
         // given
         String player = "dragon";
         String code = recoveryCodeService.generateCode(player);
@@ -106,7 +106,7 @@ public class RecoveryCodeServiceTest {
     }
 
     @Test
-    public void shouldRemoveCode() {
+    void shouldRemoveCode() {
         // given
         String player = "Tester";
         String code = recoveryCodeService.generateCode(player);

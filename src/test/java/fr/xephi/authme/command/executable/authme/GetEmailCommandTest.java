@@ -5,11 +5,11 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.CommandSender;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -22,8 +22,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link GetEmailCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class GetEmailCommandTest {
+@ExtendWith(MockitoExtension.class)
+class GetEmailCommandTest {
 
     @InjectMocks
     private GetEmailCommand command;
@@ -35,7 +35,7 @@ public class GetEmailCommandTest {
     private CommonService service;
 
     @Test
-    public void shouldReportUnknownUser() {
+    void shouldReportUnknownUser() {
         // given
         String user = "myTestUser";
         given(dataSource.getEmail(user)).willReturn(DataSourceValueImpl.unknownRow());
@@ -49,7 +49,7 @@ public class GetEmailCommandTest {
     }
 
     @Test
-    public void shouldReturnEmail() {
+    void shouldReturnEmail() {
         // given
         String user = "userToView";
         String email = "user.email@example.org";

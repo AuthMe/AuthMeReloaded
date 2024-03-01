@@ -2,13 +2,13 @@ package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.command.ExecutableCommand;
 import org.bukkit.command.CommandSender;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.util.Collections;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -16,10 +16,10 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link AuthMeCommand}.
  */
-public class AuthMeCommandTest {
+class AuthMeCommandTest {
 
     @Test
-    public void shouldDisplayInformation() {
+    void shouldDisplayInformation() {
         // given
         ExecutableCommand command = new AuthMeCommand();
         CommandSender sender = mock(CommandSender.class);

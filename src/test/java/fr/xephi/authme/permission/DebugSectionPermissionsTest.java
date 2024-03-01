@@ -3,7 +3,7 @@ package fr.xephi.authme.permission;
 /**
  * Test for {@link DebugSectionPermissions}.
  */
-public class DebugSectionPermissionsTest extends AbstractPermissionsEnumTest {
+class DebugSectionPermissionsTest extends AbstractPermissionsEnumTest {
 
     @Override
     protected PermissionNode[] getPermissionNodes() {

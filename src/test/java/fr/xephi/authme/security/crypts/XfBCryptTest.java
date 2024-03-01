@@ -1,17 +1,17 @@
 package fr.xephi.authme.security.crypts;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link XfBCrypt}.
  */
-public class XfBCryptTest extends AbstractEncryptionMethodTest {
+class XfBCryptTest extends AbstractEncryptionMethodTest {
 
-    public XfBCryptTest() {
+    XfBCryptTest() {
         super(new XfBCrypt(),
             "$2a$10$UtuON/ZG.x8EWG/zQbryB.BHfQVrfxk3H7qykzP.UJQ8YiLjZyfqq",  // password
             "$2a$10$Q.ocUo.YtHTdI4nu3pcpKun6BILcmWHm541ANULucmuU/ps1QKY4K",  // PassWord1
@@ -20,7 +20,7 @@ public class XfBCryptTest extends AbstractEncryptionMethodTest {
     }
 
     @Test
-    public void shouldGenerateWith2aPrefixAndCostFactor10() {
+    void shouldGenerateWith2aPrefixAndCostFactor10() {
         // given
         XfBCrypt xfBCrypt = new XfBCrypt();
 

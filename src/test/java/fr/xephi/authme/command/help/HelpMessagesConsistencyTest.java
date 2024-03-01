@@ -9,28 +9,28 @@ import fr.xephi.authme.message.MessagePathHelper;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertThat;
 
 /**
  * Tests that /messages/help_en.yml contains texts that correspond
  * to the texts provided in the CommandDescription.
  */
-public class HelpMessagesConsistencyTest {
+class HelpMessagesConsistencyTest {
 
     private static final File DEFAULT_MESSAGES_FILE =
         TestHelper.getJarFile("/" + MessagePathHelper.createHelpMessageFilePath(MessagePathHelper.DEFAULT_LANGUAGE));
 
     @Test
-    public void shouldHaveIdenticalTexts() {
+    void shouldHaveIdenticalTexts() {
         // given
         CommandDescription description = getAuthMeRegisterDescription();
         FileConfiguration configuration = YamlConfiguration.loadConfiguration(DEFAULT_MESSAGES_FILE);
@@ -50,7 +50,7 @@ public class HelpMessagesConsistencyTest {
      * only contains an entry for one command as to provide an example.
      */
     @Test
-    public void shouldOnlyHaveDescriptionForOneCommand() {
+    void shouldOnlyHaveDescriptionForOneCommand() {
         // given
         FileConfiguration configuration = YamlConfiguration.loadConfiguration(DEFAULT_MESSAGES_FILE);
 
@@ -63,7 +63,7 @@ public class HelpMessagesConsistencyTest {
     }
 
     @Test
-    public void shouldHaveEntryForEachHelpMessageKey() {
+    void shouldHaveEntryForEachHelpMessageKey() {
         // given
         PropertyReader reader = new YamlFileReader(DEFAULT_MESSAGES_FILE);
 

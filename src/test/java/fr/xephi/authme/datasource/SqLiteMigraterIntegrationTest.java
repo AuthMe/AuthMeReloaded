@@ -5,10 +5,10 @@ import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.settings.Settings;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,43 +20,44 @@ import java.util.List;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthLocation;
 import static fr.xephi.authme.datasource.SqlDataSourceTestUtil.createSqlite;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
  * Integration test for {@link SqLiteMigrater}. Uses a real SQLite database.
  */
-public class SqLiteMigraterIntegrationTest {
+class SqLiteMigraterIntegrationTest {
 
-    private File dataFolder;
+    @TempDir
+    File dataFolder;
     private SQLite sqLite;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    @Before
-    public void setup() throws SQLException, IOException, NoSuchMethodException {
+    @BeforeEach
+    void setup() throws SQLException, IOException {
         TestHelper.setupLogger();
 
         Settings settings = mock(Settings.class);
         TestHelper.returnDefaultsForAllProperties(settings);
 
         File sqliteDbFile = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "datasource/sqlite.april2016.db");
-        dataFolder = temporaryFolder.newFolder();
         File tempFile = new File(dataFolder, "authme.db");
         Files.copy(sqliteDbFile, tempFile);
 
         Connection con = DriverManager.getConnection("jdbc:sqlite:" + tempFile.getPath());
         sqLite = createSqlite(settings, dataFolder, con);
+    }
 
+    @AfterEach
+    void close() {
+        sqLite.closeConnection();
     }
 
     @Test
-    public void shouldRun() throws ClassNotFoundException, SQLException {
+    void shouldRun() throws SQLException {
         // given / when
         sqLite.setup();
         sqLite.migrateIfNeeded();

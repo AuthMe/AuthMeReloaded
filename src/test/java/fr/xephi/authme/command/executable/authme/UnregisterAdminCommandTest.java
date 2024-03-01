@@ -7,11 +7,11 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -23,8 +23,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link UnregisterAdminCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class UnregisterAdminCommandTest {
+@ExtendWith(MockitoExtension.class)
+class UnregisterAdminCommandTest {
 
     @InjectMocks
     private UnregisterAdminCommand command;
@@ -42,7 +42,7 @@ public class UnregisterAdminCommandTest {
     private Management management;
 
     @Test
-    public void shouldHandleUnknownPlayer() {
+    void shouldHandleUnknownPlayer() {
         // given
         String user = "bobby";
         given(dataSource.isAuthAvailable(user)).willReturn(false);
@@ -57,7 +57,7 @@ public class UnregisterAdminCommandTest {
     }
 
     @Test
-    public void shouldInvokeUnregisterProcess() {
+    void shouldInvokeUnregisterProcess() {
         // given
         String user = "personaNonGrata";
         given(dataSource.isAuthAvailable(user)).willReturn(true);
@@ -75,7 +75,7 @@ public class UnregisterAdminCommandTest {
     }
 
     @Test
-    public void shouldInvokeUnregisterProcessWithNullPlayer() {
+    void shouldInvokeUnregisterProcessWithNullPlayer() {
         // given
         String user = "personaNonGrata";
         given(dataSource.isAuthAvailable(user)).willReturn(true);

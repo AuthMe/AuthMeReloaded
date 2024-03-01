@@ -1,31 +1,31 @@
 package fr.xephi.authme.command;
 
 import org.bukkit.ChatColor;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link CommandUtils}.
  */
-public class CommandUtilsTest {
+class CommandUtilsTest {
 
     private static Collection<CommandDescription> commands;
 
-    @BeforeClass
-    public static void setUpTestCommands() {
+    @BeforeAll
+    static void setUpTestCommands() {
         commands = Collections.unmodifiableCollection(TestCommandsUtil.generateCommands());
     }
 
     @Test
-    public void shouldReturnCommandPath() {
+    void shouldReturnCommandPath() {
         // given
         CommandDescription base = CommandDescription.builder()
             .labels("authme", "auth")
@@ -49,7 +49,7 @@ public class CommandUtilsTest {
     }
 
     @Test
-    public void shouldComputeMinAndMaxOnEmptyCommand() {
+    void shouldComputeMinAndMaxOnEmptyCommand() {
         // given
         CommandDescription command = getBuilderForArgsTest().register();
 
@@ -58,7 +58,7 @@ public class CommandUtilsTest {
     }
 
     @Test
-    public void shouldComputeMinAndMaxOnCommandWithMandatoryArgs() {
+    void shouldComputeMinAndMaxOnCommandWithMandatoryArgs() {
         // given
         CommandDescription command = getBuilderForArgsTest()
             .withArgument("Test", "Arg description", false)
@@ -70,7 +70,7 @@ public class CommandUtilsTest {
     }
 
     @Test
-    public void shouldComputeMinAndMaxOnCommandIncludingOptionalArgs() {
+    void shouldComputeMinAndMaxOnCommandIncludingOptionalArgs() {
         // given
         CommandDescription command = getBuilderForArgsTest()
             .withArgument("arg1", "Arg description", false)
@@ -83,7 +83,7 @@ public class CommandUtilsTest {
     }
 
     @Test
-    public void shouldFormatSimpleArgument() {
+    void shouldFormatSimpleArgument() {
         // given
         CommandDescription command = TestCommandsUtil.getCommandWithLabel(commands, "authme");
         List<String> labels = Collections.singletonList("authme");
@@ -96,7 +96,7 @@ public class CommandUtilsTest {
     }
 
     @Test
-    public void shouldFormatCommandWithMultipleArguments() {
+    void shouldFormatCommandWithMultipleArguments() {
         // given
         CommandDescription command = TestCommandsUtil.getCommandWithLabel(commands, "authme", "register");
         List<String> labels = Arrays.asList("authme", "reg");
@@ -110,7 +110,7 @@ public class CommandUtilsTest {
 
 
     @Test
-    public void shouldFormatCommandWithOptionalArgument() {
+    void shouldFormatCommandWithOptionalArgument() {
         // given
         CommandDescription command = TestCommandsUtil.getCommandWithLabel(commands, "email");
         List<String> labels = Collections.singletonList("email");

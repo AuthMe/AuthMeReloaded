@@ -1,17 +1,17 @@
 package fr.xephi.authme.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link InternetProtocolUtils}
  */
-public class InternetProtocolUtilsTest {
+class InternetProtocolUtilsTest {
 
     @Test
-    public void shouldCheckLocalAddress() {
+    void shouldCheckLocalAddress() {
         // loopback
         assertThat(InternetProtocolUtils.isLocalAddress("localhost"), equalTo(true));
         assertThat(InternetProtocolUtils.isLocalAddress("127.0.0.1"), equalTo(true));
@@ -43,7 +43,7 @@ public class InternetProtocolUtilsTest {
     }
 
     @Test
-    public void testIsLoopback() {
+    void shouldRecognizeLoopbackAddresses() {
         // loopback
         assertThat(InternetProtocolUtils.isLoopbackAddress("localhost"), equalTo(true));
         assertThat(InternetProtocolUtils.isLoopbackAddress("127.0.0.1"), equalTo(true));

@@ -1,8 +1,5 @@
 package fr.xephi.authme.mail;
 
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
-import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.Settings;
@@ -10,66 +7,62 @@ import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.IOException;
 import java.util.Properties;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
  * Test for {@link SendMailSsl}.
  */
-@RunWith(DelayedInjectionRunner.class)
-public class SendMailSslTest {
+@ExtendWith(MockitoExtension.class)
+class SendMailSslTest {
 
-    @InjectDelayed
+    @InjectMocks
     private SendMailSsl sendMailSsl;
 
     @Mock
     private Settings settings;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    @BeforeClass
-    public static void initLogger() {
+    @BeforeAll
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
-    @BeforeInjecting
-    public void initFields() throws IOException {
+    @Test
+    void shouldHaveAllInformation() {
+        // given
         given(settings.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("mail@example.org");
         given(settings.getProperty(EmailSettings.MAIL_PASSWORD)).willReturn("pass1234");
-        given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(LogLevel.INFO);
-    }
 
-    @Test
-    public void shouldHaveAllInformation() {
-        // given / when / then
+        // when / then
         assertThat(sendMailSsl.hasAllInformation(), equalTo(true));
     }
 
     @Test
-    public void shouldCreateEmailObject() throws EmailException {
+    void shouldCreateEmailObject() throws EmailException {
         // given
         given(settings.getProperty(EmailSettings.SMTP_PORT)).willReturn(465);
         String smtpHost = "mail.example.com";
         given(settings.getProperty(EmailSettings.SMTP_HOST)).willReturn(smtpHost);
         String senderAccount = "sender@example.org";
         given(settings.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn(senderAccount);
+        given(settings.getProperty(EmailSettings.MAIL_ADDRESS)).willReturn("");
+        given(settings.getProperty(EmailSettings.MAIL_PASSWORD)).willReturn("pass1234");
         String senderName = "Server administration";
         given(settings.getProperty(EmailSettings.MAIL_SENDER_NAME)).willReturn(senderName);
+        given(settings.getProperty(EmailSettings.RECOVERY_MAIL_SUBJECT)).willReturn("Recover password");
         given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(LogLevel.DEBUG);
 
         // when
@@ -86,17 +79,20 @@ public class SendMailSslTest {
     }
 
     @Test
-    public void shouldCreateEmailObjectWithAddress() throws EmailException {
+    void shouldCreateEmailObjectWithAddress() throws EmailException {
         // given
         given(settings.getProperty(EmailSettings.SMTP_PORT)).willReturn(465);
         String smtpHost = "mail.example.com";
         given(settings.getProperty(EmailSettings.SMTP_HOST)).willReturn(smtpHost);
-        String senderAccount = "exampleAccount";
+        String senderAccount = "actualsender@example.com";
         given(settings.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn(senderAccount);
         String senderAddress = "mail@example.com";
         given(settings.getProperty(EmailSettings.MAIL_ADDRESS)).willReturn(senderAddress);
+        given(settings.getProperty(EmailSettings.MAIL_PASSWORD)).willReturn("pass1234");
         String senderName = "Server administration";
         given(settings.getProperty(EmailSettings.MAIL_SENDER_NAME)).willReturn(senderName);
+        given(settings.getProperty(EmailSettings.RECOVERY_MAIL_SUBJECT)).willReturn("Recover password");
+        given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(LogLevel.INFO);
 
         // when
         HtmlEmail email = sendMailSsl.initializeMail("recipient@example.com");
@@ -112,7 +108,7 @@ public class SendMailSslTest {
     }
 
     @Test
-    public void shouldCreateEmailObjectWithOAuth2() throws EmailException {
+    void shouldCreateEmailObjectWithOAuth2() throws EmailException {
         // given
         given(settings.getProperty(EmailSettings.SMTP_PORT)).willReturn(587);
         given(settings.getProperty(EmailSettings.OAUTH2_TOKEN)).willReturn("oAuth2 token");
@@ -120,6 +116,11 @@ public class SendMailSslTest {
         given(settings.getProperty(EmailSettings.SMTP_HOST)).willReturn(smtpHost);
         String senderMail = "sender@example.org";
         given(settings.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn(senderMail);
+        given(settings.getProperty(EmailSettings.MAIL_ADDRESS)).willReturn("");
+        given(settings.getProperty(EmailSettings.MAIL_PASSWORD)).willReturn("pass1234");
+        given(settings.getProperty(EmailSettings.MAIL_SENDER_NAME)).willReturn("Admin");
+        given(settings.getProperty(EmailSettings.RECOVERY_MAIL_SUBJECT)).willReturn("Ricóber chur pasword ése");
+        given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(LogLevel.INFO);
 
         // when
         HtmlEmail email = sendMailSsl.initializeMail("recipient@example.com");

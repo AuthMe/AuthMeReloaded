@@ -9,12 +9,12 @@ import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PasswordRecoveryService;
 import fr.xephi.authme.service.ValidationService;
 import org.bukkit.entity.Player;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -26,8 +26,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Tests for {@link EmailSetPasswordCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class EmailSetPasswordCommandTest {
+@ExtendWith(MockitoExtension.class)
+class EmailSetPasswordCommandTest {
 
     @InjectMocks
     private EmailSetPasswordCommand command;
@@ -47,13 +47,13 @@ public class EmailSetPasswordCommandTest {
     @Mock
     private ValidationService validationService;
 
-    @BeforeClass
-    public static void setUpLogger() {
+    @BeforeAll
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldChangePassword() {
+    void shouldChangePassword() {
         // given
         Player player = mock(Player.class);
         String name = "Jerry";
@@ -75,7 +75,7 @@ public class EmailSetPasswordCommandTest {
     }
 
     @Test
-    public void shouldRejectInvalidPassword() {
+    void shouldRejectInvalidPassword() {
         // given
         Player player = mock(Player.class);
         String name = "Morgan";
@@ -94,7 +94,7 @@ public class EmailSetPasswordCommandTest {
     }
 
     @Test
-    public void shouldDoNothingCantChangePass() {
+    void shouldDoNothingCantChangePass() {
         // given
         Player player = mock(Player.class);
 

@@ -1,37 +1,33 @@
 package fr.xephi.authme.settings;
 
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
-import ch.jalu.injector.testing.InjectDelayed;
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
  * Test for {@link SpawnLoader}.
  */
-@RunWith(DelayedInjectionRunner.class)
-public class SpawnLoaderTest {
+@ExtendWith(MockitoExtension.class)
+class SpawnLoaderTest {
 
-    @InjectDelayed
     private SpawnLoader spawnLoader;
 
     @Mock
@@ -40,16 +36,12 @@ public class SpawnLoaderTest {
     @Mock
     private PluginHookService pluginHookService;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @TempDir
+    File testFolder;
 
-    @DataFolder
-    private File testFolder;
-
-    @BeforeInjecting
-    public void setup() throws IOException {
+    @BeforeEach
+    void setup() throws IOException {
         // Copy test config into a new temporary folder
-        testFolder = temporaryFolder.newFolder();
         File source = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "settings/spawn-firstspawn.yml");
         File destination = new File(testFolder, "spawn.yml");
         Files.copy(source, destination);
@@ -57,10 +49,11 @@ public class SpawnLoaderTest {
         // Create a settings mock with default values
         given(settings.getProperty(RestrictionSettings.SPAWN_PRIORITY))
             .willReturn("authme, essentials, multiverse, default");
+        spawnLoader = new SpawnLoader(testFolder, settings, pluginHookService);
     }
 
     @Test
-    public void shouldSetSpawn() {
+    void shouldSetSpawn() {
         // given
         World world = mock(World.class);
         given(world.getName()).willReturn("new_world");
@@ -77,5 +70,4 @@ public class SpawnLoaderTest {
         assertThat(configuration.getDouble("spawn.z"), equalTo(-67.89));
         assertThat(configuration.getString("spawn.world"), equalTo("new_world"));
     }
-
 }

@@ -5,10 +5,10 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,15 +18,15 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
  * Integration test for {@link SQLite}.
  */
-public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
+class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
 
     /** Mock of a settings instance. */
     private static Settings settings;
@@ -38,8 +38,8 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
     /**
      * Set up the settings mock to return specific values for database settings and load {@link #sqlInitialize}.
      */
-    @BeforeClass
-    public static void initializeSettings() throws IOException, ClassNotFoundException {
+    @BeforeAll
+    static void initializeSettings() throws IOException, ClassNotFoundException {
         // Check that we have an implementation for SQLite
         Class.forName("org.sqlite.JDBC");
 
@@ -55,8 +55,8 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
         sqlInitialize = new String(Files.readAllBytes(sqlInitFile)).split(";(\\r?)\\n");
     }
 
-    @Before
-    public void initializeConnectionAndTable() throws SQLException {
+    @BeforeEach
+    void initializeConnectionAndTable() throws SQLException {
         Connection connection = DriverManager.getConnection("jdbc:sqlite::memory:");
         try (Statement st = connection.createStatement()) {
             st.execute("DROP TABLE IF EXISTS authme");
@@ -67,13 +67,13 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
         con = connection;
     }
 
-    @After
-    public void closeConnection() {
+    @AfterEach
+    void closeConnection() {
         silentClose(con);
     }
 
     @Test
-    public void shouldSetUpTableIfMissing() throws SQLException {
+    void shouldSetUpTableIfMissing() throws SQLException {
         // given
         Statement st = con.createStatement();
         // table is absent
@@ -90,7 +90,7 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldCreateMissingColumns() throws SQLException {
+    void shouldCreateMissingColumns() throws SQLException {
         // given
         Statement st = con.createStatement();
         // drop table and create one with only some of the columns: SQLite doesn't support ALTER TABLE t DROP COLUMN c

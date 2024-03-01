@@ -1,22 +1,19 @@
 package fr.xephi.authme.data.limbo.persistence;
 
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
-import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.data.limbo.UserGroup;
-import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.util.FileUtils;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,48 +21,45 @@ import java.nio.file.Files;
 import java.util.Collections;
 import java.util.UUID;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
  * Test for {@link IndividualFilesPersistenceHandler}.
  */
-@RunWith(DelayedInjectionRunner.class)
-public class IndividualFilesPersistenceHandlerTest {
+@ExtendWith(MockitoExtension.class)
+class IndividualFilesPersistenceHandlerTest {
 
     private static final UUID SAMPLE_UUID = UUID.nameUUIDFromBytes("PersistenceTest".getBytes());
     private static final String SOURCE_FOLDER = TestHelper.PROJECT_ROOT + "data/backup/";
 
-    @InjectDelayed
     private IndividualFilesPersistenceHandler handler;
 
     @Mock
     private BukkitService bukkitService;
 
-    @DataFolder
-    private File dataFolder;
+    @TempDir
+    File dataFolder;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    @BeforeInjecting
-    public void copyTestFiles() throws IOException {
-        dataFolder = temporaryFolder.newFolder();
+    @BeforeEach
+    void copyTestFilesAndInitHandler() throws IOException {
         File playerFolder = new File(dataFolder, FileUtils.makePath("playerdata", SAMPLE_UUID.toString()));
         if (!playerFolder.mkdirs()) {
             throw new IllegalStateException("Cannot create '" + playerFolder.getAbsolutePath() + "'");
         }
         Files.copy(TestHelper.getJarPath(FileUtils.makePath(SOURCE_FOLDER, "sample-folder", "data.json")),
             new File(playerFolder, "data.json").toPath());
+
+        handler = new IndividualFilesPersistenceHandler(dataFolder, bukkitService);
     }
 
     @Test
-    public void shouldReadDataFromFile() {
+    void shouldReadDataFromFile() {
         // given
         Player player = mock(Player.class);
         given(player.getUniqueId()).willReturn(SAMPLE_UUID);
@@ -92,7 +86,7 @@ public class IndividualFilesPersistenceHandlerTest {
     }
 
     @Test
-    public void shouldReturnNullForUnavailablePlayer() {
+    void shouldReturnNullForUnavailablePlayer() {
         // given
         Player player = mock(Player.class);
         given(player.getUniqueId()).willReturn(UUID.nameUUIDFromBytes("other-player".getBytes()));
@@ -105,7 +99,7 @@ public class IndividualFilesPersistenceHandlerTest {
     }
 
     @Test
-    public void shouldSavePlayerData() {
+    void shouldSavePlayerData() {
         // given
         Player player = mock(Player.class);
         UUID uuid = UUID.nameUUIDFromBytes("New player".getBytes());

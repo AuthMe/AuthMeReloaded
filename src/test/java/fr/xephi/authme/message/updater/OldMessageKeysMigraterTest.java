@@ -1,7 +1,7 @@
 package fr.xephi.authme.message.updater;
 
 import fr.xephi.authme.message.MessageKey;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -9,15 +9,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test for {@link OldMessageKeysMigrater}.
  */
-public class OldMessageKeysMigraterTest {
+class OldMessageKeysMigraterTest {
 
     @Test
-    public void shouldHasOldKeysThatAreNewParentsFirstInMap() {
+    void shouldHasOldKeysThatAreNewParentsFirstInMap() {
         // given
         Set<String> parentPaths = collectParentPathsFromMessageKeys();
         Set<String> encounteredParents = new HashSet<>();

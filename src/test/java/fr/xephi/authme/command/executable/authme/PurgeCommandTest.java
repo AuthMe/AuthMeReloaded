@@ -2,20 +2,20 @@ package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.task.purge.PurgeService;
 import org.bukkit.command.CommandSender;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Calendar;
 import java.util.Collections;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -25,8 +25,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link PurgeCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class PurgeCommandTest {
+@ExtendWith(MockitoExtension.class)
+class PurgeCommandTest {
 
     @InjectMocks
     private PurgeCommand command;
@@ -35,7 +35,7 @@ public class PurgeCommandTest {
     private PurgeService purgeService;
 
     @Test
-    public void shouldHandleInvalidNumber() {
+    void shouldHandleInvalidNumber() {
         // given
         String interval = "invalid";
         CommandSender sender = mock(CommandSender.class);
@@ -49,7 +49,7 @@ public class PurgeCommandTest {
     }
 
     @Test
-    public void shouldRejectTooSmallInterval() {
+    void shouldRejectTooSmallInterval() {
         // given
         String interval = "29";
         CommandSender sender = mock(CommandSender.class);
@@ -63,7 +63,7 @@ public class PurgeCommandTest {
     }
 
     @Test
-    public void shouldForwardToService() {
+    void shouldForwardToService() {
         // given
         String interval = "45";
         CommandSender sender = mock(CommandSender.class);

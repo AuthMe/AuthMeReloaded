@@ -1,19 +1,19 @@
 package fr.xephi.authme.security.crypts;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test for {@link Ipb4}.
  */
-public class Ipb4Test extends AbstractEncryptionMethodTest {
+class Ipb4Test extends AbstractEncryptionMethodTest {
 
-    public Ipb4Test() {
+    Ipb4Test() {
         super(new Ipb4(),
             new HashedPassword("$2a$13$leEvXu77OIwPwNvtZIJvaeAx8EItGHuR3nIlq8416g0gXeJaQdrr2", "leEvXu77OIwPwNvtZIJval"),  //password
             new HashedPassword("$2a$13$xyTTP9zhQQtRRKIJPv5AuuOGJ6Ni9FLbDhcuIAcPjt3XzCxIWe3Uu", "xyTTP9zhQQtRRKIJPv5Au3"),  //PassWord1
@@ -22,7 +22,7 @@ public class Ipb4Test extends AbstractEncryptionMethodTest {
     }
 
     @Test
-    public void shouldCreateHashesWith2aAndCostFactor13() {
+    void shouldCreateHashesWith2aAndCostFactor13() {
         // given
         Ipb4 hashMethod = new Ipb4();
 
@@ -35,7 +35,7 @@ public class Ipb4Test extends AbstractEncryptionMethodTest {
     }
 
     @Test
-    public void shouldThrowForInvalidSalt() {
+    void shouldThrowForInvalidSalt() {
         // given
         Ipb4 hashMethod = new Ipb4();
 

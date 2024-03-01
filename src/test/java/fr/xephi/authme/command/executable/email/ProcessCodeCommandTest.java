@@ -5,11 +5,11 @@ import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PasswordRecoveryService;
 import fr.xephi.authme.service.RecoveryCodeService;
 import org.bukkit.entity.Player;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -21,8 +21,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 /**
  * Tests for {@link ProcessCodeCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class ProcessCodeCommandTest {
+@ExtendWith(MockitoExtension.class)
+class ProcessCodeCommandTest {
 
     @InjectMocks
     private ProcessCodeCommand command;
@@ -37,7 +37,7 @@ public class ProcessCodeCommandTest {
     private PasswordRecoveryService recoveryService;
 
     @Test
-    public void shouldSendErrorForInvalidRecoveryCode() {
+    void shouldSendErrorForInvalidRecoveryCode() {
         // given
         String name = "Vultur3";
         Player sender = mock(Player.class);
@@ -55,7 +55,7 @@ public class ProcessCodeCommandTest {
     }
 
     @Test
-    public void shouldSendErrorForNoMoreTries() {
+    void shouldSendErrorForNoMoreTries() {
         // given
         String name = "BobbY";
         Player sender = mock(Player.class);
@@ -72,7 +72,7 @@ public class ProcessCodeCommandTest {
     }
 
     @Test
-    public void shouldProcessCorrectCode() {
+    void shouldProcessCorrectCode() {
         // given
         String name = "Dwight";
         String code = "chickenDinner";

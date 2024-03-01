@@ -1,7 +1,7 @@
 package fr.xephi.authme.data.limbo;
 
 import org.bukkit.entity.Player;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -11,10 +11,10 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link AllowFlightRestoreType}.
  */
-public class AllowFlightRestoreTypeTest {
+class AllowFlightRestoreTypeTest {
 
     @Test
-    public void shouldRestoreValue() {
+    void shouldRestoreValue() {
         // given
         LimboPlayer limboWithFly = newLimboWithAllowFlight(true);
         LimboPlayer limboWithoutFly = newLimboWithAllowFlight(false);
@@ -31,7 +31,7 @@ public class AllowFlightRestoreTypeTest {
     }
 
     @Test
-    public void shouldEnableFlight() {
+    void shouldEnableFlight() {
         // given
         LimboPlayer limboWithFly = newLimboWithAllowFlight(true);
         LimboPlayer limboWithoutFly = newLimboWithAllowFlight(false);
@@ -49,7 +49,7 @@ public class AllowFlightRestoreTypeTest {
 
 
     @Test
-    public void shouldDisableFlight() {
+    void shouldDisableFlight() {
         // given
         LimboPlayer limboWithFly = newLimboWithAllowFlight(true);
         LimboPlayer limboWithoutFly = newLimboWithAllowFlight(false);
@@ -66,7 +66,7 @@ public class AllowFlightRestoreTypeTest {
     }
 
     @Test
-    public void shouldNotInteractWithPlayer() {
+    void shouldNotInteractWithPlayer() {
         // given
         LimboPlayer limboWithFly = newLimboWithAllowFlight(true);
         LimboPlayer limboWithoutFly = newLimboWithAllowFlight(false);
@@ -82,7 +82,7 @@ public class AllowFlightRestoreTypeTest {
     }
 
     @Test
-    public void shouldRemoveFlightExceptForNothingType() {
+    void shouldRemoveFlightExceptForNothingType() {
         // given
         AllowFlightRestoreType noInteractionType = AllowFlightRestoreType.NOTHING;
 

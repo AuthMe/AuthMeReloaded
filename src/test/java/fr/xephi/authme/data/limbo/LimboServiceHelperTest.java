@@ -2,18 +2,18 @@ package fr.xephi.authme.data.limbo;
 
 import fr.xephi.authme.TestHelper;
 import org.bukkit.Location;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -22,19 +22,19 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * <p>
  * Note: some methods are tested directly where they are used via {@link LimboServiceTest}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class LimboServiceHelperTest {
+@ExtendWith(MockitoExtension.class)
+class LimboServiceHelperTest {
 
     @InjectMocks
     private LimboServiceHelper limboServiceHelper;
 
-    @BeforeClass
-    public static void initLogger() {
+    @BeforeAll
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldMergeLimboPlayers() {
+    void shouldMergeLimboPlayers() {
         // given
         Location newLocation = mock(Location.class);
         LimboPlayer newLimbo = new LimboPlayer(newLocation, false, Collections.singletonList(new UserGroup("grp-new")), false, 0.0f, 0.0f);
@@ -54,7 +54,7 @@ public class LimboServiceHelperTest {
     }
 
     @Test
-    public void shouldFallBackToNewLimboForMissingData() {
+    void shouldFallBackToNewLimboForMissingData() {
         // given
         Location newLocation = mock(Location.class);
         LimboPlayer newLimbo = new LimboPlayer(newLocation, false, Collections.singletonList(new UserGroup("grp-new")), true, 0.3f, 0.0f);
@@ -73,7 +73,7 @@ public class LimboServiceHelperTest {
     }
 
     @Test
-    public void shouldHandleNullInputs() {
+    void shouldHandleNullInputs() {
         // given
         LimboPlayer limbo = mock(LimboPlayer.class);
 

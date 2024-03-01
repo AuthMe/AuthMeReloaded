@@ -6,20 +6,20 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.CommandSender;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskAsynchronously;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -30,8 +30,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link AccountsCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class AccountsCommandTest {
+@ExtendWith(MockitoExtension.class)
+class AccountsCommandTest {
 
     @InjectMocks
     private AccountsCommand command;
@@ -43,7 +43,7 @@ public class AccountsCommandTest {
     private BukkitService bukkitService;
 
     @Test
-    public void shouldGetAccountsOfCurrentUser() {
+    void shouldGetAccountsOfCurrentUser() {
         // given
         CommandSender sender = mock(CommandSender.class);
         given(sender.getName()).willReturn("Tester");
@@ -62,7 +62,7 @@ public class AccountsCommandTest {
     }
 
     @Test
-    public void shouldReturnUnknownUserForNullAuth() {
+    void shouldReturnUnknownUserForNullAuth() {
         // given
         CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("SomeUser");
@@ -78,7 +78,7 @@ public class AccountsCommandTest {
     }
 
     @Test
-    public void shouldReturnUnregisteredMessageForEmptyAuthList() {
+    void shouldReturnUnregisteredMessageForEmptyAuthList() {
         // given
         CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("SomeUser");
@@ -95,7 +95,7 @@ public class AccountsCommandTest {
     }
 
     @Test
-    public void shouldReturnSingleAccountMessage() {
+    void shouldReturnSingleAccountMessage() {
         // given
         CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("SomeUser");
@@ -115,7 +115,7 @@ public class AccountsCommandTest {
     // Query by IP
     // -----
     @Test
-    public void shouldReturnIpUnknown() {
+    void shouldReturnIpUnknown() {
         // given
         CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("123.45.67.89");
@@ -131,7 +131,7 @@ public class AccountsCommandTest {
     }
 
     @Test
-    public void shouldReturnSingleAccountForIpQuery() {
+    void shouldReturnSingleAccountForIpQuery() {
         // given
         CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("24.24.48.48");
@@ -147,7 +147,7 @@ public class AccountsCommandTest {
     }
 
     @Test
-    public void shouldReturnAccountListForIpQuery() {
+    void shouldReturnAccountListForIpQuery() {
         // given
         CommandSender sender = mock(CommandSender.class);
         List<String> arguments = Collections.singletonList("98.76.41.122");

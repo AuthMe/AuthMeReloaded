@@ -16,13 +16,13 @@ import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.CommandSender;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,8 +38,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link ReloadCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class ReloadCommandTest {
+@ExtendWith(MockitoExtension.class)
+class ReloadCommandTest {
 
     @InjectMocks
     private ReloadCommand command;
@@ -65,20 +65,20 @@ public class ReloadCommandTest {
     @Mock
     private SingletonStore<SettingsDependent> settingsDependentStore;
 
-    @BeforeClass
-    public static void setUpLogger() {
+    @BeforeAll
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
-    @Before
-    public void setDefaultSettings() {
+    @BeforeEach
+    void setDefaultSettings() {
         // Mock properties retrieved by ConsoleLogger
         given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(LogLevel.INFO);
         given(settings.getProperty(SecuritySettings.USE_LOGGING)).willReturn(false);
     }
 
     @Test
-    public void shouldReload() {
+    void shouldReload() {
         // given
         CommandSender sender = mock(CommandSender.class);
         given(settings.getProperty(DatabaseSettings.BACKEND)).willReturn(DataSourceType.MYSQL);
@@ -101,7 +101,7 @@ public class ReloadCommandTest {
     }
 
     @Test
-    public void shouldHandleReloadError() {
+    void shouldHandleReloadError() {
         // given
         CommandSender sender = mock(CommandSender.class);
         doThrow(IllegalStateException.class).when(reloadableStore).retrieveAllOfType();
@@ -119,7 +119,7 @@ public class ReloadCommandTest {
     }
 
     @Test
-    public void shouldIssueWarningForChangedDataSourceSetting() {
+    void shouldIssueWarningForChangedDataSourceSetting() {
         // given
         CommandSender sender = mock(CommandSender.class);
         given(settings.getProperty(DatabaseSettings.BACKEND)).willReturn(DataSourceType.MYSQL);

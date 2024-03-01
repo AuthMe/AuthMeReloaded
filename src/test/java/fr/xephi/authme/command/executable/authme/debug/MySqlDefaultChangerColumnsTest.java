@@ -1,21 +1,21 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Consistency test for {@link MySqlDefaultChanger.Columns} enum.
  */
-public class MySqlDefaultChangerColumnsTest {
+class MySqlDefaultChangerColumnsTest {
 
     @Test
-    public void shouldAllHaveDifferentNameProperty() {
+    void shouldAllHaveDifferentNameProperty() {
         // given
         Set<String> properties = new HashSet<>();
 
@@ -29,14 +29,14 @@ public class MySqlDefaultChangerColumnsTest {
     }
 
     @Test
-    public void shouldHaveMatchingNullableAndNotNullDefinition() {
+    void shouldHaveMatchingNullableAndNotNullDefinition() {
         for (MySqlDefaultChanger.Columns col : MySqlDefaultChanger.Columns.values()) {
             verifyHasCorrespondingColumnDefinitions(col);
         }
     }
 
     @Test
-    public void shouldHaveMatchingDefaultValueInNotNullDefinition() {
+    void shouldHaveMatchingDefaultValueInNotNullDefinition() {
         for (MySqlDefaultChanger.Columns col : MySqlDefaultChanger.Columns.values()) {
             verifyHasSameDefaultValueInNotNullDefinition(col);
         }

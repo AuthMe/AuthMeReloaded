@@ -24,7 +24,7 @@ public class HelpMessagesService {
     private final HelpMessagesFileHandler helpMessagesFileHandler;
 
     @Inject
-    HelpMessagesService(HelpMessagesFileHandler helpMessagesFileHandler) {
+    public HelpMessagesService(HelpMessagesFileHandler helpMessagesFileHandler) {
         this.helpMessagesFileHandler = helpMessagesFileHandler;
     }
 

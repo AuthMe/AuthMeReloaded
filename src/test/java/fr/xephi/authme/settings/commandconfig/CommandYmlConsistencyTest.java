@@ -5,25 +5,23 @@ import ch.jalu.configme.resource.PropertyResource;
 import ch.jalu.configme.resource.YamlFileResource;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.SettingsMigrationService;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 
 /**
  * Tests that commands.yml is well-formed.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class CommandYmlConsistencyTest {
+@ExtendWith(MockitoExtension.class)
+class CommandYmlConsistencyTest {
 
     @InjectMocks
     private CommandMigrationService commandMigrationService;
@@ -31,11 +29,8 @@ public class CommandYmlConsistencyTest {
     @Mock
     private SettingsMigrationService settingsMigrationService;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
     @Test
-    public void shouldLoadWithNoMigrations() {
+    void shouldLoadWithNoMigrations() {
         // given
         File commandFile = TestHelper.getJarFile("/commands.yml");
         PropertyResource resource = new YamlFileResource(commandFile);

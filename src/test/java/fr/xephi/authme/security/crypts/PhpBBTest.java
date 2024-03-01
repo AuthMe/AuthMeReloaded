@@ -1,18 +1,18 @@
 package fr.xephi.authme.security.crypts;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test for {@link PhpBB}.
  */
-public class PhpBBTest extends AbstractEncryptionMethodTest {
+class PhpBBTest extends AbstractEncryptionMethodTest {
 
-    public PhpBBTest() {
+    PhpBBTest() {
         super(new PhpBB(),
             "$2a$10$1rnuna3GBduBy1NQuOpnWODqBfl8CZHeULuBThNfAvkOYDRRQR1Zi",  // password
             "$2a$10$F6LVgXa8.t95H0Fikr6nG.aEMgIQRXlFpzMvAjbO7ag3fny9GGS3i",  // PassWord1
@@ -21,7 +21,7 @@ public class PhpBBTest extends AbstractEncryptionMethodTest {
     }
 
     @Test
-    public void shouldMatchPhpassSaltedMd5Hashes() {
+    void shouldMatchPhpassSaltedMd5Hashes() {
         // given
         Map<String, String> givenHashes = ImmutableMap.of(
             "password", "$H$7MaSGQb0xe3Fp/a.Q.Ewpw.UKfCv.t0",
@@ -39,7 +39,7 @@ public class PhpBBTest extends AbstractEncryptionMethodTest {
     }
 
     @Test
-    public void shouldMatchUnsaltedMd5Hashes() {
+    void shouldMatchUnsaltedMd5Hashes() {
         // given
         Map<String, String> givenHashes = ImmutableMap.of(
             "password", "5f4dcc3b5aa765d61d8327deb882cf99",

@@ -6,11 +6,11 @@ import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.ValidationService.ValidationResult;
 import org.bukkit.command.CommandSender;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 
@@ -22,8 +22,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link ChangePasswordAdminCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class ChangePasswordAdminCommandTest {
+@ExtendWith(MockitoExtension.class)
+class ChangePasswordAdminCommandTest {
 
     @InjectMocks
     private ChangePasswordAdminCommand command;
@@ -38,7 +38,7 @@ public class ChangePasswordAdminCommandTest {
     private Management management;
 
     @Test
-    public void shouldForwardRequestToManagement() {
+    void shouldForwardRequestToManagement() {
         // given
         String name = "theUser";
         String pass = "newPassword";
@@ -54,7 +54,7 @@ public class ChangePasswordAdminCommandTest {
     }
 
     @Test
-    public void shouldSendErrorToCommandSender() {
+    void shouldSendErrorToCommandSender() {
         // given
         String name = "theUser";
         String pass = "newPassword";

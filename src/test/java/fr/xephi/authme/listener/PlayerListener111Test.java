@@ -1,19 +1,19 @@
 package fr.xephi.authme.listener;
 
 import org.bukkit.event.entity.EntityAirChangeEvent;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static fr.xephi.authme.listener.EventCancelVerifier.withServiceMock;
 
 /**
  * Test for {@link PlayerListener111}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class PlayerListener111Test {
+@ExtendWith(MockitoExtension.class)
+class PlayerListener111Test {
 
     @InjectMocks
     private PlayerListener111 listener;
@@ -22,7 +22,7 @@ public class PlayerListener111Test {
     private ListenerService listenerService;
 
     @Test
-    public void shouldCancelEvent() {
+    void shouldCancelEvent() {
         withServiceMock(listenerService)
             .check(listener::onPlayerAirChange, EntityAirChangeEvent.class);
     }

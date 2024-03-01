@@ -7,14 +7,14 @@ import fr.xephi.authme.service.BukkitServiceTestHelper;
 import fr.xephi.authme.service.GeoIpService;
 import fr.xephi.authme.settings.SettingsMigrationService;
 import org.bukkit.entity.Player;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,8 +34,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 /**
  * Test for {@link CommandManager}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class CommandManagerTest {
+@ExtendWith(MockitoExtension.class)
+class CommandManagerTest {
 
     private static final String TEST_FILES_FOLDER = "/fr/xephi/authme/settings/commandconfig/";
 
@@ -52,108 +52,152 @@ public class CommandManagerTest {
     @Mock
     private SettingsMigrationService settingsMigrationService;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @TempDir
+    File temporaryFolder;
 
-    private File testFolder;
+    @BeforeEach
+    void setup() {
+        player = mock(Player.class);
+        given(player.getName()).willReturn("Bobby");
+    }
 
-    @Before
-    public void setup() throws IOException {
-        testFolder = temporaryFolder.newFolder();
-        player = mockPlayer();
-        BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay(bukkitService);
+    @Nested
+    class TestsWithPlayerIp {
+
+        @BeforeEach
+        void setup() {
+            TestHelper.mockIpAddressToPlayer(player, "127.0.0.3");
+        }
+
+        @Test
+        void shouldExecuteCommandsOnLoginWithTwentyFiveAlts() {
+            // given
+            copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
+            initManager();
+            BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay(bukkitService);
+
+            // when
+            manager.runCommandsOnLogin(player, Collections.nCopies(25, "yolo"));
+
+            // then
+            verify(bukkitService).dispatchConsoleCommand("msg Bobby Welcome back");
+            verify(bukkitService).dispatchCommand(player, "motd");
+            verify(bukkitService).dispatchCommand(player, "list");
+            verify(bukkitService).dispatchConsoleCommand("helpop Player Bobby has more than 1 account");
+            verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(60L));
+            verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(120L));
+            verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(180L));
+            verifyNoMoreInteractions(bukkitService);
+            verifyNoInteractions(geoIpService);
+        }
+
+        @Test
+        void shouldExecuteCommandsOnLogin() {
+            // given
+            copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
+            initManager();
+            BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay(bukkitService);
+
+            // when
+            manager.runCommandsOnLogin(player, Collections.emptyList());
+
+            // then
+            verify(bukkitService).dispatchConsoleCommand("msg Bobby Welcome back");
+            verify(bukkitService).dispatchCommand(any(Player.class), eq("motd"));
+            verify(bukkitService).dispatchCommand(any(Player.class), eq("list"));
+            verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(60L));
+            verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(120L));
+            verifyNoMoreInteractions(bukkitService);
+            verifyNoInteractions(geoIpService);
+        }
+
+        @Test
+        void shouldExecuteCommandsOnRegister() {
+            // given
+            copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
+            initManager();
+            BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay(bukkitService);
+            given(geoIpService.getCountryName("127.0.0.3")).willReturn("Syldavia");
+
+            // when
+            manager.runCommandsOnRegister(player);
+
+            // then
+            verify(bukkitService).dispatchCommand(any(Player.class), eq("me I just registered"));
+            verify(bukkitService).dispatchConsoleCommand("log Bobby (127.0.0.3, Syldavia) registered");
+            verify(bukkitService, times(2)).scheduleSyncDelayedTask(any(Runnable.class), eq(100L));
+            verifyNoMoreInteractions(bukkitService);
+        }
+
+        @Test
+        void shouldExecuteCommandsOnLoginWithTwoAlts() {
+            // given
+            copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
+            initManager();
+            BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay(bukkitService);
+
+            // when
+            manager.runCommandsOnLogin(player, Arrays.asList("willy", "nilly", "billy", "silly"));
+
+            // then
+            verify(bukkitService).dispatchConsoleCommand("msg Bobby Welcome back");
+            verify(bukkitService).dispatchCommand(player, "motd");
+            verify(bukkitService).dispatchCommand(player, "list");
+            verify(bukkitService).dispatchConsoleCommand("helpop Player Bobby has more than 1 account");
+            verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(60L));
+            verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(120L));
+            verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(180L));
+            verifyNoMoreInteractions(bukkitService);
+            verifyNoInteractions(geoIpService);
+        }
+
+        @Test
+        void shouldExecuteCommandsOnLoginWithFifteenAlts() {
+            // given
+            copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
+            initManager();
+            BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay(bukkitService);
+
+            // when
+            manager.runCommandsOnLogin(player, Collections.nCopies(15, "swag"));
+
+            // then
+            verify(bukkitService).dispatchConsoleCommand("msg Bobby Welcome back");
+            verify(bukkitService).dispatchCommand(player, "motd");
+            verify(bukkitService).dispatchCommand(player, "list");
+            verify(bukkitService).dispatchConsoleCommand("helpop Player Bobby has more than 1 account");
+            verify(bukkitService).dispatchConsoleCommand("log Bobby 127.0.0.3 many accounts");
+            verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(60L));
+            verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(120L));
+            verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(180L));
+            verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(240L));
+            verifyNoMoreInteractions(bukkitService);
+            verifyNoInteractions(geoIpService);
+        }
+
+        @Test
+        void shouldExecuteCommandOnLogout() {
+            // given
+            copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
+            initManager();
+
+            // when
+            manager.runCommandsOnLogout(player);
+
+            // then
+            verify(bukkitService).dispatchConsoleCommand("broadcast Bobby (127.0.0.3) logged out");
+            verifyNoMoreInteractions(bukkitService);
+            verifyNoInteractions(geoIpService);
+        }
     }
 
     @Test
-    public void shouldExecuteCommandsOnLogin() {
-        // given
-        copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
-        initManager();
-
-        // when
-        manager.runCommandsOnLogin(player, Collections.emptyList());
-
-        // then
-        verify(bukkitService).dispatchConsoleCommand("msg Bobby Welcome back");
-        verify(bukkitService).dispatchCommand(any(Player.class), eq("motd"));
-        verify(bukkitService).dispatchCommand(any(Player.class), eq("list"));
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(60L));
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(120L));
-        verifyNoMoreInteractions(bukkitService);
-        verifyNoInteractions(geoIpService);
-    }
-
-    @Test
-    public void shouldExecuteCommandsOnLoginWithTwoAlts() {
-        // given
-        copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
-        initManager();
-
-        // when
-        manager.runCommandsOnLogin(player, Arrays.asList("willy", "nilly", "billy", "silly"));
-
-        // then
-        verify(bukkitService).dispatchConsoleCommand("msg Bobby Welcome back");
-        verify(bukkitService).dispatchCommand(player, "motd");
-        verify(bukkitService).dispatchCommand(player, "list");
-        verify(bukkitService).dispatchConsoleCommand("helpop Player Bobby has more than 1 account");
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(60L));
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(120L));
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(180L));
-        verifyNoMoreInteractions(bukkitService);
-        verifyNoInteractions(geoIpService);
-    }
-
-    @Test
-    public void shouldExecuteCommandsOnLoginWithFifteenAlts() {
-        // given
-        copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
-        initManager();
-
-        // when
-        manager.runCommandsOnLogin(player, Collections.nCopies(15, "swag"));
-
-        // then
-        verify(bukkitService).dispatchConsoleCommand("msg Bobby Welcome back");
-        verify(bukkitService).dispatchCommand(player, "motd");
-        verify(bukkitService).dispatchCommand(player, "list");
-        verify(bukkitService).dispatchConsoleCommand("helpop Player Bobby has more than 1 account");
-        verify(bukkitService).dispatchConsoleCommand("log Bobby 127.0.0.3 many accounts");
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(60L));
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(120L));
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(180L));
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(240L));
-        verifyNoMoreInteractions(bukkitService);
-        verifyNoInteractions(geoIpService);
-    }
-
-    @Test
-    public void shouldExecuteCommandsOnLoginWithTwentyFiveAlts() {
-        // given
-        copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
-        initManager();
-
-        // when
-        manager.runCommandsOnLogin(player, Collections.nCopies(25, "yolo"));
-
-        // then
-        verify(bukkitService).dispatchConsoleCommand("msg Bobby Welcome back");
-        verify(bukkitService).dispatchCommand(player, "motd");
-        verify(bukkitService).dispatchCommand(player, "list");
-        verify(bukkitService).dispatchConsoleCommand("helpop Player Bobby has more than 1 account");
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(60L));
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(120L));
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(180L));
-        verifyNoMoreInteractions(bukkitService);
-        verifyNoInteractions(geoIpService);
-    }
-
-    @Test
-    public void shouldExecuteCommandsOnLoginWithIncompleteConfig() {
+    void shouldExecuteCommandsOnLoginWithIncompleteConfig() {
         // given
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.incomplete.yml");
         initManager();
         BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay(bukkitService);
+        given(player.getDisplayName()).willReturn("bob");
 
         // when
         manager.runCommandsOnLogin(player, Collections.emptyList());
@@ -167,7 +211,7 @@ public class CommandManagerTest {
     }
 
     @Test
-    public void shouldExecuteCommandsOnSessionLogin() {
+    void shouldExecuteCommandsOnSessionLogin() {
         // given
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
         initManager();
@@ -182,7 +226,7 @@ public class CommandManagerTest {
     }
 
     @Test
-    public void shouldExecuteCommandsOnFirstLogin() {
+    void shouldExecuteCommandsOnFirstLogin() {
         // given
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
         initManager();
@@ -197,7 +241,7 @@ public class CommandManagerTest {
     }
 
     @Test
-    public void shouldNotExecuteFirstLoginCommandWhoseThresholdIsNotMet() {
+    void shouldNotExecuteFirstLoginCommandWhoseThresholdIsNotMet() {
         // given
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
         initManager();
@@ -210,10 +254,12 @@ public class CommandManagerTest {
     }
 
     @Test
-    public void shouldExecuteCommandsOnJoin() {
+    void shouldExecuteCommandsOnJoin() {
         // given
+        player.getName(); // Prevent UnnecessaryStubbingException as the name is not needed
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
         initManager();
+        given(player.getDisplayName()).willReturn("bob");
 
         // when
         manager.runCommandsOnJoin(player);
@@ -224,7 +270,7 @@ public class CommandManagerTest {
     }
 
     @Test
-    public void shouldExecuteCommandsOnJoinWithIncompleteConfig() {
+    void shouldExecuteCommandsOnJoinWithIncompleteConfig() {
         // given
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.incomplete.yml");
         initManager();
@@ -238,39 +284,9 @@ public class CommandManagerTest {
     }
 
     @Test
-    public void shouldExecuteCommandsOnRegister() {
+    void shouldExecuteCommandsOnRegisterWithIncompleteConfig() {
         // given
-        copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
-        initManager();
-
-        // when
-        manager.runCommandsOnRegister(player);
-
-        // then
-        verify(bukkitService).dispatchCommand(any(Player.class), eq("me I just registered"));
-        verify(bukkitService).dispatchConsoleCommand("log Bobby (127.0.0.3, Syldavia) registered");
-        verify(bukkitService, times(2)).scheduleSyncDelayedTask(any(Runnable.class), eq(100L));
-        verifyNoMoreInteractions(bukkitService);
-    }
-
-    @Test
-    public void shouldExecuteCommandOnLogout() {
-        // given
-        copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
-        initManager();
-
-        // when
-        manager.runCommandsOnLogout(player);
-
-        // then
-        verify(bukkitService).dispatchConsoleCommand("broadcast Bobby (127.0.0.3) logged out");
-        verifyNoMoreInteractions(bukkitService);
-        verifyNoInteractions(geoIpService);
-    }
-
-    @Test
-    public void shouldExecuteCommandsOnRegisterWithIncompleteConfig() {
-        // given
+        player.getName(); // Prevent UnnecessaryStubbingException as the name is not needed
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.incomplete.yml");
         initManager();
 
@@ -282,7 +298,7 @@ public class CommandManagerTest {
     }
 
     @Test
-    public void shouldExecuteCommandOnUnregister() {
+    void shouldExecuteCommandOnUnregister() {
         // given
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.incomplete.yml");
         initManager();
@@ -295,26 +311,16 @@ public class CommandManagerTest {
     }
 
     private void initManager() {
-        manager = new CommandManager(testFolder, bukkitService, geoIpService, commandMigrationService);
+        manager = new CommandManager(temporaryFolder, bukkitService, geoIpService, commandMigrationService);
     }
 
     private void copyJarFileAsCommandsYml(String path) {
         File source = TestHelper.getJarFile(path);
-        File destination = new File(testFolder, "commands.yml");
+        File destination = new File(temporaryFolder, "commands.yml");
         try {
             Files.copy(source, destination);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
-    }
-
-    private Player mockPlayer() {
-        Player player = mock(Player.class);
-        given(player.getName()).willReturn("Bobby");
-        given(player.getDisplayName()).willReturn("bob");
-        String ip = "127.0.0.3";
-        TestHelper.mockIpAddressToPlayer(player, ip);
-        given(geoIpService.getCountryName(ip)).willReturn("Syldavia");
-        return player;
     }
 }

@@ -9,12 +9,12 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import org.bukkit.command.CommandSender;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -24,8 +24,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link AsyncChangePassword}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class AsyncChangePasswordTest {
+@ExtendWith(MockitoExtension.class)
+class AsyncChangePasswordTest {
 
     @InjectMocks
     private AsyncChangePassword asyncChangePassword;
@@ -41,13 +41,13 @@ public class AsyncChangePasswordTest {
     @Mock
     private BungeeSender bungeeSender;
 
-    @Before
-    public void setUpLogger() {
+    @BeforeEach
+    void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldRejectCommandForUnknownUser() {
+    void shouldRejectCommandForUnknownUser() {
         // given
         CommandSender sender = mock(CommandSender.class);
         String player = "player";
@@ -64,7 +64,7 @@ public class AsyncChangePasswordTest {
     }
 
     @Test
-    public void shouldUpdatePasswordOfLoggedInUser() {
+    void shouldUpdatePasswordOfLoggedInUser() {
         // given
         CommandSender sender = mock(CommandSender.class);
         String player = "my_user12";
@@ -85,7 +85,7 @@ public class AsyncChangePasswordTest {
     }
 
     @Test
-    public void shouldUpdatePasswordOfOfflineUser() {
+    void shouldUpdatePasswordOfOfflineUser() {
         // given
         CommandSender sender = mock(CommandSender.class);
         String player = "my_user12";
@@ -107,7 +107,7 @@ public class AsyncChangePasswordTest {
     }
 
     @Test
-    public void shouldReportWhenSaveFailed() {
+    void shouldReportWhenSaveFailed() {
         // given
         CommandSender sender = mock(CommandSender.class);
         String player = "my_user12";

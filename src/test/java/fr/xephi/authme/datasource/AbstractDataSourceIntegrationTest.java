@@ -5,7 +5,7 @@ import ch.jalu.datasourcecolumns.data.DataSourceValueImpl;
 import com.google.common.collect.Lists;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -17,6 +17,7 @@ import static fr.xephi.authme.AuthMeMatchers.equalToHash;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthLocation;
 import static fr.xephi.authme.AuthMeMatchers.hasRegistrationInfo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
@@ -25,22 +26,20 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeThat;
 
 /**
  * Abstract class for data source integration tests.
  */
 public abstract class AbstractDataSourceIntegrationTest {
 
-    protected DataSource getDataSource() {
+    private DataSource getDataSource() {
         return getDataSource("salt");
     }
 
     protected abstract DataSource getDataSource(String saltColumn);
 
     @Test
-    public void shouldReturnIfAuthIsAvailableOrNot() {
+    void shouldReturnIfAuthIsAvailableOrNot() {
         // given
         DataSource dataSource = getDataSource();
 
@@ -56,7 +55,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldReturnPassword() {
+    void shouldReturnPassword() {
         // given
         DataSource dataSource = getDataSource();
 
@@ -72,7 +71,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldReturnPasswordWithEmptySaltColumn() {
+    void shouldReturnPasswordWithEmptySaltColumn() {
         // given
         DataSource dataSource = getDataSource("");
 
@@ -88,7 +87,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldGetAuth() {
+    void shouldGetAuth() {
         // given
         DataSource dataSource = getDataSource();
 
@@ -116,7 +115,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldCountAuthsByEmail() {
+    void shouldCountAuthsByEmail() {
         // given
         DataSource dataSource = getDataSource();
 
@@ -135,7 +134,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldReturnAllAuths() {
+    void shouldReturnAllAuths() {
         // given
         DataSource dataSource = getDataSource();
 
@@ -154,7 +153,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldUpdatePassword() {
+    void shouldUpdatePassword() {
         // given
         DataSource dataSource = getDataSource();
         HashedPassword newHash = new HashedPassword("new_hash");
@@ -170,7 +169,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldUpdatePasswordWithNoSalt() {
+    void shouldUpdatePasswordWithNoSalt() {
         // given
         DataSource dataSource = getDataSource("");
         HashedPassword newHash = new HashedPassword("new_hash", "1241");
@@ -186,7 +185,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldUpdatePasswordWithPlayerAuth() {
+    void shouldUpdatePasswordWithPlayerAuth() {
         // given
         DataSource dataSource = getDataSource("salt");
         PlayerAuth bobbyAuth = PlayerAuth.builder().name("bobby").password(new HashedPassword("tt", "cc")).build();
@@ -203,7 +202,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldRemovePlayerAuth() {
+    void shouldRemovePlayerAuth() {
         // given
         DataSource dataSource = getDataSource();
 
@@ -218,7 +217,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldUpdateSession() {
+    void shouldUpdateSession() {
         // given
         DataSource dataSource = getDataSource();
         PlayerAuth bobby = PlayerAuth.builder()
@@ -236,7 +235,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldUpdateLastLoc() {
+    void shouldUpdateLastLoc() {
         // given
         DataSource dataSource = getDataSource();
         PlayerAuth user = PlayerAuth.builder()
@@ -252,11 +251,11 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldDeletePlayers() {
+    void shouldDeletePlayers() {
         // given
         DataSource dataSource = getDataSource();
         Set<String> playersToDelete = new HashSet<>(Arrays.asList("bobby", "doesNotExist"));
-        assumeThat(dataSource.getAccountsRegistered(), equalTo(2));
+        assertThat(dataSource.getAccountsRegistered(), equalTo(2)); // Make sure we start as expected
 
         // when
         dataSource.purgeRecords(playersToDelete);
@@ -268,7 +267,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldUpdateEmail() {
+    void shouldUpdateEmail() {
         // given
         DataSource dataSource = getDataSource();
         String email = "new-user@mail.tld";
@@ -286,7 +285,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldCountAuths() {
+    void shouldCountAuths() {
         // given
         DataSource dataSource = getDataSource();
 
@@ -303,7 +302,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldGetAllUsersByIp() {
+    void shouldGetAllUsersByIp() {
         // given
         DataSource dataSource = getDataSource();
 
@@ -327,7 +326,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldUpdateRealName() {
+    void shouldUpdateRealName() {
         // given
         DataSource dataSource = getDataSource();
 
@@ -342,7 +341,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldGetRecordsToPurge() {
+    void shouldGetRecordsToPurge() {
         // given
         DataSource dataSource = getDataSource();
         // 1453242857 -> user, 1449136800 -> bobby
@@ -374,7 +373,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldPerformOperationsOnIsLoggedColumnSuccessfully() {
+    void shouldPerformOperationsOnIsLoggedColumnSuccessfully() {
         DataSource dataSource = getDataSource();
         // on startup no one should be marked as logged
         assertThat(dataSource.isLogged("user"), equalTo(false));
@@ -404,7 +403,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldPerformPurgeOperation() {
+    void shouldPerformPurgeOperation() {
         // given
         List<String> names = Arrays.asList("Bobby", "USER", "DoesnotExist");
         DataSource dataSource = getDataSource();
@@ -417,7 +416,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldFetchEmail() {
+    void shouldFetchEmail() {
         // given
         String user1 = "user";
         String user2 = "Bogus";
@@ -433,7 +432,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldGetLoggedPlayersWithoutEmail() {
+    void shouldGetLoggedPlayersWithoutEmail() {
         // given
         DataSource dataSource = getDataSource();
         dataSource.setLogged("bobby");
@@ -447,7 +446,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldGrantAndRetrieveSessionFlag() {
+    void shouldGrantAndRetrieveSessionFlag() {
         // given
         DataSource dataSource = getDataSource();
 
@@ -462,7 +461,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldRevokeSession() {
+    void shouldRevokeSession() {
         // given
         DataSource dataSource = getDataSource();
         dataSource.grantSession("bobby");
@@ -479,7 +478,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldGetRecentlyLoggedInPlayers() {
+    void shouldGetRecentlyLoggedInPlayers() {
         // given
         DataSource dataSource = getDataSource();
         String[] names = {"user3", "user8", "user2", "user4", "user7",
@@ -505,7 +504,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldSetTotpKey() {
+    void shouldSetTotpKey() {
         // given
         DataSource dataSource = getDataSource();
         String newTotpKey = "My new TOTP key";
@@ -519,7 +518,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldRemoveTotpKey() {
+    void shouldRemoveTotpKey() {
         // given
         DataSource dataSource = getDataSource();
 

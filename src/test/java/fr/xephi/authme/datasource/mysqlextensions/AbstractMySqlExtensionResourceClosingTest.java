@@ -4,10 +4,8 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.AbstractResourceClosingTest;
 import fr.xephi.authme.datasource.Columns;
 import fr.xephi.authme.settings.Settings;
-import org.junit.BeforeClass;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.BeforeAll;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
@@ -23,12 +21,8 @@ public abstract class AbstractMySqlExtensionResourceClosingTest extends Abstract
     private static Settings settings;
     private static Columns columns;
 
-    public AbstractMySqlExtensionResourceClosingTest(Method method, String name) {
-        super(method, name);
-    }
-
-    @BeforeClass
-    public static void initSettings() {
+    @BeforeAll
+    static void initSettings() {
         settings = mock(Settings.class);
         TestHelper.returnDefaultsForAllProperties(settings);
         columns = new Columns(settings);
@@ -41,7 +35,6 @@ public abstract class AbstractMySqlExtensionResourceClosingTest extends Abstract
 
     protected abstract MySqlExtension createExtension(Settings settings, Columns columns);
 
-    @Parameterized.Parameters(name = "{1}")
     public static List<Object[]> createParameters() {
         return Arrays.stream(MySqlExtension.class.getDeclaredMethods())
             .filter(m -> Modifier.isPublic(m.getModifiers()))

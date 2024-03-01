@@ -2,11 +2,11 @@ package fr.xephi.authme.task;
 
 import ch.jalu.injector.factory.SingletonStore;
 import fr.xephi.authme.initialization.HasCleanup;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
@@ -18,8 +18,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link CleanupTask}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class CleanupTaskTest {
+@ExtendWith(MockitoExtension.class)
+class CleanupTaskTest {
 
     @InjectMocks
     private CleanupTask cleanupTask;
@@ -28,7 +28,7 @@ public class CleanupTaskTest {
     private SingletonStore<HasCleanup> hasCleanupStore;
 
     @Test
-    public void shouldPerformCleanup() {
+    void shouldPerformCleanup() {
         // given
         List<HasCleanup> services = asList(mock(HasCleanup.class), mock(HasCleanup.class), mock(HasCleanup.class));
         given(hasCleanupStore.retrieveAllOfType()).willReturn(services);

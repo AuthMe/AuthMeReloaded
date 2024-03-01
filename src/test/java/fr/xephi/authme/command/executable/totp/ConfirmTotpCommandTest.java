@@ -9,17 +9,17 @@ import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.security.totp.GenerateTotpService;
 import fr.xephi.authme.security.totp.TotpAuthenticator.TotpGenerationResult;
 import org.bukkit.entity.Player;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -32,8 +32,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link ConfirmTotpCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class ConfirmTotpCommandTest {
+@ExtendWith(MockitoExtension.class)
+class ConfirmTotpCommandTest {
 
     @InjectMocks
     private ConfirmTotpCommand command;
@@ -47,13 +47,13 @@ public class ConfirmTotpCommandTest {
     @Mock
     private Messages messages;
 
-    @BeforeClass
-    public static void setUpLogger() {
+    @BeforeAll
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldAddTotpCodeToUserAfterSuccessfulConfirmation() {
+    void shouldAddTotpCodeToUserAfterSuccessfulConfirmation() {
         // given
         Player player = mock(Player.class);
         String playerName = "George";
@@ -79,7 +79,7 @@ public class ConfirmTotpCommandTest {
     }
 
     @Test
-    public void shouldHandleWrongTotpCode() {
+    void shouldHandleWrongTotpCode() {
         // given
         Player player = mock(Player.class);
         String playerName = "George";
@@ -102,7 +102,7 @@ public class ConfirmTotpCommandTest {
     }
 
     @Test
-    public void shouldHandleMissingTotpKey() {
+    void shouldHandleMissingTotpKey() {
         // given
         Player player = mock(Player.class);
         String playerName = "George";
@@ -122,7 +122,7 @@ public class ConfirmTotpCommandTest {
     }
 
     @Test
-    public void shouldStopForAlreadyExistingTotpKeyOnAccount() {
+    void shouldStopForAlreadyExistingTotpKeyOnAccount() {
         // given
         Player player = mock(Player.class);
         String playerName = "George";
@@ -140,7 +140,7 @@ public class ConfirmTotpCommandTest {
     }
 
     @Test
-    public void shouldHandleMissingAuthAccount() {
+    void shouldHandleMissingAuthAccount() {
         // given
         Player player = mock(Player.class);
         String playerName = "George";

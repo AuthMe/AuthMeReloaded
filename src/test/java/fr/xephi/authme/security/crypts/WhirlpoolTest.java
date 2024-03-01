@@ -3,9 +3,9 @@ package fr.xephi.authme.security.crypts;
 /**
  * Test for {@link Whirlpool}.
  */
-public class WhirlpoolTest extends AbstractEncryptionMethodTest {
+class WhirlpoolTest extends AbstractEncryptionMethodTest {
 
-    public WhirlpoolTest() {
+    WhirlpoolTest() {
         super(new Whirlpool(),
             "74DFC2B27ACFA364DA55F93A5CAEE29CCAD3557247EDA238831B3E9BD931B01D77FE994E4F12B9D4CFA92A124461D2065197D8CF7F33FC88566DA2DB2A4D6EAE",  // password
             "819B4CBD26508E39EA76BFE102DCF2ACC87A446747CAB0BD88522B0822A724583E81B6A4BD2CE255DB694E530B659F47D434EEB50344A02F50B64414C9671583",  // PassWord1

@@ -6,9 +6,9 @@ import com.zaxxer.hikari.HikariDataSource;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 /**
  * Integration test for {@link PostgreSqlDataSource}.
  */
-public class PostgreSqlIntegrationTest extends AbstractDataSourceIntegrationTest {
+class PostgreSqlIntegrationTest extends AbstractDataSourceIntegrationTest {
 
     /** Mock of a settings instance. */
     private static Settings settings;
@@ -35,8 +35,8 @@ public class PostgreSqlIntegrationTest extends AbstractDataSourceIntegrationTest
     /**
      * Set up the settings mock to return specific values for database settings and load {@link #sqlInitialize}.
      */
-    @BeforeClass
-    public static void initializeSettings() throws IOException, ClassNotFoundException {
+    @BeforeAll
+    static void initializeSettings() throws IOException, ClassNotFoundException {
         // Check that we have an H2 driver
         Class.forName("org.h2.jdbcx.JdbcDataSource");
 
@@ -50,8 +50,8 @@ public class PostgreSqlIntegrationTest extends AbstractDataSourceIntegrationTest
         sqlInitialize = new String(Files.readAllBytes(sqlInitFile));
     }
 
-    @Before
-    public void initializeConnectionAndTable() throws SQLException {
+    @BeforeEach
+    void initializeConnectionAndTable() throws SQLException {
         HikariConfig config = new HikariConfig();
         config.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
         config.setConnectionTestQuery("VALUES 1");
@@ -68,8 +68,8 @@ public class PostgreSqlIntegrationTest extends AbstractDataSourceIntegrationTest
         hikariSource = ds;
     }
 
-    @After
-    public void closeConnection() {
+    @AfterEach
+    void closeConnection() {
         silentClose(hikariSource);
     }
 

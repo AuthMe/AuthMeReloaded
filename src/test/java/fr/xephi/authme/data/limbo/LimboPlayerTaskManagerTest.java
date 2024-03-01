@@ -13,21 +13,21 @@ import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -39,8 +39,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link LimboPlayerTaskManager}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class LimboPlayerTaskManagerTest {
+@ExtendWith(MockitoExtension.class)
+class LimboPlayerTaskManagerTest {
 
     @InjectMocks
     private LimboPlayerTaskManager limboPlayerTaskManager;
@@ -60,13 +60,13 @@ public class LimboPlayerTaskManagerTest {
     @Mock
     private RegistrationCaptchaManager registrationCaptchaManager;
 
-    @BeforeClass
-    public static void setupLogger() {
+    @BeforeAll
+    static void setupLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldRegisterMessageTask() {
+    void shouldRegisterMessageTask() {
         // given
         Player player = mock(Player.class);
         LimboPlayer limboPlayer = mock(LimboPlayer.class);
@@ -86,7 +86,7 @@ public class LimboPlayerTaskManagerTest {
     }
 
     @Test
-    public void shouldNotScheduleTaskForZeroAsInterval() {
+    void shouldNotScheduleTaskForZeroAsInterval() {
         // given
         Player player = mock(Player.class);
         LimboPlayer limboPlayer = mock(LimboPlayer.class);
@@ -101,7 +101,7 @@ public class LimboPlayerTaskManagerTest {
     }
 
     @Test
-    public void shouldCancelExistingMessageTask() {
+    void shouldCancelExistingMessageTask() {
         // given
         String name = "rats";
         Player player = mock(Player.class);
@@ -124,7 +124,7 @@ public class LimboPlayerTaskManagerTest {
     }
 
     @Test
-    public void shouldInitializeMessageTaskWithCaptchaMessage() {
+    void shouldInitializeMessageTaskWithCaptchaMessage() {
         // given
         String name = "race";
         Player player = mock(Player.class);
@@ -145,7 +145,7 @@ public class LimboPlayerTaskManagerTest {
     }
 
     @Test
-    public void shouldRegisterTimeoutTask() {
+    void shouldRegisterTimeoutTask() {
         // given
         Player player = mock(Player.class);
         LimboPlayer limboPlayer = mock(LimboPlayer.class);
@@ -163,7 +163,7 @@ public class LimboPlayerTaskManagerTest {
     }
 
     @Test
-    public void shouldNotRegisterTimeoutTaskForZeroTimeout() {
+    void shouldNotRegisterTimeoutTaskForZeroTimeout() {
         // given
         Player player = mock(Player.class);
         LimboPlayer limboPlayer = mock(LimboPlayer.class);
@@ -177,7 +177,7 @@ public class LimboPlayerTaskManagerTest {
     }
 
     @Test
-    public void shouldCancelExistingTimeoutTask() {
+    void shouldCancelExistingTimeoutTask() {
         // given
         Player player = mock(Player.class);
         LimboPlayer limboPlayer = new LimboPlayer(null, false, Collections.emptyList(), true, 0.3f, 0.1f);

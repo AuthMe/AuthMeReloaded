@@ -6,8 +6,8 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -15,20 +15,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test for verifying that AuthMe listener methods are well-formed.
  */
-public final class ListenerConsistencyTest {
+final class ListenerConsistencyTest {
 
     private static List<Class<? extends Listener>> classes;
 
-    @BeforeClass
-    public static void collectListenerClasses() {
+    @BeforeAll
+    static void collectListenerClasses() {
         ClassCollector collector = new ClassCollector(TestHelper.SOURCES_FOLDER, TestHelper.PROJECT_ROOT + "listener");
         classes = collector.collectClasses(Listener.class);
 
@@ -38,14 +38,14 @@ public final class ListenerConsistencyTest {
     }
 
     @Test
-    public void shouldSetIgnoreCancelledToTrue() {
+    void shouldSetIgnoreCancelledToTrue() {
         for (Class<?> listener : classes) {
             checkCanceledAttribute(listener);
         }
     }
 
     @Test
-    public void shouldHaveOnlyEventListenersAsPublicMembers() {
+    void shouldHaveOnlyEventListenersAsPublicMembers() {
         for (Class<?> listener : classes) {
             checkPublicMethodsAreListeners(listener);
         }
@@ -53,14 +53,14 @@ public final class ListenerConsistencyTest {
 
     // #367: Event listeners with EventPriority.MONITOR should not change events
     @Test
-    public void shouldNotHaveMonitorLevelEventHandlers() {
+    void shouldNotHaveMonitorLevelEventHandlers() {
         for (Class<?> listener : classes) {
             verifyListenerIsNotUsingMonitorPriority(listener);
         }
     }
 
     @Test
-    public void shouldNotHaveMultipleMethodsWithSameName() {
+    void shouldNotHaveMultipleMethodsWithSameName() {
         Set<String> events = new HashSet<>();
         for (Class<?> listener : classes) {
             for (Method method : listener.getDeclaredMethods()) {

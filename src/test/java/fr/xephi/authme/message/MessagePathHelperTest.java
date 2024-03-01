@@ -1,33 +1,33 @@
 package fr.xephi.authme.message;
 
 import fr.xephi.authme.settings.properties.PluginSettings;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link MessagePathHelper}.
  */
-public class MessagePathHelperTest {
+class MessagePathHelperTest {
 
     @Test
-    public void shouldHaveLanguageInSyncWithConfigurations() {
+    void shouldHaveLanguageInSyncWithConfigurations() {
         // given / when / then
         assertThat(MessagePathHelper.DEFAULT_LANGUAGE, equalTo(PluginSettings.MESSAGES_LANGUAGE.getDefaultValue()));
         assertThat(MessagePathHelper.DEFAULT_MESSAGES_FILE, equalTo(MessagePathHelper.createMessageFilePath(MessagePathHelper.DEFAULT_LANGUAGE)));
     }
 
     @Test
-    public void shouldBuildTextFilePaths() {
+    void shouldBuildTextFilePaths() {
         // given / when / then
         assertThat(MessagePathHelper.createMessageFilePath("qq"), equalTo(MessagePathHelper.MESSAGES_FOLDER + "messages_qq.yml"));
         assertThat(MessagePathHelper.createHelpMessageFilePath("qq"), equalTo(MessagePathHelper.MESSAGES_FOLDER + "help_qq.yml"));
     }
 
     @Test
-    public void shouldRecognizeIfIsMessagesFile() {
+    void shouldRecognizeIfIsMessagesFile() {
         // given / when / then
         assertThat(MessagePathHelper.isMessagesFile("messages_nl.yml"), equalTo(true));
         assertThat(MessagePathHelper.isMessagesFile("messages_testtest.yml"), equalTo(true));
@@ -40,7 +40,7 @@ public class MessagePathHelperTest {
     }
 
     @Test
-    public void shouldReturnLanguageForMessagesFile() {
+    void shouldReturnLanguageForMessagesFile() {
         // given / when / then
         assertThat(MessagePathHelper.getLanguageIfIsMessagesFile("messages_nl.yml"), equalTo("nl"));
         assertThat(MessagePathHelper.getLanguageIfIsMessagesFile("messages_testtest.yml"), equalTo("testtest"));
@@ -53,7 +53,7 @@ public class MessagePathHelperTest {
     }
 
     @Test
-    public void shouldRecognizeIfIsHelpFile() {
+    void shouldRecognizeIfIsHelpFile() {
         // given / when / then
         assertThat(MessagePathHelper.isHelpFile("help_nl.yml"), equalTo(true));
         assertThat(MessagePathHelper.isHelpFile("help_testtest.yml"), equalTo(true));

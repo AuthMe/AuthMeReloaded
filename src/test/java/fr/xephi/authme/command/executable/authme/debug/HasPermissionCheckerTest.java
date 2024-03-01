@@ -8,22 +8,22 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
@@ -33,8 +33,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link HasPermissionChecker}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class HasPermissionCheckerTest {
+@ExtendWith(MockitoExtension.class)
+class HasPermissionCheckerTest {
 
     @InjectMocks
     private HasPermissionChecker hasPermissionChecker;
@@ -46,7 +46,7 @@ public class HasPermissionCheckerTest {
     private BukkitService bukkitService;
 
     @Test
-    public void shouldListAllPermissionNodeClasses() {
+    void shouldListAllPermissionNodeClasses() {
         // given
         List<Class<? extends PermissionNode>> permissionClasses =
             new ClassCollector(TestHelper.SOURCES_FOLDER, TestHelper.PROJECT_ROOT)
@@ -59,7 +59,7 @@ public class HasPermissionCheckerTest {
     }
 
     @Test
-    public void shouldShowUsageInfo() {
+    void shouldShowUsageInfo() {
         // given
         CommandSender sender = mock(CommandSender.class);
 
@@ -75,7 +75,7 @@ public class HasPermissionCheckerTest {
     }
 
     @Test
-    public void shouldShowSuccessfulTestWithRegularPlayer() {
+    void shouldShowSuccessfulTestWithRegularPlayer() {
         // given
         String name = "Chuck";
         Player player = mock(Player.class);

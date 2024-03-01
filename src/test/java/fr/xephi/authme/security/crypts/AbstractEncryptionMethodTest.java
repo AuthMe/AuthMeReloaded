@@ -4,18 +4,16 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.security.crypts.description.AsciiRestricted;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeThat;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 /**
  * Test for implementations of {@link EncryptionMethod}.
@@ -97,12 +95,12 @@ public abstract class AbstractEncryptionMethodTest {
             GIVEN_PASSWORDS[3], result3);
     }
 
-    @BeforeClass
-    public static void setupLogger() {
+    @BeforeAll
+    static void setupLogger() {
         TestHelper.setupLogger();
     }
 
-    protected void verifyCorrectConstructorIsUsed(EncryptionMethod method, boolean isConstructorWithSalt) {
+    void verifyCorrectConstructorIsUsed(EncryptionMethod method, boolean isConstructorWithSalt) {
         if (isConstructorWithSalt && !method.hasSeparateSalt()) {
             throw new UnsupportedOperationException("Salt is not stored separately, so test should be initialized"
                 + " with the password hashes only. Use the other constructor");
@@ -113,14 +111,14 @@ public abstract class AbstractEncryptionMethodTest {
     }
 
     @Test
-    public void testGivenPasswords() {
+    void testGivenPasswords() {
         // Start with the 2nd to last password if we skip long tests
         int start = SKIP_LONG_TESTS ? GIVEN_PASSWORDS.length - 2 : 0;
         // Test entries in GIVEN_PASSWORDS except the last one
         for (int i = start; i < GIVEN_PASSWORDS.length - 1; ++i) {
             String password = GIVEN_PASSWORDS[i];
-            assertTrue("Hash for password '" + password + "' should match",
-                doesGivenHashMatch(password, method));
+            assertThat("Hash for password '" + password + "' should match",
+                doesGivenHashMatch(password, method), equalTo(true));
         }
 
         // Note #375: Windows console seems to use its own character encoding (Windows-1252?) and it seems impossible to
@@ -135,7 +133,7 @@ public abstract class AbstractEncryptionMethodTest {
     }
 
     @Test
-    public void testPasswordEquality() {
+    void testPasswordEquality() {
         List<String> internalPasswords = method.getClass().isAnnotationPresent(AsciiRestricted.class)
             ? INTERNAL_PASSWORDS.subList(0, INTERNAL_PASSWORDS.size() - 1)
             : INTERNAL_PASSWORDS;
@@ -151,30 +149,30 @@ public abstract class AbstractEncryptionMethodTest {
                     hash, equalTo(method.computeHash(password, salt, USERNAME)));
             }
 
-            assertTrue("Generated hash for '" + password + "' should match password (hash = '" + hash + "')",
-                method.comparePassword(password, hashedPassword, USERNAME));
-            assumeThat(SKIP_LONG_TESTS, equalTo(false));
+            assertThat("Generated hash for '" + password + "' should match password (hash = '" + hash + "')",
+                method.comparePassword(password, hashedPassword, USERNAME), equalTo(true));
+            assumeFalse(SKIP_LONG_TESTS);
 
             if (!password.equals(password.toLowerCase(Locale.ROOT))) {
-                assertFalse("Lower-case of '" + password + "' should not match generated hash '" + hash + "'",
-                    method.comparePassword(password.toLowerCase(Locale.ROOT), hashedPassword, USERNAME));
+                assertThat("Lower-case of '" + password + "' should not match generated hash '" + hash + "'",
+                    method.comparePassword(password.toLowerCase(), hashedPassword, USERNAME), equalTo(false));
             }
             if (!password.equals(password.toUpperCase(Locale.ROOT))) {
-                assertFalse("Upper-case of '" + password + "' should not match generated hash '" + hash + "'",
-                    method.comparePassword(password.toUpperCase(Locale.ROOT), hashedPassword, USERNAME));
+                assertThat("Upper-case of '" + password + "' should not match generated hash '" + hash + "'",
+                    method.comparePassword(password.toUpperCase(), hashedPassword, USERNAME), equalTo(false));
             }
         }
     }
 
     /** Tests various strings to ensure that encryption methods don't rely on the hash's format too much. */
     @Test
-    public void testMalformedHashes() {
-        assumeThat(SKIP_LONG_TESTS, equalTo(false));
+    void testMalformedHashes() {
+        assumeFalse(SKIP_LONG_TESTS);
         String salt = method.hasSeparateSalt() ? "testSalt" : null;
         for (String bogusHash : BOGUS_HASHES) {
             HashedPassword hashedPwd = new HashedPassword(bogusHash, salt);
-            assertFalse("Passing bogus hash '" + bogusHash + "' does not result in an error",
-                method.comparePassword("Password", hashedPwd, "player"));
+            assertThat("Passing bogus hash '" + bogusHash + "' does not result in an error",
+                method.comparePassword("Password", hashedPwd, "player"), equalTo(false));
         }
     }
 

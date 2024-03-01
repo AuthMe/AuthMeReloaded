@@ -3,19 +3,19 @@ package fr.xephi.authme.output;
 import com.google.common.collect.Lists;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandInitializer;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link LogFilterHelper}.
  */
-public class LogFilterHelperTest {
+class LogFilterHelperTest {
 
     private static final List<CommandDescription> ALL_COMMANDS = new CommandInitializer().getCommands();
 
@@ -24,7 +24,7 @@ public class LogFilterHelperTest {
      * (commands with password argument).
      */
     @Test
-    public void shouldBlacklistAllSensitiveCommands() {
+    void shouldBlacklistAllSensitiveCommands() {
         // given
         List<CommandDescription> sensitiveCommands = Arrays.asList(
             getCommand("register"), getCommand("login"), getCommand("changepassword"), getCommand("unregister"),

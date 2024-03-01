@@ -8,11 +8,11 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.entity.Player;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -25,8 +25,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 /**
  * Test for {@link CaptchaCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class CaptchaCommandTest {
+@ExtendWith(MockitoExtension.class)
+class CaptchaCommandTest {
 
     @InjectMocks
     private CaptchaCommand command;
@@ -50,7 +50,7 @@ public class CaptchaCommandTest {
     private DataSource dataSource;
 
     @Test
-    public void shouldDetectIfPlayerIsLoggedIn() {
+    void shouldDetectIfPlayerIsLoggedIn() {
         // given
         String name = "creeper011";
         Player player = mockPlayerWithName(name);
@@ -64,7 +64,7 @@ public class CaptchaCommandTest {
     }
 
     @Test
-    public void shouldShowLoginUsageIfCaptchaIsNotRequired() {
+    void shouldShowLoginUsageIfCaptchaIsNotRequired() {
         // given
         String name = "bobby";
         Player player = mockPlayerWithName(name);
@@ -82,7 +82,7 @@ public class CaptchaCommandTest {
     }
 
     @Test
-    public void shouldHandleCorrectCaptchaInput() {
+    void shouldHandleCorrectCaptchaInput() {
         // given
         String name = "smith";
         Player player = mockPlayerWithName(name);
@@ -105,7 +105,7 @@ public class CaptchaCommandTest {
     }
 
     @Test
-    public void shouldHandleWrongCaptchaInput() {
+    void shouldHandleWrongCaptchaInput() {
         // given
         String name = "smith";
         Player player = mockPlayerWithName(name);
@@ -129,7 +129,7 @@ public class CaptchaCommandTest {
     }
 
     @Test
-    public void shouldVerifyWithRegisterCaptchaManager() {
+    void shouldVerifyWithRegisterCaptchaManager() {
         // given
         String name = "john";
         Player player = mockPlayerWithName(name);
@@ -149,7 +149,7 @@ public class CaptchaCommandTest {
     }
 
     @Test
-    public void shouldHandleFailedRegisterCaptcha() {
+    void shouldHandleFailedRegisterCaptcha() {
         // given
         String name = "asfd";
         Player player = mockPlayerWithName(name);
@@ -168,7 +168,7 @@ public class CaptchaCommandTest {
     }
 
     @Test
-    public void shouldShowRegisterUsageWhenRegistrationCaptchaIsSolved() {
+    void shouldShowRegisterUsageWhenRegistrationCaptchaIsSolved() {
         // given
         String name = "alice";
         Player player = mockPlayerWithName(name);

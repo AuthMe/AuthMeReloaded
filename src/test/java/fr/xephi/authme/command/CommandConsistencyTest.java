@@ -3,7 +3,7 @@ package fr.xephi.authme.command;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,20 +13,20 @@ import java.util.List;
 import java.util.Map;
 
 import static fr.xephi.authme.TestHelper.getJarFile;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 
 /**
  * Checks that the commands declared in plugin.yml correspond
  * to the ones built by the {@link CommandInitializer}.
  */
-public class CommandConsistencyTest {
+class CommandConsistencyTest {
 
     @Test
-    public void shouldHaveEqualDefinitions() {
+    void shouldHaveEqualDefinitions() {
         // given
         Collection<List<String>> initializedCommands = initializeCommands();
         Map<String, List<String>> pluginFileLabels = getLabelsFromPluginFile();

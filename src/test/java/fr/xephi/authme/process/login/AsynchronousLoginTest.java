@@ -15,20 +15,22 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.entity.Player;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.mockito.stubbing.Answer;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -42,8 +44,9 @@ import static org.mockito.internal.verification.VerificationModeFactory.only;
 /**
  * Test for {@link AsynchronousLogin}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class AsynchronousLoginTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class AsynchronousLoginTest {
 
     @InjectMocks
     @Spy
@@ -60,13 +63,13 @@ public class AsynchronousLoginTest {
     @Mock
     private BukkitService bukkitService;
 
-    @BeforeClass
-    public static void initLogger() {
+    @BeforeAll
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldNotForceLoginAlreadyLoggedInPlayer() {
+    void shouldNotForceLoginAlreadyLoggedInPlayer() {
         // given
         String name = "bobby";
         Player player = mockPlayer(name);
@@ -82,7 +85,7 @@ public class AsynchronousLoginTest {
     }
 
     @Test
-    public void shouldNotForceLoginNonExistentUser() {
+    void shouldNotForceLoginNonExistentUser() {
         // given
         String name = "oscar";
         Player player = mockPlayer(name);
@@ -99,7 +102,7 @@ public class AsynchronousLoginTest {
     }
 
     @Test
-    public void shouldNotForceLoginInactiveUser() {
+    void shouldNotForceLoginInactiveUser() {
         // given
         String name = "oscar";
         Player player = mockPlayer(name);
@@ -120,7 +123,7 @@ public class AsynchronousLoginTest {
     }
 
     @Test
-    public void shouldNotForceLoginUserWithAlreadyOnlineIp() {
+    void shouldNotForceLoginUserWithAlreadyOnlineIp() {
         // given
         String name = "oscar";
         String ip = "1.1.1.245";
@@ -143,7 +146,7 @@ public class AsynchronousLoginTest {
     }
 
     @Test
-    public void shouldNotForceLoginForCanceledEvent() {
+    void shouldNotForceLoginForCanceledEvent() {
         // given
         String name = "oscar";
         String ip = "1.1.1.245";
@@ -169,11 +172,10 @@ public class AsynchronousLoginTest {
         verify(asynchronousLogin).hasReachedMaxLoggedInPlayersForIp(player, ip);
     }
 
-
     @Test
-    public void shouldPassMaxLoginPerIpCheck() {
+    void shouldPassMaxLoginPerIpCheck() {
         // given
-        Player player = mockPlayer("Carl");
+        Player player = mock(Player.class);
         given(commonService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(2);
         given(commonService.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)).willReturn(false);
         mockOnlinePlayersInBukkitService();
@@ -188,9 +190,9 @@ public class AsynchronousLoginTest {
     }
 
     @Test
-    public void shouldSkipIpCheckForZeroThreshold() {
+    void shouldSkipIpCheckForZeroThreshold() {
         // given
-        Player player = mockPlayer("Fiona");
+        Player player = mock(Player.class);
         given(commonService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(0);
 
         // when
@@ -202,9 +204,9 @@ public class AsynchronousLoginTest {
     }
 
     @Test
-    public void shouldSkipIpCheckForPlayerWithMultipleAccountsPermission() {
+    void shouldSkipIpCheckForPlayerWithMultipleAccountsPermission() {
         // given
-        Player player = mockPlayer("Frank");
+        Player player = mock(Player.class);
         given(commonService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(1);
         given(commonService.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)).willReturn(true);
 
@@ -218,9 +220,9 @@ public class AsynchronousLoginTest {
     }
 
     @Test
-    public void shouldFailIpCheckForIpWithTooManyPlayersOnline() {
+    void shouldFailIpCheckForIpWithTooManyPlayersOnline() {
         // given
-        Player player = mockPlayer("Ian");
+        Player player = mock(Player.class);
         given(commonService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(2);
         given(commonService.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)).willReturn(false);
         mockOnlinePlayersInBukkitService();
@@ -234,7 +236,7 @@ public class AsynchronousLoginTest {
         verify(bukkitService).getOnlinePlayers();
     }
 
-    private static Player mockPlayer(String name) {
+    private Player mockPlayer(String name) {
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
         return player;
@@ -267,5 +269,4 @@ public class AsynchronousLoginTest {
         List<Player> onlinePlayers = Arrays.asList(playerA, playerB, playerC, playerD, playerE, playerF);
         given(bukkitService.getOnlinePlayers()).willReturn(onlinePlayers);
     }
-
 }

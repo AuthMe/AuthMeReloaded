@@ -1,7 +1,7 @@
 package fr.xephi.authme.data.limbo.persistence;
 
 import com.google.common.collect.ImmutableSet;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -9,15 +9,15 @@ import java.util.Set;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test for {@link SegmentSize}.
  */
-public class SegmentSizeTest {
+class SegmentSizeTest {
 
     @Test
-    public void shouldHaveDistributionThatIsPowerOf2() {
+    void shouldHaveDistributionThatIsPowerOf2() {
         // given
         Set<Integer> allowedDistributions = ImmutableSet.of(1, 2, 4, 8, 16);
 
@@ -30,7 +30,7 @@ public class SegmentSizeTest {
     }
 
     @Test
-    public void shouldHaveDifferentSegmentSizes() {
+    void shouldHaveDifferentSegmentSizes() {
         // given
         Set<Integer> segmentTotals = new HashSet<>();
 

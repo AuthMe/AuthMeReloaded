@@ -1,6 +1,5 @@
 package fr.xephi.authme.settings;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.service.BukkitService;
@@ -9,11 +8,11 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -27,8 +26,8 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 /**
  * Test for {@link SettingsWarner}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class SettingsWarnerTest {
+@ExtendWith(MockitoExtension.class)
+class SettingsWarnerTest {
 
     @InjectMocks
     private SettingsWarner settingsWarner;
@@ -40,7 +39,7 @@ public class SettingsWarnerTest {
     private BukkitService bukkitService;
 
     @Test
-    public void shouldLogWarnings() {
+    void shouldLogWarnings() {
         // given
         Logger logger = TestHelper.setupLogger();
         given(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)).willReturn(false);
@@ -60,7 +59,8 @@ public class SettingsWarnerTest {
     }
 
     @Test
-    public void shouldWarnBungeeWithoutSpigot() {
+    void shouldWarnBungeeWithoutSpigot() {
+        // given
         Logger logger = TestHelper.setupLogger();
 
         // this cannot be covered above, because it's conflicting with the other settings
@@ -80,7 +80,8 @@ public class SettingsWarnerTest {
     }
 
     @Test
-    public void shouldNotLogAnyWarning() {
+    void shouldNotLogAnyWarning() {
+        // given
         Logger logger = TestHelper.setupLogger();
         given(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)).willReturn(true);
         given(settings.getProperty(EmailSettings.SMTP_PORT)).willReturn(25);

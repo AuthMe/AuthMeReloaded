@@ -5,21 +5,21 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.expiring.ExpiringMap;
 import org.bukkit.entity.Player;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
  * Test for {@link RegistrationCaptchaManager}.
  */
-public class RegistrationCaptchaManagerTest {
+class RegistrationCaptchaManagerTest {
 
     @Test
-    public void shouldBeDisabled() {
+    void shouldBeDisabled() {
         // given
         Settings settings = mock(Settings.class);
         // Return false first time, and true after that
@@ -37,7 +37,7 @@ public class RegistrationCaptchaManagerTest {
     }
 
     @Test
-    public void shouldVerifyCodeSuccessfully() {
+    void shouldVerifyCodeSuccessfully() {
         // given
         Settings settings = mock(Settings.class);
         given(settings.getProperty(SecuritySettings.ENABLE_CAPTCHA_FOR_REGISTRATION)).willReturn(true);
@@ -60,7 +60,7 @@ public class RegistrationCaptchaManagerTest {
     }
 
     @Test
-    public void shouldGenerateAndRetrieveCode() {
+    void shouldGenerateAndRetrieveCode() {
         // given
         Settings settings = mock(Settings.class);
         given(settings.getProperty(SecuritySettings.ENABLE_CAPTCHA_FOR_REGISTRATION)).willReturn(true);

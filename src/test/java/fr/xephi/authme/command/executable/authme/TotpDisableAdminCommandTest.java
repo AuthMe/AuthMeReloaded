@@ -8,12 +8,12 @@ import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -27,8 +27,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link TotpDisableAdminCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class TotpDisableAdminCommandTest {
+@ExtendWith(MockitoExtension.class)
+class TotpDisableAdminCommandTest {
 
     @InjectMocks
     private TotpDisableAdminCommand command;
@@ -42,13 +42,13 @@ public class TotpDisableAdminCommandTest {
     @Mock
     private BukkitService bukkitService;
 
-    @BeforeClass
-    public static void initLogger() {
+    @BeforeAll
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldHandleUnknownUser() {
+    void shouldHandleUnknownUser() {
         // given
         CommandSender sender = mock(CommandSender.class);
         given(dataSource.getAuth("user")).willReturn(null);
@@ -62,7 +62,7 @@ public class TotpDisableAdminCommandTest {
     }
 
     @Test
-    public void shouldHandleUserWithNoTotpEnabled() {
+    void shouldHandleUserWithNoTotpEnabled() {
         // given
         CommandSender sender = mock(CommandSender.class);
         PlayerAuth auth = PlayerAuth.builder()
@@ -80,7 +80,7 @@ public class TotpDisableAdminCommandTest {
     }
 
     @Test
-    public void shouldRemoveTotpFromUser() {
+    void shouldRemoveTotpFromUser() {
         // given
         CommandSender sender = mock(CommandSender.class);
         PlayerAuth auth = PlayerAuth.builder()
@@ -101,7 +101,7 @@ public class TotpDisableAdminCommandTest {
     }
 
     @Test
-    public void shouldHandleErrorWhileRemovingTotp() {
+    void shouldHandleErrorWhileRemovingTotp() {
         // given
         CommandSender sender = mock(CommandSender.class);
         PlayerAuth auth = PlayerAuth.builder()

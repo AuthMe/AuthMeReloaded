@@ -1,13 +1,11 @@
 package fr.xephi.authme.data.limbo;
 
 import org.bukkit.entity.Player;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static fr.xephi.authme.data.limbo.LimboPlayer.DEFAULT_FLY_SPEED;
 import static fr.xephi.authme.data.limbo.LimboPlayer.DEFAULT_WALK_SPEED;
@@ -22,17 +20,11 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link WalkFlySpeedRestoreType}.
  */
-@RunWith(Parameterized.class)
-public class WalkFlySpeedRestoreTypeTest {
+class WalkFlySpeedRestoreTypeTest {
 
-    private final TestParameters parameters;
-
-    public WalkFlySpeedRestoreTypeTest(TestParameters parameters) {
-        this.parameters = parameters;
-    }
-
-    @Test
-    public void shouldRestoreToExpectedValue() {
+    @ParameterizedTest
+    @MethodSource("buildParams")
+    void shouldRestoreToExpectedValue(TestParameters parameters) {
         // given
         LimboPlayer limbo = mock(LimboPlayer.class);
         given(limbo.getWalkSpeed()).willReturn(parameters.givenLimboWalkSpeed);
@@ -50,10 +42,9 @@ public class WalkFlySpeedRestoreTypeTest {
         verify(player).setWalkSpeed(parameters.expectedWalkSpeed);
         verify(player).setFlySpeed(parameters.expectedFlySpeed);
     }
-    
-    @Parameterized.Parameters(name = "{0}")
-    public static List<Object[]> buildParams() {
-        List<TestParameters> parameters = Arrays.asList(
+
+    private static List<TestParameters> buildParams() {
+        return Arrays.asList(
             create(RESTORE).withLimbo(0.1f, 0.4f).withPlayer(0.3f, 0.9f).expect(0.1f, 0.4f),
             create(RESTORE).withLimbo(0.9f, 0.2f).withPlayer(0.3f, 0.0f).expect(0.9f, 0.2f),
             create(MAX_RESTORE).withLimbo(0.3f, 0.8f).withPlayer(0.5f, 0.2f).expect(0.5f, 0.8f),
@@ -62,9 +53,6 @@ public class WalkFlySpeedRestoreTypeTest {
             create(RESTORE_NO_ZERO).withLimbo(0.0f, 0.005f).withPlayer(0.4f, 0.8f).expect(DEFAULT_WALK_SPEED, DEFAULT_FLY_SPEED),
             create(DEFAULT).withLimbo(0.1f, 0.7f).withPlayer(0.4f, 0.0f).expect(DEFAULT_WALK_SPEED, DEFAULT_FLY_SPEED)
         );
-
-        // Convert List<TestParameters> to List<Object[]>
-        return parameters.stream().map(p -> new Object[]{p}).collect(Collectors.toList());
     }
 
     private static TestParameters create(WalkFlySpeedRestoreType testedType) {

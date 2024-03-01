@@ -7,11 +7,11 @@ import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.security.totp.GenerateTotpService;
 import fr.xephi.authme.security.totp.TotpAuthenticator.TotpGenerationResult;
 import org.bukkit.entity.Player;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -23,8 +23,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link AddTotpCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class AddTotpCommandTest {
+@ExtendWith(MockitoExtension.class)
+class AddTotpCommandTest {
 
     @InjectMocks
     private AddTotpCommand addTotpCommand;
@@ -37,7 +37,7 @@ public class AddTotpCommandTest {
     private Messages messages;
 
     @Test
-    public void shouldHandleNonLoggedInUser() {
+    void shouldHandleNonLoggedInUser() {
         // given
         Player player = mockPlayerWithName("bob");
         given(playerCache.getAuth("bob")).willReturn(null);
@@ -51,7 +51,7 @@ public class AddTotpCommandTest {
     }
 
     @Test
-    public void shouldNotAddCodeForAlreadyExistingTotp() {
+    void shouldNotAddCodeForAlreadyExistingTotp() {
         // given
         Player player = mockPlayerWithName("arend");
         PlayerAuth auth = PlayerAuth.builder().name("arend")
@@ -67,7 +67,7 @@ public class AddTotpCommandTest {
     }
 
     @Test
-    public void shouldGenerateTotpCode() {
+    void shouldGenerateTotpCode() {
         // given
         Player player = mockPlayerWithName("charles");
         PlayerAuth auth = PlayerAuth.builder().name("charles").build();

@@ -1,6 +1,6 @@
 package fr.xephi.authme.data.limbo.persistence;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,21 +12,21 @@ import static fr.xephi.authme.data.limbo.persistence.SegmentSize.SIXTEEN;
 import static fr.xephi.authme.data.limbo.persistence.SegmentSize.SIXTY_FOUR;
 import static fr.xephi.authme.data.limbo.persistence.SegmentSize.THIRTY_TWO;
 import static fr.xephi.authme.data.limbo.persistence.SegmentSize.TWO_FIFTY;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link SegmentNameBuilder}.
  */
-public class SegmentNameBuilderTest {
+class SegmentNameBuilderTest {
 
     /**
      * Checks that using a given segment size really produces as many segments as defined.
      * E.g. if we partition with {@link SegmentSize#EIGHT} we expect eight different buckets.
      */
     @Test
-    public void shouldCreatePromisedSizeOfSegments() {
+    void shouldCreatePromisedSizeOfSegments() {
         for (SegmentSize part : SegmentSize.values()) {
             // Perform this check only for `length` <= 5 because the test creates all hex numbers with `length` digits.
             if (part.getLength() <= 5) {
@@ -62,7 +62,7 @@ public class SegmentNameBuilderTest {
     }
 
     @Test
-    public void shouldCreateOneSegment() {
+    void shouldCreateOneSegment() {
         // given
         SegmentNameBuilder nameBuilder = new SegmentNameBuilder(ONE);
 
@@ -73,7 +73,7 @@ public class SegmentNameBuilderTest {
     }
 
     @Test
-    public void shouldCreateFourSegments() {
+    void shouldCreateFourSegments() {
         // given
         SegmentNameBuilder nameBuilder = new SegmentNameBuilder(FOUR);
 
@@ -84,7 +84,7 @@ public class SegmentNameBuilderTest {
     }
 
     @Test
-    public void shouldCreateEightSegments() {
+    void shouldCreateEightSegments() {
         // given
         SegmentNameBuilder nameBuilder = new SegmentNameBuilder(EIGHT);
 
@@ -96,7 +96,7 @@ public class SegmentNameBuilderTest {
     }
 
     @Test
-    public void shouldCreateSixteenSegments() {
+    void shouldCreateSixteenSegments() {
         // given
         SegmentNameBuilder nameBuilder = new SegmentNameBuilder(SIXTEEN);
 
@@ -107,7 +107,7 @@ public class SegmentNameBuilderTest {
     }
 
     @Test
-    public void shouldCreateThirtyTwoSegments() {
+    void shouldCreateThirtyTwoSegments() {
         // given
         SegmentNameBuilder nameBuilder = new SegmentNameBuilder(THIRTY_TWO);
 
@@ -118,7 +118,7 @@ public class SegmentNameBuilderTest {
     }
 
     @Test
-    public void shouldCreateSixtyFourSegments() {
+    void shouldCreateSixtyFourSegments() {
         // given
         SegmentNameBuilder nameBuilder = new SegmentNameBuilder(SIXTY_FOUR);
 
@@ -129,7 +129,7 @@ public class SegmentNameBuilderTest {
     }
 
     @Test
-    public void shouldCreate256Segments() {
+    void shouldCreate256Segments() {
         // given
         SegmentNameBuilder nameBuilder = new SegmentNameBuilder(TWO_FIFTY);
 

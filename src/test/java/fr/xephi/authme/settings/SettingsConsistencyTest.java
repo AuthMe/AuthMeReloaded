@@ -6,8 +6,8 @@ import ch.jalu.configme.properties.Property;
 import com.google.common.collect.ImmutableSet;
 import fr.xephi.authme.settings.properties.AuthMeSettingsRetriever;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,12 +18,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static fr.xephi.authme.ReflectionTestUtils.getFieldValue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests the consistency of the settings configuration.
  */
-public class SettingsConsistencyTest {
+class SettingsConsistencyTest {
 
     /**
      * Maximum characters one comment line may have (prevents horizontal scrolling).
@@ -38,13 +38,13 @@ public class SettingsConsistencyTest {
 
     private static ConfigurationData configurationData;
 
-    @BeforeClass
-    public static void buildConfigurationData() {
+    @BeforeAll
+    static void buildConfigurationData() {
         configurationData = AuthMeSettingsRetriever.buildConfigurationData();
     }
 
     @Test
-    public void shouldHaveCommentOnEachProperty() {
+    void shouldHaveCommentOnEachProperty() {
         // given
         List<Property<?>> properties = configurationData.getProperties();
 
@@ -57,7 +57,7 @@ public class SettingsConsistencyTest {
     }
 
     @Test
-    public void shouldNotHaveVeryLongCommentLines() {
+    void shouldNotHaveVeryLongCommentLines() {
         // given
         Map<String, List<String>> commentEntries = configurationData.getAllComments();
         List<String> badPaths = new ArrayList<>(0);
@@ -86,7 +86,7 @@ public class SettingsConsistencyTest {
      * so the user knows which values are available.
      */
     @Test
-    public void shouldMentionAllEnumValues() {
+    void shouldMentionAllEnumValues() {
         // given
         Map<Property<?>, Enum<?>> invalidEnumProperties = new HashMap<>();
 

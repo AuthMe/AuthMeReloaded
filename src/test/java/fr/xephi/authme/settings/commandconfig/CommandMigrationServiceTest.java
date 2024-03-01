@@ -8,12 +8,12 @@ import ch.jalu.configme.resource.PropertyResource;
 import ch.jalu.configme.resource.YamlFileResource;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.SettingsMigrationService;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.util.List;
@@ -22,17 +22,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
  * Test for {@link CommandMigrationService}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class CommandMigrationServiceTest {
+@ExtendWith(MockitoExtension.class)
+class CommandMigrationServiceTest {
 
     @InjectMocks
     private CommandMigrationService commandMigrationService;
@@ -40,13 +40,13 @@ public class CommandMigrationServiceTest {
     @Mock
     private SettingsMigrationService settingsMigrationService;
 
-    @BeforeClass
-    public static void setUpLogger() {
+    @BeforeAll
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldRewriteForEmptyFile() {
+    void shouldRewriteForEmptyFile() {
         // given
         File commandFile = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "settings/commandconfig/commands.empty.yml");
         PropertyResource resource = new YamlFileResource(commandFile);
@@ -60,7 +60,7 @@ public class CommandMigrationServiceTest {
     }
 
     @Test
-    public void shouldRewriteIncompleteFile() {
+    void shouldRewriteIncompleteFile() {
         // given
         File commandFile = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "settings/commandconfig/commands.incomplete.yml");
         PropertyResource resource = new YamlFileResource(commandFile);
@@ -74,7 +74,7 @@ public class CommandMigrationServiceTest {
     }
 
     @Test
-    public void shouldNotChangeCompleteFile() {
+    void shouldNotChangeCompleteFile() {
         // given
         File commandFile = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "settings/commandconfig/commands.complete.yml");
         PropertyResource resource = new YamlFileResource(commandFile);
@@ -92,7 +92,7 @@ public class CommandMigrationServiceTest {
      * {@link CommandConfig} class. It is used to ensure that the commands.yml file is complete.
      */
     @Test
-    public void shouldHaveAllPropertiesFromCommandConfig() {
+    void shouldHaveAllPropertiesFromCommandConfig() {
         // given
         String[] properties = new BeanDescriptionFactoryImpl()
             .getAllProperties(CommandConfig.class)
@@ -105,7 +105,7 @@ public class CommandMigrationServiceTest {
     }
 
     @Test
-    public void shouldMigrateOldOtherAccountsCommand() {
+    void shouldMigrateOldOtherAccountsCommand() {
         // given
         given(settingsMigrationService.hasOldOtherAccountsCommand()).willReturn(true);
         given(settingsMigrationService.getOldOtherAccountsCommand())

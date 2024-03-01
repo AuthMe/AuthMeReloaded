@@ -5,7 +5,6 @@ import fr.xephi.authme.datasource.mysqlextensions.MySqlExtension;
 import fr.xephi.authme.datasource.mysqlextensions.MySqlExtensionsFactory;
 import fr.xephi.authme.settings.Settings;
 
-import java.lang.reflect.Method;
 import java.sql.Connection;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -15,11 +14,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Resource closing test for {@link PostgreSqlDataSource}.
  */
-public class PostgreSqlResourceClosingTest extends AbstractSqlDataSourceResourceClosingTest {
-
-    public PostgreSqlResourceClosingTest(Method method, String name) {
-        super(method, name);
-    }
+class PostgreSqlResourceClosingTest extends AbstractSqlDataSourceResourceClosingTest {
 
     @Override
     protected DataSource createDataSource(Settings settings, Connection connection) throws Exception {
@@ -29,5 +24,4 @@ public class PostgreSqlResourceClosingTest extends AbstractSqlDataSourceResource
         given(extensionsFactory.buildExtension(any(Columns.class))).willReturn(mock(MySqlExtension.class));
         return new PostgreSqlDataSource(settings, hikariDataSource, extensionsFactory);
     }
-
 }

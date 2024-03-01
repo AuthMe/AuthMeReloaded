@@ -9,18 +9,18 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -29,8 +29,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link TotpAuthenticator}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class TotpAuthenticatorTest {
+@ExtendWith(MockitoExtension.class)
+class TotpAuthenticatorTest {
 
     private TotpAuthenticator totpAuthenticator;
 
@@ -40,13 +40,13 @@ public class TotpAuthenticatorTest {
     @Mock
     private IGoogleAuthenticator googleAuthenticator;
 
-    @Before
-    public void initializeTotpAuthenticator() {
+    @BeforeEach
+    void initializeTotpAuthenticator() {
         totpAuthenticator = new TotpAuthenticatorTestImpl(settings);
     }
 
     @Test
-    public void shouldGenerateTotpKey() {
+    void shouldGenerateTotpKey() {
         // given
         // Use the GoogleAuthenticator instance the TotpAuthenticator normally creates to test its parameters
         totpAuthenticator = new TotpAuthenticator(settings);
@@ -69,7 +69,7 @@ public class TotpAuthenticatorTest {
     }
 
     @Test
-    public void shouldCheckCodeAndDeclareItValidOnlyOnce() {
+    void shouldCheckCodeAndDeclareItValidOnlyOnce() {
         // given
         String secret = "the_secret";
         int code = 21398;
@@ -86,7 +86,7 @@ public class TotpAuthenticatorTest {
     }
 
     @Test
-    public void shouldHandleInvalidNumberInput() {
+    void shouldHandleInvalidNumberInput() {
         // given / when
         boolean result = totpAuthenticator.checkCode("foo", "Some_Secret", "123ZZ");
 
@@ -96,7 +96,7 @@ public class TotpAuthenticatorTest {
     }
 
     @Test
-    public void shouldVerifyCode() {
+    void shouldVerifyCode() {
         // given
         String totpKey = "ASLO43KDF2J";
         PlayerAuth auth = PlayerAuth.builder()
@@ -115,7 +115,7 @@ public class TotpAuthenticatorTest {
     }
 
     @Test
-    public void shouldRemoveOldEntries() {
+    void shouldRemoveOldEntries() {
         // given
         Table<String, Integer, Long> usedCodes = ReflectionTestUtils.getFieldValue(
             TotpAuthenticator.class, totpAuthenticator, "usedCodes");

@@ -1,8 +1,8 @@
 package fr.xephi.authme.command;
 
 import fr.xephi.authme.util.StringUtils;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,15 +15,15 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test for {@link CommandInitializer} to guarantee the integrity of the defined commands.
  */
-public class CommandInitializerTest {
+class CommandInitializerTest {
 
     /**
      * Defines the maximum allowed depths for nesting CommandDescription instances.
@@ -33,14 +33,14 @@ public class CommandInitializerTest {
 
     private static Collection<CommandDescription> commands;
 
-    @BeforeClass
-    public static void initializeCommandCollection() {
+    @BeforeAll
+    static void initializeCommandCollection() {
         CommandInitializer commandInitializer = new CommandInitializer();
         commands = commandInitializer.getCommands();
     }
 
     @Test
-    public void shouldInitializeCommands() {
+    void shouldInitializeCommands() {
         // given/when/then
         // It obviously doesn't make sense to test much of the concrete data
         // that is being initialized; we just want to guarantee with this test
@@ -52,7 +52,7 @@ public class CommandInitializerTest {
     }
 
     @Test
-    public void shouldNotBeNestedExcessively() {
+    void shouldNotBeNestedExcessively() {
         // given
         BiConsumer<CommandDescription, Integer> descriptionTester =
             (command, depth) -> assertThat(depth <= MAX_ALLOWED_DEPTH, equalTo(true));
@@ -63,7 +63,7 @@ public class CommandInitializerTest {
 
     /** Ensure that all children of a command stored the parent. */
     @Test
-    public void shouldHaveConnectionBetweenParentAndChild() {
+    void shouldHaveConnectionBetweenParentAndChild() {
         // given
         BiConsumer<CommandDescription, Integer> connectionTester = new BiConsumer<CommandDescription, Integer>() {
             @Override
@@ -84,7 +84,7 @@ public class CommandInitializerTest {
     }
 
     @Test
-    public void shouldUseProperLowerCaseLabels() {
+    void shouldUseProperLowerCaseLabels() {
         // given
         final Pattern invalidPattern = Pattern.compile("\\s");
         BiConsumer<CommandDescription, Integer> labelFormatTester = new BiConsumer<CommandDescription, Integer>() {
@@ -105,7 +105,7 @@ public class CommandInitializerTest {
     }
 
     @Test
-    public void shouldNotDefineSameLabelTwice() {
+    void shouldNotDefineSameLabelTwice() {
         // given
         final Set<String> commandMappings = new HashSet<>();
         BiConsumer<CommandDescription, Integer> uniqueMappingTester = new BiConsumer<CommandDescription, Integer>() {
@@ -130,7 +130,7 @@ public class CommandInitializerTest {
      * detailed description should be longer and end with a period.
      */
     @Test
-    public void shouldHaveProperDescription() {
+    void shouldHaveProperDescription() {
         // given
         BiConsumer<CommandDescription, Integer> descriptionTester = new BiConsumer<CommandDescription, Integer>() {
             @Override
@@ -153,7 +153,7 @@ public class CommandInitializerTest {
     }
 
     @Test
-    public void shouldHaveOptionalArgumentsAfterMandatoryOnes() {
+    void shouldHaveOptionalArgumentsAfterMandatoryOnes() {
         // given
         BiConsumer<CommandDescription, Integer> argumentOrderTester = new BiConsumer<CommandDescription, Integer>() {
             @Override
@@ -179,7 +179,7 @@ public class CommandInitializerTest {
      * clash with the label of the child.
      */
     @Test
-    public void shouldNotHaveArgumentsIfCommandHasChildren() {
+    void shouldNotHaveArgumentsIfCommandHasChildren() {
         // given
         BiConsumer<CommandDescription, Integer> noArgumentForParentChecker = new BiConsumer<CommandDescription, Integer>() {
             @Override
@@ -202,7 +202,7 @@ public class CommandInitializerTest {
      * count of arguments.
      */
     @Test
-    public void shouldPointToSameExecutableCommandWithConsistentArgumentCount() {
+    void shouldPointToSameExecutableCommandWithConsistentArgumentCount() {
         // given
         final Map<Class<? extends ExecutableCommand>, Integer> mandatoryArguments = new HashMap<>();
         final Map<Class<? extends ExecutableCommand>, Integer> totalArguments = new HashMap<>();

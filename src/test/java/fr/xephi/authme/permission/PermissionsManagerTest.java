@@ -4,22 +4,22 @@ import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
  * Test for {@link PermissionsManager}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class PermissionsManagerTest {
+@ExtendWith(MockitoExtension.class)
+class PermissionsManagerTest {
 
     @InjectMocks
     private PermissionsManager permissionsManager;
@@ -31,7 +31,7 @@ public class PermissionsManagerTest {
     private PluginManager pluginManager;
 
     @Test
-    public void shouldUseDefaultPermissionForCommandSender() {
+    void shouldUseDefaultPermissionForCommandSender() {
         // given
         PermissionNode node = TestPermissions.LOGIN;
         CommandSender sender = mock(CommandSender.class);
@@ -44,7 +44,7 @@ public class PermissionsManagerTest {
     }
 
     @Test
-    public void shouldGrantToOpCommandSender() {
+    void shouldGrantToOpCommandSender() {
         // given
         PermissionNode node = TestPermissions.DELETE_USER;
         CommandSender sender = mock(CommandSender.class);
@@ -58,7 +58,7 @@ public class PermissionsManagerTest {
     }
 
     @Test
-    public void shouldDenyPermissionEvenForOpCommandSender() {
+    void shouldDenyPermissionEvenForOpCommandSender() {
         // given
         PermissionNode node = TestPermissions.WORLD_DOMINATION;
         CommandSender sender = mock(CommandSender.class);
@@ -71,7 +71,7 @@ public class PermissionsManagerTest {
     }
 
     @Test
-    public void shouldAllowForNonOpPlayer() {
+    void shouldAllowForNonOpPlayer() {
         // given
         PermissionNode node = TestPermissions.LOGIN;
         Player player = mock(Player.class);
@@ -84,7 +84,7 @@ public class PermissionsManagerTest {
     }
 
     @Test
-    public void shouldDenyForNonOpPlayer() {
+    void shouldDenyForNonOpPlayer() {
         // given
         PermissionNode node = TestPermissions.DELETE_USER;
         Player player = mock(Player.class);
@@ -97,7 +97,7 @@ public class PermissionsManagerTest {
     }
 
     @Test
-    public void shouldAllowForOpPlayer() {
+    void shouldAllowForOpPlayer() {
         // given
         PermissionNode node = TestPermissions.DELETE_USER;
         Player player = mock(Player.class);
@@ -111,7 +111,7 @@ public class PermissionsManagerTest {
     }
 
     @Test
-    public void shouldDenyEvenForOpPlayer() {
+    void shouldDenyEvenForOpPlayer() {
         // given
         PermissionNode node = TestPermissions.WORLD_DOMINATION;
         Player player = mock(Player.class);
@@ -124,7 +124,7 @@ public class PermissionsManagerTest {
     }
 
     @Test
-    public void shouldHandleNullPermissionForCommandSender() {
+    void shouldHandleNullPermissionForCommandSender() {
         // given
         PermissionNode node = null;
         CommandSender sender = mock(CommandSender.class);
@@ -137,7 +137,7 @@ public class PermissionsManagerTest {
     }
 
     @Test
-    public void shouldHandleNullPermissionForPlayer() {
+    void shouldHandleNullPermissionForPlayer() {
         // given
         PermissionNode node = null;
         Player player = mock(Player.class);

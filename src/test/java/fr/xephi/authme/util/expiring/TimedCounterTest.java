@@ -1,19 +1,19 @@
 package fr.xephi.authme.util.expiring;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link TimedCounter}.
  */
-public class TimedCounterTest {
+class TimedCounterTest {
 
     @Test
-    public void shouldReturnZeroForAnyKey() {
+    void shouldReturnZeroForAnyKey() {
         // given
         TimedCounter<Double> counter = new TimedCounter<>(1, TimeUnit.DAYS);
 
@@ -23,7 +23,7 @@ public class TimedCounterTest {
     }
 
     @Test
-    public void shouldIncrementCount() {
+    void shouldIncrementCount() {
         // given
         TimedCounter<String> counter = new TimedCounter<>(10, TimeUnit.MINUTES);
         counter.put("moto", 12);
@@ -38,7 +38,7 @@ public class TimedCounterTest {
     }
 
     @Test
-    public void shouldDecrementCount() {
+    void shouldDecrementCount() {
         // given
         TimedCounter<String> counter = new TimedCounter<>(10, TimeUnit.MINUTES);
         counter.put("moto", 12);
@@ -53,7 +53,7 @@ public class TimedCounterTest {
     }
 
     @Test
-    public void shouldSumUpEntries() {
+    void shouldSumUpEntries() {
         // given
         TimedCounter<String> counter = new TimedCounter<>(90, TimeUnit.SECONDS);
         counter.getEntries().put("expired", new ExpiringMap.ExpiringEntry<>(800, 0));

@@ -1,23 +1,23 @@
 package fr.xephi.authme.permission;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link PermissionsSystemType}.
  */
-public class PermissionsSystemTypeTest {
+class PermissionsSystemTypeTest {
 
     @Test
-    public void shouldHaveDefinedAndUniqueNames() {
+    void shouldHaveDefinedAndUniqueNames() {
         // given / when / then
         List<String> names = new ArrayList<>(PermissionsSystemType.values().length);
         List<String> pluginNames = new ArrayList<>(PermissionsSystemType.values().length);
@@ -37,7 +37,7 @@ public class PermissionsSystemTypeTest {
     }
 
     @Test
-    public void shouldRecognizePermissionSystemType() {
+    void shouldRecognizePermissionSystemType() {
         assertThat(PermissionsSystemType.isPermissionSystem("bogus"), equalTo(false));
         assertThat(PermissionsSystemType.isPermissionSystem("PermissionsEx"), equalTo(true));
     }

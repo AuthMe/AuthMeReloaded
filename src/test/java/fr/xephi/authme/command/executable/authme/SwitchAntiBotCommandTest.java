@@ -5,11 +5,11 @@ import fr.xephi.authme.command.FoundCommandResult;
 import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.service.AntiBotService;
 import org.bukkit.command.CommandSender;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -25,8 +25,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link SwitchAntiBotCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class SwitchAntiBotCommandTest {
+@ExtendWith(MockitoExtension.class)
+class SwitchAntiBotCommandTest {
 
     @InjectMocks
     private SwitchAntiBotCommand command;
@@ -41,7 +41,7 @@ public class SwitchAntiBotCommandTest {
     private HelpProvider helpProvider;
 
     @Test
-    public void shouldReturnAntiBotState() {
+    void shouldReturnAntiBotState() {
         // given
         given(antiBot.getAntiBotStatus()).willReturn(AntiBotService.AntiBotStatus.ACTIVE);
         CommandSender sender = mock(CommandSender.class);
@@ -54,7 +54,7 @@ public class SwitchAntiBotCommandTest {
     }
 
     @Test
-    public void shouldActivateAntiBot() {
+    void shouldActivateAntiBot() {
         // given
         CommandSender sender = mock(CommandSender.class);
 
@@ -67,7 +67,7 @@ public class SwitchAntiBotCommandTest {
     }
 
     @Test
-    public void shouldDeactivateAntiBot() {
+    void shouldDeactivateAntiBot() {
         // given
         CommandSender sender = mock(CommandSender.class);
 
@@ -80,7 +80,7 @@ public class SwitchAntiBotCommandTest {
     }
 
     @Test
-    public void shouldShowHelpForUnknownState() {
+    void shouldShowHelpForUnknownState() {
         // given
         CommandSender sender = mock(CommandSender.class);
         FoundCommandResult foundCommandResult = mock(FoundCommandResult.class);

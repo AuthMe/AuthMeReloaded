@@ -8,31 +8,31 @@ import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import org.bukkit.Location;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
  * Test for {@link DebugSectionUtils}.
  */
-public class DebugSectionUtilsTest {
+class DebugSectionUtilsTest {
 
-    @Before
-    public void initMockLogger() {
+    @BeforeEach
+    void initMockLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldFormatLocation() {
+    void shouldFormatLocation() {
         // given / when
         String result = DebugSectionUtils.formatLocation(0.0, 10.248592, -18934.2349023, "Main");
 
@@ -41,7 +41,7 @@ public class DebugSectionUtilsTest {
     }
 
     @Test
-    public void shouldHandleNullWorld() {
+    void shouldHandleNullWorld() {
         // given
         Location location = new Location(null, 3.7777, 2.14156, 1);
 
@@ -53,13 +53,13 @@ public class DebugSectionUtilsTest {
     }
 
     @Test
-    public void shouldHandleNullLocation() {
+    void shouldHandleNullLocation() {
         // given / when / then
         assertThat(DebugSectionUtils.formatLocation(null), equalTo("null"));
     }
 
     @Test
-    public void shouldFetchMapInLimboService() {
+    void shouldFetchMapInLimboService() {
         // given
         LimboService limboService = mock(LimboService.class);
         Map<String, LimboPlayer> limboMap = new HashMap<>();
@@ -73,7 +73,7 @@ public class DebugSectionUtilsTest {
     }
 
     @Test
-    public void shouldHandleErrorGracefully() {
+    void shouldHandleErrorGracefully() {
         // given
         LimboService limboService = mock(LimboService.class);
         Map<String, LimboPlayer> limboMap = new HashMap<>();
@@ -89,7 +89,7 @@ public class DebugSectionUtilsTest {
     }
 
     @Test
-    public void shouldReturnSameDataSourceInstance() {
+    void shouldReturnSameDataSourceInstance() {
         // given
         DataSource dataSource = mock(DataSource.class);
 
@@ -101,7 +101,7 @@ public class DebugSectionUtilsTest {
     }
 
     @Test
-    public void shouldUnwrapCacheDataSource() {
+    void shouldUnwrapCacheDataSource() {
         // given
         DataSource source = mock(DataSource.class);
         PlayerCache playerCache = mock(PlayerCache.class);
@@ -115,7 +115,7 @@ public class DebugSectionUtilsTest {
     }
 
     @Test
-    public void shouldCastOrReturnNull() {
+    void shouldCastOrReturnNull() {
         // given / when / then
         assertThat(DebugSectionUtils.castToTypeOrNull("test", String.class), equalTo("test"));
         assertThat(DebugSectionUtils.castToTypeOrNull("test", Integer.class), nullValue());

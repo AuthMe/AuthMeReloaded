@@ -1,22 +1,22 @@
 package fr.xephi.authme.util.lazytags;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static fr.xephi.authme.util.lazytags.TagBuilder.createTag;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link TagReplacer}.
  */
-public class TagReplacerTest {
+class TagReplacerTest {
 
     @Test
-    public void shouldReplaceTags() {
+    void shouldReplaceTags() {
         // given
         TestTagService tagService = new TestTagService();
         List<Tag<Integer>> tags = tagService.getAvailableTags();
@@ -35,7 +35,7 @@ public class TagReplacerTest {
     }
 
     @Test
-    public void shouldNotCallUnusedTags() {
+    void shouldNotCallUnusedTags() {
         // given
         TestTagService tagService = new TestTagService();
         List<Tag<Integer>> tags = tagService.getAvailableTags();

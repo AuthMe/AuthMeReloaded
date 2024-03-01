@@ -1,24 +1,24 @@
 package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.TestHelper;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link TwoFactor}.
  */
-public class TwoFactorTest {
+class TwoFactorTest {
 
-    @BeforeClass
-    public static void initLogger() {
+    @BeforeAll
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldGenerateBarcodeUrl() {
+    void shouldGenerateBarcodeUrl() {
         // given
         String user = "tester";
         String host = "192.168.0.4";
@@ -34,7 +34,7 @@ public class TwoFactorTest {
     }
 
     @Test
-    public void shouldHandleInvalidHash() {
+    void shouldHandleInvalidHash() {
         // given
         HashedPassword password = new HashedPassword("!@&#@!(*&@");
         String inputPassword = "12345";
@@ -48,7 +48,7 @@ public class TwoFactorTest {
     }
 
     @Test
-    public void shouldHandleInvalidInput() {
+    void shouldHandleInvalidInput() {
         // given
         HashedPassword password = new HashedPassword("3AK6Y4KWGRLJMEQW");
         String inputPassword = "notA_number!";

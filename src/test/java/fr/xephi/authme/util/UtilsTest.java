@@ -5,8 +5,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -24,15 +24,15 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link Utils}.
  */
-public class UtilsTest {
+class UtilsTest {
 
-    @BeforeClass
-    public static void initLogger() {
+    @BeforeAll
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldCompilePattern() {
+    void shouldCompilePattern() {
         // given
         String pattern = "gr(a|e)ys?";
 
@@ -44,7 +44,7 @@ public class UtilsTest {
     }
 
     @Test
-    public void shouldDefaultToAllAllowedPattern() {
+    void shouldDefaultToAllAllowedPattern() {
         // given
         String invalidPattern = "gr(a|eys?"; // missing closing ')'
 
@@ -56,7 +56,7 @@ public class UtilsTest {
     }
 
     @Test
-    public void shouldLogAndSendMessage() {
+    void shouldLogAndSendMessage() {
         // given
         Logger logger = TestHelper.setupLogger();
         Player player = mock(Player.class);
@@ -71,7 +71,7 @@ public class UtilsTest {
     }
 
     @Test
-    public void shouldHandleNullAsCommandSender() {
+    void shouldHandleNullAsCommandSender() {
         // given
         Logger logger = TestHelper.setupLogger();
         String message = "Test test, test.";
@@ -84,7 +84,7 @@ public class UtilsTest {
     }
 
     @Test
-    public void shouldNotSendToCommandSenderTwice() {
+    void shouldNotSendToCommandSenderTwice() {
         // given
         Logger logger = TestHelper.setupLogger();
         CommandSender sender = mock(ConsoleCommandSender.class);
@@ -99,7 +99,7 @@ public class UtilsTest {
     }
 
     @Test
-    public void shouldCheckIfCollectionIsEmpty() {
+    void shouldCheckIfCollectionIsEmpty() {
         // given
         List<String> emptyList = Collections.emptyList();
         Collection<Integer> nonEmptyColl = Arrays.asList(3, 4, 5);
@@ -111,7 +111,7 @@ public class UtilsTest {
     }
 
     @Test
-    public void shouldLogAndSendWarning() {
+    void shouldLogAndSendWarning() {
         // given
         Logger logger = TestHelper.setupLogger();
         String message = "Error while performing action";
@@ -126,7 +126,7 @@ public class UtilsTest {
     }
 
     @Test
-    public void shouldLogWarningAndNotSendToConsoleSender() {
+    void shouldLogWarningAndNotSendToConsoleSender() {
         // given
         Logger logger = TestHelper.setupLogger();
         String message = "Error while performing action";
@@ -141,7 +141,7 @@ public class UtilsTest {
     }
 
     @Test
-    public void shouldLogWarningAndHandleNullCommandSender() {
+    void shouldLogWarningAndHandleNullCommandSender() {
         // given
         Logger logger = TestHelper.setupLogger();
         String message = "Error while performing action";
@@ -155,14 +155,14 @@ public class UtilsTest {
     }
 
     @Test
-    public void shouldCheckIfClassIsLoaded() {
+    void shouldCheckIfClassIsLoaded() {
         // given / when / then
         assertThat(Utils.isClassLoaded("org.bukkit.event.player.PlayerFishEvent"), equalTo(true));
         assertThat(Utils.isClassLoaded("com.someclass.doesnot.exist"), equalTo(false));
     }
 
     @Test
-    public void shouldDetectIfEmailIsEmpty() {
+    void shouldDetectIfEmailIsEmpty() {
         // given / when / then
         assertThat(Utils.isEmailEmpty(""), equalTo(true));
         assertThat(Utils.isEmailEmpty(null), equalTo(true));

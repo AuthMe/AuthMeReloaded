@@ -11,12 +11,12 @@ import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import org.bukkit.entity.Player;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.function.Function;
 
@@ -31,8 +31,8 @@ import static org.mockito.Mockito.when;
 /**
  * Test for {@link AsyncChangeEmail}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class AsyncChangeEmailTest {
+@ExtendWith(MockitoExtension.class)
+class AsyncChangeEmailTest {
 
     @InjectMocks
     private AsyncChangeEmail process;
@@ -58,13 +58,13 @@ public class AsyncChangeEmailTest {
     @Mock
     private BukkitService bukkitService;
 
-    @BeforeClass
-    public static void setUp() {
+    @BeforeAll
+    static void setUp() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldChangeEmail() {
+    void shouldChangeEmail() {
         // given
         String newEmail = "new@mail.tld";
         given(player.getName()).willReturn("Bobby");
@@ -87,7 +87,7 @@ public class AsyncChangeEmailTest {
     }
 
     @Test
-    public void shouldNotBeCaseSensitiveWhenComparingEmails() {
+    void shouldNotBeCaseSensitiveWhenComparingEmails() {
         // given
         String newEmail = "newmail@example.com";
         given(player.getName()).willReturn("Debra");
@@ -111,7 +111,7 @@ public class AsyncChangeEmailTest {
     }
 
     @Test
-    public void shouldShowErrorIfSaveFails() {
+    void shouldShowErrorIfSaveFails() {
         // given
         String newEmail = "new@mail.tld";
         given(player.getName()).willReturn("Bobby");
@@ -134,7 +134,7 @@ public class AsyncChangeEmailTest {
     }
 
     @Test
-    public void shouldShowAddEmailUsage() {
+    void shouldShowAddEmailUsage() {
         // given
         given(player.getName()).willReturn("Bobby");
         given(playerCache.isAuthenticated("bobby")).willReturn(true);
@@ -151,7 +151,7 @@ public class AsyncChangeEmailTest {
     }
 
     @Test
-    public void shouldRejectInvalidNewMail() {
+    void shouldRejectInvalidNewMail() {
         // given
         String newEmail = "bogus";
         given(player.getName()).willReturn("Bobby");
@@ -170,7 +170,7 @@ public class AsyncChangeEmailTest {
     }
 
     @Test
-    public void shouldRejectInvalidOldEmail() {
+    void shouldRejectInvalidOldEmail() {
         // given
         String newEmail = "new@mail.tld";
         given(player.getName()).willReturn("Bobby");
@@ -189,7 +189,7 @@ public class AsyncChangeEmailTest {
     }
 
     @Test
-    public void shouldRejectAlreadyUsedEmail() {
+    void shouldRejectAlreadyUsedEmail() {
         // given
         String newEmail = "new@example.com";
         given(player.getName()).willReturn("Username");
@@ -209,7 +209,7 @@ public class AsyncChangeEmailTest {
     }
 
     @Test
-    public void shouldSendLoginMessage() {
+    void shouldSendLoginMessage() {
         // given
         given(player.getName()).willReturn("Bobby");
         given(playerCache.isAuthenticated("bobby")).willReturn(false);
@@ -225,7 +225,7 @@ public class AsyncChangeEmailTest {
     }
 
     @Test
-    public void shouldShowRegistrationMessage() {
+    void shouldShowRegistrationMessage() {
         // given
         given(player.getName()).willReturn("Bobby");
         given(playerCache.isAuthenticated("bobby")).willReturn(false);
@@ -241,7 +241,7 @@ public class AsyncChangeEmailTest {
     }
 
     @Test
-    public void shouldNotChangeOnCancelledEvent() {
+    void shouldNotChangeOnCancelledEvent() {
         // given
         String newEmail = "new@example.com";
         String oldEmail = "old@example.com";

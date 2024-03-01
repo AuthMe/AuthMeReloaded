@@ -19,13 +19,13 @@ import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,8 +43,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link RegisterCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class RegisterCommandTest {
+@ExtendWith(MockitoExtension.class)
+class RegisterCommandTest {
 
     @InjectMocks
     private RegisterCommand command;
@@ -64,22 +64,21 @@ public class RegisterCommandTest {
     @Mock
     private RegistrationCaptchaManager registrationCaptchaManager;
 
-    @BeforeClass
-    public static void setup() {
+    @BeforeAll
+    static void setup() {
         TestHelper.setupLogger();
     }
 
-    @Before
-    public void linkMocksAndProvideSettingDefaults() {
-        given(commonService.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.BCRYPT);
-        given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.PASSWORD);
-        given(commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.NONE);
+    @BeforeEach
+    void setPasswordHashProperty() {
+         given(commonService.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.BCRYPT);
     }
 
     @Test
-    public void shouldNotRunForNonPlayerSender() {
+    void shouldNotRunForNonPlayerSender() {
         // given
         CommandSender sender = mock(BlockCommandSender.class);
+        commonService.getProperty(SecuritySettings.PASSWORD_HASH); // Prevent UnnecessaryStubbingException
 
         // when
         command.executeCommand(sender, Collections.emptyList());
@@ -90,7 +89,7 @@ public class RegisterCommandTest {
     }
 
     @Test
-    public void shouldForwardToManagementForTwoFactor() {
+    void shouldForwardToManagementForTwoFactor() {
         // given
         given(commonService.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.TWO_FACTOR);
         Player player = mockPlayerWithName("test2");
@@ -106,7 +105,7 @@ public class RegisterCommandTest {
     }
 
     @Test
-    public void shouldReturnErrorForEmptyArguments() {
+    void shouldReturnErrorForEmptyArguments() {
         // given
         Player player = mock(Player.class);
 
@@ -119,7 +118,7 @@ public class RegisterCommandTest {
     }
 
     @Test
-    public void shouldReturnErrorForMissingConfirmation() {
+    void shouldReturnErrorForMissingConfirmation() {
         // given
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.PASSWORD);
         given(commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.CONFIRMATION);
@@ -134,7 +133,7 @@ public class RegisterCommandTest {
     }
 
     @Test
-    public void shouldReturnErrorForMissingEmailConfirmation() {
+    void shouldReturnErrorForMissingEmailConfirmation() {
         // given
         given(emailService.hasAllInformation()).willReturn(true);
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.EMAIL);
@@ -151,7 +150,7 @@ public class RegisterCommandTest {
     }
 
     @Test
-    public void shouldThrowErrorForMissingEmailConfiguration() {
+    void shouldThrowErrorForMissingEmailConfiguration() {
         // given
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.EMAIL);
         given(emailService.hasAllInformation()).willReturn(false);
@@ -167,7 +166,7 @@ public class RegisterCommandTest {
     }
 
     @Test
-    public void shouldRejectInvalidEmail() {
+    void shouldRejectInvalidEmail() {
         // given
         String playerMail = "player@example.org";
         given(validationService.validateEmail(playerMail)).willReturn(false);
@@ -185,7 +184,7 @@ public class RegisterCommandTest {
     }
 
     @Test
-    public void shouldRejectInvalidEmailConfirmation() {
+    void shouldRejectInvalidEmailConfirmation() {
         // given
         String playerMail = "bobber@bobby.org";
         given(validationService.validateEmail(playerMail)).willReturn(true);
@@ -204,7 +203,7 @@ public class RegisterCommandTest {
     }
 
     @Test
-    public void shouldPerformEmailRegistration() {
+    void shouldPerformEmailRegistration() {
         // given
         String playerMail = "asfd@lakjgre.lds";
         given(validationService.validateEmail(playerMail)).willReturn(true);
@@ -225,7 +224,7 @@ public class RegisterCommandTest {
     }
 
     @Test
-    public void shouldRejectInvalidPasswordConfirmation() {
+    void shouldRejectInvalidPasswordConfirmation() {
         // given
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.PASSWORD);
         given(commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.CONFIRMATION);
@@ -240,9 +239,11 @@ public class RegisterCommandTest {
     }
 
     @Test
-    public void shouldPerformPasswordRegistration() {
+    void shouldPerformPasswordRegistration() {
         // given
         Player player = mockPlayerWithName("newPlayer");
+        given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.PASSWORD);
+        given(commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.NONE);
 
         // when
         command.executeCommand(player, Collections.singletonList("myPass"));
@@ -254,7 +255,7 @@ public class RegisterCommandTest {
     }
 
     @Test
-    public void shouldPerformMailValidationForPasswordWithEmail() {
+    void shouldPerformMailValidationForPasswordWithEmail() {
         // given
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.PASSWORD);
         given(commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.EMAIL_MANDATORY);
@@ -272,7 +273,7 @@ public class RegisterCommandTest {
     }
 
     @Test
-    public void shouldStopForInvalidEmail() {
+    void shouldStopForInvalidEmail() {
         // given
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.PASSWORD);
         given(commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.EMAIL_OPTIONAL);
@@ -291,7 +292,7 @@ public class RegisterCommandTest {
     }
 
     @Test
-    public void shouldPerformNormalPasswordRegisterForOneArgument() {
+    void shouldPerformNormalPasswordRegisterForOneArgument() {
         // given
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.PASSWORD);
         given(commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.EMAIL_OPTIONAL);
@@ -307,8 +308,9 @@ public class RegisterCommandTest {
     }
 
     @Test
-    public void shouldRequestCaptcha() {
+    void shouldRequestCaptcha() {
         // given
+        commonService.getProperty(SecuritySettings.PASSWORD_HASH); // Prevent UnnecessaryStubbingException
         given(registrationCaptchaManager.isCaptchaRequired(anyString())).willReturn(true);
         String name = "Brian";
         Player player = mockPlayerWithName(name);

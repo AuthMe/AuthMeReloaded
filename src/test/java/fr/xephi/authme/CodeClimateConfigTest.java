@@ -2,26 +2,26 @@ package fr.xephi.authme;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Consistency test for the CodeClimate configuration file.
  */
-public class CodeClimateConfigTest {
+class CodeClimateConfigTest {
 
     private static final String CONFIG_FILE = ".codeclimate.yml";
 
     @Test
-    public void shouldHaveExistingClassesInExclusions() {
+    void shouldHaveExistingClassesInExclusions() {
         // given / when
         FileConfiguration configuration = YamlConfiguration.loadConfiguration(new File(CONFIG_FILE));
         List<String> excludePaths = configuration.getStringList("exclude_patterns");

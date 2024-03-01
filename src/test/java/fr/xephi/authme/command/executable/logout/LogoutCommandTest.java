@@ -4,11 +4,11 @@ import fr.xephi.authme.process.Management;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,8 +22,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link LogoutCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class LogoutCommandTest {
+@ExtendWith(MockitoExtension.class)
+class LogoutCommandTest {
 
     @InjectMocks
     private LogoutCommand command;
@@ -33,7 +33,7 @@ public class LogoutCommandTest {
 
 
     @Test
-    public void shouldStopIfSenderIsNotAPlayer() {
+    void shouldStopIfSenderIsNotAPlayer() {
         // given
         CommandSender sender = mock(BlockCommandSender.class);
 
@@ -46,7 +46,7 @@ public class LogoutCommandTest {
     }
 
     @Test
-    public void shouldCallManagementForPlayerCaller() {
+    void shouldCallManagementForPlayerCaller() {
         // given
         Player sender = mock(Player.class);
 

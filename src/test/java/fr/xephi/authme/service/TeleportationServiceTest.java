@@ -11,19 +11,19 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -37,8 +37,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link TeleportationService}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class TeleportationServiceTest {
+@ExtendWith(MockitoExtension.class)
+class TeleportationServiceTest {
 
     @InjectMocks
     private TeleportationService teleportationService;
@@ -55,8 +55,8 @@ public class TeleportationServiceTest {
     @Mock
     private PlayerCache playerCache;
 
-    @Before
-    public void setUpForcedWorlds() {
+    @BeforeEach
+    void setUpForcedWorlds() {
         given(settings.getProperty(RestrictionSettings.FORCE_SPAWN_ON_WORLDS))
             .willReturn(Arrays.asList("forced1", "OtherForced"));
         teleportationService.reload();
@@ -68,7 +68,7 @@ public class TeleportationServiceTest {
     // JOINING
     // -----------
     @Test
-    public void shouldNotTeleportPlayerOnJoin() {
+    void shouldNotTeleportPlayerOnJoin() {
         // given
         given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(true);
         Player player = mock(Player.class);
@@ -82,7 +82,7 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldTeleportPlayerToFirstSpawn() {
+    void shouldTeleportPlayerToFirstSpawn() {
         // given
         Player player = mock(Player.class);
         given(player.hasPlayedBefore()).willReturn(false);
@@ -102,7 +102,7 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldTeleportPlayerToSpawn() {
+    void shouldTeleportPlayerToSpawn() {
         // given
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
         Player player = mock(Player.class);
@@ -122,7 +122,7 @@ public class TeleportationServiceTest {
 
     @Test
     // No first spawn defined, no teleport settings enabled
-    public void shouldNotTeleportNewPlayer() {
+    void shouldNotTeleportNewPlayer() {
         // given
         Player player = mock(Player.class);
         given(spawnLoader.getFirstSpawn()).willReturn(null);
@@ -138,7 +138,7 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldNotTeleportPlayerToFirstSpawnIfNoTeleportEnabled() {
+    void shouldNotTeleportPlayerToFirstSpawnIfNoTeleportEnabled() {
         // given
         Player player = mock(Player.class);
         given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(true);
@@ -152,7 +152,7 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldNotTeleportNotNewPlayerToFirstSpawn() {
+    void shouldNotTeleportNotNewPlayerToFirstSpawn() {
         // given
         Player player = mock(Player.class);
         given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(false);
@@ -166,10 +166,10 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldNotTeleportPlayerForRemovedLocationInEvent() {
+    void shouldNotTeleportPlayerForRemovedLocationInEvent() {
         // given
         final Player player = mock(Player.class);
-        Location spawn = mockLocation();
+        Location spawn = mock(Location.class);
         given(spawnLoader.getSpawnLocation(player)).willReturn(spawn);
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
         doAnswer(invocation -> {
@@ -189,10 +189,10 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldNotTeleportPlayerForCanceledEvent() {
+    void shouldNotTeleportPlayerForCanceledEvent() {
         // given
         final Player player = mock(Player.class);
-        Location spawn = mockLocation();
+        Location spawn = mock(Location.class);
         given(spawnLoader.getSpawnLocation(player)).willReturn(spawn);
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
         doAnswer(invocation -> {
@@ -215,7 +215,7 @@ public class TeleportationServiceTest {
     // LOGIN
     // ---------
     @Test
-    public void shouldNotTeleportUponLogin() {
+    void shouldNotTeleportUponLogin() {
         // given
         given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(true);
         Player player = mock(Player.class);
@@ -230,7 +230,7 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldTeleportPlayerToSpawnAfterLogin() {
+    void shouldTeleportPlayerToSpawnAfterLogin() {
         // given
         given(settings.getProperty(RestrictionSettings.FORCE_SPAWN_LOCATION_AFTER_LOGIN)).willReturn(true);
         Player player = mock(Player.class);
@@ -251,14 +251,14 @@ public class TeleportationServiceTest {
         verify(player).teleport(spawn);
     }
 
-    @Test
     // Check that the worlds for "force spawn loc after login" are case-sensitive
-    public void shouldNotTeleportToSpawnForOtherCaseInWorld() {
+    @Test
+    void shouldNotTeleportToSpawnForOtherCaseInWorld() {
         // given
         given(settings.getProperty(RestrictionSettings.FORCE_SPAWN_LOCATION_AFTER_LOGIN)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(false);
         Player player = mock(Player.class);
-        Location spawn = mockLocation();
+        Location spawn = mock(Location.class);
         PlayerAuth auth = mock(PlayerAuth.class);
         LimboPlayer limbo = mock(LimboPlayer.class);
         Location limboLocation = mockLocation();
@@ -274,7 +274,7 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldTeleportBackToPlayerAuthLocation() {
+    void shouldTeleportBackToPlayerAuthLocation() {
         // given
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(true);
@@ -301,7 +301,7 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldTeleportAccordingToPlayerAuthAndPlayerWorldAsFallback() {
+    void shouldTeleportAccordingToPlayerAuthAndPlayerWorldAsFallback() {
         // given
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(true);
@@ -329,7 +329,7 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldTeleportWithLimboPlayerIfAuthYCoordIsNotSet() {
+    void shouldTeleportWithLimboPlayerIfAuthYCoordIsNotSet() {
         // given
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(true);
@@ -353,7 +353,7 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldTeleportWithLimboPlayerIfSaveQuitLocIsDisabled() {
+    void shouldTeleportWithLimboPlayerIfSaveQuitLocIsDisabled() {
         // given
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(false);
@@ -374,7 +374,7 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldNotTeleportForNullLocationInLimboPlayer() {
+    void shouldNotTeleportForNullLocationInLimboPlayer() {
         // given
         given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(false);
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
@@ -411,5 +411,4 @@ public class TeleportationServiceTest {
             .locX(123.45).locY(23.4).locZ(-4.567)
             .build();
     }
-
 }

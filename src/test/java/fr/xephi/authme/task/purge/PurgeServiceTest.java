@@ -10,13 +10,13 @@ import fr.xephi.authme.settings.properties.PurgeSettings;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -26,12 +26,12 @@ import java.util.Set;
 import java.util.UUID;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -45,8 +45,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link PurgeService}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class PurgeServiceTest {
+@ExtendWith(MockitoExtension.class)
+class PurgeServiceTest {
 
     @InjectMocks
     private PurgeService purgeService;
@@ -62,13 +62,13 @@ public class PurgeServiceTest {
     @Mock
     private PurgeExecutor executor;
 
-    @BeforeClass
-    public static void initLogger() {
+    @BeforeAll
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldNotRunAutoPurge() {
+    void shouldNotRunAutoPurge() {
         // given
         given(settings.getProperty(PurgeSettings.USE_AUTO_PURGE)).willReturn(false);
         given(settings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER)).willReturn(60);
@@ -81,7 +81,7 @@ public class PurgeServiceTest {
     }
 
     @Test
-    public void shouldNotRunAutoPurgeForInvalidInterval() {
+    void shouldNotRunAutoPurgeForInvalidInterval() {
         // given
         given(settings.getProperty(PurgeSettings.USE_AUTO_PURGE)).willReturn(true);
         given(settings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER)).willReturn(0);
@@ -94,7 +94,7 @@ public class PurgeServiceTest {
     }
 
     @Test
-    public void shouldRunAutoPurge() {
+    void shouldRunAutoPurge() {
         // given
         given(settings.getProperty(PurgeSettings.USE_AUTO_PURGE)).willReturn(true);
         given(settings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER)).willReturn(60);
@@ -114,7 +114,7 @@ public class PurgeServiceTest {
     }
 
     @Test
-    public void shouldRecognizeNoPlayersToPurge() {
+    void shouldRecognizeNoPlayersToPurge() {
         // given
         final long delay = 123012301L;
         given(dataSource.getRecordsToPurge(delay)).willReturn(Collections.emptySet());
@@ -131,7 +131,7 @@ public class PurgeServiceTest {
     }
 
     @Test
-    public void shouldRunPurge() {
+    void shouldRunPurge() {
         // given
         final long delay = 1809714L;
         Set<String> playerNames = newHashSet("charlie", "delta", "echo", "foxtrot");
@@ -149,7 +149,7 @@ public class PurgeServiceTest {
     }
 
     @Test
-    public void shouldNotRunPurgeIfProcessIsAlreadyRunning() {
+    void shouldNotRunPurgeIfProcessIsAlreadyRunning() {
         // given
         purgeService.setPurging(true);
         CommandSender sender = mock(CommandSender.class);
@@ -164,7 +164,7 @@ public class PurgeServiceTest {
     }
 
     @Test
-    public void shouldExecutePurgeActions() {
+    void shouldExecutePurgeActions() {
         // given
         List<String> names = Arrays.asList("alpha", "bravo", "foxtrot");
         List<OfflinePlayer> offlinePlayers = Arrays.asList(

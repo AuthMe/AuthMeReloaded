@@ -9,14 +9,14 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -24,8 +24,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link CommonService}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class CommonServiceTest {
+@ExtendWith(MockitoExtension.class)
+class CommonServiceTest {
 
     @InjectMocks
     private CommonService commonService;
@@ -40,7 +40,7 @@ public class CommonServiceTest {
     private PermissionsManager permissionsManager;
 
     @Test
-    public void shouldGetProperty() {
+    void shouldGetProperty() {
         // given
         given(settings.getProperty(SecuritySettings.CAPTCHA_LENGTH)).willReturn(8);
 
@@ -53,7 +53,7 @@ public class CommonServiceTest {
     }
 
     @Test
-    public void shouldSendMessageToPlayer() {
+    void shouldSendMessageToPlayer() {
         // given
         CommandSender sender = mock(CommandSender.class);
         MessageKey key = MessageKey.ACCOUNT_NOT_ACTIVATED;
@@ -66,7 +66,7 @@ public class CommonServiceTest {
     }
 
     @Test
-    public void shouldSendMessageWithReplacements() {
+    void shouldSendMessageWithReplacements() {
         // given
         CommandSender sender = mock(CommandSender.class);
         MessageKey key = MessageKey.ACCOUNT_NOT_ACTIVATED;
@@ -80,7 +80,7 @@ public class CommonServiceTest {
     }
 
     @Test
-    public void shouldRetrieveSingleMessage() {
+    void shouldRetrieveSingleMessage() {
         // given
         MessageKey key = MessageKey.ACCOUNT_NOT_ACTIVATED;
         Player player = mock(Player.class);
@@ -96,7 +96,7 @@ public class CommonServiceTest {
     }
 
     @Test
-    public void shouldCheckPermission() {
+    void shouldCheckPermission() {
         // given
         Player player = mock(Player.class);
         PermissionNode permission = PlayerPermission.CHANGE_PASSWORD;

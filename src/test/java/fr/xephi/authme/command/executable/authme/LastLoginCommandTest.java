@@ -5,19 +5,19 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.CommandSender;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.Date;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -26,8 +26,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link LastLoginCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class LastLoginCommandTest {
+@ExtendWith(MockitoExtension.class)
+class LastLoginCommandTest {
 
     private static final long HOUR_IN_MSEC = 3600 * 1000;
     private static final long DAY_IN_MSEC = 24 * HOUR_IN_MSEC;
@@ -43,7 +43,7 @@ public class LastLoginCommandTest {
 
 
     @Test
-    public void shouldRejectNonExistentUser() {
+    void shouldRejectNonExistentUser() {
         // given
         String player = "tester";
         given(dataSource.getAuth(player)).willReturn(null);
@@ -58,7 +58,7 @@ public class LastLoginCommandTest {
     }
 
     @Test
-    public void shouldDisplayLastLoginOfUser() {
+    void shouldDisplayLastLoginOfUser() {
         // given
         String player = "SomePlayer";
         long lastLogin = System.currentTimeMillis() -
@@ -84,7 +84,7 @@ public class LastLoginCommandTest {
     }
 
     @Test
-    public void shouldDisplayLastLoginOfCommandSender() {
+    void shouldDisplayLastLoginOfCommandSender() {
         // given
         String name = "CommandSender";
         CommandSender sender = mock(CommandSender.class);
@@ -112,7 +112,7 @@ public class LastLoginCommandTest {
     }
 
     @Test
-    public void shouldHandleNullLastLoginDate() {
+    void shouldHandleNullLastLoginDate() {
         // given
         String name = "player";
         PlayerAuth auth = PlayerAuth.builder()

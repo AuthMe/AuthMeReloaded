@@ -6,8 +6,8 @@ import ch.jalu.configme.properties.Property;
 import fr.xephi.authme.ClassCollector;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -16,21 +16,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test for {@link SettingsHolder} implementations.
  */
-public class SettingsClassConsistencyTest {
+class SettingsClassConsistencyTest {
 
     private static final String SETTINGS_FOLDER = TestHelper.PROJECT_ROOT + "settings/properties";
     private static List<Class<? extends SettingsHolder>> classes;
 
-    @BeforeClass
-    public static void scanForSettingsClasses() {
+    @BeforeAll
+    static void scanForSettingsClasses() {
         ClassCollector collector = new ClassCollector(TestHelper.SOURCES_FOLDER, SETTINGS_FOLDER);
         classes = collector.collectClasses(SettingsHolder.class);
 
@@ -44,7 +44,7 @@ public class SettingsClassConsistencyTest {
      * Make sure that all {@link Property} instances we define are in public, static, final fields.
      */
     @Test
-    public void shouldHavePublicStaticFinalFields() {
+    void shouldHavePublicStaticFinalFields() {
         for (Class<?> clazz : classes) {
             Field[] fields = clazz.getDeclaredFields();
             for (Field field : fields) {
@@ -61,7 +61,7 @@ public class SettingsClassConsistencyTest {
      * Make sure that no properties use the same path.
      */
     @Test
-    public void shouldHaveUniquePaths() {
+    void shouldHaveUniquePaths() {
         Set<String> paths = new HashSet<>();
         for (Class<?> clazz : classes) {
             Field[] fields = clazz.getDeclaredFields();
@@ -82,7 +82,7 @@ public class SettingsClassConsistencyTest {
      * available SettingsHolder classes.
      */
     @Test
-    public void shouldHaveAllClassesInConfigurationData() {
+    void shouldHaveAllClassesInConfigurationData() {
         // given
         long totalProperties = classes.stream()
             .map(Class::getDeclaredFields)

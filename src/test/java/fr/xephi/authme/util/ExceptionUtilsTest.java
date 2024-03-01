@@ -1,23 +1,23 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.ReflectionTestUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
 import java.util.ConcurrentModificationException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link ExceptionUtils}.
  */
-public class ExceptionUtilsTest {
+class ExceptionUtilsTest {
 
     @Test
-    public void shouldFindWantedThrowable() {
+    void shouldFindWantedThrowable() {
         // given
         ConcurrentModificationException initialCme = new ConcurrentModificationException();
         Throwable th = new Throwable(initialCme);
@@ -38,7 +38,7 @@ public class ExceptionUtilsTest {
     }
 
     @Test
-    public void shouldHandleCircularCausesGracefully() {
+    void shouldHandleCircularCausesGracefully() {
         // given
         ExceptionWithSettableCause exceptionWithSettableCause = new ExceptionWithSettableCause();
         UnsupportedOperationException uoe = new UnsupportedOperationException(exceptionWithSettableCause);
@@ -55,7 +55,7 @@ public class ExceptionUtilsTest {
     }
 
     @Test
-    public void shouldFormatException() {
+    void shouldFormatException() {
         // given
         MalformedURLException ex = new MalformedURLException("Unrecognized URL format");
 

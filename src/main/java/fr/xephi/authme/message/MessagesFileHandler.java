@@ -1,10 +1,13 @@
 package fr.xephi.authme.message;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.output.ConsoleLoggerFactory;
+import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.message.updater.MessageUpdater;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
+import fr.xephi.authme.settings.Settings;
 
 import javax.inject.Inject;
+import java.io.File;
 
 import static fr.xephi.authme.message.MessagePathHelper.DEFAULT_LANGUAGE;
 
@@ -15,10 +18,12 @@ public class MessagesFileHandler extends AbstractMessageFileHandler {
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(MessagesFileHandler.class);
 
-    @Inject
-    private MessageUpdater messageUpdater;
+    private final MessageUpdater messageUpdater;
 
-    MessagesFileHandler() {
+    @Inject
+    MessagesFileHandler(@DataFolder File dataFolder, Settings settings, MessageUpdater messageUpdater) {
+        super(dataFolder, settings);
+        this.messageUpdater = messageUpdater;
     }
 
     @Override

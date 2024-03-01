@@ -7,17 +7,17 @@ import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -27,8 +27,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link UnregisterCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class UnregisterCommandTest {
+@ExtendWith(MockitoExtension.class)
+class UnregisterCommandTest {
 
     @InjectMocks
     private UnregisterCommand command;
@@ -46,7 +46,7 @@ public class UnregisterCommandTest {
     private VerificationCodeManager codeManager;
 
     @Test
-    public void shouldCatchUnauthenticatedUser() {
+    void shouldCatchUnauthenticatedUser() {
         // given
         String password = "mySecret123";
         String name = "player77";
@@ -64,7 +64,7 @@ public class UnregisterCommandTest {
     }
 
     @Test
-    public void shouldStopForMissingVerificationCode() {
+    void shouldStopForMissingVerificationCode() {
         // given
         String name = "asldjf";
         Player player = mock(Player.class);
@@ -83,7 +83,7 @@ public class UnregisterCommandTest {
     }
 
     @Test
-    public void shouldForwardDataToAsyncTask() {
+    void shouldForwardDataToAsyncTask() {
         // given
         String password = "p@ssw0rD";
         String name = "jas0n_";
@@ -102,7 +102,7 @@ public class UnregisterCommandTest {
     }
 
     @Test
-    public void shouldStopIfSenderIsNotPlayer() {
+    void shouldStopIfSenderIsNotPlayer() {
         // given
         CommandSender sender = mock(CommandSender.class);
 
@@ -115,7 +115,7 @@ public class UnregisterCommandTest {
     }
 
     @Test
-    public void shouldDefineArgumentMismatchMessage() {
+    void shouldDefineArgumentMismatchMessage() {
         // given / when / then
         assertThat(command.getArgumentsMismatchMessage(), equalTo(MessageKey.USAGE_UNREGISTER));
     }

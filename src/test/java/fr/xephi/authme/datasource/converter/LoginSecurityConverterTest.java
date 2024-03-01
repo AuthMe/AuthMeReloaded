@@ -1,21 +1,20 @@
 package fr.xephi.authme.datasource.converter;
 
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
-import ch.jalu.injector.testing.InjectDelayed;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ConverterSettings;
 import org.bukkit.command.CommandSender;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,11 +25,11 @@ import java.sql.Statement;
 
 import static fr.xephi.authme.AuthMeMatchers.equalToHash;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthLocation;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -39,27 +38,31 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link LoginSecurityConverter}.
  */
-@RunWith(DelayedInjectionRunner.class)
-public class LoginSecurityConverterTest {
+@ExtendWith(MockitoExtension.class)
+class LoginSecurityConverterTest {
 
-    @InjectDelayed
     private LoginSecurityConverter converter;
 
     @Mock
     private DataSource dataSource;
     @Mock
     private Settings settings;
-    @DataFolder
+
     private File dataFolder = new File("."); // not used but required for injection
 
-    @BeforeInjecting
-    public void initMocks() {
+    @BeforeAll
+    static void initLogger() {
         TestHelper.setupLogger();
+    }
+
+    @BeforeEach
+    void setUpConverter() {
         given(settings.getProperty(ConverterSettings.LOGINSECURITY_USE_SQLITE)).willReturn(true);
+        converter = new LoginSecurityConverter(dataFolder, dataSource, settings);
     }
 
     @Test
-    public void shouldConvertFromSqlite() throws SQLException {
+    void shouldConvertFromSqlite() throws SQLException {
         // given
         Connection connection = converter.createSqliteConnection(
             TestHelper.TEST_RESOURCES_FOLDER + TestHelper.PROJECT_ROOT + "datasource/converter/LoginSecurity.db");
@@ -94,7 +97,7 @@ public class LoginSecurityConverterTest {
     // For H2 it looks like Date#getTime returns the millis of the date at 12AM in the system's timezone,
     // so we check with a margin of 12 hours to cover most cases...
     @Test
-    public void shouldConvertFromMySql() throws IOException, SQLException {
+    void shouldConvertFromMySql() throws IOException, SQLException {
         // given
         Connection connection = initializeMySqlTable();
         CommandSender sender = mock(CommandSender.class);

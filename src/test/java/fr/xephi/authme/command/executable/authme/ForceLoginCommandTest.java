@@ -6,11 +6,11 @@ import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -24,8 +24,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link ForceLoginCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class ForceLoginCommandTest {
+@ExtendWith(MockitoExtension.class)
+class ForceLoginCommandTest {
 
     @InjectMocks
     private ForceLoginCommand command;
@@ -40,7 +40,7 @@ public class ForceLoginCommandTest {
     private BukkitService bukkitService;
 
     @Test
-    public void shouldRejectOfflinePlayer() {
+    void shouldRejectOfflinePlayer() {
         // given
         String playerName = "Bobby";
         Player player = mockPlayer(false);
@@ -57,7 +57,7 @@ public class ForceLoginCommandTest {
     }
 
     @Test
-    public void shouldRejectInexistentPlayer() {
+    void shouldRejectInexistentPlayer() {
         // given
         String playerName = "us3rname01";
         given(bukkitService.getPlayerExact(playerName)).willReturn(null);
@@ -73,7 +73,7 @@ public class ForceLoginCommandTest {
     }
 
     @Test
-    public void shouldRejectPlayerWithMissingPermission() {
+    void shouldRejectPlayerWithMissingPermission() {
         // given
         String playerName = "testTest";
         Player player = mockPlayer(true);
@@ -91,7 +91,7 @@ public class ForceLoginCommandTest {
     }
 
     @Test
-    public void shouldForceLoginPlayer() {
+    void shouldForceLoginPlayer() {
         // given
         String playerName = "tester23";
         Player player = mockPlayer(true);
@@ -108,7 +108,7 @@ public class ForceLoginCommandTest {
     }
 
     @Test
-    public void shouldForceLoginSenderSelf() {
+    void shouldForceLoginSenderSelf() {
         // given
         String senderName = "tester23";
         Player player = mockPlayer(true);

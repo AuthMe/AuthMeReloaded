@@ -5,7 +5,6 @@ import fr.xephi.authme.datasource.mysqlextensions.MySqlExtension;
 import fr.xephi.authme.datasource.mysqlextensions.MySqlExtensionsFactory;
 import fr.xephi.authme.settings.Settings;
 
-import java.lang.reflect.Method;
 import java.sql.Connection;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -15,11 +14,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Resource closing test for {@link MySQL}.
  */
-public class MySqlResourceClosingTest extends AbstractSqlDataSourceResourceClosingTest {
-
-    public MySqlResourceClosingTest(Method method, String name) {
-        super(method, name);
-    }
+class MySqlResourceClosingTest extends AbstractSqlDataSourceResourceClosingTest {
 
     @Override
     protected DataSource createDataSource(Settings settings, Connection connection) throws Exception {

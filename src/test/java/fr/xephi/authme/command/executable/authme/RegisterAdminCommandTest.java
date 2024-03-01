@@ -12,21 +12,21 @@ import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.ValidationService.ValidationResult;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Locale;
 
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskOptionallyAsync;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -36,8 +36,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link RegisterAdminCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class RegisterAdminCommandTest {
+@ExtendWith(MockitoExtension.class)
+class RegisterAdminCommandTest {
 
     @InjectMocks
     private RegisterAdminCommand command;
@@ -57,13 +57,13 @@ public class RegisterAdminCommandTest {
     @Mock
     private ValidationService validationService;
 
-    @BeforeClass
-    public static void setUpLogger() {
+    @BeforeAll
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldRejectInvalidPassword() {
+    void shouldRejectInvalidPassword() {
         // given
         String user = "tester";
         String password = "myPassword";
@@ -81,7 +81,7 @@ public class RegisterAdminCommandTest {
     }
 
     @Test
-    public void shouldRejectAlreadyRegisteredAccount() {
+    void shouldRejectAlreadyRegisteredAccount() {
         // given
         String user = "my_name55";
         String password = "@some-pass@";
@@ -100,7 +100,7 @@ public class RegisterAdminCommandTest {
     }
 
     @Test
-    public void shouldHandleSavingError() {
+    void shouldHandleSavingError() {
         // given
         String user = "test-test";
         String password = "afdjhfkt";
@@ -124,7 +124,7 @@ public class RegisterAdminCommandTest {
     }
 
     @Test
-    public void shouldRegisterOfflinePlayer() {
+    void shouldRegisterOfflinePlayer() {
         // given
         String user = "someone";
         String password = "Al1O3P49S5%";
@@ -149,7 +149,7 @@ public class RegisterAdminCommandTest {
     }
 
     @Test
-    public void shouldRegisterOnlinePlayer() {
+    void shouldRegisterOnlinePlayer() {
         // given
         String user = "someone";
         String password = "Al1O3P49S5%";

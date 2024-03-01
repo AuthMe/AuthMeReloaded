@@ -6,13 +6,13 @@ import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,10 +20,10 @@ import java.util.Locale;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Collections.emptyList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
@@ -41,8 +41,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link DebugCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class DebugCommandTest {
+@ExtendWith(MockitoExtension.class)
+class DebugCommandTest {
 
     /**
      * Number we test against if we expect an action to have been performed for each debug section.
@@ -60,9 +60,9 @@ public class DebugCommandTest {
     @Mock
     private PermissionsManager permissionsManager;
 
-    @Before
+    @BeforeEach
     @SuppressWarnings("unchecked")
-    public void initFactory() {
+    void initFactory() {
         given(debugSectionFactory.newInstance(any(Class.class))).willAnswer(
             invocation -> {
                 Class<?> classArgument = invocation.getArgument(0);
@@ -72,7 +72,7 @@ public class DebugCommandTest {
     }
 
     @Test
-    public void shouldListAllAvailableDebugSections() {
+    void shouldListAllAvailableDebugSections() {
         // given
         CommandSender sender = mock(CommandSender.class);
         given(permissionsManager.hasPermission(eq(sender), any(PermissionNode.class))).willReturn(false);
@@ -96,7 +96,7 @@ public class DebugCommandTest {
     }
 
     @Test
-    public void shouldNotListAnyDebugSection() {
+    void shouldNotListAnyDebugSection() {
         // given
         CommandSender sender = mock(CommandSender.class);
         given(permissionsManager.hasPermission(eq(sender), any(PermissionNode.class))).willReturn(false);
@@ -117,7 +117,7 @@ public class DebugCommandTest {
     }
 
     @Test
-    public void shouldRunSection() {
+    void shouldRunSection() {
         // given
         DebugSection section = spy(InputValidator.class);
         doNothing().when(section).execute(any(CommandSender.class), anyList());
@@ -137,7 +137,7 @@ public class DebugCommandTest {
     }
 
     @Test
-    public void shouldNotRunSectionForMissingPermission() {
+    void shouldNotRunSectionForMissingPermission() {
         // given
         DebugSection section = spy(InputValidator.class);
         // Mockito throws a runtime error if below we use the usual "given(factory.newInstance(...)).willReturn(...)"

@@ -1,19 +1,19 @@
 package fr.xephi.authme.util.expiring;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link ExpiringSet}.
  */
-public class ExpiringSetTest {
+class ExpiringSetTest {
 
     @Test
-    public void shouldAddEntry() {
+    void shouldAddEntry() {
         // given
         ExpiringSet<String> set = new ExpiringSet<>(10, TimeUnit.MINUTES);
 
@@ -26,7 +26,7 @@ public class ExpiringSetTest {
     }
 
     @Test
-    public void shouldRemoveEntries() {
+    void shouldRemoveEntries() {
         // given
         ExpiringSet<Integer> set = new ExpiringSet<>(20, TimeUnit.SECONDS);
         set.add(20);
@@ -43,7 +43,7 @@ public class ExpiringSetTest {
     }
 
     @Test
-    public void shouldHandleNewExpirationAndSupportNegativeValues() {
+    void shouldHandleNewExpirationAndSupportNegativeValues() {
         // given
         ExpiringSet<Character> set = new ExpiringSet<>(800, TimeUnit.MILLISECONDS);
         set.add('A');
@@ -58,7 +58,7 @@ public class ExpiringSetTest {
     }
 
     @Test
-    public void shouldClearAllValues() {
+    void shouldClearAllValues() {
         // given
         ExpiringSet<String> set = new ExpiringSet<>(1, TimeUnit.MINUTES);
         set.add("test");
@@ -71,7 +71,7 @@ public class ExpiringSetTest {
     }
 
     @Test
-    public void shouldClearExpiredValues() {
+    void shouldClearExpiredValues() {
         // given
         ExpiringSet<Integer> set = new ExpiringSet<>(2, TimeUnit.HOURS);
         set.add(2);
@@ -90,7 +90,7 @@ public class ExpiringSetTest {
     }
 
     @Test
-    public void shouldReturnExpiration() {
+    void shouldReturnExpiration() {
         // given
         ExpiringSet<String> set = new ExpiringSet<>(123, TimeUnit.MINUTES);
         set.add("my entry");
@@ -105,7 +105,7 @@ public class ExpiringSetTest {
     }
 
     @Test
-    public void shouldReturnExpirationInSuitableUnits() {
+    void shouldReturnExpirationInSuitableUnits() {
         // given
         ExpiringSet<Integer> set = new ExpiringSet<>(601, TimeUnit.SECONDS);
         set.add(12);
@@ -124,7 +124,7 @@ public class ExpiringSetTest {
     }
 
     @Test
-    public void shouldReturnMinusOneForExpiredEntry() {
+    void shouldReturnMinusOneForExpiredEntry() {
         // given
         ExpiringSet<Integer> set = new ExpiringSet<>(-100, TimeUnit.SECONDS);
         set.add(23);

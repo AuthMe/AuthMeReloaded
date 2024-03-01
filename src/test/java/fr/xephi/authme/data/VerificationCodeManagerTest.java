@@ -8,14 +8,14 @@ import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
@@ -25,8 +25,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link VerificationCodeManager}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class VerificationCodeManagerTest {
+@ExtendWith(MockitoExtension.class)
+class VerificationCodeManagerTest {
 
     @Mock
     private Settings settings;
@@ -40,15 +40,15 @@ public class VerificationCodeManagerTest {
     @Mock
     private PermissionsManager permissionsManager;
 
-    @Before
-    public void setUpBasicBehavior() {
-        given(emailService.hasAllInformation()).willReturn(true);
+    @BeforeEach
+    void setUpBasicBehavior() {
         given(settings.getProperty(SecuritySettings.VERIFICATION_CODE_EXPIRATION_MINUTES)).willReturn(1);
     }
 
     @Test
-    public void shouldRequireVerification() {
+    void shouldRequireVerification() {
         // given
+        given(emailService.hasAllInformation()).willReturn(true);
         String name1 = "ILoveTests";
         Player player1 = mockPlayerWithName(name1);
         given(dataSource.getEmail(name1)).willReturn(DataSourceValueImpl.of("ilovetests@test.com"));
@@ -71,7 +71,7 @@ public class VerificationCodeManagerTest {
     }
 
     @Test
-    public void shouldNotRequireVerificationIfEmailSettingsAreIncomplete() {
+    void shouldNotRequireVerificationIfEmailSettingsAreIncomplete() {
         // given
         given(emailService.hasAllInformation()).willReturn(false);
         VerificationCodeManager codeManager = createCodeManager();
@@ -86,8 +86,9 @@ public class VerificationCodeManagerTest {
     }
 
     @Test
-    public void shouldNotRequireVerificationForMissingPermission() {
+    void shouldNotRequireVerificationForMissingPermission() {
         // given
+        given(emailService.hasAllInformation()).willReturn(true);
         Player player = mockPlayerWithName("ILoveTests");
         given(permissionsManager.hasPermission(player, PlayerPermission.VERIFICATION_CODE)).willReturn(false);
         VerificationCodeManager codeManager = createCodeManager();
@@ -102,8 +103,9 @@ public class VerificationCodeManagerTest {
     }
 
     @Test
-    public void shouldGenerateCode() {
+    void shouldGenerateCode() {
         // given
+        given(emailService.hasAllInformation()).willReturn(true);
         String player = "ILoveTests";
         String email = "ilovetests@test.com";
         given(dataSource.getEmail(player)).willReturn(DataSourceValueImpl.of(email));
@@ -121,8 +123,9 @@ public class VerificationCodeManagerTest {
     }
 
     @Test
-    public void shouldRequireCode() {
+    void shouldRequireCode() {
         // given
+        given(emailService.hasAllInformation()).willReturn(true);
         String player = "ILoveTests";
         String email = "ilovetests@test.com";
         given(dataSource.getEmail(player)).willReturn(DataSourceValueImpl.of(email));
@@ -140,8 +143,9 @@ public class VerificationCodeManagerTest {
     }
 
     @Test
-    public void shouldVerifyCode() {
+    void shouldVerifyCode() {
         // given
+        given(emailService.hasAllInformation()).willReturn(true);
         String player = "ILoveTests";
         String code = "193458";
         String email = "ilovetests@test.com";

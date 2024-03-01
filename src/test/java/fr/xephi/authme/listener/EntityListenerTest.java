@@ -12,15 +12,15 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.projectiles.ProjectileSource;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static fr.xephi.authme.listener.EventCancelVerifier.withServiceMock;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -32,8 +32,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link EntityListener}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class EntityListenerTest {
+@ExtendWith(MockitoExtension.class)
+class EntityListenerTest {
 
     @InjectMocks
     private EntityListener listener;
@@ -42,7 +42,7 @@ public class EntityListenerTest {
     private ListenerService listenerService;
 
     @Test
-    public void shouldHandleSimpleEvents() {
+    void shouldHandleSimpleEvents() {
         withServiceMock(listenerService)
             .check(listener::onFoodLevelChange, FoodLevelChangeEvent.class)
             .check(listener::onShoot, EntityShootBowEvent.class)
@@ -51,7 +51,7 @@ public class EntityListenerTest {
     }
 
     @Test
-    public void shouldCancelRegainHealthEvent() {
+    void shouldCancelRegainHealthEvent() {
         // given
         EntityRegainHealthEvent event = mock(EntityRegainHealthEvent.class);
         given(listenerService.shouldCancelEvent(event)).willReturn(true);
@@ -66,7 +66,7 @@ public class EntityListenerTest {
     }
 
     @Test
-    public void shouldNotCancelRegainedHealth() {
+    void shouldNotCancelRegainedHealth() {
         // given
         EntityRegainHealthEvent event = mock(EntityRegainHealthEvent.class);
         given(listenerService.shouldCancelEvent(event)).willReturn(false);
@@ -80,7 +80,7 @@ public class EntityListenerTest {
     }
 
     @Test
-    public void shouldCancelEntityDamageByEntityEvent() {
+    void shouldCancelEntityDamageByEntityEvent() {
         // given
         EntityDamageByEntityEvent event = mock(EntityDamageByEntityEvent.class);
         Entity player = mock(Player.class);
@@ -96,7 +96,7 @@ public class EntityListenerTest {
     }
 
     @Test
-    public void shouldNotCancelEntityDamageByEntityEvent() {
+    void shouldNotCancelEntityDamageByEntityEvent() {
         // given
         EntityDamageByEntityEvent event = mock(EntityDamageByEntityEvent.class);
         Entity player = mock(Player.class);
@@ -112,7 +112,7 @@ public class EntityListenerTest {
     }
 
     @Test
-    public void shouldCancelEntityDamageEvent() {
+    void shouldCancelEntityDamageEvent() {
         // given
         EntityDamageEvent event = mock(EntityDamageEvent.class);
         Entity entity = mock(Entity.class);
@@ -130,7 +130,7 @@ public class EntityListenerTest {
     }
 
     @Test
-    public void shouldNotCancelEntityDamageEvent() {
+    void shouldNotCancelEntityDamageEvent() {
         // given
         EntityDamageEvent event = mock(EntityDamageEvent.class);
         given(listenerService.shouldCancelEvent(event)).willReturn(false);
@@ -144,7 +144,7 @@ public class EntityListenerTest {
     }
 
     @Test
-    public void shouldAllowProjectileLaunchFromNonHuman() {
+    void shouldAllowProjectileLaunchFromNonHuman() {
         // given
         Projectile projectile = mock(Projectile.class);
         ProjectileSource source = mock(ProjectileSource.class);
@@ -161,7 +161,7 @@ public class EntityListenerTest {
     }
 
     @Test
-    public void shouldAllowProjectileLaunchFromAuthedHuman() {
+    void shouldAllowProjectileLaunchFromAuthedHuman() {
         // given
         Projectile projectile = mock(Projectile.class);
         Player player = mock(Player.class);
@@ -179,7 +179,7 @@ public class EntityListenerTest {
     }
 
     @Test
-    public void shouldRejectProjectileLaunchFromUnauthed() {
+    void shouldRejectProjectileLaunchFromUnauthed() {
         // given
         Projectile projectile = mock(Projectile.class);
         Player player = mock(Player.class);
@@ -197,7 +197,7 @@ public class EntityListenerTest {
     }
 
     @Test
-    public void shouldHandleOldShooterMethod() {
+    void shouldHandleOldShooterMethod() {
         // given
         Projectile projectile = mock(Projectile.class);
         Player shooter = mock(Player.class);
@@ -214,7 +214,7 @@ public class EntityListenerTest {
     }
 
     @Test
-    public void shouldCancelEntityTargetEvent() {
+    void shouldCancelEntityTargetEvent() {
         // given
         EntityTargetEvent event = mock(EntityTargetEvent.class);
         Entity target = mock(Entity.class);
@@ -230,7 +230,7 @@ public class EntityListenerTest {
     }
 
     @Test
-    public void shouldNotCancelEntityTargetEvent() {
+    void shouldNotCancelEntityTargetEvent() {
         // given
         EntityTargetEvent event = mock(EntityTargetEvent.class);
         Entity target = mock(Entity.class);

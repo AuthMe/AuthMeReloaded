@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.mockito.Mockito;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
@@ -117,5 +118,22 @@ public final class TestHelper {
     public static void returnDefaultsForAllProperties(Settings settings) {
         given(settings.getProperty(any(Property.class)))
             .willAnswer(invocation -> ((Property<?>) invocation.getArgument(0)).getDefaultValue());
+    }
+
+    /**
+     * Creates a file with the given name in the provided folder. Throws an exception if the file
+     * could not be created.
+     *
+     * @param folder the folder to create the file in
+     * @param filename the name of the file to create
+     * @return the created file
+     */
+    public static File createFile(File folder, String filename) throws IOException {
+        File file = new File(folder, filename);
+        boolean created = file.createNewFile();
+        if (!created) {
+            throw new IllegalStateException("Could not create file '" + filename + "' in " + folder);
+        }
+        return file;
     }
 }

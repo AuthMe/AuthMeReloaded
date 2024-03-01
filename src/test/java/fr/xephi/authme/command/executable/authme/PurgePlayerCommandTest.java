@@ -5,11 +5,11 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.task.purge.PurgeExecutor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Locale;
 
@@ -27,8 +27,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link PurgePlayerCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class PurgePlayerCommandTest {
+@ExtendWith(MockitoExtension.class)
+class PurgePlayerCommandTest {
 
     @InjectMocks
     private PurgePlayerCommand command;
@@ -43,7 +43,7 @@ public class PurgePlayerCommandTest {
     private DataSource dataSource;
 
     @Test
-    public void shouldNotExecutePurgeForRegisteredPlayer() {
+    void shouldNotExecutePurgeForRegisteredPlayer() {
         // given
         String name = "Bobby";
         given(dataSource.isAuthAvailable(name)).willReturn(true);
@@ -59,7 +59,7 @@ public class PurgePlayerCommandTest {
     }
 
     @Test
-    public void shouldExecutePurge() {
+    void shouldExecutePurge() {
         // given
         String name = "Frank";
         given(dataSource.isAuthAvailable(name)).willReturn(false);
@@ -77,7 +77,7 @@ public class PurgePlayerCommandTest {
     }
 
     @Test
-    public void shouldExecutePurgeOfRegisteredPlayer() {
+    void shouldExecutePurgeOfRegisteredPlayer() {
         // given
         String name = "GhiJKlmn7";
         OfflinePlayer player = mock(OfflinePlayer.class);

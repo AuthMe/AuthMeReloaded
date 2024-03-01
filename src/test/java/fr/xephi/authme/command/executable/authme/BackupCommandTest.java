@@ -2,11 +2,11 @@ package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.service.BackupService;
 import org.bukkit.command.CommandSender;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -16,8 +16,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link BackupCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class BackupCommandTest {
+@ExtendWith(MockitoExtension.class)
+class BackupCommandTest {
 
     @InjectMocks
     private BackupCommand command;
@@ -26,7 +26,7 @@ public class BackupCommandTest {
     private BackupService backupService;
 
     @Test
-    public void shouldStartBackup() {
+    void shouldStartBackup() {
         // given
         CommandSender sender = mock(CommandSender.class);
 

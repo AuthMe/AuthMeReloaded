@@ -4,22 +4,22 @@ import fr.xephi.authme.util.lazytags.TagReplacerTest.TestTagService;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link WrappedTagReplacer}.
  */
-public class WrappedTagReplacerTest {
+class WrappedTagReplacerTest {
 
     @Test
-    public void shouldApplyTags() {
+    void shouldApplyTags() {
         // given
         TestTagService tagService = new TestTagService();
         List<Tag<Integer>> tags = tagService.getAvailableTags();

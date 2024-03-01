@@ -8,12 +8,12 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.command.CommandSender;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -22,9 +22,9 @@ import java.util.Map;
 import java.util.Set;
 
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskAsynchronously;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -37,8 +37,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link ConverterCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class ConverterCommandTest {
+@ExtendWith(MockitoExtension.class)
+class ConverterCommandTest {
 
     @InjectMocks
     private ConverterCommand command;
@@ -52,13 +52,13 @@ public class ConverterCommandTest {
     @Mock
     private Factory<Converter> converterFactory;
 
-    @BeforeClass
-    public static void initLogger() {
+    @BeforeAll
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldHandleUnknownConversionType() {
+    void shouldHandleUnknownConversionType() {
         // given
         CommandSender sender = mock(CommandSender.class);
 
@@ -72,7 +72,7 @@ public class ConverterCommandTest {
     }
 
     @Test
-    public void shouldHandleCommandWithNoArgs() {
+    void shouldHandleCommandWithNoArgs() {
         // given
         CommandSender sender = mock(CommandSender.class);
 
@@ -86,7 +86,7 @@ public class ConverterCommandTest {
     }
 
     @Test
-    public void shouldHaveUniqueClassForEachConverter() {
+    void shouldHaveUniqueClassForEachConverter() {
         // given
         Set<Class<? extends Converter>> classes = new HashSet<>();
 
@@ -101,7 +101,7 @@ public class ConverterCommandTest {
     }
 
     @Test
-    public void shouldLaunchConverterForAllTypes() {
+    void shouldLaunchConverterForAllTypes() {
         // given
         String converterName = "rakamak";
         Class<? extends Converter> converterClass = ConverterCommand.CONVERTERS.get(converterName);
@@ -120,7 +120,7 @@ public class ConverterCommandTest {
     }
 
     @Test
-    public void shouldCatchExceptionInConverterAndInformSender() {
+    void shouldCatchExceptionInConverterAndInformSender() {
         // given
         String converterName = "vauth";
         Class<? extends Converter> converterClass = ConverterCommand.CONVERTERS.get(converterName);

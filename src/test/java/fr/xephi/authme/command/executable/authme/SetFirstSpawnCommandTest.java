@@ -3,11 +3,11 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.settings.SpawnLoader;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -20,8 +20,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link SetFirstSpawnCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class SetFirstSpawnCommandTest {
+@ExtendWith(MockitoExtension.class)
+class SetFirstSpawnCommandTest {
 
     @InjectMocks
     private SetFirstSpawnCommand command;
@@ -31,7 +31,7 @@ public class SetFirstSpawnCommandTest {
 
 
     @Test
-    public void shouldSetFirstSpawn() {
+    void shouldSetFirstSpawn() {
         // given
         Player player = mock(Player.class);
         Location location = mock(Location.class);
@@ -47,7 +47,7 @@ public class SetFirstSpawnCommandTest {
     }
 
     @Test
-    public void shouldHandleError() {
+    void shouldHandleError() {
         // given
         Player player = mock(Player.class);
         Location location = mock(Location.class);

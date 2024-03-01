@@ -14,15 +14,16 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
@@ -34,8 +35,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link BukkitService}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class BukkitServiceTest {
+@ExtendWith(MockitoExtension.class)
+class BukkitServiceTest {
 
     private BukkitService bukkitService;
 
@@ -47,20 +48,121 @@ public class BukkitServiceTest {
     private Server server;
     @Mock
     private BukkitScheduler scheduler;
-    @Mock
-    private PluginManager pluginManager;
 
-    @Before
-    public void constructBukkitService() {
+    @BeforeEach
+    void constructBukkitService() {
         ReflectionTestUtils.setField(Bukkit.class, null, "server", server);
-        given(server.getScheduler()).willReturn(scheduler);
-        given(server.getPluginManager()).willReturn(pluginManager);
         given(settings.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(true);
         bukkitService = new BukkitService(authMe, settings);
     }
+    
+    @Nested
+    class SchedulerFunctionalityTests {
+        
+        @BeforeEach
+        void setUpScheduler() {
+            given(server.getScheduler()).willReturn(scheduler);
+        }
+
+        @Test
+        void shouldScheduleSyncDelayedTask() {
+            // given
+            Runnable task = () -> {/* noop */};
+            given(scheduler.scheduleSyncDelayedTask(authMe, task)).willReturn(123);
+
+            // when
+            int taskId = bukkitService.scheduleSyncDelayedTask(task);
+
+            // then
+            verify(scheduler, only()).scheduleSyncDelayedTask(authMe, task);
+            assertThat(taskId, equalTo(123));
+        }
+
+        @Test
+        void shouldScheduleSyncDelayedTaskWithDelay() {
+            // given
+            Runnable task = () -> {/* noop */};
+            int delay = 3;
+            given(scheduler.scheduleSyncDelayedTask(authMe, task, delay)).willReturn(44);
+
+            // when
+            int taskId = bukkitService.scheduleSyncDelayedTask(task, delay);
+
+            // then
+            verify(scheduler, only()).scheduleSyncDelayedTask(authMe, task, delay);
+            assertThat(taskId, equalTo(44));
+        }
+
+
+        @Test
+        void shouldRunTask() {
+            // given
+            Runnable task = () -> {/* noop */};
+            BukkitTask bukkitTask = mock(BukkitTask.class);
+            given(scheduler.runTask(authMe, task)).willReturn(bukkitTask);
+
+            // when
+            BukkitTask resultingTask = bukkitService.runTask(task);
+
+            // then
+            assertThat(resultingTask, equalTo(bukkitTask));
+            verify(scheduler, only()).runTask(authMe, task);
+        }
+
+        @Test
+        void shouldRunTaskLater() {
+            // given
+            Runnable task = () -> {/* noop */};
+            BukkitTask bukkitTask = mock(BukkitTask.class);
+            long delay = 400;
+            given(scheduler.runTaskLater(authMe, task, delay)).willReturn(bukkitTask);
+
+            // when
+            BukkitTask resultingTask = bukkitService.runTaskLater(task, delay);
+
+            // then
+            assertThat(resultingTask, equalTo(bukkitTask));
+            verify(scheduler, only()).runTaskLater(authMe, task, delay);
+        }
+
+        @Test
+        void shouldRunTaskAsynchronously() {
+            // given
+            Runnable task = () -> {/* noop */};
+            BukkitTask bukkitTask = mock(BukkitTask.class);
+            given(scheduler.runTaskAsynchronously(authMe, task)).willReturn(bukkitTask);
+
+            // when
+            BukkitTask resultingTask = bukkitService.runTaskAsynchronously(task);
+
+            // then
+            assertThat(resultingTask, equalTo(bukkitTask));
+            verify(scheduler, only()).runTaskAsynchronously(authMe, task);
+        }
+
+        @Test
+        void shouldRunTaskTimerAsynchronously() {
+            // given
+            BukkitRunnable task = new BukkitRunnable() {
+                @Override
+                public void run() {
+                }
+            };
+            long delay = 20L;
+            long period = 4000L;
+            BukkitTask bukkitTask = mock(BukkitTask.class);
+            given(task.runTaskTimerAsynchronously(authMe, delay, period)).willReturn(bukkitTask);
+
+            // when
+            BukkitTask resultingTask = bukkitService.runTaskTimerAsynchronously(task, delay, period);
+
+            // then
+            assertThat(resultingTask, equalTo(bukkitTask));
+        }
+    }
 
     @Test
-    public void shouldDispatchCommand() {
+    void shouldDispatchCommand() {
         // given
         CommandSender sender = mock(CommandSender.class);
         String command = "help test abc";
@@ -73,7 +175,7 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldDispatchConsoleCommand() {
+    void shouldDispatchConsoleCommand() {
         // given
         ConsoleCommandSender consoleSender = mock(ConsoleCommandSender.class);
         given(server.getConsoleSender()).willReturn(consoleSender);
@@ -87,36 +189,7 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldScheduleSyncDelayedTask() {
-        // given
-        Runnable task = () -> {/* noop */};
-        given(scheduler.scheduleSyncDelayedTask(authMe, task)).willReturn(123);
-
-        // when
-        int taskId = bukkitService.scheduleSyncDelayedTask(task);
-
-        // then
-        verify(scheduler, only()).scheduleSyncDelayedTask(authMe, task);
-        assertThat(taskId, equalTo(123));
-    }
-
-    @Test
-    public void shouldScheduleSyncDelayedTaskWithDelay() {
-        // given
-        Runnable task = () -> {/* noop */};
-        int delay = 3;
-        given(scheduler.scheduleSyncDelayedTask(authMe, task, delay)).willReturn(44);
-
-        // when
-        int taskId = bukkitService.scheduleSyncDelayedTask(task, delay);
-
-        // then
-        verify(scheduler, only()).scheduleSyncDelayedTask(authMe, task, delay);
-        assertThat(taskId, equalTo(44));
-    }
-
-    @Test
-    public void shouldScheduleSyncTask() {
+    void shouldScheduleSyncTask() {
         // given
         BukkitService spy = Mockito.spy(bukkitService);
         doReturn(1).when(spy).scheduleSyncDelayedTask(any(Runnable.class));
@@ -131,7 +204,7 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldRunTaskDirectly() {
+    void shouldRunTaskDirectly() {
         // given
         given(server.isPrimaryThread()).willReturn(true);
         bukkitService.reload(settings);
@@ -147,38 +220,7 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldRunTask() {
-        // given
-        Runnable task = () -> {/* noop */};
-        BukkitTask bukkitTask = mock(BukkitTask.class);
-        given(scheduler.runTask(authMe, task)).willReturn(bukkitTask);
-
-        // when
-        BukkitTask resultingTask = bukkitService.runTask(task);
-
-        // then
-        assertThat(resultingTask, equalTo(bukkitTask));
-        verify(scheduler, only()).runTask(authMe, task);
-    }
-
-    @Test
-    public void shouldRunTaskLater() {
-        // given
-        Runnable task = () -> {/* noop */};
-        BukkitTask bukkitTask = mock(BukkitTask.class);
-        long delay = 400;
-        given(scheduler.runTaskLater(authMe, task, delay)).willReturn(bukkitTask);
-
-        // when
-        BukkitTask resultingTask = bukkitService.runTaskLater(task, delay);
-
-        // then
-        assertThat(resultingTask, equalTo(bukkitTask));
-        verify(scheduler, only()).runTaskLater(authMe, task, delay);
-    }
-
-    @Test
-    public void shouldRunTaskInAsync() {
+    void shouldRunTaskInAsync() {
         // given
         Runnable task = mock(Runnable.class);
         BukkitService spy = Mockito.spy(bukkitService);
@@ -193,7 +235,7 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldRunTaskDirectlyIfConfigured() {
+    void shouldRunTaskDirectlyIfConfigured() {
         // given
         given(settings.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(false);
         bukkitService.reload(settings);
@@ -208,43 +250,12 @@ public class BukkitServiceTest {
         verify(spy, only()).runTaskOptionallyAsync(task);
     }
 
-    @Test
-    public void shouldRunTaskAsynchronously() {
-        // given
-        Runnable task = () -> {/* noop */};
-        BukkitTask bukkitTask = mock(BukkitTask.class);
-        given(scheduler.runTaskAsynchronously(authMe, task)).willReturn(bukkitTask);
 
-        // when
-        BukkitTask resultingTask = bukkitService.runTaskAsynchronously(task);
 
-        // then
-        assertThat(resultingTask, equalTo(bukkitTask));
-        verify(scheduler, only()).runTaskAsynchronously(authMe, task);
-    }
+
 
     @Test
-    public void shouldRunTaskTimerAsynchronously() {
-        // given
-        BukkitRunnable task = new BukkitRunnable() {
-            @Override
-            public void run() {
-            }
-        };
-        long delay = 20L;
-        long period = 4000L;
-        BukkitTask bukkitTask = mock(BukkitTask.class);
-        given(task.runTaskTimerAsynchronously(authMe, delay, period)).willReturn(bukkitTask);
-
-        // when
-        BukkitTask resultingTask = bukkitService.runTaskTimerAsynchronously(task, delay, period);
-
-        // then
-        assertThat(resultingTask, equalTo(bukkitTask));
-    }
-
-    @Test
-    public void shouldRunTaskTimer() {
+    void shouldRunTaskTimer() {
         // given
         BukkitRunnable bukkitRunnable = mock(BukkitRunnable.class);
         long delay = 20;
@@ -261,7 +272,7 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldBroadcastMessage() {
+    void shouldBroadcastMessage() {
         // given
         String message = "Important message to all";
         given(server.broadcastMessage(message)).willReturn(24);
@@ -275,11 +286,13 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldCreateAndEmitSyncEvent() {
+    void shouldCreateAndEmitSyncEvent() {
         // given
         given(settings.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(false);
         bukkitService.reload(settings);
         Player player = mock(Player.class);
+        PluginManager pluginManager = mock(PluginManager.class);
+        given(server.getPluginManager()).willReturn(pluginManager);
 
         // when
         FailedLoginEvent event = bukkitService.createAndCallEvent(isAsync -> new FailedLoginEvent(player, isAsync));
@@ -291,9 +304,11 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldCreateAndEmitAsyncEvent() {
+    void shouldCreateAndEmitAsyncEvent() {
         // given
         Player player = mock(Player.class);
+        PluginManager pluginManager = mock(PluginManager.class);
+        given(server.getPluginManager()).willReturn(pluginManager);
 
         // when
         FailedLoginEvent event = bukkitService.createAndCallEvent(isAsync -> new FailedLoginEvent(player, isAsync));
@@ -305,7 +320,7 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldReturnServerIp() {
+    void shouldReturnServerIp() {
         // given
         String ip = "99.99.99.99";
         given(server.getIp()).willReturn(ip);

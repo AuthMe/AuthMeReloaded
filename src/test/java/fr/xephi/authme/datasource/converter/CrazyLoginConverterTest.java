@@ -1,27 +1,26 @@
 package fr.xephi.authme.datasource.converter;
 
-import ch.jalu.injector.testing.DelayedInjectionRunner;
-import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ConverterSettings;
 import org.bukkit.command.CommandSender;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.util.List;
 
 import static fr.xephi.authme.AuthMeMatchers.equalToHash;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -32,10 +31,9 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link CrazyLoginConverter}.
  */
-@RunWith(DelayedInjectionRunner.class)
-public class CrazyLoginConverterTest {
+@ExtendWith(MockitoExtension.class)
+class CrazyLoginConverterTest {
 
-    @InjectDelayed
     private CrazyLoginConverter crazyLoginConverter;
 
     @Mock
@@ -44,16 +42,20 @@ public class CrazyLoginConverterTest {
     @Mock
     private Settings settings;
 
-    @DataFolder
     private File dataFolder = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "/datasource/converter/");
 
-    @BeforeClass
-    public static void initializeLogger() {
+    @BeforeAll
+    static void initializeLogger() {
         TestHelper.setupLogger();
     }
 
+    @BeforeEach
+    void initConverter() {
+        crazyLoginConverter = new CrazyLoginConverter(dataFolder, dataSource, settings);
+    }
+
     @Test
-    public void shouldImportUsers() {
+    void shouldImportUsers() {
         // given
         given(settings.getProperty(ConverterSettings.CRAZYLOGIN_FILE_NAME)).willReturn("crazylogin.db");
         CommandSender sender = mock(CommandSender.class);
@@ -72,7 +74,7 @@ public class CrazyLoginConverterTest {
     }
 
     @Test
-    public void shouldStopForNonExistentFile() {
+    void shouldStopForNonExistentFile() {
         // given
         given(settings.getProperty(ConverterSettings.CRAZYLOGIN_FILE_NAME)).willReturn("invalid-file");
         CommandSender sender = mock(CommandSender.class);

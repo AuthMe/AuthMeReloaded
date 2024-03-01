@@ -1,18 +1,19 @@
 package fr.xephi.authme.datasource;
 
 import fr.xephi.authme.TestHelper;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -21,17 +22,17 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link SqlDataSourceUtils}.
  */
-public class SqlDataSourceUtilsTest {
+class SqlDataSourceUtilsTest {
 
     private Logger logger;
 
-    @Before
-    public void initLogger() {
+    @BeforeEach
+    void initLogger() {
         logger = TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldLogException() {
+    void shouldLogException() {
         // given
         String msg = "Hocus pocus did not work";
         SQLException ex = new SQLException(msg);
@@ -44,7 +45,7 @@ public class SqlDataSourceUtilsTest {
     }
 
     @Test
-    public void shouldFetchNullableStatus() throws SQLException {
+    void shouldFetchNullableStatus() throws SQLException {
         // given
         String tableName = "data";
         String columnName = "category";
@@ -62,7 +63,7 @@ public class SqlDataSourceUtilsTest {
     }
 
     @Test
-    public void shouldReturnFalseForUnknownNullableStatus() throws SQLException {
+    void shouldReturnFalseForUnknownNullableStatus() throws SQLException {
         // given
         String tableName = "comments";
         String columnName = "author";
@@ -79,8 +80,8 @@ public class SqlDataSourceUtilsTest {
         assertThat(result, equalTo(false));
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowForUnknownColumnInNullableCheck() throws SQLException {
+    @Test
+    void shouldThrowForUnknownColumnInNullableCheck() throws SQLException {
         // given
         String tableName = "data";
         String columnName = "unknown";
@@ -89,14 +90,13 @@ public class SqlDataSourceUtilsTest {
         DatabaseMetaData metaData = mock(DatabaseMetaData.class);
         given(metaData.getColumns(null, null, tableName, columnName)).willReturn(resultSet);
 
-        // when
-        SqlDataSourceUtils.isNotNullColumn(metaData, tableName, columnName);
-
-        // then - expect exception
+        // when / then
+        assertThrows(IllegalStateException.class,
+            () -> SqlDataSourceUtils.isNotNullColumn(metaData, tableName, columnName));
     }
 
     @Test
-    public void shouldGetDefaultValue() throws SQLException {
+    void shouldGetDefaultValue() throws SQLException {
         // given
         String tableName = "data";
         String columnName = "category";
@@ -113,8 +113,8 @@ public class SqlDataSourceUtilsTest {
         assertThat(defaultValue, equalTo("Literature"));
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowForUnknownColumnInDefaultValueRetrieval() throws SQLException {
+    @Test
+    void shouldThrowForUnknownColumnInDefaultValueRetrieval() throws SQLException {
         // given
         String tableName = "data";
         String columnName = "unknown";
@@ -123,14 +123,13 @@ public class SqlDataSourceUtilsTest {
         DatabaseMetaData metaData = mock(DatabaseMetaData.class);
         given(metaData.getColumns(null, null, tableName, columnName)).willReturn(resultSet);
 
-        // when
-        SqlDataSourceUtils.getColumnDefaultValue(metaData, tableName, columnName);
-
-        // then - expect exception
+        // when / then
+        assertThrows(IllegalStateException.class,
+            () -> SqlDataSourceUtils.getColumnDefaultValue(metaData, tableName, columnName));
     }
 
     @Test
-    public void shouldHandleNullDefaultValue() throws SQLException {
+    void shouldHandleNullDefaultValue() throws SQLException {
         // given
         String tableName = "data";
         String columnName = "category";

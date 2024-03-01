@@ -1,11 +1,8 @@
 package fr.xephi.authme.settings;
 
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
-import ch.jalu.injector.testing.InjectDelayed;
+import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerCache;
-import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.GeoIpService;
@@ -14,11 +11,13 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,10 +25,10 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -37,10 +36,10 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link WelcomeMessageConfiguration}.
  */
-@RunWith(DelayedInjectionRunner.class)
-public class WelcomeMessageConfigurationTest {
+@ExtendWith(MockitoExtension.class)
+class WelcomeMessageConfigurationTest {
 
-    @InjectDelayed
+    @InjectMocks
     private WelcomeMessageConfiguration welcomeMessageConfiguration;
     @Mock
     private Server server;
@@ -52,24 +51,21 @@ public class WelcomeMessageConfigurationTest {
     private PlayerCache playerCache;
     @Mock
     private CommonService service;
-    @DataFolder
-    private File testPluginFolder;
+    @TempDir
+    File testPluginFolder;
 
     private File welcomeFile;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    @BeforeInjecting
-    public void createPluginFolder() throws IOException {
-        testPluginFolder = temporaryFolder.newFolder();
+    @BeforeEach
+    void createWelcomeFileAndSetPluginFolder() throws IOException {
         welcomeFile = new File(testPluginFolder, "welcome.txt");
         welcomeFile.createNewFile();
         given(service.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)).willReturn(true);
+        ReflectionTestUtils.setField(welcomeMessageConfiguration, "pluginFolder", testPluginFolder);
     }
 
     @Test
-    public void shouldLoadWelcomeMessage() {
+    void shouldLoadWelcomeMessage() {
         // given
         String welcomeMessage = "This is my welcome message for testing\nBye!";
         setWelcomeMessageAndReload(welcomeMessage);
@@ -85,7 +81,7 @@ public class WelcomeMessageConfigurationTest {
     }
 
     @Test
-    public void shouldReplaceNameAndIpAndCountry() {
+    void shouldReplaceNameAndIpAndCountry() {
         // given
         String welcomeMessage = "Hello {PLAYER}, your IP is {IP}\nYour country is {COUNTRY}.\nWelcome to {SERVER}!";
         setWelcomeMessageAndReload(welcomeMessage);
@@ -108,7 +104,7 @@ public class WelcomeMessageConfigurationTest {
     }
 
     @Test
-    public void shouldApplyOtherReplacements() {
+    void shouldApplyOtherReplacements() {
         // given
         String welcomeMessage = "{ONLINE}/{MAXPLAYERS} online\n{LOGINS} logged in\nYour world is {WORLD}\nServer: {VERSION}";
         setWelcomeMessageAndReload(welcomeMessage);

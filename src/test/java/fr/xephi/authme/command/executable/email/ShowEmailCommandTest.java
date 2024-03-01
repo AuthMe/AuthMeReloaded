@@ -6,11 +6,11 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -21,8 +21,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link ShowEmailCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class ShowEmailCommandTest {
+@ExtendWith(MockitoExtension.class)
+class ShowEmailCommandTest {
 
     private static final String CURRENT_EMAIL = "my.email@example.com";
     private static final String USERNAME = "name";
@@ -37,7 +37,7 @@ public class ShowEmailCommandTest {
     private PlayerCache playerCache;
 
     @Test
-    public void shouldShowCurrentEmailMessage() {
+    void shouldShowCurrentEmailMessage() {
         // given
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(USERNAME);
@@ -52,7 +52,7 @@ public class ShowEmailCommandTest {
     }
 
     @Test
-    public void shouldShowHiddenEmailMessage() {
+    void shouldShowHiddenEmailMessage() {
         // given
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(USERNAME);
@@ -67,7 +67,7 @@ public class ShowEmailCommandTest {
     }
 
     @Test
-    public void shouldReturnNoEmailMessage() {
+    void shouldReturnNoEmailMessage() {
         // given
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(USERNAME);
