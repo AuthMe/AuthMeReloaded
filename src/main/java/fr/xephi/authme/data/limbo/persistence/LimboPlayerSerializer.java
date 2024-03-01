@@ -31,6 +31,7 @@ class LimboPlayerSerializer implements JsonSerializer<LimboPlayer> {
     static final String CAN_FLY = "can-fly";
     static final String WALK_SPEED = "walk-speed";
     static final String FLY_SPEED = "fly-speed";
+    static final String GAMEMODE = "gamemode";
 
     private static final Gson GSON = new Gson();
 
@@ -66,6 +67,7 @@ class LimboPlayerSerializer implements JsonSerializer<LimboPlayer> {
         obj.addProperty(CAN_FLY, limboPlayer.isCanFly());
         obj.addProperty(WALK_SPEED, limboPlayer.getWalkSpeed());
         obj.addProperty(FLY_SPEED, limboPlayer.getFlySpeed());
+        obj.addProperty(GAMEMODE, limboPlayer.getGameMode().getValue());
         return obj;
     }
 }

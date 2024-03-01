@@ -119,6 +119,7 @@ public class LimboService {
             logger.debug("No LimboPlayer found for `{0}` - cannot restore", lowerName);
         } else {
             player.setOp(limbo.isOperator());
+            player.setGameMode(limbo.getGameMode());
             settings.getProperty(RESTORE_ALLOW_FLIGHT).restoreAllowFlight(player, limbo);
             settings.getProperty(RESTORE_FLY_SPEED).restoreFlySpeed(player, limbo);
             settings.getProperty(RESTORE_WALK_SPEED).restoreWalkSpeed(player, limbo);

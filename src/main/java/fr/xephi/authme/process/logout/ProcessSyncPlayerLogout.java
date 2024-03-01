@@ -9,6 +9,7 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.SpectateLoginService;
 import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -44,6 +45,9 @@ public class ProcessSyncPlayerLogout implements SynchronousProcess {
     @Inject
     private CommandManager commandManager;
 
+    @Inject
+    private SpectateLoginService spectateLoginService;
+
     ProcessSyncPlayerLogout() {
     }
 
@@ -65,6 +69,10 @@ public class ProcessSyncPlayerLogout implements SynchronousProcess {
 
         service.send(player, MessageKey.LOGOUT_SUCCESS);
         logger.info(player.getName() + " logged out");
+
+        if (service.getProperty(RestrictionSettings.SPECTATE_STAND_LOGIN)) {
+            spectateLoginService.createStand(player);
+        }
     }
 
     private void applyLogoutEffect(Player player) {

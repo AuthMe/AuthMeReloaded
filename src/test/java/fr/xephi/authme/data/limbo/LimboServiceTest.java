@@ -243,7 +243,7 @@ public class LimboServiceTest {
 
     private static LimboPlayer convertToLimboPlayer(Player player, Location location, Collection<UserGroup> groups) {
         return new LimboPlayer(location, player.isOp(), groups, player.getAllowFlight(),
-            player.getWalkSpeed(), player.getFlySpeed());
+            player.getWalkSpeed(), player.getFlySpeed(), player.getGameMode());
     }
 
     private Map<String, LimboPlayer> getLimboMap() {
