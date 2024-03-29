@@ -10,7 +10,7 @@ import static fr.xephi.authme.process.register.executors.PlayerAuthBuilderHelper
 class PasswordRegisterExecutor extends AbstractPasswordRegisterExecutor<PasswordRegisterParams> {
 
     @Override
-    public PlayerAuth createPlayerAuthObject(PasswordRegisterParams params) {
+    public synchronized PlayerAuth createPlayerAuthObject(PasswordRegisterParams params) {
         return createPlayerAuth(params.getPlayer(), params.getHashedPassword(), params.getEmail());
     }
 
