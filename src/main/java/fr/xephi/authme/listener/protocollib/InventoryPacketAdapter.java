@@ -34,14 +34,13 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 
 class InventoryPacketAdapter extends PacketAdapter {
 
     private static final int PLAYER_INVENTORY = 0;
-    // http://wiki.vg/Inventory#Inventory (0-4 crafting, 5-8 armor, 9-35 main inventory, 36-44 hotbar, 45 off hand)
+    // http://wiki.vg/Inventory#Inventory (0-4 crafting, 5-8 armor, 9-35 main inventory, 36-44 hotbar, 45 offhand)
     // +1 because an index starts with 0
     private static final int CRAFTING_SIZE = 5;
     private static final int ARMOR_SIZE = 4;
@@ -116,8 +115,8 @@ class InventoryPacketAdapter extends PacketAdapter {
 
         try {
             protocolManager.sendServerPacket(player, inventoryPacket, false);
-        } catch (InvocationTargetException invocationExc) {
-            logger.logException("Error during sending blank inventory", invocationExc);
+        } catch (Throwable throwable) {
+            logger.logException("Error during sending blank inventory", throwable);
         }
     }
 }

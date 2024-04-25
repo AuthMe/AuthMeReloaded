@@ -18,6 +18,7 @@ import org.mockito.Mock;
 
 import java.util.logging.Logger;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -25,7 +26,6 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -40,6 +40,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 @RunWith(DelayedInjectionRunner.class)
 public class LimboPersistenceTest {
 
+    @SuppressWarnings("unused")
     @InjectDelayed
     private LimboPersistence limboPersistence;
 
@@ -59,7 +60,7 @@ public class LimboPersistenceTest {
     public void setUpMocks() {
         given(settings.getProperty(LimboSettings.LIMBO_PERSISTENCE_TYPE)).willReturn(LimboPersistenceType.DISABLED);
         given(handlerFactory.newInstance(any(Class.class)))
-            .willAnswer(invocation -> mock(invocation.getArgument(0)));
+            .willAnswer(invocation -> mock((Class<?>) invocation.getArgument(0)));
     }
 
     @Test

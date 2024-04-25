@@ -4,12 +4,12 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
-import com.maxmind.db.GeoIp2Provider;
-import com.maxmind.db.Reader;
+import com.maxmind.db.CHMCache;
 import com.maxmind.db.Reader.FileMode;
-import com.maxmind.db.cache.CHMCache;
-import com.maxmind.db.model.Country;
-import com.maxmind.db.model.CountryResponse;
+import com.maxmind.geoip2.DatabaseReader;
+import com.maxmind.geoip2.exception.GeoIp2Exception;
+import com.maxmind.geoip2.model.AbstractCountryResponse;
+import com.maxmind.geoip2.record.Country;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
@@ -61,21 +61,21 @@ public class GeoIpService {
     private final BukkitService bukkitService;
     private final Settings settings;
 
-    private GeoIp2Provider databaseReader;
+    private DatabaseReader databaseReader;
     private volatile boolean downloading;
 
     @Inject
-    GeoIpService(@DataFolder File dataFolder, BukkitService bukkitService, Settings settings) {
+    public GeoIpService(@DataFolder File dataFolder, BukkitService bukkitService, Settings settings) {
         this.bukkitService = bukkitService;
         this.dataFile = dataFolder.toPath().resolve(DATABASE_FILE);
         this.settings = settings;
 
-        // Fires download of recent data or the initialization of the look up service
+        // Fires download of recent data or the initialization of the look-up service
         isDataAvailable();
     }
 
     @VisibleForTesting
-    GeoIpService(@DataFolder File dataFolder, BukkitService bukkitService, Settings settings, GeoIp2Provider reader) {
+    GeoIpService(@DataFolder File dataFolder, BukkitService bukkitService, Settings settings, DatabaseReader reader) {
         this.bukkitService = bukkitService;
         this.settings = settings;
         this.dataFile = dataFolder.toPath().resolve(DATABASE_FILE);
@@ -105,7 +105,7 @@ public class GeoIpService {
                 if (Duration.between(lastModifiedTime.toInstant(), Instant.now()).toDays() <= UPDATE_INTERVAL_DAYS) {
                     startReading();
 
-                    // don't fire the update task - we are up to date
+                    // don't fire the update task - we are up-to-date
                     return true;
                 } else {
                     logger.debug("GEO IP database is older than " + UPDATE_INTERVAL_DAYS + " Days");
@@ -149,6 +149,7 @@ public class GeoIpService {
             extractDatabase(downloadFile, tempFile);
 
             // MD5 checksum verification
+            //noinspection deprecation
             verifyChecksum(Hashing.md5(), tempFile, expectedChecksum);
 
             Files.copy(tempFile, dataFile, StandardCopyOption.REPLACE_EXISTING);
@@ -170,7 +171,7 @@ public class GeoIpService {
     }
 
     private void startReading() throws IOException {
-        databaseReader = new Reader(dataFile.toFile(), FileMode.MEMORY, new CHMCache());
+        databaseReader = new DatabaseReader.Builder(dataFile.toFile()).withCache(new CHMCache()).fileMode(FileMode.MEMORY).build();
         logger.info(LICENSE);
 
         // clear downloading flag, because we now have working reader instance
@@ -178,7 +179,7 @@ public class GeoIpService {
     }
 
     /**
-     * Downloads the archive to the destination file if it's newer than the locally version.
+     * Downloads the archive to the destination file if it's newer than the local version.
      *
      * @param lastModified modification timestamp of the already present file
      * @param destination save file
@@ -220,7 +221,7 @@ public class GeoIpService {
     }
 
     /**
-     * Downloads the archive to the destination file if it's newer than the locally version.
+     * Downloads the archive to the destination file if it's newer than the local version.
      *
      * @param destination save file
      * @return null if no updates were found, the MD5 hash of the downloaded archive if successful
@@ -320,11 +321,11 @@ public class GeoIpService {
             InetAddress address = InetAddress.getByName(ip);
 
             // Reader.getCountry() can be null for unknown addresses
-            return Optional.ofNullable(databaseReader.getCountry(address)).map(CountryResponse::getCountry);
+            return Optional.ofNullable(databaseReader.country(address)).map(AbstractCountryResponse::getCountry);
         } catch (UnknownHostException e) {
             // Ignore invalid ip addresses
-            // Legacy GEO IP Database returned a unknown country object with Country-Code: '--' and Country-Name: 'N/A'
-        } catch (IOException ioEx) {
+            // Legacy GEO IP Database returned an unknown country object with Country-Code: '--' and Country-Name: 'N/A'
+        } catch (GeoIp2Exception | IOException ioEx) {
             logger.logException("Cannot lookup country for " + ip + " at GEO IP database", ioEx);
         }
 

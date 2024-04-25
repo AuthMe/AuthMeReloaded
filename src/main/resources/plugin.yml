@@ -1,10 +1,13 @@
+# noinspection YAMLSchemaValidation
 name: ${pluginDescription.name}
+# noinspection YAMLSchemaValidation
 authors: [${pluginDescription.authors}]
 website: ${project.url}
 description: ${project.description}
+# noinspection YAMLSchemaValidation
 main: ${pluginDescription.main}
 version: ${pluginDescription.version}
-api-version: 1.13
+api-version: 1.19
 softdepend:
     - Vault
     - LuckPerms
@@ -15,6 +18,23 @@ softdepend:
     - Essentials
     - EssentialsSpawn
     - ProtocolLib
+libraries:
+  - ch.jalu:injector:${dependencies.injector.version}
+  - net.ricecode:string-similarity:${dependencies.string-similarity.version}
+  - com.maxmind.geoip2:geoip2:${dependencies.geoip2.version}
+  - javatar:javatar:${dependencies.javatar.version}
+  - org.apache.commons:commons-email:${dependencies.commons-email.version}
+  - com.zaxxer:HikariCP:${dependencies.hikaricp.version}
+  - org.slf4j:slf4j-simple:${dependencies.slf4j.version}
+  - com.mysql:mysql-connector-j:${dependencies.mysql-connector-j.version}
+  - org.mariadb.jdbc:mariadb-java-client:${dependencies.mariadb-java-client.version}
+  - org.postgresql:postgresql:${dependencies.postgresql.version}
+  - de.rtner:PBKDF2:${dependencies.pbkdf2.version}
+  - de.mkammerer:argon2-jvm-nolibs:${dependencies.argon2-jvm-nolibs.version}
+  - at.favre.lib:bcrypt:${dependencies.bcrypt.version}
+  - com.warrenstrange:googleauth:${dependencies.googleauth.version}
+  - ch.jalu:configme:${dependencies.configme.version}
+  - org.bstats:bstats-bukkit:${dependencies.bstats.version}
 commands:
   authme:
     description: AuthMe op commands
