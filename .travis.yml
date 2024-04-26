@@ -5,10 +5,6 @@ language: java
 matrix:
   include:
   - env:
-    - JDK_VERSION=8
-  - env:
-    - JDK_VERSION=11
-  - env:
     - JDK_VERSION=17
 
 before_install:
