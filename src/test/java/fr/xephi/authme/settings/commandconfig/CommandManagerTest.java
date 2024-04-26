@@ -313,7 +313,7 @@ public class CommandManagerTest {
         given(player.getName()).willReturn("Bobby");
         given(player.getDisplayName()).willReturn("bob");
         String ip = "127.0.0.3";
-        TestHelper.mockPlayerIp(player, ip);
+        TestHelper.mockIpAddressToPlayer(player, ip);
         given(geoIpService.getCountryName(ip)).willReturn("Syldavia");
         return player;
     }

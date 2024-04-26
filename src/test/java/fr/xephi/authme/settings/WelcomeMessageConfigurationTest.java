@@ -92,7 +92,7 @@ public class WelcomeMessageConfigurationTest {
 
         Player player = mock(Player.class);
         given(player.getName()).willReturn("Bobby");
-        TestHelper.mockPlayerIp(player, "123.45.66.77");
+        TestHelper.mockIpAddressToPlayer(player, "123.45.66.77");
         given(geoIpService.getCountryName("123.45.66.77")).willReturn("Syldavia");
         given(service.getProperty(PluginSettings.SERVER_NAME)).willReturn("CrazyServer");
 

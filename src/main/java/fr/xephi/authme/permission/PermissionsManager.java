@@ -324,7 +324,7 @@ public class PermissionsManager implements Reloadable {
      *         False is also returned if this feature isn't supported for the current permissions system.
      */
     public boolean addGroup(OfflinePlayer player, UserGroup groupName) {
-        if (!isEnabled() || StringUtils.isEmpty(groupName.getGroupName())) {
+        if (!isEnabled() || StringUtils.isBlank(groupName.getGroupName())) {
             return false;
         }
         return handler.addToGroup(player, groupName);

@@ -293,7 +293,7 @@ public class SpawnLoader implements Reloadable {
             String prefix = pathPrefix + ".";
             String worldName = configuration.getString(prefix + "world");
             World world = Bukkit.getWorld(worldName);
-            if (!StringUtils.isEmpty(worldName) && world != null) {
+            if (!StringUtils.isBlank(worldName) && world != null) {
                 return new Location(world, configuration.getDouble(prefix + "x"),
                     configuration.getDouble(prefix + "y"), configuration.getDouble(prefix + "z"),
                     getFloat(configuration, prefix + "yaw"), getFloat(configuration, prefix + "pitch"));
@@ -315,7 +315,7 @@ public class SpawnLoader implements Reloadable {
             String prefix = pathPrefix + ".";
             String worldName = configuration.getString(prefix + "World");
             World world = Bukkit.getWorld(worldName);
-            if (!StringUtils.isEmpty(worldName) && world != null) {
+            if (!StringUtils.isBlank(worldName) && world != null) {
                 return new Location(world, configuration.getDouble(prefix + "X"),
                     configuration.getDouble(prefix + "Y"), configuration.getDouble(prefix + "Z"),
                     getFloat(configuration, prefix + "Yaw"), getFloat(configuration, prefix + "Pitch"));

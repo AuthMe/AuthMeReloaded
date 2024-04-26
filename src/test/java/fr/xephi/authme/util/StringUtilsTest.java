@@ -49,15 +49,15 @@ public class StringUtilsTest {
     }
 
     @Test
-    public void shouldCheckIsEmptyUtil() {
+    public void shouldCheckIfIsBlankString() {
         // Should be true for null/empty/whitespace
-        assertTrue(StringUtils.isEmpty(null));
-        assertTrue(StringUtils.isEmpty(""));
-        assertTrue(StringUtils.isEmpty(" \t"));
+        assertTrue(StringUtils.isBlank(null));
+        assertTrue(StringUtils.isBlank(""));
+        assertTrue(StringUtils.isBlank(" \t"));
 
         // Should be false if string has content
-        assertFalse(StringUtils.isEmpty("P"));
-        assertFalse(StringUtils.isEmpty(" test"));
+        assertFalse(StringUtils.isBlank("P"));
+        assertFalse(StringUtils.isBlank(" test"));
     }
 
     @Test

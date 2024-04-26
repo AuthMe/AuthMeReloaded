@@ -114,7 +114,7 @@ public class SettingsMigrationService extends PlainMigrationService {
     // Old other accounts
     // --------
     public boolean hasOldOtherAccountsCommand() {
-        return !StringUtils.isEmpty(oldOtherAccountsCommand);
+        return !StringUtils.isBlank(oldOtherAccountsCommand);
     }
 
     public String getOldOtherAccountsCommand() {

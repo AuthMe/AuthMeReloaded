@@ -78,7 +78,7 @@
         <pluginDescription.name>${project.outputName}</pluginDescription.name>
         <pluginDescription.version>${project.versionCode}</pluginDescription.version>
         <pluginDescription.main>${project.groupId}.${project.artifactId}.${pluginDescription.name}</pluginDescription.main>
-        <pluginDescription.authors>sgdc3, ljacqu, games647, Hex3l, krusic22</pluginDescription.authors>
+        <pluginDescription.authors>sgdc3, games647, Hex3l, krusic22</pluginDescription.authors>
 
         <!-- Java libraries -->
         <dependencies.injector.version>1.0</dependencies.injector.version>

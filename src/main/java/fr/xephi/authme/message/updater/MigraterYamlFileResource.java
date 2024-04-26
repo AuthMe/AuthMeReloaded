@@ -36,4 +36,12 @@ public class MigraterYamlFileResource extends YamlFileResource {
         }
         return singleQuoteYaml;
     }
+
+    // Because we set the YAML object to put strings in single quotes, this method by default uses that YAML object
+    // and also puts all paths as single quotes. Override to just always return the same string since we know those
+    // are only message names (so never any conflicting strings like "true" or "0").
+    @Override
+    protected String escapePathElementIfNeeded(String path) {
+        return path;
+    }
 }

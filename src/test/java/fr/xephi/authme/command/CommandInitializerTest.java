@@ -138,11 +138,11 @@ public class CommandInitializerTest {
                 String forCommandText = " for command with labels '" + command.getLabels() + "'";
 
                 assertThat("has description" + forCommandText,
-                    StringUtils.isEmpty(command.getDescription()), equalTo(false));
+                    StringUtils.isBlank(command.getDescription()), equalTo(false));
                 assertThat("short description doesn't end in '.'" + forCommandText,
                     command.getDescription().endsWith("."), equalTo(false));
                 assertThat("has detailed description" + forCommandText,
-                    StringUtils.isEmpty(command.getDetailedDescription()), equalTo(false));
+                    StringUtils.isBlank(command.getDetailedDescription()), equalTo(false));
                 assertThat("detailed description ends in '.'" + forCommandText,
                     command.getDetailedDescription().endsWith("."), equalTo(true));
             }

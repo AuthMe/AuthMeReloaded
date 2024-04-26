@@ -74,9 +74,9 @@ public class HashAlgorithmIntegrationTest {
                 }
                 HashedPassword hashedPassword = method.computeHash("pwd", "name");
                 assertThat("Salt should not be null if method.hasSeparateSalt(), and vice versa. Method: '"
-                    + method + "'", StringUtils.isEmpty(hashedPassword.getSalt()), equalTo(!method.hasSeparateSalt()));
+                    + method + "'", StringUtils.isBlank(hashedPassword.getSalt()), equalTo(!method.hasSeparateSalt()));
                 assertThat("Hash should not be empty for method '" + method + "'",
-                    StringUtils.isEmpty(hashedPassword.getHash()), equalTo(false));
+                    StringUtils.isBlank(hashedPassword.getHash()), equalTo(false));
             }
         }
     }

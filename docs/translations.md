@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Apr 04 21:31:44 CEST 2021. See docs/translations/translations.tpl.md -->
+<!-- File auto-generated on Wed Jun 21 12:14:29 CEST 2023. See docs/translations/translations.tpl.md -->
 
 # AuthMe Translations
 The following translations are available in AuthMe. Set `messagesLanguage` to the language code
@@ -22,10 +22,11 @@ Code | Language | Translated | &nbsp;
 [hu](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_hu.yml) | Hungarian | 99% | <img src="https://via.placeholder.com/99x7/66ee55?text=%20" alt="99" />
 [id](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_id.yml) | Indonesian | 93% | <img src="https://via.placeholder.com/93x7/77dd44?text=%20" alt="93" />
 [it](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_it.yml) | Italian | 100% | <img src="https://via.placeholder.com/100x7/66ff66?text=%20" alt="100" />
+[ja](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_ja.yml) | Japanese | 100% | <img src="https://via.placeholder.com/100x7/66ff66?text=%20" alt="100" />
 [ko](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_ko.yml) | Korean | 99% | <img src="https://via.placeholder.com/99x7/66ee55?text=%20" alt="99" />
-[lt](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_lt.yml) | Lithuanian | 36% | <img src="https://via.placeholder.com/36x7/aa4400?text=%20" alt="36" />
+[lt](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_lt.yml) | Lithuanian | 100% | <img src="https://via.placeholder.com/100x7/66ff66?text=%20" alt="100" />
 [nl](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_nl.yml) | Dutch | 100% | <img src="https://via.placeholder.com/100x7/66ff66?text=%20" alt="100" />
-[pl](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_pl.yml) | Polish | 99% | <img src="https://via.placeholder.com/99x7/66ee55?text=%20" alt="99" />
+[pl](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_pl.yml) | Polish | 100% | <img src="https://via.placeholder.com/100x7/66ff66?text=%20" alt="100" />
 [pt](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_pt.yml) | Portuguese | 100% | <img src="https://via.placeholder.com/100x7/66ff66?text=%20" alt="100" />
 [ro](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_ro.yml) | Romanian | 100% | <img src="https://via.placeholder.com/100x7/66ff66?text=%20" alt="100" />
 [ru](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_ru.yml) | Russian | 100% | <img src="https://via.placeholder.com/100x7/66ff66?text=%20" alt="100" />
@@ -34,13 +35,13 @@ Code | Language | Translated | &nbsp;
 [sr](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_sr.yml) | Serbian | 99% | <img src="https://via.placeholder.com/99x7/66ee55?text=%20" alt="99" />
 [tr](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_tr.yml) | Turkish | 100% | <img src="https://via.placeholder.com/100x7/66ff66?text=%20" alt="100" />
 [uk](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_uk.yml) | Ukrainian | 100% | <img src="https://via.placeholder.com/100x7/66ff66?text=%20" alt="100" />
-[vn](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_vn.yml) | Vietnamese | 77% | <img src="https://via.placeholder.com/77x7/bb9900?text=%20" alt="77" />
+[vn](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_vn.yml) | Vietnamese | 100% | <img src="https://via.placeholder.com/100x7/66ff66?text=%20" alt="100" />
 [zhcn](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_zhcn.yml) | Chinese (China) | 100% | <img src="https://via.placeholder.com/100x7/66ff66?text=%20" alt="100" />
 [zhhk](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_zhhk.yml) | Chinese (Hong Kong) | 99% | <img src="https://via.placeholder.com/99x7/66ee55?text=%20" alt="99" />
 [zhmc](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_zhmc.yml) | Chinese (Macau) | 64% | <img src="https://via.placeholder.com/64x7/bb7700?text=%20" alt="64" />
-[zhtw](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_zhtw.yml) | Chinese (Taiwan) | 86% | <img src="https://via.placeholder.com/86x7/99bb22?text=%20" alt="86" />
+[zhtw](https://github.com/AuthMe/AuthMeReloaded/blob/master/src/main/resources/messages/messages_zhtw.yml) | Chinese (Taiwan) | 100% | <img src="https://via.placeholder.com/100x7/66ff66?text=%20" alt="100" />
 
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Apr 04 21:31:44 CEST 2021
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed Jun 21 12:14:29 CEST 2023

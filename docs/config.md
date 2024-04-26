@@ -403,6 +403,8 @@ Protection:
     # Apply the protection also to registered usernames
     enableProtectionRegistered: true
     geoIpDatabase:
+        # Enable GeoIp database
+        enabled: true
         # The MaxMind clientId used to download the GeoIp database,
         # get one at https://www.maxmind.com/en/accounts/current/license-key
         # The EssentialsX project has a very useful tutorial on how to generate

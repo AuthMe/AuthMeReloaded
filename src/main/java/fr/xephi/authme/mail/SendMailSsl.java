@@ -51,11 +51,11 @@ public class SendMailSsl {
      * @throws EmailException if the mail is invalid
      */
     public HtmlEmail initializeMail(String emailAddress) throws EmailException {
-        String senderMail = StringUtils.isEmpty(settings.getProperty(EmailSettings.MAIL_ADDRESS))
+        String senderMail = StringUtils.isBlank(settings.getProperty(EmailSettings.MAIL_ADDRESS))
             ? settings.getProperty(EmailSettings.MAIL_ACCOUNT)
             : settings.getProperty(EmailSettings.MAIL_ADDRESS);
 
-        String senderName = StringUtils.isEmpty(settings.getProperty(EmailSettings.MAIL_SENDER_NAME))
+        String senderName = StringUtils.isBlank(settings.getProperty(EmailSettings.MAIL_SENDER_NAME))
             ? senderMail
             : settings.getProperty(EmailSettings.MAIL_SENDER_NAME);
         String mailPassword = settings.getProperty(EmailSettings.MAIL_PASSWORD);
