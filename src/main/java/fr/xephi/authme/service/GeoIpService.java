@@ -177,7 +177,10 @@ public class GeoIpService {
     }
 
     private void startReading() throws IOException {
-        databaseReader = new DatabaseReader.Builder(dataFile.toFile()).withCache(new CHMCache()).fileMode(FileMode.MEMORY).build();
+        databaseReader = new DatabaseReader.Builder(dataFile.toFile())
+            .withCache(new CHMCache())
+            .fileMode(FileMode.MEMORY)
+            .build();
         logger.info(LICENSE);
 
         // clear downloading flag, because we now have working reader instance
