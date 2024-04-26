@@ -19,7 +19,7 @@ import java.util.Locale;
 
 import static fr.xephi.authme.AuthMeMatchers.equalToHash;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;

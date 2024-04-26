@@ -31,7 +31,7 @@ import static fr.xephi.authme.command.FoundResultStatus.SUCCESS;
 import static fr.xephi.authme.command.FoundResultStatus.UNKNOWN_LABEL;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;

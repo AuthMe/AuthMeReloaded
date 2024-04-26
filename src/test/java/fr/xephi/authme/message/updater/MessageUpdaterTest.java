@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 import static fr.xephi.authme.message.MessagePathHelper.DEFAULT_MESSAGES_FILE;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Test for {@link MessageUpdater}.

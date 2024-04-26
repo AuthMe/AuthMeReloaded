@@ -8,7 +8,7 @@ import java.util.List;
 import static fr.xephi.authme.util.lazytags.TagBuilder.createTag;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Test for {@link TagReplacer}.
