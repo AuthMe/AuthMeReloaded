@@ -3,9 +3,14 @@ package fr.xephi.authme.service;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
+import com.google.common.collect.ImmutableMap;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.model.CountryResponse;
+import com.maxmind.geoip2.record.Continent;
 import com.maxmind.geoip2.record.Country;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
@@ -58,12 +63,7 @@ public class GeoIpServiceTest {
         // given
         InetAddress ip = InetAddress.getByName("123.45.67.89");
         String countryCode = "XX";
-
-        Country country = mock(Country.class);
-        given(country.getIsoCode()).willReturn(countryCode);
-
-        CountryResponse response = mock(CountryResponse.class);
-        given(response.getCountry()).willReturn(country);
+        CountryResponse response = createCountryResponse(countryCode, "Unknown");
         given(lookupService.country(ip)).willReturn(response);
         given(settings.getProperty(ProtectionSettings.ENABLE_GEOIP)).willReturn(true);
 
@@ -93,12 +93,7 @@ public class GeoIpServiceTest {
         // given
         InetAddress ip = InetAddress.getByName("24.45.167.89");
         String countryName = "Ecuador";
-
-        Country country = mock(Country.class);
-        given(country.getName()).willReturn(countryName);
-
-        CountryResponse response = mock(CountryResponse.class);
-        given(response.getCountry()).willReturn(country);
+        CountryResponse response = createCountryResponse("EC", countryName);
         given(lookupService.country(ip)).willReturn(response);
         given(settings.getProperty(ProtectionSettings.ENABLE_GEOIP)).willReturn(true);
 
@@ -135,5 +130,14 @@ public class GeoIpServiceTest {
         // then
         assertThat(result, equalTo("N/A"));
         verifyNoInteractions(lookupService);
+    }
+
+    private static CountryResponse createCountryResponse(String countryCode, String countryName) {
+        List<String> locales = Collections.singletonList("en");
+        Continent continent = new Continent(locales, "XX", 1L, Collections.emptyMap());
+
+        Map<String, String> countryNames = ImmutableMap.of("en", countryName);
+        Country country = new Country(locales, 100, 3L, false, countryCode, countryNames);
+        return new CountryResponse(continent, country, null, country, null, null);
     }
 }
