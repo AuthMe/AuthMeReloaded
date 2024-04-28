@@ -66,8 +66,6 @@
         <java.compiler.minimumVersion>17</java.compiler.minimumVersion>
         <maven.minimumVersion>3.9.0</maven.minimumVersion>
 
-        <!-- Dependencies versions -->
-
         <!-- Versioning properties -->
         <project.outputName>AuthMe</project.outputName>
         <project.buildNumber>CUSTOM</project.buildNumber>
@@ -88,7 +86,7 @@
         <dependencies.commons-email.version>1.6.0</dependencies.commons-email.version>
         <dependencies.hikaricp.version>5.1.0</dependencies.hikaricp.version>
         <dependencies.slf4j.version>2.0.13</dependencies.slf4j.version>
-        <dependencies.datasourcecolumns.version>0.1.1-SNAPSHOT</dependencies.datasourcecolumns.version>
+        <dependencies.datasourcecolumns.version>0.1.2</dependencies.datasourcecolumns.version>
         <dependencies.mysql-connector-j.version>8.3.0</dependencies.mysql-connector-j.version>
         <dependencies.mariadb-java-client.version>3.3.3</dependencies.mariadb-java-client.version>
         <dependencies.postgresql.version>42.5.1</dependencies.postgresql.version>
@@ -338,12 +336,14 @@
                     <!-- Use the base jar name, to help server owners download the right jar -->
                     <finalName>${project.finalNameBase}</finalName>
 
+                    <!--
                     <relocations>
                         <relocation>
                             <pattern>ch.jalu.datasourcecolumns</pattern>
                             <shadedPattern>fr.xephi.authme.libs.ch.jalu.datasourcecolumns</shadedPattern>
                         </relocation>
                     </relocations>
+                    -->
 
                     <filters>
                         <!-- Ignore manifest signatures for shading the project into an uber-jar to fix -->
@@ -571,7 +571,7 @@
             <groupId>ch.jalu</groupId>
             <artifactId>datasourcecolumns</artifactId>
             <version>${dependencies.datasourcecolumns.version}</version>
-            <!-- We need to shade it as it is not published on Maven Central -->
+            <scope>provided</scope>
         </dependency>
 
         <!-- MySQL connector -->
