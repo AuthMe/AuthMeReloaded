@@ -11,3 +11,4 @@ updates:
   - dependency-name: org.apache.logging.log4j:log4j-core
   - dependency-name: "org.mockito:mockito-core"
     versions: ">= 5"
+  - dependency-name: ch.jalu:configme
