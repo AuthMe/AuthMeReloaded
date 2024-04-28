@@ -7,7 +7,7 @@ description: ${project.description}
 # noinspection YAMLSchemaValidation
 main: ${pluginDescription.main}
 version: ${pluginDescription.version}
-api-version: 1.19
+api-version: 1.16
 softdepend:
     - Vault
     - LuckPerms
@@ -26,6 +26,7 @@ libraries:
   - org.apache.commons:commons-email:${dependencies.commons-email.version}
   - com.zaxxer:HikariCP:${dependencies.hikaricp.version}
   - org.slf4j:slf4j-simple:${dependencies.slf4j.version}
+  - ch.jalu:datasourcecolumns:${dependencies.datasourcecolumns.version}
   - com.mysql:mysql-connector-j:${dependencies.mysql-connector-j.version}
   - org.mariadb.jdbc:mariadb-java-client:${dependencies.mariadb-java-client.version}
   - org.postgresql:postgresql:${dependencies.postgresql.version}
