@@ -2,7 +2,6 @@ package fr.xephi.authme.message.updater;
 
 import ch.jalu.configme.resource.PropertyReader;
 import ch.jalu.configme.resource.YamlFileResource;
-import org.jetbrains.annotations.NotNull;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -20,12 +19,12 @@ public class MigraterYamlFileResource extends YamlFileResource {
     }
 
     @Override
-    public @NotNull PropertyReader createReader() {
+    public PropertyReader createReader() {
         return MessageMigraterPropertyReader.loadFromFile(getFile());
     }
 
     @Override
-    protected @NotNull Yaml createNewYaml() {
+    protected Yaml createNewYaml() {
         if (singleQuoteYaml == null) {
             DumperOptions options = new DumperOptions();
             options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
@@ -36,5 +35,13 @@ public class MigraterYamlFileResource extends YamlFileResource {
             singleQuoteYaml = new Yaml(options);
         }
         return singleQuoteYaml;
+    }
+
+    // Because we set the YAML object to put strings in single quotes, this method by default uses that YAML object
+    // and also puts all paths as single quotes. Override to just always return the same string since we know those
+    // are only message names (so never any conflicting strings like "true" or "0").
+    @Override
+    protected String escapePathElementIfNeeded(String path) {
+        return path;
     }
 }
