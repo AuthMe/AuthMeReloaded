@@ -55,6 +55,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -65,12 +66,12 @@ import java.util.UUID;
 import static com.google.common.collect.Sets.newHashSet;
 import static fr.xephi.authme.listener.EventCancelVerifier.withServiceMock;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -711,7 +712,7 @@ public class PlayerListenerTest {
         UUID uniqueId = UUID.fromString("753493c9-33ba-4a4a-bf61-1bce9d3c9a71");
         String ip = "12.34.56.78";
 
-        AsyncPlayerPreLoginEvent preLoginEvent = spy(new AsyncPlayerPreLoginEvent(name, mockAddrWithIp(ip), uniqueId));
+        AsyncPlayerPreLoginEvent preLoginEvent = spy(new AsyncPlayerPreLoginEvent(name, createInetAddress(ip), uniqueId));
         given(validationService.isUnrestricted(name)).willReturn(false);
 
         // when
@@ -749,7 +750,7 @@ public class PlayerListenerTest {
         UUID uniqueId = UUID.fromString("753493c9-33ba-4a4a-bf61-1bce9d3c9a71");
         String ip = "12.34.56.78";
 
-        AsyncPlayerPreLoginEvent preLoginEvent = spy(new AsyncPlayerPreLoginEvent(name, mockAddrWithIp(ip), uniqueId));
+        AsyncPlayerPreLoginEvent preLoginEvent = spy(new AsyncPlayerPreLoginEvent(name, createInetAddress(ip), uniqueId));
         given(validationService.isUnrestricted(name)).willReturn(false);
         PlayerAuth auth = PlayerAuth.builder().name(name).build();
         given(dataSource.getAuth(name)).willReturn(auth);
@@ -773,7 +774,7 @@ public class PlayerListenerTest {
         Player player = mockPlayerWithName(name);
         String ip = "12.34.56.78";
 
-        PlayerLoginEvent loginEvent = spy(new PlayerLoginEvent(player, "", mockAddrWithIp(ip)));
+        PlayerLoginEvent loginEvent = spy(new PlayerLoginEvent(player, "", createInetAddress(ip)));
         given(validationService.isUnrestricted(name)).willReturn(false);
         given(onJoinVerifier.refusePlayerForFullServer(loginEvent)).willReturn(false);
 
@@ -792,7 +793,7 @@ public class PlayerListenerTest {
         // given
         String name = "inval!dName";
         UUID uniqueId = UUID.fromString("753493c9-33ba-4a4a-bf61-1bce9d3c9a71");
-        InetAddress ip = mockAddrWithIp("33.32.33.33");
+        InetAddress ip = createInetAddress("33.32.33.33");
         AsyncPlayerPreLoginEvent event = spy(new AsyncPlayerPreLoginEvent(name, ip, uniqueId));
         given(validationService.isUnrestricted(name)).willReturn(false);
         FailedVerificationException exception = new FailedVerificationException(
@@ -1107,9 +1108,11 @@ public class PlayerListenerTest {
         verifyNoMoreInteractions(event);
     }
 
-    private static InetAddress mockAddrWithIp(String ip) {
-        InetAddress addr = mock(InetAddress.class);
-        given(addr.getHostAddress()).willReturn(ip);
-        return addr;
+    public static InetAddress createInetAddress(String ip) {
+        try {
+            return InetAddress.getByName(ip);
+        } catch (UnknownHostException e) {
+            throw new IllegalArgumentException("Invalid IP address: " + ip, e);
+        }
     }
 }
