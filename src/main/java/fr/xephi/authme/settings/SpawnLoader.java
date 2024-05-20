@@ -146,16 +146,13 @@ public class SpawnLoader implements Reloadable {
 
         String path = "userdata/" + player.getUniqueId() + ".yml";
         File essentialsUserdataFile = new File(essentialsFolder, path);
-        logger.info(essentialsUserdataFile.getAbsolutePath());
         if (essentialsUserdataFile.exists()) {
-            logger.info("Found location!");
 
             YamlConfiguration config = YamlConfiguration.loadConfiguration(essentialsUserdataFile);
             if (config.contains("logoutlocation")) {
                 String worldName = config.getString("logoutlocation.world-name");
                 World world = Bukkit.getWorld(worldName);
                 if (world == null) {
-                    logger.warning("World not found: " + worldName);
                     return null;
                 }
                 double x = config.getDouble("logoutlocation.x");
@@ -165,14 +162,13 @@ public class SpawnLoader implements Reloadable {
                 float pitch = (float) config.getDouble("logoutlocation.pitch");
 
                 Location location = new Location(world, x, y, z, yaw, pitch);
-                logger.info(location.toString());
                 return location;
             } else {
-                logger.info("logoutlocation not found in file: " + essentialsUserdataFile.getAbsolutePath());
+                logger.debug("logoutlocation not found in userdata file: " + essentialsUserdataFile.getAbsolutePath());
                 return null;
             }
         } else {
-            logger.info("Essentials userdata file not found: '" + essentialsUserdataFile.getAbsolutePath() + "'");
+            logger.debug("Essentials userdata file not found: '" + essentialsUserdataFile.getAbsolutePath() + "'");
             return null;
         }
     }
