@@ -25,7 +25,7 @@ import java.util.Map;
 
 import static fr.xephi.authme.TestHelper.getJarFile;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Integration test for {@link Settings} (ConfigMe integration).

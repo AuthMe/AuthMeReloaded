@@ -5,8 +5,8 @@ import fr.xephi.authme.data.ProxySessionManager;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
-import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.login.AsynchronousLogin;
@@ -27,11 +27,8 @@ import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.GameMode;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import javax.inject.Inject;
-
 import java.util.Locale;
 
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
@@ -197,7 +194,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
                 // Allow infinite blindness effect
                 int blindTimeOut = (registrationTimeout <= 0) ? 99999 : registrationTimeout;
-                player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, blindTimeOut, 2));
+                player.addPotionEffect(bukkitService.createBlindnessEffect(blindTimeOut));
             }
             commandManager.runCommandsOnJoin(player);
         });

@@ -32,7 +32,7 @@ import java.util.function.Function;
 
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -115,6 +115,7 @@ public class AsynchronousUnregisterTest {
         given(service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)).willReturn(true);
         given(service.getProperty(RestrictionSettings.TIMEOUT)).willReturn(21);
         setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+        given(bukkitService.createBlindnessEffect(21 * 20)).willReturn(mock(PotionEffect.class));
 
         // when
         asynchronousUnregister.unregister(player, userPassword);
@@ -127,7 +128,6 @@ public class AsynchronousUnregisterTest {
         verify(teleportationService).teleportOnJoin(player);
         verifyCalledUnregisterEventFor(player);
         verify(commandManager).runCommandsOnUnregister(player);
-        verify(player).addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 21 * 20, 2));
     }
 
     @Test

@@ -10,7 +10,7 @@ jobs:
   build_and_test:
     strategy:
       matrix:
-        jdkversion: [11]
+        jdkversion: [11, 17, 21]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3

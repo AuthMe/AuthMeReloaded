@@ -5,7 +5,7 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 

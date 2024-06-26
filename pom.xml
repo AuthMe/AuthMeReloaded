@@ -6,7 +6,7 @@
 
     <groupId>fr.xephi</groupId>
     <artifactId>authme</artifactId>
-    <version>5.6.0</version>
+    <version>5.6.1-SNAPSHOT</version>
 
     <name>AuthMeReloaded</name>
     <description>The first authentication plugin for the Bukkit API!</description>
@@ -60,14 +60,11 @@
         <!-- Environment properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.source>1.8</java.source>
-        <java.target>1.8</java.target>
-        <java.apiVersion>8</java.apiVersion>
+        <java.source>11</java.source>
+        <java.target>11</java.target>
+        <java.apiVersion>11</java.apiVersion>
         <java.compiler.minimumVersion>11</java.compiler.minimumVersion>
-        <maven.minimumVersion>3.6.3</maven.minimumVersion>
-
-        <!-- Dependencies versions -->
-        <spigot.version>1.19.2-R0.1-SNAPSHOT</spigot.version>
+        <maven.minimumVersion>3.8.8</maven.minimumVersion>
 
         <!-- Versioning properties -->
         <project.outputName>AuthMe</project.outputName>
@@ -80,6 +77,29 @@
         <pluginDescription.version>${project.versionCode}</pluginDescription.version>
         <pluginDescription.main>${project.groupId}.${project.artifactId}.${pluginDescription.name}</pluginDescription.main>
         <pluginDescription.authors>sgdc3, games647, Hex3l, krusic22</pluginDescription.authors>
+
+        <!-- Java libraries -->
+        <dependencies.injector.version>1.0</dependencies.injector.version>
+        <dependencies.string-similarity.version>1.0.0</dependencies.string-similarity.version>
+        <dependencies.geoip2.version>4.2.0</dependencies.geoip2.version>
+        <dependencies.javatar.version>2.5</dependencies.javatar.version>
+        <dependencies.commons-email.version>1.6.0</dependencies.commons-email.version>
+        <dependencies.hikaricp.version>5.1.0</dependencies.hikaricp.version>
+        <dependencies.slf4j.version>2.0.13</dependencies.slf4j.version>
+        <dependencies.datasourcecolumns.version>0.1.2</dependencies.datasourcecolumns.version>
+        <dependencies.mysql-connector-j.version>8.3.0</dependencies.mysql-connector-j.version>
+        <dependencies.mariadb-java-client.version>3.3.3</dependencies.mariadb-java-client.version>
+        <dependencies.postgresql.version>42.5.1</dependencies.postgresql.version>
+        <dependencies.pbkdf2.version>1.1.4</dependencies.pbkdf2.version>
+        <dependencies.argon2-jvm-nolibs.version>2.11</dependencies.argon2-jvm-nolibs.version>
+        <dependencies.bcrypt.version>0.9.0</dependencies.bcrypt.version>
+        <dependencies.googleauth.version>1.5.0</dependencies.googleauth.version>
+        <dependencies.configme.version>1.3.1</dependencies.configme.version>
+        <!-- Spigot -->
+        <dependencies.spigot.version>1.16.5-R0.1-SNAPSHOT</dependencies.spigot.version>
+        <dependencies.log4j-core.version>2.8.1</dependencies.log4j-core.version> <!-- version bundled 1.16.5 -->
+        <!-- Spigot libraries -->
+        <dependencies.bstats.version>3.0.2</dependencies.bstats.version>
     </properties>
 
     <!-- Jenkins profile -->
@@ -127,8 +147,10 @@
 
     <build>
         <defaultGoal>clean package</defaultGoal>
-        <!-- Little hack to make the shade plugin output a file with the right name -->
+        <!-- Little hack to make the shade plugin output a file with the right name
+        Disable, we aren't using shading atm
         <finalName>${project.finalNameBase}-noshade</finalName>
+        -->
 
         <resources>
             <resource>
@@ -154,7 +176,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.4.1</version>
+                    <version>3.6.3</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -164,7 +186,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>3.4.1</version>
                 <executions>
                     <execution>
                         <id>enforce-environment</id>
@@ -177,7 +199,7 @@
                                     <version>${maven.minimumVersion}</version>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
-                                    <version>[11,)</version>
+                                    <version>[${java.compiler.minimumVersion},)</version>
                                 </requireJavaVersion>
                             </rules>
                             <fail>true</fail>
@@ -189,19 +211,19 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.3.2</version>
             </plugin>
             <!-- Include resource files -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.3.1</version>
             </plugin>
             <!-- Compile and include classes -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
+                <version>3.13.0</version>
                 <configuration>
                     <source>${java.source}</source>
                     <target>${java.target}</target>
@@ -212,7 +234,13 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.11</version>
+                <version>0.8.12</version>
+                <configuration>
+                    <includes>
+                        <include>fr/xephi/authme/*</include>
+                        <include>fr/xephi/authme/**/*</include>
+                    </includes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>pre-unit-test</id>
@@ -232,11 +260,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
+                <version>3.2.5</version>
                 <configuration>
+                    <!-- Fix java.base opens for new JDK versions -->
                     <!-- Force the right file encoding during unit testing -->
                     <!-- Set language to English in order to get consistent results for localized time formatting -->
-                    <argLine>-Dfile.encoding=${project.build.sourceEncoding} -Duser.language=en @{argLine}</argLine>
+                    <argLine>--add-opens=java.base/java.lang=ALL-UNNAMED -Dfile.encoding=${project.build.sourceEncoding} -Duser.language=en @{argLine}</argLine>
                     <systemPropertyVariables>
                         <project.skipExtendedHashTests>${project.skipExtendedHashTests}</project.skipExtendedHashTests>
                     </systemPropertyVariables>
@@ -248,7 +277,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.4.1</version>
             </plugin>
             <!-- Generate a jar containing the source javadoc -->
             <plugin>
@@ -257,7 +286,7 @@
                 <configuration>
                     <finalName>${project.finalNameBase}</finalName>
                     <!-- In sync with the source/target properties of the maven-compiler-plugin -->
-                    <source>8</source>
+                    <source>${java.source}</source>
                 </configuration>
                 <executions>
                     <execution>
@@ -272,7 +301,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>3.3.1</version>
                 <configuration>
                     <finalName>${project.finalNameBase}</finalName>
                 </configuration>
@@ -289,61 +318,17 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>3.5.3</version>
                 <executions>
+                    <!-- Disable, we aren't using shading atm
                     <execution>
                         <id>shaded-jar</id>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
-                        <configuration>
-                            <artifactSet>
-                                <excludes>
-                                    <!-- Guava -->
-                                    <exclude>com.google.guava:guava</exclude>
-                                    <exclude>com.google.guava:failureaccess</exclude>
-                                    <exclude>com.google.guava:listenablefuture</exclude>
-                                    <exclude>com.google.errorprone:error_prone_annotations</exclude>
-                                    <exclude>com.google.j2objc:j2objc-annotations</exclude>
-                                    <!-- Gson -->
-                                    <exclude>com.google.code.gson:gson</exclude>
-                                </excludes>
-                            </artifactSet>
-                        </configuration>
                     </execution>
-                    <execution>
-                        <id>shaded-jar-legacy</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <finalName>${project.finalNameBase}-legacy</finalName>
-                            <relocations>
-                                <relocation>
-                                    <pattern>com.google.common</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.com.google.common</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com.google.thirdparty</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.com.google.thirdparty</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com.google.j2objc</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.com.google.j2objc</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com.google.errorprone</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.com.google.errorprone</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com.google.gson</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.com.google.gson</shadedPattern>
-                                </relocation>
-                            </relocations>
-                        </configuration>
-                    </execution>
+                    -->
                 </executions>
                 <configuration>
                     <!-- Don't create the reduced pom file, as we don't deploy the shaded jar -->
@@ -353,89 +338,14 @@
                     <!-- Use the base jar name, to help server owners download the right jar -->
                     <finalName>${project.finalNameBase}</finalName>
 
-                    <!--
-                    Relocate all lib we use in order to fix class loading errors if we use different versions
-                    than already loaded libs
-                    -->
-                    <relocations combine.children="append">
+                    <!-- Disable, no relocations atm
+                    <relocations>
                         <relocation>
-                            <pattern>ch.jalu</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.ch.jalu</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>com.zaxxer.hikari</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.com.zaxxer.hikari</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.slf4j</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.org.slf4j</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>com.maxmind.db</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.com.maxmind.db</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>com.ice.tar</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.com.icetar.tar</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>net.ricecode.similarity</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.ricecode.net.ricecode.similarity</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>de.rtner</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.de.rtner</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.picketbox</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.org.picketbox</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.jboss.crypto</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.org.jboss.crypto</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.jboss.security</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.org.jboss.security</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>de.mkammerer</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.de.mkammerer</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>com.warrenstrange</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.com.warrenstrange</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>javax.inject</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.javax.inject</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>at.favre.lib</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.at.favre.lib</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.postgresql</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.org.postgresql</shadedPattern>
-                        </relocation>
-                        <!-- bStats metrics class -->
-                        <relocation>
-                            <pattern>org.bstats</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.org.bstats</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.mariadb.jdbc</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.org.mariadb.jdbc</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>com.mysql</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.com.mysql</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>com.google.protobuf</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.com.google.protobuf</shadedPattern>
+                            <pattern></pattern>
+                            <shadedPattern>fr.xephi.authme.libs.</shadedPattern>
                         </relocation>
                     </relocations>
+                    -->
 
                     <filters>
                         <!-- Ignore manifest signatures for shading the project into an uber-jar to fix -->
@@ -467,13 +377,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-install-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.1.1</version>
             </plugin>
             <!-- Deploy the jars as artifacts into the remote repository -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.1.1</version>
             </plugin>
             <!-- Handle documentation generation, required by other plugins -->
             <plugin>
@@ -602,54 +512,39 @@
         <dependency>
             <groupId>ch.jalu</groupId>
             <artifactId>injector</artifactId>
-            <version>1.0</version>
-            <optional>true</optional>
+            <version>${dependencies.injector.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- String comparison library. Used for dynamic help system. -->
         <dependency>
             <groupId>net.ricecode</groupId>
             <artifactId>string-similarity</artifactId>
-            <version>1.0.0</version>
-            <optional>true</optional>
+            <version>${dependencies.string-similarity.version}</version>
+            <scope>provided</scope>
         </dependency>
 
-        <!-- MaxMind GEO IP with our modifications to use GSON in replacement of the big Jackson dependency -->
-        <!-- GSON is already included and therefore it reduces the file size in comparison to the original version -->
+        <!-- MaxMind GEO IP -->
         <dependency>
-            <groupId>com.maxmind.db</groupId>
-            <artifactId>maxmind-db-gson</artifactId>
-            <version>2.0.3</version>
-            <optional>true</optional>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.code.gson</groupId>
-                    <artifactId>gson</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>com.maxmind.geoip2</groupId>
+            <artifactId>geoip2</artifactId>
+            <version>${dependencies.geoip2.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Library for tar archives -->
         <dependency>
             <groupId>javatar</groupId>
             <artifactId>javatar</artifactId>
-            <version>2.5</version>
-            <optional>true</optional>
+            <version>${dependencies.javatar.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Java Email Library -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-email</artifactId>
-            <version>1.6-SNAPSHOT</version>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- Log4J Logger (required by the console filter) -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.8.1</version> <!-- Log4J version bundled in 1.12.2 -->
+            <version>${dependencies.commons-email.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -657,88 +552,62 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>4.0.3</version> <!-- Latest java 8 release -->
-            <optional>true</optional>
-            <exclusions>
-                <exclusion>
-                    <artifactId>slf4j-api</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <!-- HikariCP Logger -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>1.7.36</version> <!-- We can't update to 2.x as long as we use HikariCP for java 8 -->
-            <optional>true</optional>
-        </dependency>
-
-        <!-- PBKDF2 implementation -->
-        <dependency>
-            <groupId>de.rtner</groupId>
-            <artifactId>PBKDF2</artifactId>
-            <version>1.1.4</version>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- MySQL connector, shaded into the legacy jar -->
-        <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <version>8.2.0</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.mariadb.jdbc</groupId>
-            <artifactId>mariadb-java-client</artifactId>
-            <version>3.3.0</version>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- Argon2 implementation -->
-        <dependency>
-            <groupId>de.mkammerer</groupId>
-            <artifactId>argon2-jvm-nolibs</artifactId>
-            <version>2.11</version>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- TOTP client -->
-        <dependency>
-            <groupId>com.warrenstrange</groupId>
-            <artifactId>googleauth</artifactId>
-            <version>1.5.0</version>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- Spigot API, https://www.spigotmc.org/ -->
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>${spigot.version}</version>
+            <version>${dependencies.hikaricp.version}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <artifactId>junit</artifactId>
-                    <groupId>junit</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>bungeecord-chat</artifactId>
-                    <groupId>net.md-5</groupId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.googlecode.json-simple</groupId>
-                    <artifactId>json-simple</artifactId>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
-        <!--  Keep in sync with spigot 1.19  -->
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>31.0.1-jre</version>
-            <optional>true</optional>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${dependencies.slf4j.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Data source columns -->
+        <dependency>
+            <groupId>ch.jalu</groupId>
+            <artifactId>datasourcecolumns</artifactId>
+            <version>${dependencies.datasourcecolumns.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- MySQL connector -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>${dependencies.mysql-connector-j.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- MariaDB connector -->
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>${dependencies.mariadb-java-client.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.checkerframework</groupId>
+                    <artifactId>checker-qual</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.errorprone</groupId>
+                    <artifactId>error_prone_annotations</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- PostgreSQL -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${dependencies.postgresql.version}</version>
+            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>org.checkerframework</groupId>
@@ -746,22 +615,45 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!--  Keep in sync with spigot 1.19  -->
+
+        <!-- PBKDF2 implementation -->
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.8.9</version>
-            <optional>true</optional>
+            <groupId>de.rtner</groupId>
+            <artifactId>PBKDF2</artifactId>
+            <version>${dependencies.pbkdf2.version}</version>
+            <scope>provided</scope>
         </dependency>
 
-        <!-- Bukkit Libraries  -->
+        <!-- Argon2 implementation -->
+        <dependency>
+            <groupId>de.mkammerer</groupId>
+            <artifactId>argon2-jvm-nolibs</artifactId>
+            <version>${dependencies.argon2-jvm-nolibs.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- BCrypt implementation -->
+        <dependency>
+            <groupId>at.favre.lib</groupId>
+            <artifactId>bcrypt</artifactId>
+            <version>${dependencies.bcrypt.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- TOTP client -->
+        <dependency>
+            <groupId>com.warrenstrange</groupId>
+            <artifactId>googleauth</artifactId>
+            <version>${dependencies.googleauth.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- ConfigMe -->
         <dependency>
             <groupId>ch.jalu</groupId>
             <artifactId>configme</artifactId>
-            <version>1.3.0</version>
-            <optional>true</optional>
+            <version>${dependencies.configme.version}</version>
+            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>org.yaml</groupId>
@@ -770,19 +662,47 @@
             </exclusions>
         </dependency>
 
+        <!-- Spigot API, https://www.spigotmc.org/ -->
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>${dependencies.spigot.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.joml</groupId>
+                    <artifactId>joml</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.md-5</groupId>
+                    <artifactId>bungeecord-chat</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${dependencies.log4j-core.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Bukkit Libraries  -->
+
         <!-- bStats metrics -->
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>3.0.0</version>
-            <optional>true</optional>
+            <version>${dependencies.bstats.version}</version>
+            <scope>provided</scope>
         </dependency>
+
+        <!-- Plugin Hooks -->
 
         <!-- ProtocolLib -->
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
-            <version>4.8.0</version>
+            <version>5.1.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -971,14 +891,6 @@
             </exclusions>
         </dependency>
 
-        <!-- BCrypt implementation -->
-        <dependency>
-            <groupId>at.favre.lib</groupId>
-            <artifactId>bcrypt</artifactId>
-            <version>0.10.2</version>
-            <optional>true</optional>
-        </dependency>
-
         <!-- XAuth, another authentication plugin, required by the database converter -->
         <dependency>
             <groupId>de.luricos.bukkit</groupId>
@@ -987,60 +899,42 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>ch.jalu</groupId>
-            <artifactId>datasourcecolumns</artifactId>
-            <version>0.1.1-SNAPSHOT</version>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.7.2</version>
-            <optional>true</optional>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.checkerframework</groupId>
-                    <artifactId>checker-qual</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
         <!-- Unit Testing Libraries -->
 
+        <!-- TODO: update to junit 5 -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
             <version>4.13.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hamcrest</groupId>
+                    <artifactId>hamcrest-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>org.hamcrest</groupId>
-            <artifactId>java-hamcrest</artifactId>
+            <artifactId>hamcrest</artifactId>
             <scope>test</scope>
-            <version>2.0.0.0</version>
+            <version>2.2</version>
         </dependency>
 
+        <!-- TODO: update to mockito 5 -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
-            <version>4.8.1</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>hamcrest-core</artifactId>
-                    <groupId>org.hamcrest</groupId>
-                </exclusion>
-            </exclusions>
+            <version>4.11.0</version>
         </dependency>
 
         <!-- Required to mock the LuckPerms API-->
         <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
-            <version>3.40.0</version>
+            <version>3.42.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -1048,13 +942,19 @@
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>3.44.0.0</version>
+            <version>3.45.3.0</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>2.2.220</version>
+            <version>2.2.224</version>
             <scope>test</scope>
         </dependency>
 

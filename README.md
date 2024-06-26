@@ -5,7 +5,6 @@
 
 | Type              | Badges                                                                                                                                                                                                                                                                                                                                                                                |
 |-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **General:**      | ![](https://tokei.rs/b1/github/AuthMe/AuthMeReloaded?category=code) ![](https://tokei.rs/b1/github/AuthMe/AuthMeReloaded?category=files)                                                                                                                                                                                                                                              |
 | **Code quality:** | [![Code Climate](https://codeclimate.com/github/AuthMe/AuthMeReloaded/badges/gpa.svg)](https://codeclimate.com/github/AuthMe/AuthMeReloaded) [![Coverage status](https://coveralls.io/repos/AuthMe-Team/AuthMeReloaded/badge.svg?branch=master&service=github)](https://coveralls.io/github/AuthMe-Team/AuthMeReloaded?branch=master)                                                 |
 | **Jenkins CI:**   | [![Jenkins Status](https://img.shields.io/website-up-down-green-red/http/shields.io.svg?label=ci.codemc.org)](https://ci.codemc.org/) [![Build Status](https://ci.codemc.org/buildStatus/icon?job=AuthMe/AuthMeReloaded)](https://ci.codemc.org/job/AuthMe/job/AuthMeReloaded) ![Build Tests](https://img.shields.io/jenkins/t/https/ci.codemc.org/job/AuthMe/job/AuthMeReloaded.svg) |
 | **Other CIs:**    | [![Build Status](https://www.travis-ci.com/AuthMe/AuthMeReloaded.svg?branch=master)](https://www.travis-ci.com/AuthMe/AuthMeReloaded)                                                                                                                                                                                                                                                             |
@@ -104,7 +103,7 @@ You can also create your own translation file and, if you want, you can share it
         <dependency>
             <groupId>fr.xephi</groupId>
             <artifactId>authme</artifactId>
-            <version>5.6.0-SNAPSHOT</version>
+            <version>5.6.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -116,19 +115,17 @@ You can also create your own translation file and, if you want, you can share it
 ## Requirements
 
 ##### Compiling requirements:
->- JDK 11 (JDK 17 is recommended)
->- Maven
->- Git/Github (Optional)
+>- JDK 11+
+>- Maven (3.8.8+)
+>- Git/GitHub (Optional)
 
 ##### How to compile the project:
 >- Clone the project with Git/GitHub
 >- Execute command "mvn clean package"
 
 ##### Running requirements:
->- Java 8 (Java 17 is recommended)
->- Paper or Spigot (1.8.X and up)<br>
-   (In case you use Thermos, Cauldron or similar, you have to update the SpecialSource library to support Java 8 plugins.
-   HowTo: https://github.com/games647/FastLogin/issues/111#issuecomment-272331347)
+>- Java 11+
+>- Paper or Spigot (1.16.5 and up)
 >- ProtocolLib (optional, required by some features)
 
 ## Credits

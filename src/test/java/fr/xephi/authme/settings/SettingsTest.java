@@ -18,7 +18,7 @@ import java.nio.file.Files;
 import java.util.Collections;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.mock;
  * Unit tests for {@link Settings}.
  */
 public class SettingsTest {
-    
+
     private static final ConfigurationData CONFIG_DATA =
         ConfigurationDataBuilder.createConfiguration(TestConfiguration.class);
 
