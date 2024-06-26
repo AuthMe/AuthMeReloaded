@@ -87,9 +87,9 @@
         <dependencies.hikaricp.version>5.1.0</dependencies.hikaricp.version>
         <dependencies.slf4j.version>2.0.13</dependencies.slf4j.version>
         <dependencies.datasourcecolumns.version>0.1.2</dependencies.datasourcecolumns.version>
-        <dependencies.mysql-connector-j.version>8.3.0</dependencies.mysql-connector-j.version>
+        <dependencies.mysql-connector-j.version>8.4.0</dependencies.mysql-connector-j.version>
         <dependencies.mariadb-java-client.version>3.3.3</dependencies.mariadb-java-client.version>
-        <dependencies.postgresql.version>42.5.1</dependencies.postgresql.version>
+        <dependencies.postgresql.version>42.7.3</dependencies.postgresql.version>
         <dependencies.pbkdf2.version>1.1.4</dependencies.pbkdf2.version>
         <dependencies.argon2-jvm-nolibs.version>2.11</dependencies.argon2-jvm-nolibs.version>
         <dependencies.bcrypt.version>0.9.0</dependencies.bcrypt.version>
@@ -186,7 +186,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>3.5.0</version>
                 <executions>
                     <execution>
                         <id>enforce-environment</id>
@@ -211,7 +211,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>3.3.2</version>
+                <version>3.4.0</version>
             </plugin>
             <!-- Include resource files -->
             <plugin>
@@ -277,7 +277,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>3.4.2</version>
             </plugin>
             <!-- Generate a jar containing the source javadoc -->
             <plugin>
@@ -942,7 +942,7 @@
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>3.45.3.0</version>
+            <version>3.46.0.0</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
