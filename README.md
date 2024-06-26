@@ -103,7 +103,7 @@ You can also create your own translation file and, if you want, you can share it
         <dependency>
             <groupId>fr.xephi</groupId>
             <artifactId>authme</artifactId>
-            <version>5.6.0-SNAPSHOT</version>
+            <version>5.6.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
