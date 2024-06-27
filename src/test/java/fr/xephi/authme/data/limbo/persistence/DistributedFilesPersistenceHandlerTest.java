@@ -157,10 +157,10 @@ public class DistributedFilesPersistenceHandlerTest {
         // given
         Player uuidToAdd1 = mockPlayerWithUuid(UNKNOWN_UUID);
         Location location1 = mockLocation("1world");
-        LimboPlayer limbo1 = new LimboPlayer(location1, false, Collections.singletonList(new UserGroup("group-1")), true, 0.1f, 0.2f);
+        LimboPlayer limbo1 = new LimboPlayer(location1, false, Collections.singletonList(new UserGroup("group-1")), true, 0.1f, 0.2f, uuidToAdd1.getGameMode());
         Player uuidToAdd2 = mockPlayerWithUuid(UNKNOWN_UUID2);
         Location location2 = mockLocation("2world");
-        LimboPlayer limbo2 = new LimboPlayer(location2, true, Collections.emptyList(), false, 0.0f, 0.25f);
+        LimboPlayer limbo2 = new LimboPlayer(location2, true, Collections.emptyList(), false, 0.0f, 0.25f, uuidToAdd2.getGameMode());
 
         // when
         persistenceHandler.saveLimboPlayer(uuidToAdd1, limbo1);
