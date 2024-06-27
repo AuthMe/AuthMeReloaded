@@ -88,7 +88,7 @@
         <dependencies.slf4j.version>2.0.13</dependencies.slf4j.version>
         <dependencies.datasourcecolumns.version>0.1.2</dependencies.datasourcecolumns.version>
         <dependencies.mysql-connector-j.version>8.4.0</dependencies.mysql-connector-j.version>
-        <dependencies.mariadb-java-client.version>3.3.3</dependencies.mariadb-java-client.version>
+        <dependencies.mariadb-java-client.version>3.4.0</dependencies.mariadb-java-client.version>
         <dependencies.postgresql.version>42.7.3</dependencies.postgresql.version>
         <dependencies.pbkdf2.version>1.1.4</dependencies.pbkdf2.version>
         <dependencies.argon2-jvm-nolibs.version>2.11</dependencies.argon2-jvm-nolibs.version>
