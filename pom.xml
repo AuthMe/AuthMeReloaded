@@ -60,10 +60,10 @@
         <!-- Environment properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.source>11</java.source>
-        <java.target>11</java.target>
-        <java.apiVersion>11</java.apiVersion>
-        <java.compiler.minimumVersion>11</java.compiler.minimumVersion>
+        <java.source>17</java.source>
+        <java.target>17</java.target>
+        <java.apiVersion>17</java.apiVersion>
+        <java.compiler.minimumVersion>17</java.compiler.minimumVersion>
         <maven.minimumVersion>3.8.8</maven.minimumVersion>
 
         <!-- Versioning properties -->

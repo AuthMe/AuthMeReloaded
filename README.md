@@ -115,7 +115,7 @@ You can also create your own translation file and, if you want, you can share it
 ## Requirements
 
 ##### Compiling requirements:
->- JDK 11+
+>- JDK 17+
 >- Maven (3.8.8+)
 >- Git/GitHub (Optional)
 
@@ -124,7 +124,7 @@ You can also create your own translation file and, if you want, you can share it
 >- Execute command "mvn clean package"
 
 ##### Running requirements:
->- Java 11+
+>- Java 17+
 >- Paper or Spigot (1.16.5 and up)
 >- ProtocolLib (optional, required by some features)
 
