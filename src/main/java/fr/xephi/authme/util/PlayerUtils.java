@@ -28,7 +28,7 @@ public final class PlayerUtils {
      * @return True if the player is an NPC, false otherwise
      */
     public static boolean isNpc(Player player) {
-        return player.hasMetadata("NPC");
+        return player.hasMetadata("NPC") || player.getAddress() == null;
     }
 
 }
