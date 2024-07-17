@@ -1,6 +1,7 @@
 package fr.xephi.authme.data.limbo;
 
 import fr.xephi.authme.TestHelper;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -37,9 +38,11 @@ public class LimboServiceHelperTest {
     public void shouldMergeLimboPlayers() {
         // given
         Location newLocation = mock(Location.class);
-        LimboPlayer newLimbo = new LimboPlayer(newLocation, false, Collections.singletonList(new UserGroup("grp-new")), false, 0.0f, 0.0f);
+        GameMode newGameMode = GameMode.SPECTATOR;
+        LimboPlayer newLimbo = new LimboPlayer(newLocation, false, Collections.singletonList(new UserGroup("grp-new")), false, 0.0f, 0.0f, newGameMode);
         Location oldLocation = mock(Location.class);
-        LimboPlayer oldLimbo = new LimboPlayer(oldLocation, true, Collections.singletonList(new UserGroup("grp-old")), true, 0.1f, 0.8f);
+        GameMode oldGameMode = GameMode.CREATIVE;
+        LimboPlayer oldLimbo = new LimboPlayer(oldLocation, true, Collections.singletonList(new UserGroup("grp-old")), true, 0.1f, 0.8f, oldGameMode);
 
         // when
         LimboPlayer result = limboServiceHelper.merge(newLimbo, oldLimbo);
@@ -51,14 +54,15 @@ public class LimboServiceHelperTest {
         assertThat(result.isCanFly(), equalTo(true));
         assertThat(result.getWalkSpeed(), equalTo(0.1f));
         assertThat(result.getFlySpeed(), equalTo(0.8f));
+        assertThat(result.getGameMode(), equalTo(newGameMode));
     }
 
     @Test
     public void shouldFallBackToNewLimboForMissingData() {
         // given
         Location newLocation = mock(Location.class);
-        LimboPlayer newLimbo = new LimboPlayer(newLocation, false, Collections.singletonList(new UserGroup("grp-new")), true, 0.3f, 0.0f);
-        LimboPlayer oldLimbo = new LimboPlayer(null, false, Collections.emptyList(), false, 0.1f, 0.1f);
+        LimboPlayer newLimbo = new LimboPlayer(newLocation, false, Collections.singletonList(new UserGroup("grp-new")), true, 0.3f, 0.0f, GameMode.CREATIVE);
+        LimboPlayer oldLimbo = new LimboPlayer(null, false, Collections.emptyList(), false, 0.1f, 0.1f, null);
 
         // when
         LimboPlayer result = limboServiceHelper.merge(newLimbo, oldLimbo);
@@ -70,6 +74,7 @@ public class LimboServiceHelperTest {
         assertThat(result.isCanFly(), equalTo(true));
         assertThat(result.getWalkSpeed(), equalTo(0.3f));
         assertThat(result.getFlySpeed(), equalTo(0.1f));
+        assertThat(result.getGameMode(), equalTo(oldLimbo.getGameMode()));
     }
 
     @Test
