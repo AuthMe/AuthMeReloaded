@@ -919,7 +919,7 @@
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest</artifactId>
             <scope>test</scope>
-            <version>2.2</version>
+            <version>3.0</version>
         </dependency>
 
         <!-- TODO: update to mockito 5 -->
