@@ -85,7 +85,7 @@
         <dependencies.javatar.version>2.5</dependencies.javatar.version>
         <dependencies.commons-email.version>1.6.0</dependencies.commons-email.version>
         <dependencies.hikaricp.version>5.1.0</dependencies.hikaricp.version>
-        <dependencies.slf4j.version>2.0.13</dependencies.slf4j.version>
+        <dependencies.slf4j.version>2.0.14</dependencies.slf4j.version>
         <dependencies.datasourcecolumns.version>0.1.2</dependencies.datasourcecolumns.version>
         <dependencies.mysql-connector-j.version>8.4.0</dependencies.mysql-connector-j.version>
         <dependencies.mariadb-java-client.version>3.4.0</dependencies.mariadb-java-client.version>
