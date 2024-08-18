@@ -129,6 +129,52 @@ public class SpawnLoader implements Reloadable {
     }
 
     /**
+     * Retrieves the last logout location of a player from their Essentials data file.
+     *
+     * This function fetches the player's data file from the Essentials data folder,
+     * reads the 'logoutlocation' section, and constructs a Location object from it.
+     * If the file or the location data is not found, it returns null.
+     *
+     * @param player The player whose logout location is to be retrieved.
+     * @return The last known logout location of the player, or null if not found.
+     */
+    public Location getEssentialsQuitLocation(Player player) {
+        File essentialsFolder = pluginHookService.getEssentialsDataFolder();
+        if (essentialsFolder == null) {
+            return null;
+        }
+
+        String path = "userdata/" + player.getUniqueId() + ".yml";
+        File essentialsUserdataFile = new File(essentialsFolder, path);
+        if (essentialsUserdataFile.exists()) {
+
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(essentialsUserdataFile);
+            if (config.contains("logoutlocation")) {
+                String worldName = config.getString("logoutlocation.world-name");
+                World world = Bukkit.getWorld(worldName);
+                if (world == null) {
+                    return null;
+                }
+                double x = config.getDouble("logoutlocation.x");
+                double y = config.getDouble("logoutlocation.y");
+                double z = config.getDouble("logoutlocation.z");
+                float yaw = (float) config.getDouble("logoutlocation.yaw");
+                float pitch = (float) config.getDouble("logoutlocation.pitch");
+
+                Location location = new Location(world, x, y, z, yaw, pitch);
+                return location;
+            } else {
+                logger.debug("logoutlocation not found in userdata file: " + essentialsUserdataFile.getAbsolutePath());
+                return null;
+            }
+        } else {
+            logger.debug("Essentials userdata file not found: '" + essentialsUserdataFile.getAbsolutePath() + "'");
+            return null;
+        }
+    }
+
+
+    /**
      * Unset the spawn point defined in EssentialsSpawn.
      */
     public void unloadEssentialsSpawn() {
