@@ -389,7 +389,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.12.1</version>
+                <version>3.20.0</version>
             </plugin>
             <!-- Publish coveralls test coverage reports, not included in the build cycle by default -->
             <plugin>
