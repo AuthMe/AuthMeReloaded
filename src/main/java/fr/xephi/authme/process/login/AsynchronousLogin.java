@@ -115,7 +115,13 @@ public class AsynchronousLogin implements AsynchronousProcess {
     public void forceLogin(Player player) {
         PlayerAuth auth = getPlayerAuth(player);
         if (auth != null) {
-            performLogin(player, auth);
+            if (auth.getTotpKey() != null) {
+                limboService.resetMessageTask(player, LimboMessageType.TOTP_CODE);
+                limboService.getLimboPlayer(player.getName()).setState(LimboPlayerState.TOTP_REQUIRED);
+                // TODO #1141: Check if we should check limbo state before processing password
+            } else {
+                performLogin(player, auth);
+            }
         }
     }
 
