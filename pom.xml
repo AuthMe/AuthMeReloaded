@@ -942,7 +942,7 @@
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>3.46.0.0</version>
+            <version>3.46.1.2</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
