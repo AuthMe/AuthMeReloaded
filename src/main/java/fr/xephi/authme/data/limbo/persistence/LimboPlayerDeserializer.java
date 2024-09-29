@@ -10,6 +10,7 @@ import com.google.gson.JsonObject;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.data.limbo.UserGroup;
 import fr.xephi.authme.service.BukkitService;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -23,6 +24,7 @@ import java.util.function.Function;
 
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.CAN_FLY;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.FLY_SPEED;
+import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.GAMEMODE;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.GROUPS;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.IS_OP;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.LOCATION;
@@ -64,8 +66,10 @@ class LimboPlayerDeserializer implements JsonDeserializer<LimboPlayer> {
         boolean canFly = getBoolean(jsonObject, CAN_FLY);
         float walkSpeed = getFloat(jsonObject, WALK_SPEED, LimboPlayer.DEFAULT_WALK_SPEED);
         float flySpeed = getFloat(jsonObject, FLY_SPEED, LimboPlayer.DEFAULT_FLY_SPEED);
+        int gameModeId = getNumberFromElement(jsonObject.get(GAMEMODE), JsonElement::getAsInt, 0);
+        GameMode gameMode = GameMode.getByValue(gameModeId);
 
-        return new LimboPlayer(loc, operator, groups, canFly, walkSpeed, flySpeed);
+        return new LimboPlayer(loc, operator, groups, canFly, walkSpeed, flySpeed, gameMode);
     }
 
     private Location deserializeLocation(JsonObject jsonObject) {
