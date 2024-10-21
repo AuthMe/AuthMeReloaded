@@ -22,10 +22,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -326,30 +325,6 @@ public class TeleportationServiceTest {
         ArgumentCaptor<Location> locationCaptor = ArgumentCaptor.forClass(Location.class);
         verify(player).teleport(locationCaptor.capture());
         assertCorrectLocation(locationCaptor.getValue(), auth, world);
-    }
-
-    @Test
-    public void shouldTeleportWithLimboPlayerIfAuthYCoordIsNotSet() {
-        // given
-        given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
-        given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(true);
-
-        PlayerAuth auth = createAuthWithLocation();
-        auth.setQuitLocY(0.0);
-        auth.setWorld("authWorld");
-        Player player = mock(Player.class);
-        given(player.isOnline()).willReturn(true);
-        LimboPlayer limbo = mock(LimboPlayer.class);
-        Location location = mockLocation();
-        given(limbo.getLocation()).willReturn(location);
-        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
-
-        // when
-        teleportationService.teleportOnLogin(player, auth, limbo);
-
-        // then
-        verify(player).teleport(location);
-        verify(bukkitService, never()).getWorld(anyString());
     }
 
     @Test

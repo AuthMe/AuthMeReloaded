@@ -140,7 +140,7 @@ public class TeleportationService implements Reloadable {
             logger.debug("Teleporting `{0}` to spawn because of 'force-spawn after login'", player.getName());
             teleportToSpawn(player, true);
         } else if (settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)) {
-            if (settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION) && auth.getQuitLocY() != 0) {
+            if (settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
                 Location location = buildLocationFromAuth(player, auth);
                 logger.debug("Teleporting `{0}` after login, based on the player auth", player.getName());
                 teleportBackFromSpawn(player, location);
