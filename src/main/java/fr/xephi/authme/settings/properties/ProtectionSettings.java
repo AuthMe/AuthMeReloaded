@@ -24,14 +24,14 @@ public final class ProtectionSettings implements SettingsHolder {
     public static final Property<Boolean> ENABLE_GEOIP =
         newProperty("Protection.geoIpDatabase.enabled", true);
 
-    @Comment({"The MaxMind clientId used to download the GeoIp database,",
-        "get one at https://www.maxmind.com/en/accounts/current/license-key",
-        "The EssentialsX project has a very useful tutorial on how to generate",
-        "the license key: https://github.com/EssentialsX/Wiki/blob/master/GeoIP.md"})
+    @Comment({"Get the information needed for the GeoIP database at https://www.maxmind.com/en/accounts/current/license-key",
+        "This EssentialsX project has a very useful tutorial on how to generate it:",
+        "https://github.com/EssentialsX/Website/blob/master/pages/wiki/GeoIP.md",
+        "The MaxMind clientId called 'Account ID' on the 'Manage License Keys' page:"})
     public static final Property<String> MAXMIND_API_CLIENT_ID =
         newProperty("Protection.geoIpDatabase.clientId", "");
 
-    @Comment("The MaxMind licenseKey used to download the GeoIp database.")
+    @Comment("The MaxMind licenseKey you generated on the MaxMind website:")
     public static final Property<String> MAXMIND_API_LICENSE_KEY =
         newProperty("Protection.geoIpDatabase.licenseKey", "");
 
