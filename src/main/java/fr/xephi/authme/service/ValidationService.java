@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import static fr.xephi.authme.util.StringUtils.isInsideString;
 
@@ -202,13 +203,21 @@ public class ValidationService implements Reloadable {
 
     private static boolean containsIgnoreCase(Collection<String> coll, String needle) {
         for (String entry : coll) {
-            if (entry.equalsIgnoreCase(needle)) {
+            if (entry.startsWith("r:")) {
+                String pattern = entry.substring(2);
+                try {
+                    if (Pattern.compile(pattern, Pattern.CASE_INSENSITIVE).matcher(needle).matches()) {
+                        return true;
+                    }
+                } catch (PatternSyntaxException e) {
+                    //possible way to log error?
+                }
+            } else if (entry.equalsIgnoreCase(needle)) {
                 return true;
             }
         }
         return false;
     }
-
     /**
      * Loads the configured name restrictions into a Multimap by player name (all-lowercase).
      *

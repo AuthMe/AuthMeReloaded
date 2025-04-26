@@ -63,7 +63,7 @@ public final class EmailSettings implements SettingsHolder {
     public static final Property<List<String>> DOMAIN_BLACKLIST =
         newListProperty("Email.emailBlacklisted", "10minutemail.com");
 
-    @Comment("Whitelist ONLY these domains for emails")
+    @Comment("Whitelist ONLY these domains for emails. Use 'r:' prefix for regex patterns (e.g. 'r:.*\\.gmail\\.com')")
     public static final Property<List<String>> DOMAIN_WHITELIST =
         newListProperty("Email.emailWhitelisted");
 
