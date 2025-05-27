@@ -1,207 +1,361 @@
-# AuthmeReloaded帮助文件汉化
-# Translated By CH1
+# AuthMe帮助信息的翻译配置，例如在执行/authme help 或/authme help register 时显示
+
 # -------------------------------------------------------
+# 帮助信息使用的文本列表
 common:
-    header: '==========[ AuthMeReloaded ]=========='
-    optional: '可选'
-    hasPermission: '您拥有权限去使用这个指令'
-    noPermission: '您没有权限使用这个指令'
-    default: '默认'
-    result: '您的权限'
-    defaultPermissions:
-        notAllowed: '任何人不能使用'
-        opOnly: 'OP拥有此权限'
-        allowed: '所有人都可以使用'
+  header: ==========[ AuthMe 帮助 ]==========
+  optional: 可选参数
+  hasPermission: 拥有权限
+  noPermission: 无权操作
+  default: 默认
+  result: 权限状态
+  defaultPermissions:
+    notAllowed: 无权限
+    opOnly: 仅管理员可用
+    allowed: 所有玩家可用
 
-
+# -------------------------------------------------------
+# 各个帮助信息的标题
+# 将翻译文本设置为空可以禁用该部分，例如隐藏备用选项：
+#   alternatives: ''
 section:
-    command: '指令'
-    description: '功能'
-    detailedDescription: '功能详情'
-    arguments: '参数'
-    permissions: '权限'
-    alternatives: '别名'
-    children: '子命令'
+  command: 命令
+  description: 描述
+  detailedDescription: 详细说明
+  arguments: 参数
+  alternatives: 别名
+  permissions: 权限
+  children: 子命令
 
-
+# -------------------------------------------------------
+# 你可以使用以下模板翻译所有命令的数据。
+# 例如，要翻译/authme reload，需创建一个"authme.reload"部分，如果是/login，则创建"login"部分
+# 若命令有参数，可以使用如下的 arg1 来翻译第一个参数，依此类推
+# 翻译不需要完整；任何缺失的部分将自动从默认值获取
+# 注意：像"authme"这样的主命令需要放在其子命令（如"authme.reload"）之前
 commands:
-    authme.register:
-        description: '注册一个玩家'
-        detailedDescription: '注册一个玩家'
-        arg1:
-            label: '玩家'
-            description: '玩家名称'
-        arg2:
-            label: '密码'
-            description: '密码'
-    authme.unregister:
-        description: '注销一个玩家'
-        detailedDescription: '注销一个玩家'
-        arg1:
-            label: '玩家'
-            description: '玩家'
-    authme.forcelogin:
-        description: '强制玩家重新登录'
-        detailedDescription: '强制使指定玩家重新登录'
-        arg1:
-            label: '玩家'
-            description: '玩家'
-    authme.password:
-        description: '改变某个玩家的密码'
-        detailedDescription: '改变某个玩家的密码'
-        arg1:
-            label: '玩家'
-            description: '玩家'
-        arg2:
-            label: '新密码'
-            description: '新密码'
-    authme.lastlogin:
-        description: '查看玩家最后登录时间'
-        detailedDescription: '查看玩家最后登录时间'
-        arg1:
-            label: '玩家'
-            description: '玩家'
-    authme.accounts:
-        description: '查看玩家IP下的账户'
-        detailedDescription: '查看玩家IP下的账户'
-        arg1:
-            label: '玩家或IP'
-            description: '玩家或IP'
-    authme.email:
-        description: '查看玩家的邮箱'
-        detailedDescription: '查看玩家的邮箱'
-        arg1:
-            label: '玩家'
-            description: '玩家'
-    authme.setemail:
-        description: '改变玩家的邮箱'
-        detailedDescription: '改变玩家的邮箱'
-        arg1:
-            label: '玩家'
-            description: '玩家'
-        arg2:
-            label: '邮箱'
-            description: '邮箱'
-    authme.getip:
-        description: '获取玩家IP'
-        detailedDescription: '获取玩家IP'
-        arg1:
-            label: '玩家'
-            description: '玩家'
-    authme.spawn:
-        description: '传送到AuthMe出生点'
-        detailedDescription: '传送到AuthMe出生点'
-    authme.setspawn:
-        description: '改变AuthMe出生点'
-        detailedDescription: '改变AuthMe出生点'
-    authme.firstspawn:
-        description: '传送到第一次进入游戏出生点'
-        detailedDescription: '传送到第一次进入游戏出生点'
-    authme.setfirstspawn:
-        description: '设置第一次进入游戏的出生点'
-        detailedDescription: '设置第一次进入游戏的出生点'
-    authme.purge:
-        description: '删除指定天数之前没登录的玩家登陆数据'
-        detailedDescription: '删除指定天数之前没登录的玩家登陆数据'
-        arg1:
-            label: '天数'
-            description: '天数'
-    authme.resetpos:
-       description: '重置玩家登出位置'
-       detailedDescription: '重置玩家登出位置'
-       arg1:
-           label: '玩家/*'
-           description: '玩家名称或所有玩家'
-    authme.purgebannedplayers:
-        description: '删除已经被封禁的玩家数据'
-        detailedDescription: '删除已经被封禁的玩家数据'
-    authme.switchantibot:
-        description: '改变AntiBot的状态'
-        detailedDescription: '改变AntiBot的状态'
-        arg1:
-            label: '开关'
-            description: '选项: ON/OFF'
-    authme.reload:
-        description: '重载插件'
-        detailedDescription: '重载插件'
-    authme.version:
-        description: '查看版本信息'
-        detailedDescription: '查看AuthmeReload版本,开发者,贡献者和许可'
-    authme.converter:
-        description: '转换数据命令'
-        detailedDescription: '转换数据命令'
-        arg1:
-            label: '类型'
-            description: '转换类型:xauth/crazylogin/rakamak/royalauth/vauth/sqliteToSql/mysqlToSqlite'
-    authme.messages:
-        description: '添加信息'
-        detailedDescription: '在语言文件夹中添加缺少的信息'
-    authme.help:
-        description: '查看帮助'
-        detailedDescription: '查看帮助'
-        arg1:
-            label: '子命令'
-            description: '查看的指令'
-    unregister:
-        description: '注销您的账户'
-        detailedDescription: '注销您的账户'
-        arg1:
-            label: '密码'
-            description: '密码'
-    changepassword:
-        description: '更改您的密码'
-        detailedDescription: '更改您的密码'
-        arg1:
-            label: '旧的密码'
-            description: '旧的密码'
-        arg2:
-            label: '新的密码'
-            description: '新的密码'
-    email:
-        description: '绑定邮箱或更改密码'
-        detailedDescription: '绑定邮箱或更改密码'
-    email.show:
-        description: '查看邮箱'
-        detailedDescription: '查看您的邮箱地址'
-    email.add:
-        description: '绑定邮箱'
-        detailedDescription: '为您的账户绑定邮箱'
-        arg1:
-            label: '邮箱'
-            description: '邮箱地址'
-        arg2:
-            label: '邮箱'
-            description: '重新输入邮箱地址'
-    email.change:
-        description: '改变邮箱地址'
-        detailedDescription: '更改您账户的邮箱地址'
-        arg1:
-            label: '旧邮箱'
-            description: '旧的邮箱地址'
-        arg2:
-            label: '新邮箱'
-            description: '新的邮箱地址'
-    email.recover:
-        description: '通过邮箱改变密码'
-        detailedDescription: '通过邮箱改变密码'
-        arg1:
-            label: '邮箱'
-            description: '邮箱地址'
-    email.help:
-        description: '查看帮助'
-        detailedDescription: '查看邮箱帮助'
-        arg1:
-            label: '子命令'
-            description: '指令'
-    captcha:
-        description: '验证码'
-        detailedDescription: '验证码'
-        arg1:
-            label: '验证码'
-            description: '验证码'
-    captcha.help:
-        description: '查看验证码帮助'
-        detailedDescription: '查看验证码帮助'
-        arg1:
-            label: '子命令'
-            description: '指令'
+  authme:
+    description: AuthMe管理员命令
+    detailedDescription: AuthMe主命令。所有管理员命令的根命令。
+  authme.register:
+    description: 注册玩家
+    detailedDescription: 为指定玩家注册账号并设置密码。
+    arg1:
+      label: 玩家
+      description: 玩家名称
+    arg2:
+      label: 密码
+      description: 登录密码
+  authme.unregister:
+    description: 注销玩家
+    detailedDescription: 为指定玩家注销账号。
+    arg1:
+      label: 玩家
+      description: 玩家名称
+  authme.forcelogin:
+    description: 强制登录玩家
+    detailedDescription: 强制登录指定玩家。
+    arg1:
+      label: 玩家
+      description: 在线玩家名称
+  authme.password:
+    description: 更改玩家密码
+    detailedDescription: 更改一位玩家的密码。
+    arg1:
+      label: 玩家
+      description: 玩家名称
+    arg2:
+      label: 密码
+      description: 新密码
+  authme.lastlogin:
+    description: 玩家近期登录时间
+    detailedDescription: 查看指定玩家最近一次登录的时间。
+    arg1:
+      label: 玩家
+      description: 玩家名称
+  authme.accounts:
+    description: 显示玩家账号
+    detailedDescription: 按玩家名称或IP地址显示玩家的所有账号。
+    arg1:
+      label: 玩家
+      description: 玩家名称或IP地址
+  authme.email:
+    description: 显示玩家邮箱
+    detailedDescription: 若指定玩家，可显示该玩家的邮箱地址。
+    arg1:
+      label: 玩家
+      description: 玩家名称
+  authme.setemail:
+    description: 更改玩家邮箱
+    detailedDescription: 更改指定玩家的邮箱地址。
+    arg1:
+      label: 玩家
+      description: 玩家名称
+    arg2:
+      label: 邮箱
+      description: 玩家邮箱
+  authme.getip:
+    description: 获取玩家IP地址
+    detailedDescription: 获取指定在线玩家的IP地址。
+    arg1:
+      label: 玩家
+      description: 玩家名称
+  authme.totp:
+    description: 查看玩家是否启用令牌
+    detailedDescription: 返回指定玩家是否启用了双重验证。
+    arg1:
+      label: 玩家
+      description: 玩家名称
+  authme.disabletotp:
+    description: 删除玩家的通行密钥
+    detailedDescription: 为指定玩家关闭双重验证。
+    arg1:
+      label: 玩家
+      description: 玩家名称
+  authme.spawn:
+    description: 传送至出生点
+    detailedDescription: 传送至出生点。
+  authme.setspawn:
+    description: 更改出生点
+    detailedDescription: 将出生点更改为你当前所处的位置。
+  authme.firstspawn:
+    description: 传送至第一出生点
+    detailedDescription: 传送至第一个出生点。
+  authme.setfirstspawn:
+    description: 更改第一出生点
+    detailedDescription: 将第一个出生点更改为你当前所处的位置。
+  authme.purge:
+    description: 清除旧数据
+    detailedDescription: 清除超过指定天数的数据。
+    arg1:
+      label: 天数
+      description: 天数
+  authme.purgeplayer:
+    description: 清除玩家数据
+    detailedDescription: 清除指定玩家的数据。
+    arg1:
+      label: 玩家
+      description: 要清除的玩家
+    arg2:
+      label: 选项
+      description: 若填写'force'，则执行时不会检查玩家是否已注册
+  authme.backup:
+    description: 执行备份
+    detailedDescription: 创建已注册玩家数据的备份。
+  authme.resetpos:
+    description: 清除玩家最新位置
+    detailedDescription: 清除指定或全部玩家最近一次已知的位置。
+    arg1:
+      label: 玩家/*
+      description: 玩家名称或用 * 表示全部玩家
+  authme.purgebannedplayers:
+    description: 清除封禁玩家数据
+    detailedDescription: 清除全部封禁玩家的数据。
+  authme.switchantibot:
+    description: 切换防假人功能
+    detailedDescription: 切换或开关防假人功能至特定的状态。
+    arg1:
+      label: 开/关
+      description: ON / OFF
+  authme.reload:
+    description: 重载插件
+    detailedDescription: 重新加载插件。
+  authme.version:
+    description: 插件信息
+    detailedDescription: 显示插件的版本、开发者、贡献者和许可证协议。
+  authme.converter:
+    description: 转换命令
+    detailedDescription: AuthMe的转换命令。
+    arg1:
+      label: 类型
+      description: 转换类型：xauth / crazylogin / rakamak / royalauth / vauth / sqliteToSql
+        / mysqlToSqlite / loginsecurity
+  authme.messages:
+    description: 添加缺少的帮助消息
+    detailedDescription: 为当前帮助消息文件添加缺失的文本。
+  authme.recent:
+    description: 查看近期玩家登录
+    detailedDescription: 显示最近有哪些玩家登录。
+  authme.debug:
+    description: 调试功能
+    detailedDescription: 允许进行各种调试操作。
+    arg1:
+      label: 子项
+      description: 要执行的子项
+    arg2:
+      label: 参数
+      description: 参数(取决于调试部分)
+    arg3:
+      label: 参数
+      description: 参数(取决于调试部分)
+  authme.help:
+    description: 查看帮助
+    detailedDescription: 查看/authme命令的详细帮助。
+    arg1:
+      label: 关键词
+      description: 要查询的命令或内容。
+  email:
+    description: 添加邮箱或恢复密码
+    detailedDescription: AuthMe的基础邮箱命令。
+  email.show:
+    description: 显示邮箱
+    detailedDescription: 显示你当前的邮箱。
+  email.add:
+    description: 绑定邮箱
+    detailedDescription: 为账号绑定一个邮箱。
+    arg1:
+      label: 邮箱
+      description: 邮箱地址
+    arg2:
+      label: 再次输入邮箱确认
+      description: 验证邮箱地址
+  email.change:
+    description: 修改邮箱
+    detailedDescription: 修改账号的邮箱。
+    arg1:
+      label: 原邮箱
+      description: 原邮箱地址
+    arg2:
+      label: 新邮箱
+      description: 新邮箱地址
+  email.recover:
+    description: 通过邮箱恢复密码
+    detailedDescription: 向邮箱发送包含新密码的邮件来恢复你的账号。
+    arg1:
+      label: 邮箱
+      description: 邮箱地址
+  email.code:
+    description: 输入验证码恢复密码
+    detailedDescription: 输入向邮箱发送的验证码来恢复你的账号。
+    arg1:
+      label: 验证码
+      description: 恢复验证码
+  email.setpassword:
+    description: 恢复后设置新密码
+    detailedDescription: 成功恢复账号后设置一个新密码。
+    arg1:
+      label: 密码
+      description: 新密码
+  email.help:
+    description: 查看帮助
+    detailedDescription: 查看/email命令的详细帮助。
+    arg1:
+      label: 关键词
+      description: 要查询的命令或内容。
+  login:
+    description: 登录命令
+    detailedDescription: AuthMe的登录命令。
+    arg1:
+      label: 密码
+      description: 登录密码
+  login.help:
+    description: 查看帮助
+    detailedDescription: 查看/login命令的详细帮助。
+    arg1:
+      label: 关键词
+      description: 要查询的命令或内容。
+  logout:
+    description: 登出命令
+    detailedDescription: AuthMe的登出命令。
+  logout.help:
+    description: 查看帮助
+    detailedDescription: 查看/logout命令的详细帮助。
+    arg1:
+      label: 关键词
+      description: 要查询的命令或内容。
+  register:
+    description: 注册账号
+    detailedDescription: AuthMe的注册命令。
+    arg1:
+      label: 密码
+      description: 密码
+    arg2:
+      label: 再次输入密码确认
+      description: 验证密码
+  register.help:
+    description: 查看帮助
+    detailedDescription: 查看/register命令的详细帮助。
+    arg1:
+      label: 关键词
+      description: 要查询的命令或内容。
+  unregister:
+    description: 注销账号
+    detailedDescription: AuthMe的注销命令。
+    arg1:
+      label: 密码
+      description: 密码
+  unregister.help:
+    description: 查看帮助
+    detailedDescription: 查看/unregister命令的详细帮助。
+    arg1:
+      label: 关键词
+      description: 要查询的命令或内容。
+  changepassword:
+    description: 修改账号密码
+    detailedDescription: AuthMe的修改密码命令。
+    arg1:
+      label: 原密码
+      description: 原密码
+    arg2:
+      label: 新密码
+      description: 新密码
+  changepassword.help:
+    description: 查看帮助
+    detailedDescription: 查看/changepassword命令的详细帮助。
+    arg1:
+      label: 关键词
+      description: 要查询的命令或内容。
+  totp:
+    description: 动态令牌命令
+    detailedDescription: 执行与双重验证相关的操作。
+  totp.code:
+    description: 登录命令
+    detailedDescription: 在登录时验证令牌。
+    arg1:
+      label: 令牌
+      description: 用于登录的动态令牌
+  totp.add:
+    description: 启用令牌
+    detailedDescription: 为账号开启双重验证。
+  totp.confirm:
+    description: 验证成功后启用令牌
+    detailedDescription: 验证后保存生成的通行密钥。
+    arg1:
+      label: 令牌
+      description: 使用/totp add命令获取通行密钥生成的令牌
+  totp.remove:
+    description: 关闭令牌
+    detailedDescription: 为账号关闭双重验证。
+    arg1:
+      label: 令牌
+      description: 动态令牌
+  totp.help:
+    description: 查看帮助
+    detailedDescription: 查看/totp命令的详细帮助。
+    arg1:
+      label: 关键词
+      description: 要查询的命令或内容。
+  captcha:
+    description: 验证码命令
+    detailedDescription: AuthMe的验证码命令。
+    arg1:
+      label: 验证码
+      description: 验证码
+  captcha.help:
+    description: 查看帮助
+    detailedDescription: 查看/captcha命令的详细帮助。
+    arg1:
+      label: 关键词
+      description: 要查询的命令或内容。
+  verification:
+    description: 验证命令
+    detailedDescription: 完成AuthMe验证过程的命令。
+    arg1:
+      label: 验证码
+      description: 验证码
+  verification.help:
+    description: 查看帮助
+    detailedDescription: 查看/verification命令的详细帮助。
+    arg1:
+      label: 关键词
+      description: 要查询的命令或内容。

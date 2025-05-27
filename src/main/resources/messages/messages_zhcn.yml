@@ -1,25 +1,25 @@
-# 全局标签列表:
+# 全局标签列表：
 # %nl% - 换行。
 # %username% - 替换为接收消息的玩家的名称。
-# %displayname% - 替换为接收消息的玩家的昵称（及其颜色格式）。
+# %displayname% - 替换为接收消息的玩家的昵称(及其颜色格式)。
 
 # 注册
 registration:
-  register_request: '&3请使用命令注册：/register <密码> <再次输入密码进行确认>'
+  register_request: '&3请使用命令注册：/register <密码> <再次输入密码确认>'
   command_usage: '&c用法：/register <密码> <再次输入密码进行确认>'
   reg_only: '&4只有注册过的玩家才能加入服务器！请访问 http://example.com 进行注册！'
-  kicked_admin_registered: '管理员已为你注册；请重新登录。'
+  kicked_admin_registered: '管理员已为你注册，请重新登录。'
   success: '&2注册成功！'
   disabled: '&c已禁用游戏内注册！'
   name_taken: '&c你已经注册了此用户名！'
 
 # 注册时密码错误
 password:
-  match_error: '&c两次输入的密码不一致，请重新检查！'
+  match_error: '&c两次输入的密码不一致，请重试！'
   name_in_password: '&c不能将用户名作为密码，请选择其他密码...'
   unsafe_password: '&c密码安全性较低，请设置为更复杂的密码...'
-  forbidden_characters: '&4你的密码包含非法字符。合法字符：%valid_chars'
-  wrong_length: '&c你的密码长度不符合要求！请选择其他密码！'
+  forbidden_characters: '&4密码包含非法字符。合法字符：%valid_chars'
+  wrong_length: '&c密码长度不符合要求！请选择其他密码！'
 
 # 登录
 login:
@@ -27,16 +27,16 @@ login:
   wrong_password: '&c密码错误！'
   success: '&2登录成功！'
   login_request: '&c请使用命令登录：/login <密码>'
-  timeout_error: '&4登录超时，你已被移出服务器，请重试！'
+  timeout_error: '&4登录超时，你已被踢出服务器，请重试！'
 
 # 错误
 error:
   unregistered_user: '&c该玩家尚未注册！'
-  denied_command: '&c执行此命令前请先完成身份认证！'
-  denied_chat: '&c聊天前请先完成身份认证！'
+  denied_command: '&c执行此命令前请先完成身份验证！'
+  denied_chat: '&c聊天前请先完成身份验证！'
   not_logged_in: '&c你尚未登录！'
   tempban_max_logins: '&c由于登录失败次数过多，你已被临时封禁。'
-  max_registration: '&c你的连接已达到最大账号注册数限制(%reg_count/%max_acc %reg_names)！'
+  max_registration: '&c你已达到账号最大注册数限制(%reg_count/%max_acc %reg_names)！'
   no_permission: '&4你没有权限执行此操作！'
   unexpected_error: '&4发生意外错误，请联系管理员！'
   kick_for_vip: '&3VIP玩家加入导致服务器满员！'
@@ -45,9 +45,9 @@ error:
 
 # 防假人
 antibot:
-  kick_antibot: '已启用防假人保护模式！请等待几分钟后再尝试加入服务器。'
-  auto_enabled: '&4[防假人] 检测到大量连接，已自动启用防假人保护！'
-  auto_disabled: '&2[防假人] 防假人保护已关闭，持续时长 %m 分钟。'
+  kick_antibot: '已启用防假人保护！请等待几分钟后再尝试加入服务器。'
+  auto_enabled: '&4[防假人] 检测到大量连接，已自动启用防护功能！'
+  auto_disabled: '&2[防假人] 防护功能已关闭，持续时长 %m 分钟。'
 
 unregister:
   success: '&c账号注销成功！'
@@ -58,15 +58,15 @@ misc:
   accounts_owned_self: '你拥有 %count 个账号：'
   accounts_owned_other: '玩家 %name 拥有 %count 个账号：'
   account_not_activated: '&c你的账号尚未激活，请检查你的邮箱！'
-  password_changed: '&2密码更改成功！'
+  password_changed: '&2密码修改成功！'
   logout: '&2登出成功！'
-  reload: '&2配置和数据库已成功重载！'
+  reload: '&2配置和数据库已重载！'
   usage_change_password: '&c用法：/changepassword <原密码> <新密码>'
 
 # 会话消息
 session:
-  invalid_session: '&c你的IP地址发生变更，会话数据已失效！'
-  valid_session: '&2会话已恢复，已自动登录。'
+  invalid_session: '&c你的IP地址已变更，会话数据已失效！'
+  valid_session: '&2会话重连，已自动登录。'
 
 # 加入时的错误消息
 on_join_validation:
@@ -75,14 +75,14 @@ on_join_validation:
   country_banned: '&4你所在的国家/地区已被服务器封禁！'
   not_owner_error: '你不是该账号的所有者。请选择其他用户名！'
   kick_full_server: '&4服务器已满，请稍后再试！'
-  same_nick_online: '&4服务器内已存在相同的用户名的玩家！'
+  same_nick_online: '&4服务器内已存在相同用户名的玩家！'
   invalid_name_case: '请使用用户名 %valid 加入，而不是 %invalid。'
-  same_ip_online: '服务器内已存在相同的IP的玩家！'
+  same_ip_online: '服务器内已存在相同IP地址的玩家！'
   quick_command: '执行命令过快！请重新加入服务器并稍后再试。'
 
 # 邮箱
 email:
-  usage_email_add: '&c用法：/email add <邮箱地址> <再次输入邮箱地址进行确认>'
+  usage_email_add: '&c用法：/email add <邮箱地址> <再次输入邮箱地址确认>'
   usage_email_change: '&c用法：/email change <原邮箱> <新邮箱>'
   new_email_invalid: '&c新邮箱地址无效，请重试！'
   old_email_invalid: '&c原邮箱地址无效，请重试！'
@@ -94,29 +94,29 @@ email:
   incomplete_settings: '错误：邮件发送配置不完整。请联系管理员。'
   already_used: '&4该邮箱地址已被其他账号使用'
   send_failure: '邮件发送失败。请联系管理员。'
-  no_email_for_account: '&2你的账号尚未绑定任何邮箱。'
-  add_email_request: '&3请使用命令绑定邮箱：/email add <邮箱地址> <再次输入邮箱地址进行确认>'
+  no_email_for_account: '&2你尚未绑定任何邮箱。'
+  add_email_request: '&3请使用命令绑定邮箱：/email add <邮箱地址> <再次输入邮箱地址确认>'
   change_password_expired: '你不能再使用此命令修改密码。'
   email_cooldown_error: '&c邮件已发送。请等待 %time 后再试。'
-  add_not_allowed: '&c当前不允许绑定新邮箱。'
+  add_not_allowed: '&c当前不允许绑定邮箱。'
   change_not_allowed: '&c当前不允许修改邮箱。'
 
 # 通过邮箱恢复密码
 recovery:
-  forgot_password_hint: '&3忘记密码？请使用命令：/email recovery <邮箱地址>'
+  forgot_password_hint: '&3忘记密码？请使用命令恢复：/email recovery <邮箱地址>'
   command_usage: '&c用法：/email recovery <邮箱地址>'
   email_sent: '&2密码重置邮件已发送，请查收邮箱！'
   code:
     code_sent: '密码重置验证码已发送至你的邮箱。'
     incorrect: '验证码错误！你还有 %count 次尝试机会。'
-    tries_exceeded: '验证码尝试次数超限。请再次使用命令“/email recovery [邮箱]”生成新验证码。'
+    tries_exceeded: '验证码尝试次数超限。请再次使用命令"/email recovery [邮箱]"生成新验证码。'
     correct: '验证码校验成功！'
-    change_password: '请立即使用命令“/email setpassword <新密码>”修改密码。'
+    change_password: '请立即使用命令"/email setpassword <新密码>"修改密码。'
 
 # 验证码
 captcha:
   usage_captcha: '&3登录需输入验证码，请使用命令：/captcha %captcha_code'
-  wrong_captcha: '&c验证码错误，请使用命令：“/captcha %captcha_code”'
+  wrong_captcha: '&c验证码错误，请使用命令：/captcha %captcha_code'
   valid_captcha: '&2验证码校验成功！'
   captcha_for_registration: '注册前需输入验证码，请输入命令：/captcha %captcha_code'
   register_captcha_valid: '&2验证码通过！现在你可以使用命令注册：/register'
@@ -131,18 +131,18 @@ verification:
   code_expired: '&3验证码已过期！请重新触发敏感操作获取新验证码！'
   email_needed: '&3请先绑定邮箱进行身份验证！'
 
-# 双因素身份验证（2FA）
+# 双因素身份验证 (2FA)
 two_factor:
-  code_created: '&2你的安全码为：%code。可访问链接并扫码：%url'
-  confirmation_required: '请使用命令确认安全码：/2fa confirm <安全码>'
-  code_required: '请提交安全码：/2fa code <安全码>'
-  already_enabled: '你的账号已启用双重认证！'
-  enable_error_no_code: '未生成有效安全码。请使用命令：/2fa add'
-  enable_success: '已启用双重认证'
-  enable_error_wrong_code: '验证码错误或过期。请使用命令：/2fa add'
-  not_enabled_error: '未启用双重认证。请使用命令：/2fa add'
-  removed_success: '已关闭双重认证'
-  invalid_code: '无效安全码！'
+  code_created: '&2你的通行密钥为：%code。可访问链接并使用验证器扫描二维码：%url'
+  confirmation_required: '请验证通行密钥：/2fa confirm <令牌>'
+  code_required: '请输入令牌：/2fa code <令牌>'
+  already_enabled: '你已经启用了双重验证！'
+  enable_error_no_code: '未生成有效通行密钥或已过期。请使用命令：/2fa add'
+  enable_success: '已启用双重验证'
+  enable_error_wrong_code: '令牌错误或已过期。请使用命令：/2fa add'
+  not_enabled_error: '未启用双重验证。请使用命令：/2fa add'
+  removed_success: '已关闭双重验证'
+  invalid_code: '令牌无效！'
 
 # 时间单位
 time:
