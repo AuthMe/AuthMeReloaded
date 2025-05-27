@@ -1,3 +1,7 @@
+# AuthMe帮助信息的翻译配置，例如在执行/authme help 或/authme help register 时显示
+
+# -------------------------------------------------------
+# 帮助信息使用的文本列表
 common:
   header: ==========[ AuthMe 帮助 ]==========
   optional: 可选参数
@@ -9,6 +13,11 @@ common:
     notAllowed: 无权限
     opOnly: 仅管理员可用
     allowed: 所有玩家可用
+
+# -------------------------------------------------------
+# 各个帮助信息的标题
+# 将翻译文本设置为空可以禁用该部分，例如隐藏备用选项：
+#   alternatives: ''
 section:
   command: 命令
   description: 描述
@@ -17,6 +26,13 @@ section:
   alternatives: 别名
   permissions: 权限
   children: 子命令
+
+# -------------------------------------------------------
+# 你可以使用以下模板翻译所有命令的数据。
+# 例如，要翻译/authme reload，需创建一个"authme.reload"部分，如果是/login，则创建"login"部分
+# 若命令有参数，可以使用如下的 arg1 来翻译第一个参数，依此类推
+# 翻译不需要完整；任何缺失的部分将自动从默认值获取
+# 注意：像"authme"这样的主命令需要放在其子命令（如"authme.reload"）之前
 commands:
   authme:
     description: AuthMe管理员命令
