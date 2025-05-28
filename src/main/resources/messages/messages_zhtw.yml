@@ -1,159 +1,156 @@
-# Translators: MineWolf50, lifehome, haer0248  #
-# -------------------------------------------- #
-# List of global tags:
-# %nl% - Goes to new line.
-# %username% - Replaces the username of the player receiving the message.
-# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
+# 全域標籤列表：
+# %nl% - 換行。
+# %username% - 替換為接收訊息的玩家名稱。
+# %displayname% - 替換為接收訊息的玩家暱稱(及其顏色格式)。
 
-# Registration
+# 註冊
 registration:
-    disabled: '&b【AuthMe】&6已關閉註冊功能。'
-    name_taken: '&b【AuthMe】&6這個帳號已經被註冊過了！'
-    register_request: '&b【AuthMe】&6請使用 "&c/register <密碼> <確認密碼>" 來註冊。'
-    command_usage: '&b【AuthMe】&6用法: &c"/register <密碼> <確認密碼>"'
-    reg_only: '&b【AuthMe】&6請到下列網站：「 https://example.tw 」進行註冊。'
-    success: '&b【AuthMe】&6您已成功註冊！'
-    kicked_admin_registered: '&b【AuthMe】&6管理員已協助您註冊，請重新登入。'
+  register_request: '&3請使用指令註冊：/register <密碼> <再次輸入密碼確認>'
+  command_usage: '&c用法：/register <密碼> <再次輸入密碼進行確認>'
+  reg_only: '&4只有註冊過的玩家才能加入伺服器！請造訪 http://example.com 進行註冊！'
+  kicked_admin_registered: '管理員已為你註冊，請重新登入。'
+  success: '&2註冊成功！'
+  disabled: '&c已停用遊戲內註冊功能！'
+  name_taken: '&c你已經註冊了此使用者名稱！'
 
-# Password errors on registration
+# 註冊時密碼錯誤
 password:
-    match_error: '&b【AuthMe】&6兩次輸入的密碼不一致！'
-    name_in_password: '&b【AuthMe】&6您不可以用您的 ID (遊戲名稱) 來當作密碼！'
-    unsafe_password: '&b【AuthMe】&6您不可以使用這個不安全的密碼！'
-    forbidden_characters: '&b【AuthMe】&c密碼包含非法字符，可使用：%valid_chars'
-    wrong_length: '&b【AuthMe】&6您的密碼 超過最大字數 / 小於最小字數'
+  match_error: '&c兩次輸入的密碼不一致，請重試！'
+  name_in_password: '&c不能將使用者名稱作為密碼，請選擇其他密碼...'
+  unsafe_password: '&c密碼安全性較低，請設定更複雜的密碼...'
+  forbidden_characters: '&4密碼包含非法字元。合法字元：%valid_chars'
+  wrong_length: '&c密碼長度不符合要求！請選擇其他密碼！'
 
-# Login
+# 登入
 login:
-    command_usage: '&b【AuthMe】&6用法: &c"/login <密碼>"'
-    wrong_password: '&b【AuthMe】&6密碼錯誤！'
-    success: '&b【AuthMe】&6密碼正確，您已成功登入！'
-    login_request: '&b【AuthMe】&6請使用 &c"/login <密碼>" &6來登入。'
-    timeout_error: '&b【AuthMe】&6超過登入時間，請稍後再試一次。'
+  command_usage: '&c用法：/login <密碼>'
+  wrong_password: '&c密碼錯誤！'
+  success: '&2登入成功！'
+  login_request: '&c請使用指令登入：/login <密碼>'
+  timeout_error: '&4登入逾時，你已被踢出伺服器，請重試！'
 
-# Errors
+# 錯誤
 error:
-    denied_command: '&b【AuthMe】&c使用指令之前必須通過驗證！'
-    denied_chat: '&b【AuthMe】&c說話之前必須通過驗證！'
-    unregistered_user: '&b【AuthMe】&6這個帳號還沒有註冊過。'
-    not_logged_in: '&b【AuthMe】&6您還沒有登入！'
-    no_permission: '&b【AuthMe】&6您沒有使用該指令的權限。'
-    unexpected_error: '&b【AuthMe】&6發生錯誤，請聯繫管理員'
-    max_registration: '&b【AuthMe】&6您的 IP 位置所註冊的帳號數量已經達到最大限制。'
-    logged_in: '&b【AuthMe】&6您已經登入了！'
-    kick_for_vip: '&b【AuthMe】&6您已經被請出。&c原因：有 VIP 玩家登入伺服器'
-    kick_unresolved_hostname: '&b【AuthMe】&6無法解析玩家主機名稱。'
-    tempban_max_logins: '&b【AuthMe】&c您已被暫時封鎖IP位置，因為您登入失敗太多次。'
+  unregistered_user: '&c該玩家尚未註冊！'
+  denied_command: '&c執行此指令前請先完成身份驗證！'
+  denied_chat: '&c聊天前請先完成身份驗證！'
+  not_logged_in: '&c你尚未登入！'
+  tempban_max_logins: '&c由於登入失敗次數過多，你已被暫時封鎖。'
+  max_registration: '&c你已達到帳號最大註冊數限制(%reg_count/%max_acc %reg_names)！'
+  no_permission: '&4你沒有權限執行此操作！'
+  unexpected_error: '&4發生意外錯誤，請聯繫管理員！'
+  kick_for_vip: '&3VIP玩家加入導致伺服器滿員！'
+  logged_in: '&c你已經登入了！'
+  kick_unresolved_hostname: '&c出現錯誤：無法解析玩家主機名稱！'
 
-# AntiBot
+# 防假人
 antibot:
-    kick_antibot: '&b【AuthMe】&cAntiBotMod 正在啟用中，請稍後再嘗試登入吧！'
-    auto_enabled: '&b【AuthMe】&6AntiBotMod 已自動啟用！'
-    auto_disabled: '&b【AuthMe】&6AntiBotMod 將於 &c%m &6分鐘後自動關閉'
+  kick_antibot: '已啟用防假人保護！請等待幾分鐘後再嘗試加入伺服器。'
+  auto_enabled: '&4[防假人] 偵測到大量連線，已自動啟用防護功能！'
+  auto_disabled: '&2[防假人] 防護功能已關閉，持續時長 %m 分鐘。'
 
-# Unregister
 unregister:
-    success: '&b【AuthMe】&6您已經成功註銷。'
-    command_usage: '&b【AuthMe】&6用法：&c"/unregister <密碼>"'
+  success: '&c帳號註銷成功！'
+  command_usage: '&c用法：/unregister <密碼>'
 
-# Other messages
+# 其他訊息
 misc:
-    account_not_activated: '&b【AuthMe】&6您的帳號還沒有經過驗證！檢查看看您的電子郵件 (Email) 吧！'
-    password_changed: '&b【AuthMe】&6密碼變更成功！'
-    logout: '&b【AuthMe】&6您已成功登出。'
-    reload: '&b【AuthMe】&6已重新讀取設定檔及資料庫。'
-    usage_change_password: '&b【AuthMe】&6用法：&c"/changepassword <舊密碼> <新密碼>"'
-    accounts_owned_self: '&b【AuthMe】&6您擁有 %count 個帳號：'
-    accounts_owned_other: '&b【AuthMe】&6玩家 %name 擁有 %count 個帳號：'
+  accounts_owned_self: '你擁有 %count 個帳號：'
+  accounts_owned_other: '玩家 %name 擁有 %count 個帳號：'
+  account_not_activated: '&c你的帳號尚未啟用，請檢查你的電子郵件！'
+  password_changed: '&2密碼修改成功！'
+  logout: '&2登出成功！'
+  reload: '&2設定和資料庫已重新載入！'
+  usage_change_password: '&c用法：/changepassword <原密碼> <新密碼>'
 
-# Session messages
+# 工作階段訊息
 session:
-    valid_session: '&b【AuthMe】&6您已經成功登入！'
-    invalid_session: '&b【AuthMe】&6Session驗證不相符！'
+  invalid_session: '&c你的IP位址已變更，工作階段資料已失效！'
+  valid_session: '&2工作階段重新連線，已自動登入。'
 
-# Error messages when joining
+# 加入時的錯誤訊息
 on_join_validation:
-    same_ip_online: '&b【AuthMe】&6相同IP玩家在線上！'
-    same_nick_online: '&b【AuthMe】&6有同樣帳號的玩家在線上！'
-    name_length: '&b【AuthMe】&6您的暱稱 太長 / 太短 了！'
-    characters_in_name: '&b【AuthMe】&6暱稱裡能使用的字符為： %valid_chars'
-    kick_full_server: '&b【AuthMe】&6伺服器已經滿了，請等等再試一次。'
-    country_banned: '&b【AuthMe】&6您所在的地區無法進入此伺服器。'
-    not_owner_error: '&b【AuthMe】&4警告！&c您並不是此帳戶持有人，請立即登出。'
-    invalid_name_case: '&b【AuthMe】&4警告！&c您應該使用「%valid」而並非「%invalid」登入遊戲。'
-    quick_command: '&b【AuthMe】&4指令使用過快，請加入伺服器後稍等一下再使用指令。'
+  name_length: '&4你的使用者名稱長度不符合要求！'
+  characters_in_name: '&4你的使用者名稱包含非法字元。合法字元：%valid_chars'
+  country_banned: '&4你所在的國家/地區已被伺服器封鎖！'
+  not_owner_error: '你不是該帳號的擁有者。請選擇其他使用者名稱！'
+  kick_full_server: '&4伺服器已滿，請稍後再試！'
+  same_nick_online: '&4伺服器內已存在相同使用者名稱的玩家！'
+  invalid_name_case: '請使用使用者名稱 %valid 加入，而不是 %invalid。'
+  same_ip_online: '伺服器內已存在相同IP位址的玩家！'
+  quick_command: '執行指令過快！請重新加入伺服器並稍後再試。'
 
-# Email
+# 電子郵件
 email:
-    add_email_request: '&b【AuthMe】&6請使用 &c"/email add <電子郵件> <再次輸入電子郵件>" &6來新增電子郵件'
-    usage_email_add: '&b【AuthMe】&6用法: &c"/email add <電子郵件> <再次輸入電子郵件>"'
-    usage_email_change: '&b【AuthMe】&6用法: &c"/email change <舊的電子郵件> <新的電子郵件>"'
-    new_email_invalid: '&b【AuthMe】&6新的電子郵件無效！'
-    old_email_invalid: '&b【AuthMe】&6舊的電子郵件無效！'
-    invalid: '&b【AuthMe】&6無效的電子郵件！'
-    added: '&b【AuthMe】&6已新增電子郵件！'
-    add_not_allowed: '&b【AuthMe】&c不允許新增電子郵件'
-    request_confirmation: '&b【AuthMe】&6請驗證您的電子郵件！'
-    changed: '&b【AuthMe】&6電子郵件已變更！'
-    change_not_allowed: '&b【AuthMe】&c不允許變更電子郵件'
-    email_show: '&b【AuthMe】&2目前的電子郵件：&f%email'
-    no_email_for_account: '&b【AuthMe】&2您目前沒有設定電子郵件。'
-    already_used: '&b【AuthMe】&4這個電子郵件已被使用。'
-    incomplete_settings: '&b【AuthMe】&4因為電子郵件設定不完整導致無法傳送，請聯絡管理員。'
-    send_failure: '&b【AuthMe】&4無法傳送電子郵件，請聯絡管理員。'
-    change_password_expired: '&b【AuthMe】&6您現在不能使用這個指令變更密碼了。'
-    email_cooldown_error: '&b【AuthMe】&c電子郵件已經寄出了，您只能在 %time 後才能傳送。'
+  usage_email_add: '&c用法：/email add <電子郵件地址> <再次輸入電子郵件地址確認>'
+  usage_email_change: '&c用法：/email change <原電子郵件> <新電子郵件>'
+  new_email_invalid: '&c新電子郵件地址無效，請重試！'
+  old_email_invalid: '&c原電子郵件地址無效，請重試！'
+  invalid: '&c電子郵件地址無效，請重試！'
+  added: '&2電子郵件地址已成功綁定到你的帳號！'
+  request_confirmation: '&c請先驗證你的電子郵件地址！'
+  changed: '&2電子郵件地址修改成功！'
+  email_show: '&2你當前綁定的電子郵件是：&f%email'
+  incomplete_settings: '錯誤：郵件傳送設定不完整。請聯繫管理員。'
+  already_used: '&4該電子郵件地址已被其他帳號使用'
+  send_failure: '郵件傳送失敗。請聯繫管理員。'
+  no_email_for_account: '&2你尚未綁定任何電子郵件。'
+  add_email_request: '&3請使用指令綁定電子郵件：/email add <電子郵件地址> <再次輸入電子郵件地址確認>'
+  change_password_expired: '你不能再使用此指令修改密碼。'
+  email_cooldown_error: '&c郵件已傳送。請等待 %time 後再試。'
+  add_not_allowed: '&c當前不允許綁定電子郵件。'
+  change_not_allowed: '&c當前不允許修改電子郵件。'
 
-# Password recovery by email
+# 透過電子郵件恢復密碼
 recovery:
-    forgot_password_hint: '&b【AuthMe】&6忘記密碼了嗎？使用 &c"/email recovery <電子郵件>"'
-    command_usage: '&b【AuthMe】&6用法: &c"/email recovery <電子郵件>"'
-    email_sent: '&b【AuthMe】&6已經送出重設密碼要求至您的電子郵件，請查收。'
-    code:
-        code_sent: '&b【AuthMe】&6忘記密碼的恢復密碼電子郵件已傳送至您的信箱中。'
-        incorrect: '&b【AuthMe】&6恢復密碼錯誤！您剩餘 %count 次嘗試機會。'
-        tries_exceeded: '&b【AuthMe】&6恢復密碼過多次數錯誤。使用 "/email recovery [電子郵件]" 取得新的恢復密碼。'
-        correct: '&b【AuthMe】&6恢復密碼正確！'
-        change_password: '&b【AuthMe】&6請使用 "/email setpassword <新密碼>" 變更您的密碼。'
+  forgot_password_hint: '&3忘記密碼？請使用指令恢復：/email recovery <電子郵件地址>'
+  command_usage: '&c用法：/email recovery <電子郵件地址>'
+  email_sent: '&2密碼重設郵件已傳送，請查收電子郵件！'
+  code:
+    code_sent: '密碼重設驗證碼已傳送至你的電子郵件。'
+    incorrect: '驗證碼錯誤！你還有 %count 次嘗試機會。'
+    tries_exceeded: '驗證碼嘗試次數超限。請再次使用指令"/email recovery [電子郵件]"產生新驗證碼。'
+    correct: '驗證碼校驗成功！'
+    change_password: '請立即使用指令"/email setpassword <新密碼>"修改密碼。'
 
-# Captcha
+# 驗證碼
 captcha:
-    usage_captcha: '&b【AuthMe】&6請用 &c"/captcha %captcha_code" &6來輸入您的驗證碼。'
-    wrong_captcha: '&b【AuthMe】&6錯誤的驗證碼，請使用 "/captcha %captcha_code" 再試一次。'
-    valid_captcha: '&b【AuthMe】&6驗證碼無效。'
-    captcha_for_registration: '&b【AuthMe】&6註冊前必須先提供驗證碼，使用 /captcha %captcha_code 來驗證。'
-    register_captcha_valid: '&b【AuthMe】&2驗證已通過，現在可以使用 /register 來進行註冊了。'
+  usage_captcha: '&3登入需輸入驗證碼，請使用指令：/captcha %captcha_code'
+  wrong_captcha: '&c驗證碼錯誤，請使用指令：/captcha %captcha_code'
+  valid_captcha: '&2驗證碼校驗成功！'
+  captcha_for_registration: '註冊前需輸入驗證碼，請輸入指令：/captcha %captcha_code'
+  register_captcha_valid: '&2驗證碼通過！現在你可以使用指令註冊：/register'
 
-# Verification code
+# 電子郵件驗證
 verification:
-    code_required: '&b【AuthMe】&3敏感指令，需要電子郵件驗證後才能執行，請檢查電子郵件。'
-    command_usage: '&b【AuthMe】&c用法：/verification <驗證碼>'
-    incorrect_code: '&b【AuthMe】&c驗證碼錯誤，請在聊天室使用 "/verification <驗證碼>" 電子郵件收到的驗證碼'
-    success: '&b【AuthMe】&2身分已驗證，您現在可以使用所有指令！'
-    already_verified: '&b【AuthMe】&2您已經可以使用所有指令！'
-    code_expired: '&b【AuthMe】&3驗證碼已過期，請使用其他敏感指令來取得新的驗證碼！'
-    email_needed: '&b【AuthMe】&3若需要身分驗證，請先新增電子郵件！'
+  code_required: '&3敏感操作需電子郵件驗證！請查收郵件並按指引操作。'
+  command_usage: '&c用法：/verification <驗證碼>'
+  incorrect_code: '&c驗證碼錯誤，請輸入郵件收到的驗證碼：/verification <驗證碼>'
+  success: '&2身份驗證成功！當前工作階段可執行所有敏感指令！'
+  already_verified: '&2當前工作階段已具備敏感操作權限！'
+  code_expired: '&3驗證碼已過期！請重新觸發敏感操作取得新驗證碼！'
+  email_needed: '&3請先綁定電子郵件進行身份驗證！'
 
-# Time units
-time:
-    second: '秒'
-    seconds: '秒'
-    minute: '分'
-    minutes: '分'
-    hour: '時'
-    hours: '時'
-    day: '天'
-    days: '天'
-
-# Two-factor authentication
+# 雙重因素驗證 (2FA)
 two_factor:
-    code_created: '&b【AuthMe】&b您的登入金鑰為&9「%c%code&9」&b，掃描連結為：&c %url'
-    confirmation_required: '&b【AuthMe】&6請使用 /2fa confirm <驗證碼> 來確認雙重驗證。'
-    code_required: '&b【AuthMe】&c請使用 /2fa code <驗證碼> 來完成驗證。'
-    already_enabled: '&b【AuthMe】&c雙重驗證已經開啟。'
-    enable_error_no_code: '&b【AuthMe】&6雙重驗證代碼不存在或失效，使用 /2fa add 來新增。'
-    enable_success: '&b【AuthMe】&6雙重驗證已開啟！'
-    enable_error_wrong_code: '&b【AuthMe】&6雙重驗證代碼錯誤或失效，使用 /2fa add 來新增。'
-    not_enabled_error: '&b【AuthMe】&6雙重驗證尚未開啟，使用 /2fa add 來開啟。'
-    removed_success: '&b【AuthMe】&6雙重驗證已成功移除！'
-    invalid_code: '&b【AuthMe】&c驗證碼錯誤。'
+  code_created: '&2你的通行金鑰為：%code。可造訪連結並使用驗證器掃描QR碼：%url'
+  confirmation_required: '請驗證通行金鑰：/2fa confirm <令牌>'
+  code_required: '請輸入令牌：/2fa code <令牌>'
+  already_enabled: '你已經啟用了雙重驗證！'
+  enable_error_no_code: '未產生有效通行金鑰或已過期。請使用指令：/2fa add'
+  enable_success: '已啟用雙重驗證'
+  enable_error_wrong_code: '令牌錯誤或已過期。請使用指令：/2fa add'
+  not_enabled_error: '未啟用雙重驗證。請使用指令：/2fa add'
+  removed_success: '已關閉雙重驗證'
+  invalid_code: '令牌無效！'
+
+# 時間單位
+time:
+  second: '秒'
+  seconds: '秒'
+  minute: '分鐘'
+  minutes: '分鐘'
+  hour: '小時'
+  hours: '小時'
+  day: '天'
+  days: '天'
