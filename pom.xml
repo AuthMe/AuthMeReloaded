@@ -485,7 +485,7 @@
         <!-- Multiverse Repo -->
         <repository>
             <id>onarandombox-repo-releases</id>
-            <url>https://repo.onarandombox.com/content/repositories/multiverse/</url>
+            <url>https://repo.onarandombox.com/multiverse-releases</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -495,7 +495,7 @@
         </repository>
         <repository>
             <id>onarandombox-repo-snapshots</id>
-            <url>https://repo.onarandombox.com/content/repositories/multiverse-snapshots/</url>
+            <url>https://repo.onarandombox.com/multiverse-snapshots</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -781,8 +781,8 @@
         <!-- Multi World plugin, https://www.spigotmc.org/resources/multiverse-core.390/ -->
         <dependency>
             <groupId>com.onarandombox.multiversecore</groupId>
-            <artifactId>Multiverse-Core</artifactId>
-            <version>4.3.1</version>
+            <artifactId>multiverse-core</artifactId>
+            <version>4.3.16</version>
             <type>jar</type>
             <scope>provided</scope>
             <exclusions>
