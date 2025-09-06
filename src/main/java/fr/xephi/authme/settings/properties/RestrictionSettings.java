@@ -193,6 +193,22 @@ public final class RestrictionSettings implements SettingsHolder {
     public static final Property<Set<String>> UNRESTRICTED_INVENTORIES =
         newLowercaseStringSetProperty("settings.unrestrictions.UnrestrictedInventories");
 
+    @Comment({
+        "While in unregistered/logged out state, should players be set to spectator mode and",
+        "forced to spectate within a spawn point invisible armor stand, for 0 movement and head",
+        "pitch + yaw? may be more effective than 'allowMovement' at locking the player in place."
+    })
+    public static final Property<Boolean> SPECTATE_STAND_LOGIN =
+        newProperty("settings.restrictions.spectateStandLogin.enabled", false);
+
+    @Comment("Head Yaw position (rotation of X head) for 'spectateStandLogin'.")
+    public static final Property<Double> SPECTATE_HEAD_YAW =
+        newProperty("settings.restrictions.spectateStandLogin.headYaw", 0.0f);
+
+    @Comment("Head Pitch position (rotation of Y head) for 'spectateStandLogin'.")
+    public static final Property<Double> SPECTATE_HEAD_PITCH =
+        newProperty("settings.restrictions.spectateStandLogin.headPitch", 0.0f);
+
     private RestrictionSettings() {
     }
 

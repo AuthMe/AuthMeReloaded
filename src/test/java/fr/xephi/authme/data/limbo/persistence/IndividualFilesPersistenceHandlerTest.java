@@ -115,7 +115,7 @@ public class IndividualFilesPersistenceHandlerTest {
         World world = mock(World.class);
         given(world.getName()).willReturn("player-world");
         Location location = new Location(world, 0.2, 102.25, -89.28, 3.02f, 90.13f);
-        LimboPlayer limbo = new LimboPlayer(location, true, Collections.singletonList(new UserGroup("primary-grp")), true, 1.2f, 0.8f);
+        LimboPlayer limbo = new LimboPlayer(location, true, Collections.singletonList(new UserGroup("primary-grp")), true, 1.2f, 0.8f, player.getGameMode());
 
         // when
         handler.saveLimboPlayer(player, limbo);
