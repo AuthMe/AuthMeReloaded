@@ -463,7 +463,7 @@
         <!-- ProtocolLib Repo -->
         <repository>
             <id>dmulloy2-repo-releases</id>
-            <url>https://repo.dmulloy2.net/nexus/repository/releases/</url>
+            <url>https://repo.dmulloy2.net/repository/releases/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -473,7 +473,7 @@
         </repository>
         <repository>
             <id>dmulloy2-repo-snapshots</id>
-            <url>https://repo.dmulloy2.net/nexus/repository/snapshots/</url>
+            <url>https://repo.dmulloy2.net/repository/snapshots/</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -702,7 +702,7 @@
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
-            <version>5.1.0</version>
+            <version>5.3.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
