@@ -14,6 +14,7 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.SessionService;
+import fr.xephi.authme.service.SpectateLoginService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.service.bungeecord.MessageType;
@@ -38,7 +39,7 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_IN
  * Asynchronous process for when a player joins.
  */
 public class AsynchronousJoin implements AsynchronousProcess {
-    
+
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(AsynchronousJoin.class);
 
     @Inject
@@ -79,6 +80,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     @Inject
     private ProxySessionManager proxySessionManager;
+
+    @Inject
+    private SpectateLoginService spectateLoginService;
 
     AsynchronousJoin() {
     }
@@ -178,7 +182,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
      * Performs various operations in sync mode for an unauthenticated player (such as blindness effect and
      * limbo player creation).
      *
-     * @param player the player to process
+     * @param player          the player to process
      * @param isAuthAvailable true if the player is registered, false otherwise
      */
     private void processJoinSync(Player player, boolean isAuthAvailable) {
@@ -196,6 +200,13 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 int blindTimeOut = (registrationTimeout <= 0) ? 99999 : registrationTimeout;
                 player.addPotionEffect(bukkitService.createBlindnessEffect(blindTimeOut));
             }
+
+            if (service.getProperty(RestrictionSettings.SPECTATE_STAND_LOGIN)) {
+                // The delay is necessary in order to make sure that the player is teleported to spawn
+                // and after authorization appears in the same place
+                bukkitService.runTaskLater(() -> spectateLoginService.createStand(player), 1L);
+            }
+
             commandManager.runCommandsOnJoin(player);
         });
     }
@@ -206,7 +217,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
      *
      * @param player the player to verify
      * @param ip     the ip address of the player
-     *
      * @return true if the verification is OK (no infraction), false if player has been kicked
      */
     private boolean validatePlayerCountForIp(Player player, String ip) {
