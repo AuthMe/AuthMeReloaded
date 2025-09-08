@@ -146,7 +146,12 @@ public class TeleportationService implements Reloadable {
                 teleportBackFromSpawn(player, location);
             } else if (limbo != null && limbo.getLocation() != null) {
                 logger.debug("Teleporting `{0}` after login, based on the limbo player", player.getName());
-                teleportBackFromSpawn(player, limbo.getLocation());
+                //check for essential's quit location exists
+                Location location = spawnLoader.getEssentialsQuitLocation(player);
+                if(location != null)
+                    teleportBackFromSpawn(player, location);
+                else
+                    teleportBackFromSpawn(player, limbo.getLocation());
             }
         }
     }
