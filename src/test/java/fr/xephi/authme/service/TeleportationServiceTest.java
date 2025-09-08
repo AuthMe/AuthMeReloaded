@@ -7,6 +7,7 @@ import fr.xephi.authme.events.FirstSpawnTeleportEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -70,6 +71,8 @@ public class TeleportationServiceTest {
     public void shouldNotTeleportPlayerOnJoin() {
         // given
         given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(true);
+        given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
+        
         Player player = mock(Player.class);
 
         // when
@@ -104,6 +107,8 @@ public class TeleportationServiceTest {
     public void shouldTeleportPlayerToSpawn() {
         // given
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
+        given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
+        
         Player player = mock(Player.class);
         given(player.isOnline()).willReturn(true);
         Location spawn = mockLocation();
@@ -171,6 +176,8 @@ public class TeleportationServiceTest {
         Location spawn = mockLocation();
         given(spawnLoader.getSpawnLocation(player)).willReturn(spawn);
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
+        given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
+        
         doAnswer(invocation -> {
             SpawnTeleportEvent event = (SpawnTeleportEvent) invocation.getArguments()[0];
             assertThat(event.getPlayer(), equalTo(player));
@@ -194,6 +201,8 @@ public class TeleportationServiceTest {
         Location spawn = mockLocation();
         given(spawnLoader.getSpawnLocation(player)).willReturn(spawn);
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
+        given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
+        
         doAnswer(invocation -> {
             SpawnTeleportEvent event = (SpawnTeleportEvent) invocation.getArguments()[0];
             assertThat(event.getPlayer(), equalTo(player));
