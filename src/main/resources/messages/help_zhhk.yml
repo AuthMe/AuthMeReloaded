@@ -1,45 +1,45 @@
-# Translation config for the AuthMe help, e.g. when /authme help or /authme help register is called
+# AuthMe 幫助文本翻譯配置，例如輸入 /authme help 或 /authme help register 時調用
 
 # -------------------------------------------------------
-# List of texts used in the help section
+# 幫助章節使用的文本列表
 common:
-    header: '==========[ 登入系統指南 ]=========='
-    optional: '選填'
-    hasPermission: '你擁有此權限節點'
-    noPermission: '你並沒有此權限節點'
-    default: '預設權限'
-    result: '你的權限'
+    header: '==========[ AuthMe 幫助 ]=========='
+    optional: '可選參數'
+    hasPermission: '你有權限'
+    noPermission: '無權限'
+    default: '預設值'
+    result: '執行結果'
     defaultPermissions:
-        notAllowed: '你並沒有此權限節點'
-        opOnly: '伺服器操作員限定'
-        allowed: '開放給所有玩家'
+        notAllowed: '無權限'
+        opOnly: '僅管理員可用'
+        allowed: '所有玩家可用'
 
 # -------------------------------------------------------
-# Titles of the individual help sections
-# Set the translation text to empty text to disable the section, e.g. to hide alternatives:
+# 各幫助章節標題
+# 如需禁用某個章節可設置為空值，例如隱藏替代命令：
 #   alternatives: ''
 section:
     command: '指令'
-    description: '簡述'
-    detailedDescription: '詳述'
+    description: '描述'
+    detailedDescription: '詳細說明'
     arguments: '參數'
     permissions: '權限'
     alternatives: '替代指令'
-    children: '指令集'
+    children: '子指令'
 
 # -------------------------------------------------------
-# You can translate the data for all commands using the below pattern.
-# For example to translate /authme reload, create a section "authme.reload", or "login" for /login
-# If the command has arguments, you can use arg1 as below to translate the first argument, and so forth
-# Translations don't need to be complete; any missing section will be taken from the default silently
-# Important: Put main commands like "authme" before their children (e.g. "authme.reload")
+# 以下為所有指令的翻譯模板。
+# 例如翻譯 /authme reload 指令可創建「authme.reload」段落，/login 指令對應「login」
+# 若指令包含參數，使用 arg1 表示第一個參數（如下示例），以此類推
+# 翻譯不必完整；任何缺失的部分將以靜默方式從預設值中獲取
+# 注意：主指令（如「authme」）必須排列在子指令（如「authme.reload」）之前
 commands:
     authme.register:
-        description: '登記一個新的玩家帳戶'
-        detailedDescription: '透過管理員身份，將一個玩家帳戶以指定的密碼註冊'
+        description: '註冊玩家帳號'
+        detailedDescription: '為指定玩家創建帳號並設定密碼。'
         arg1:
-            label: 'player'
+            label: '玩家'
             description: '玩家名稱'
         arg2:
-            label: 'password'
-            description: '密碼'
+            label: '密碼'
+            description: '登入密碼'
