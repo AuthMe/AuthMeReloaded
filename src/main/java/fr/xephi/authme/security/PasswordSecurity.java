@@ -82,9 +82,8 @@ public class PasswordSecurity implements Reloadable {
      * @return True if the password matches, false otherwise
      */
     public boolean comparePassword(String password, HashedPassword hashedPassword, String playerName) {
-        String playerLowerCase = playerName.toLowerCase(Locale.ROOT);
-        return methodMatches(encryptionMethod, password, hashedPassword, playerLowerCase)
-            || compareWithLegacyHashes(password, hashedPassword, playerLowerCase);
+        return methodMatches(encryptionMethod, password, hashedPassword, playerName)
+            || compareWithLegacyHashes(password, hashedPassword, playerName);
     }
 
     /**
