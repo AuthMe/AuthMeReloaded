@@ -1,108 +1,128 @@
-# AuthmeReloaded帮助文件汉化
-# Translated By CH1
+# AuthmeReloaded插件help文件'帮助信息'的简体中文文本配置
+# 对应/authme help 或/authme help register指令
+# Translated By LASER_ZY
+# 2025/10/1
 # -------------------------------------------------------
+# 帮助信息所使用的文本列表
 common:
-    header: '==========[ AuthMeReloaded ]=========='
-    optional: '可选'
-    hasPermission: '您拥有权限去使用这个指令'
-    noPermission: '您没有权限使用这个指令'
+    header: '==========[ AuthMeReloaded 帮助列表 ]=========='
+    optional: '可选参数'
+    hasPermission: '已拥有操作权限'
+    noPermission: '无操作权限'
     default: '默认'
-    result: '您的权限'
+    result: '当前权限状态'
     defaultPermissions:
-        notAllowed: '任何人不能使用'
-        opOnly: 'OP拥有此权限'
-        allowed: '所有人都可以使用'
-
-
+        notAllowed: '无权限'
+        opOnly: '仅管理员可用'
+        allowed: '全体可用'
+# -------------------------------------------------------
+# 各帮助信息的标题
+# 将翻译文本设置为空可以禁用该部分
+# 示例如下
+#   alternatives: ''
 section:
     command: '指令'
-    description: '功能'
-    detailedDescription: '功能详情'
+    description: '功能描述'
+    detailedDescription: '详细说明'
     arguments: '参数'
     permissions: '权限'
     alternatives: '别名'
     children: '子命令'
-
-
+# -------------------------------------------------------
+# 你可以使用以下模板翻译所有指令的数据
+# 例如，要翻译/authme reload，需创建一个"authme.reload"部分，如果是/login，则创建"login"部分
+# 若命令有参数，可以使用 arg1 来翻译第一个参数， arg2 来翻译第二个参数，依此类推
+# 翻译不需要完整；缺失的部分将自动从默认值中获取
+# 注意：像"authme"这样的主命令需要放在其子命令（如"authme.reload"）之前
+# 示例如下
+#authme.reload:
+#        description: '重新加载插件'
+#        detailedDescription: '重新加载插件你还要我怎么详细描述？'
+#        arg1:
+#            label: 'XX'
+#            description: 'XX'
+#        arg2:
+#            label: 'XX'
+#            description: 'XX'
 commands:
     authme.register:
-        description: '注册一个玩家'
-        detailedDescription: '注册一个玩家'
+        description: '注册玩家档案'
+        detailedDescription: '为指定的玩家注册账号档案并设置登录密码'
         arg1:
             label: '玩家'
             description: '玩家名称'
         arg2:
             label: '密码'
-            description: '密码'
+            description: '登录密码'
     authme.unregister:
-        description: '注销一个玩家'
-        detailedDescription: '注销一个玩家'
+        description: '注销玩家档案'
+        detailedDescription: '为指定玩家注销账号档案'
         arg1:
             label: '玩家'
-            description: '玩家'
+            description: '玩家名称'
     authme.forcelogin:
-        description: '强制玩家重新登录'
-        detailedDescription: '强制使指定玩家重新登录'
+        description: '强制玩家登录'
+        detailedDescription: '强制使指定玩家登录'
         arg1:
             label: '玩家'
-            description: '玩家'
+            description: '当前在线玩家的名称'
     authme.password:
-        description: '改变某个玩家的密码'
-        detailedDescription: '改变某个玩家的密码'
+        description: '改变玩家密码'
+        detailedDescription: '改变指定玩家的登录密码'
         arg1:
             label: '玩家'
-            description: '玩家'
+            description: '玩家名称'
         arg2:
             label: '新密码'
             description: '新密码'
     authme.lastlogin:
         description: '查看玩家最后登录时间'
-        detailedDescription: '查看玩家最后登录时间'
+        detailedDescription: '查看指定玩家最后一次登录的时间'
         arg1:
             label: '玩家'
-            description: '玩家'
+            description: '玩家名称'
     authme.accounts:
-        description: '查看玩家IP下的账户'
-        detailedDescription: '查看玩家IP下的账户'
+        description: '查看玩家档案'
+        detailedDescription: '按玩家名称或IP地址显示玩家的所有账号档案'
         arg1:
-            label: '玩家或IP'
-            description: '玩家或IP'
+            label: '玩家/IP'
+            description: '玩家名称或IP地址'
     authme.email:
-        description: '查看玩家的邮箱'
-        detailedDescription: '查看玩家的邮箱'
+        description: '查看玩家邮箱'
+        detailedDescription: '显示指定玩家绑定的邮箱地址'
         arg1:
             label: '玩家'
             description: '玩家'
     authme.setemail:
-        description: '改变玩家的邮箱'
-        detailedDescription: '改变玩家的邮箱'
+        description: '更改玩家邮箱'
+        detailedDescription: '更改指定玩家的邮箱地址'
         arg1:
             label: '玩家'
-            description: '玩家'
+            description: '玩家名称'
         arg2:
             label: '邮箱'
             description: '邮箱'
     authme.getip:
         description: '获取玩家IP'
-        detailedDescription: '获取玩家IP'
+        detailedDescription: '获取指定在线玩家的IP地址'
         arg1:
             label: '玩家'
-            description: '玩家'
+            description: '在线玩家名称'
     authme.spawn:
         description: '传送到AuthMe出生点'
         detailedDescription: '传送到AuthMe出生点'
     authme.setspawn:
         description: '改变AuthMe出生点'
-        detailedDescription: '改变AuthMe出生点'
+        detailedDescription: '将AuthMe出生点更改为你当前所处的位置'
     authme.firstspawn:
-        description: '传送到第一次进入游戏出生点'
-        detailedDescription: '传送到第一次进入游戏出生点'
+        description: '传送至第一出生点'
+        detailedDescription: '传送至第一出生点'
     authme.setfirstspawn:
-        description: '设置第一次进入游戏的出生点'
-        detailedDescription: '设置第一次进入游戏的出生点'
+        description: '更改第一出生点'
+        detailedDescription: '将第一出生点更改为你当前所处的位置'
     authme.purge:
-        description: '删除指定天数之前没登录的玩家登陆数据'
-        detailedDescription: '删除指定天数之前没登录的玩家登陆数据'
+        description: '删除指定天数没登录的玩家登陆数据'
+        detailedDescription: '删除指定天数没登录的玩家登陆数据'
         arg1:
             label: '天数'
             description: '天数'
