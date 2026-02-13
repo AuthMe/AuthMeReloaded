@@ -74,13 +74,14 @@ public class PasswordRecoveryService implements Reloadable, HasCleanup {
         }
 
         String recoveryCode = recoveryCodeService.generateCode(player.getName());
-        boolean couldSendMail = emailService.sendRecoveryCode(player.getName(), email, recoveryCode);
-        if (couldSendMail) {
-            commonService.send(player, MessageKey.RECOVERY_CODE_SENT);
-            emailCooldown.add(player.getName().toLowerCase(Locale.ROOT));
-        } else {
-            commonService.send(player, MessageKey.EMAIL_SEND_FAILURE);
-        }
+        emailService.sendRecoveryCode(player.getName(), email, recoveryCode, couldSendMail -> {
+            if (couldSendMail) {
+                commonService.send(player, MessageKey.RECOVERY_CODE_SENT);
+                emailCooldown.add(player.getName().toLowerCase(Locale.ROOT));
+            } else {
+                commonService.send(player, MessageKey.EMAIL_SEND_FAILURE);
+            }
+        });
     }
 
     /**
@@ -102,13 +103,14 @@ public class PasswordRecoveryService implements Reloadable, HasCleanup {
         logger.info("Generating new password for '" + name + "'");
 
         dataSource.updatePassword(name, hashNew);
-        boolean couldSendMail = emailService.sendPasswordMail(name, email, thePass);
-        if (couldSendMail) {
-            commonService.send(player, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
-            emailCooldown.add(player.getName().toLowerCase(Locale.ROOT));
-        } else {
-            commonService.send(player, MessageKey.EMAIL_SEND_FAILURE);
-        }
+        emailService.sendPasswordMail(name, email, thePass, couldSendMail -> {
+            if (couldSendMail) {
+                commonService.send(player, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
+                emailCooldown.add(player.getName().toLowerCase(Locale.ROOT));
+            } else {
+                commonService.send(player, MessageKey.EMAIL_SEND_FAILURE);
+            }
+        });
     }
 
     /**

@@ -5,6 +5,7 @@ import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
@@ -18,9 +19,11 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.stubbing.Answer;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.function.Consumer;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -28,10 +31,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -49,6 +52,8 @@ public class EmailServiceTest {
     private SendMailSsl sendMailSsl;
     @DataFolder
     private File dataFolder;
+    @Mock
+    private BukkitService bukkitService;
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -65,6 +70,14 @@ public class EmailServiceTest {
         given(settings.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("mail@example.org");
         given(settings.getProperty(EmailSettings.MAIL_PASSWORD)).willReturn("pass1234");
         given(sendMailSsl.hasAllInformation()).willReturn(true);
+
+        Answer<Void> runRunnable = invocation -> {
+            Runnable r = invocation.getArgument(0);
+            r.run();
+            return null;
+        };
+        doAnswer(runRunnable).when(bukkitService).runTaskAsynchronously(any(Runnable.class));
+        doAnswer(runRunnable).when(bukkitService).runTask(any(Runnable.class));
     }
 
     @Test
@@ -82,12 +95,13 @@ public class EmailServiceTest {
         HtmlEmail email = mock(HtmlEmail.class);
         given(sendMailSsl.initializeMail(anyString())).willReturn(email);
         given(sendMailSsl.sendEmail(anyString(), eq(email))).willReturn(true);
+        Consumer<Boolean> callback = mock(Consumer.class);
 
         // when
-        boolean result = emailService.sendPasswordMail("Player", "user@example.com", "new_password");
+        emailService.sendPasswordMail("Player", "user@example.com", "new_password", callback);
 
         // then
-        assertThat(result, equalTo(true));
+        verify(callback).accept(true);
         verify(sendMailSsl).initializeMail("user@example.com");
         ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
         verify(sendMailSsl).sendEmail(messageCaptor.capture(), eq(email));
@@ -99,12 +113,13 @@ public class EmailServiceTest {
     public void shouldHandleMailCreationError() throws EmailException {
         // given
         doThrow(EmailException.class).when(sendMailSsl).initializeMail(anyString());
+        Consumer<Boolean> callback = mock(Consumer.class);
 
         // when
-        boolean result = emailService.sendPasswordMail("Player", "user@example.com", "new_password");
+        emailService.sendPasswordMail("Player", "user@example.com", "new_password", callback);
 
         // then
-        assertThat(result, equalTo(false));
+        verify(callback).accept(false);
         verify(sendMailSsl).initializeMail("user@example.com");
         verify(sendMailSsl, never()).sendEmail(anyString(), any(HtmlEmail.class));
     }
@@ -117,12 +132,13 @@ public class EmailServiceTest {
         HtmlEmail email = mock(HtmlEmail.class);
         given(sendMailSsl.initializeMail(anyString())).willReturn(email);
         given(sendMailSsl.sendEmail(anyString(), any(HtmlEmail.class))).willReturn(false);
+        Consumer<Boolean> callback = mock(Consumer.class);
 
         // when
-        boolean result = emailService.sendPasswordMail("bobby", "user@example.com", "myPassw0rd");
+        emailService.sendPasswordMail("bobby", "user@example.com", "myPassw0rd", callback);
 
         // then
-        assertThat(result, equalTo(false));
+        verify(callback).accept(false);
         verify(sendMailSsl).initializeMail("user@example.com");
         ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
         verify(sendMailSsl).sendEmail(messageCaptor.capture(), eq(email));
@@ -138,12 +154,13 @@ public class EmailServiceTest {
         HtmlEmail email = mock(HtmlEmail.class);
         given(sendMailSsl.initializeMail(anyString())).willReturn(email);
         given(sendMailSsl.sendEmail(anyString(), any(HtmlEmail.class))).willReturn(true);
+        Consumer<Boolean> callback = mock(Consumer.class);
 
         // when
-        boolean result = emailService.sendRecoveryCode("Timmy", "tim@example.com", "12C56A");
+        emailService.sendRecoveryCode("Timmy", "tim@example.com", "12C56A", callback);
 
         // then
-        assertThat(result, equalTo(true));
+        verify(callback).accept(true);
         verify(sendMailSsl).initializeMail("tim@example.com");
         ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
         verify(sendMailSsl).sendEmail(messageCaptor.capture(), eq(email));
@@ -154,12 +171,13 @@ public class EmailServiceTest {
     public void shouldHandleMailCreationErrorForRecoveryCode() throws EmailException {
         // given
         given(sendMailSsl.initializeMail(anyString())).willThrow(EmailException.class);
+        Consumer<Boolean> callback = mock(Consumer.class);
 
         // when
-        boolean result = emailService.sendRecoveryCode("Player", "player@example.org", "ABC1234");
+        emailService.sendRecoveryCode("Player", "player@example.org", "ABC1234", callback);
 
         // then
-        assertThat(result, equalTo(false));
+        verify(callback).accept(false);
         verify(sendMailSsl).initializeMail("player@example.org");
         verify(sendMailSsl, never()).sendEmail(anyString(), any(HtmlEmail.class));
     }
@@ -169,16 +187,16 @@ public class EmailServiceTest {
         // given
         given(settings.getProperty(SecuritySettings.RECOVERY_CODE_HOURS_VALID)).willReturn(7);
         given(settings.getRecoveryCodeEmailMessage()).willReturn("Hi <playername />, your code is <recoverycode />");
-        EmailService sendMailSpy = spy(emailService);
         HtmlEmail email = mock(HtmlEmail.class);
         given(sendMailSsl.initializeMail(anyString())).willReturn(email);
         given(sendMailSsl.sendEmail(anyString(), any(HtmlEmail.class))).willReturn(false);
+        Consumer<Boolean> callback = mock(Consumer.class);
 
         // when
-        boolean result = sendMailSpy.sendRecoveryCode("John", "user@example.com", "1DEF77");
+        emailService.sendRecoveryCode("John", "user@example.com", "1DEF77", callback);
 
         // then
-        assertThat(result, equalTo(false));
+        verify(callback).accept(false);
         verify(sendMailSsl).initializeMail("user@example.com");
         ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
         verify(sendMailSsl).sendEmail(messageCaptor.capture(), eq(email));

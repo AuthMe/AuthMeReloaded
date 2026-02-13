@@ -15,9 +15,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
+import java.util.function.Consumer;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -62,15 +67,21 @@ public class PasswordRecoveryServiceTest {
         given(player.getName()).willReturn(name);
         String email = "test@example.com";
         String code = "qwerty";
+        
         given(codeService.generateCode(name)).willReturn(code);
-        given(emailService.sendRecoveryCode(player.getName(), email, code)).willReturn(true);
+
+        doAnswer(invocation -> {
+            Consumer<Boolean> callback = invocation.getArgument(3);
+            callback.accept(true);
+            return null;
+        }).when(emailService).sendRecoveryCode(eq(name), eq(email), eq(code), any(Consumer.class));
 
         // when
         recoveryService.createAndSendRecoveryCode(player, email);
 
         // then
         verify(codeService).generateCode(name);
-        verify(emailService).sendRecoveryCode(name, email, code);
+        verify(emailService).sendRecoveryCode(eq(name), eq(email), eq(code), any(Consumer.class));
         verify(commonService).send(player, MessageKey.RECOVERY_CODE_SENT);
     }
 

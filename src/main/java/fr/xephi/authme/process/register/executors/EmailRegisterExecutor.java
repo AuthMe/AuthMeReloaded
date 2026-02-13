@@ -64,13 +64,15 @@ class EmailRegisterExecutor implements RegistrationExecutor<EmailRegisterParams>
     @Override
     public void executePostPersistAction(EmailRegisterParams params) {
         Player player = params.getPlayer();
-        boolean couldSendMail = emailService.sendPasswordMail(
-            player.getName(), params.getEmail(), params.getPassword());
-        if (couldSendMail) {
-            syncProcessManager.processSyncEmailRegister(player);
-        } else {
-            commonService.send(player, MessageKey.EMAIL_SEND_FAILURE);
-        }
+        emailService.sendPasswordMail(
+            player.getName(), params.getEmail(), params.getPassword(),
+            couldSendMail -> {
+                if (couldSendMail) {
+                    syncProcessManager.processSyncEmailRegister(player);
+                } else {
+                    commonService.send(player, MessageKey.EMAIL_SEND_FAILURE);
+                }
+            });
     }
 
 }

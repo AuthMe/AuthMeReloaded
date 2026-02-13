@@ -18,14 +18,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.function.Consumer;
+
 import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -127,7 +132,12 @@ public class EmailRegisterExecutorTest {
     @Test
     public void shouldPerformActionAfterDataSourceSave() {
         // given
-        given(emailService.sendPasswordMail(anyString(), anyString(), anyString())).willReturn(true);
+        doAnswer(invocation -> {
+            Consumer<Boolean> callback = invocation.getArgument(3);
+            callback.accept(true);
+            return null;
+        }).when(emailService).sendPasswordMail(anyString(), anyString(), anyString(), any(Consumer.class));
+
         Player player = mock(Player.class);
         given(player.getName()).willReturn("Laleh");
         EmailRegisterParams params = EmailRegisterParams.of(player, "test@example.com");
@@ -138,14 +148,19 @@ public class EmailRegisterExecutorTest {
         executor.executePostPersistAction(params);
 
         // then
-        verify(emailService).sendPasswordMail("Laleh", "test@example.com", password);
+        verify(emailService).sendPasswordMail(eq("Laleh"), eq("test@example.com"), eq(password), any(Consumer.class));
         verify(syncProcessManager).processSyncEmailRegister(player);
     }
 
     @Test
     public void shouldHandleEmailSendingFailure() {
         // given
-        given(emailService.sendPasswordMail(anyString(), anyString(), anyString())).willReturn(false);
+        doAnswer(invocation -> {
+            Consumer<Boolean> callback = invocation.getArgument(3);
+            callback.accept(false);
+            return null;
+        }).when(emailService).sendPasswordMail(anyString(), anyString(), anyString(), any(Consumer.class));
+
         Player player = mock(Player.class);
         given(player.getName()).willReturn("Laleh");
         EmailRegisterParams params = EmailRegisterParams.of(player, "test@example.com");
@@ -156,7 +171,7 @@ public class EmailRegisterExecutorTest {
         executor.executePostPersistAction(params);
 
         // then
-        verify(emailService).sendPasswordMail("Laleh", "test@example.com", password);
+        verify(emailService).sendPasswordMail(eq("Laleh"), eq("test@example.com"), eq(password), any(Consumer.class));
         verify(commonService).send(player, MessageKey.EMAIL_SEND_FAILURE);
         verifyNoInteractions(syncProcessManager);
     }

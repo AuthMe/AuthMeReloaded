@@ -3,6 +3,7 @@ package fr.xephi.authme.mail;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
@@ -17,6 +18,7 @@ import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.util.function.Consumer;
 
 /**
  * Creates emails and sends them.
@@ -28,12 +30,15 @@ public class EmailService {
     private final File dataFolder;
     private final Settings settings;
     private final SendMailSsl sendMailSsl;
+    private final BukkitService bukkitService;
 
     @Inject
-    EmailService(@DataFolder File dataFolder, Settings settings, SendMailSsl sendMailSsl) {
+    EmailService(@DataFolder File dataFolder, Settings settings, SendMailSsl sendMailSsl,
+                 BukkitService bukkitService) {
         this.dataFolder = dataFolder;
         this.settings = settings;
         this.sendMailSsl = sendMailSsl;
+        this.bukkitService = bukkitService;
     }
 
     public boolean hasAllInformation() {
@@ -47,14 +52,22 @@ public class EmailService {
      * @param name the name of the player
      * @param mailAddress the player's email
      * @param newPass the new password
-     * @return true if email could be sent, false otherwise
+     * @param callback consumer processing the result (true=success)
      */
-    public boolean sendPasswordMail(String name, String mailAddress, String newPass) {
+    public void sendPasswordMail(String name, String mailAddress, String newPass, Consumer<Boolean> callback) {
         if (!hasAllInformation()) {
             logger.warning("Cannot perform email registration: not all email settings are complete");
-            return false;
+            callback.accept(false);
+            return;
         }
 
+        bukkitService.runTaskAsynchronously(() -> {
+            boolean result = sendPasswordMailBlocking(name, mailAddress, newPass);
+            bukkitService.runTask(() -> callback.accept(result));
+        });
+    }
+
+    private boolean sendPasswordMailBlocking(String name, String mailAddress, String newPass) {
         HtmlEmail email;
         try {
             email = sendMailSsl.initializeMail(mailAddress);
@@ -87,14 +100,22 @@ public class EmailService {
      * @param name the name of the player
      * @param mailAddress the player's email
      * @param code the verification code
-     * @return true if email could be sent, false otherwise
+     * @param callback consumer processing the result (true=success)
      */
-    public boolean sendVerificationMail(String name, String mailAddress, String code) {
+    public void sendVerificationMail(String name, String mailAddress, String code, Consumer<Boolean> callback) {
         if (!hasAllInformation()) {
             logger.warning("Cannot send verification email: not all email settings are complete");
-            return false;
+            callback.accept(false);
+            return;
         }
 
+        bukkitService.runTaskAsynchronously(() -> {
+            boolean result = sendVerificationMailBlocking(name, mailAddress, code);
+            bukkitService.runTask(() -> callback.accept(result));
+        });
+    }
+
+    private boolean sendVerificationMailBlocking(String name, String mailAddress, String code) {
         HtmlEmail email;
         try {
             email = sendMailSsl.initializeMail(mailAddress);
@@ -114,9 +135,16 @@ public class EmailService {
      * @param name the name of the player
      * @param email the player's email address
      * @param code the recovery code
-     * @return true if email could be sent, false otherwise
+     * @param callback consumer processing the result (true=success)
      */
-    public boolean sendRecoveryCode(String name, String email, String code) {
+    public void sendRecoveryCode(String name, String email, String code, Consumer<Boolean> callback) {
+        bukkitService.runTaskAsynchronously(() -> {
+            boolean result = sendRecoveryCodeBlocking(name, email, code);
+            bukkitService.runTask(() -> callback.accept(result));
+        });
+    }
+
+    private boolean sendRecoveryCodeBlocking(String name, String email, String code) {
         HtmlEmail htmlEmail;
         try {
             htmlEmail = sendMailSsl.initializeMail(email);

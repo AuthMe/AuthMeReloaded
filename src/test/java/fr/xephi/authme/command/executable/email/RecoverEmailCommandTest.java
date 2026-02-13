@@ -27,7 +27,6 @@ import java.util.Locale;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskAsynchronously;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -178,7 +177,6 @@ public class RecoverEmailCommandTest {
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(name);
         given(emailService.hasAllInformation()).willReturn(true);
-        given(emailService.sendRecoveryCode(anyString(), anyString(), anyString())).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         String email = "v@example.com";
         given(dataSource.getEmail(name)).willReturn(DataSourceValueImpl.of(email));
@@ -203,7 +201,6 @@ public class RecoverEmailCommandTest {
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(name);
         given(emailService.hasAllInformation()).willReturn(true);
-        given(emailService.sendPasswordMail(anyString(), anyString(), anyString())).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         String email = "vulture@example.com";
         given(dataSource.getEmail(name)).willReturn(DataSourceValueImpl.of(email));
