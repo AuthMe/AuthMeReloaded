@@ -150,6 +150,7 @@ public class SendMailSsl {
                 email.setSSLOnConnect(true);
                 break;
             default:
+                email.setSslSmtpPort(Integer.toString(port));
                 email.setStartTLSEnabled(true);
                 email.setSSLOnConnect(true);
                 email.setSSLCheckServerIdentity(true);
