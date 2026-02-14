@@ -15,6 +15,7 @@ import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -99,7 +100,7 @@ public class DataStatisticsTest {
     public void shouldOutputCachedDataSourceStatistics() {
         // given
         CacheDataSource cacheDataSource = mock(CacheDataSource.class);
-        LoadingCache<String, Optional<PlayerAuth>> cache = mock(LoadingCache.class);
+        LoadingCache<@NotNull String, @NotNull Optional<PlayerAuth>> cache = mock(LoadingCache.class);
         given(cache.size()).willReturn(11L);
         given(cacheDataSource.getCachedAuths()).willReturn(cache);
         ReflectionTestUtils.setField(DataStatistics.class, dataStatistics, "dataSource", cacheDataSource);

@@ -49,9 +49,9 @@ public abstract class AbstractEncryptionMethodTest {
         "true".equals(System.getProperty("project.skipExtendedHashTests"));
 
     /** The encryption method to test. */
-    private EncryptionMethod method;
+    private final EncryptionMethod method;
     /** Map with the hashes against which the entries in GIVEN_PASSWORDS are tested. */
-    private Map<String, HashedPassword> hashes;
+    private final Map<String, HashedPassword> hashes;
 
     /**
      * Creates a new test for the given encryption method. This is for encryption methods that do not have
@@ -125,7 +125,7 @@ public abstract class AbstractEncryptionMethodTest {
 
         // Note #375: Windows console seems to use its own character encoding (Windows-1252?) and it seems impossible to
         // force it to use UTF-8, so passwords with non-ASCII characters will fail. Since we do not recommend to use
-        // such characters in passwords (something outside of our control, e.g. a database system, might also cause
+        // such characters in passwords (something outside our control, e.g. a database system, might also cause
         // problems), we will check the last password in GIVEN_PASSWORDS in a non-failing way; if the hash doesn't match
         // we'll just issue a message to System.err
         String lastPassword = GIVEN_PASSWORDS[GIVEN_PASSWORDS.length - 1];
@@ -210,8 +210,8 @@ public abstract class AbstractEncryptionMethodTest {
             // Encr. method uses separate salt, so we need to call the constructor that takes HashedPassword instances
             if (method.hasSeparateSalt()) {
                 HashedPassword hashedPassword = method.computeHash(password, USERNAME);
-                System.out.println(String.format("\t\tnew HashedPassword(\"%s\", \"%s\")%s// %s",
-                    hashedPassword.getHash(), hashedPassword.getSalt(), delim, password));
+                System.out.printf("\t\tnew HashedPassword(\"%s\", \"%s\")%s// %s%n",
+                    hashedPassword.getHash(), hashedPassword.getSalt(), delim, password);
             } else {
                 // Encryption method doesn't have separate salt, so simply pass the generated hash to the constructor
                 System.out.println("\t\t\"" + method.computeHash(password, USERNAME).getHash()
@@ -230,7 +230,7 @@ public abstract class AbstractEncryptionMethodTest {
      * and verify that {@link EncryptionMethod#computeHash(String, String, String)} generates
      * the same hash for the salt returned in the first call.
      *
-     * @return Whether or not to test that the hash is the same for the same salt
+     * @return Whether to test that the hash is the same for the same salt
      */
     protected boolean testHashEqualityForSameSalt() {
         return true;

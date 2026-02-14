@@ -4,11 +4,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.Filter.Result;
 import org.apache.logging.log4j.core.LogEvent;
-import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.message.Message;
 import org.junit.Test;
 import org.mockito.Mockito;

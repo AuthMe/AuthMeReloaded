@@ -70,7 +70,7 @@ public class BukkitService implements SettingsDependent {
     }
 
     /**
-     * Schedules a synchronous task if we are currently on a async thread; if not, it runs the task immediately.
+     * Schedules a synchronous task if we are currently on an async thread; if not, it runs the task immediately.
      * Use this when {@link #runTaskOptionallyAsync(Runnable) optionally asynchronous tasks} have to
      * run something synchronously.
      *
@@ -184,7 +184,7 @@ public class BukkitService implements SettingsDependent {
     }
 
     /**
-     * Gets the player with the exact given name, case insensitive.
+     * Gets the player with the exact given name, case-insensitive.
      *
      * @param name Exact name of the player to retrieve
      * @return a player object if one was found, null otherwise
@@ -206,6 +206,7 @@ public class BukkitService implements SettingsDependent {
      * @param name the name the player to retrieve
      * @return an offline player
      */
+    @SuppressWarnings("deprecation")
     public OfflinePlayer getOfflinePlayer(String name) {
         return authMe.getServer().getOfflinePlayer(name);
     }
@@ -327,7 +328,7 @@ public class BukkitService implements SettingsDependent {
 
     /**
      * Returns an optional with a boolean indicating whether bungeecord is enabled or not if the
-     * server implementation is Spigot. Otherwise returns an empty optional.
+     * server implementation is Spigot. Otherwise, returns an empty optional.
      *
      * @return Optional with configuration value for Spigot, empty optional otherwise
      */

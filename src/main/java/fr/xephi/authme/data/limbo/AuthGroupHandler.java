@@ -88,7 +88,7 @@ class AuthGroupHandler implements Reloadable {
     /**
      * Returns whether the auth permissions group function should be used.
      *
-     * @return true if should be used, false otherwise
+     * @return true if you should be used, false otherwise
      */
     private boolean useAuthGroups() {
         // Check whether the permissions check is enabled

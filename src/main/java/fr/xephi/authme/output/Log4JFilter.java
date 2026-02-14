@@ -14,8 +14,6 @@ import org.apache.logging.log4j.message.Message;
  */
 public class Log4JFilter extends AbstractFilter {
 
-    private static final long serialVersionUID = -5594073755007974254L;
-
     /**
      * Validates a Message instance and returns the {@link Result} value
      * depending on whether the message contains sensitive AuthMe data.

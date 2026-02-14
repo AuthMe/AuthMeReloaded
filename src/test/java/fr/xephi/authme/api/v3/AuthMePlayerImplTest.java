@@ -79,7 +79,7 @@ public class AuthMePlayerImplTest {
     }
 
     private static <T> Matcher<Optional<T>> emptyOptional() {
-        return new TypeSafeMatcher<Optional<T>>() {
+        return new TypeSafeMatcher<>() {
 
             @Override
             public void describeTo(Description description) {
@@ -88,7 +88,7 @@ public class AuthMePlayerImplTest {
 
             @Override
             protected boolean matchesSafely(Optional<T> item) {
-                return !item.isPresent();
+                return item.isEmpty();
             }
         };
     }

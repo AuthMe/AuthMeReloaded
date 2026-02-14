@@ -44,7 +44,7 @@ class MySqlDefaultChanger implements DebugSection {
     private static final String NOT_NULL_SUFFIX = ChatColor.DARK_AQUA + "@" + ChatColor.RESET;
     private static final String DEFAULT_VALUE_SUFFIX = ChatColor.GOLD + "#" + ChatColor.RESET;
 
-    private ConsoleLogger logger = ConsoleLoggerFactory.get(MySqlDefaultChanger.class);
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(MySqlDefaultChanger.class);
 
     @Inject
     private Settings settings;

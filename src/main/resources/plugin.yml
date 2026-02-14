@@ -7,7 +7,7 @@ description: ${project.description}
 # noinspection YAMLSchemaValidation
 main: ${pluginDescription.main}
 version: ${pluginDescription.version}
-api-version: 1.16
+api-version: 1.18
 softdepend:
     - Vault
     - LuckPerms
@@ -19,11 +19,12 @@ softdepend:
     - EssentialsSpawn
     - ProtocolLib
 libraries:
+  - com.google.guava:guava:${dependencies.guava.version}
   - ch.jalu:injector:${dependencies.injector.version}
   - net.ricecode:string-similarity:${dependencies.string-similarity.version}
   - com.maxmind.geoip2:geoip2:${dependencies.geoip2.version}
   - javatar:javatar:${dependencies.javatar.version}
-  - org.apache.commons:commons-email:${dependencies.commons-email.version}
+  - org.apache.commons:commons-email2-core:${dependencies.commons-email2.version}
   - com.zaxxer:HikariCP:${dependencies.hikaricp.version}
   - org.slf4j:slf4j-simple:${dependencies.slf4j.version}
   - ch.jalu:datasourcecolumns:${dependencies.datasourcecolumns.version}

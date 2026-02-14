@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.UUID;
 
 import static fr.xephi.authme.TestHelper.PROJECT_ROOT;
@@ -100,7 +101,7 @@ public class DistributedFilesPersistenceHandlerTest {
         playerDataFolder.mkdir();
 
         File limboFilesFolder = new File(TEST_RESOURCES_FOLDER + PROJECT_ROOT + "data/limbo");
-        for (File file : limboFilesFolder.listFiles()) {
+        for (File file : Objects.requireNonNull(limboFilesFolder.listFiles())) {
             File from = new File(playerDataFolder, file.getName());
             Files.copy(file, from);
         }

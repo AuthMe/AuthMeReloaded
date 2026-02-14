@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityEvent;
 import org.bukkit.event.player.PlayerEvent;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -223,13 +224,16 @@ public class ListenerServiceTest {
      * Test implementation of {@link PlayerEvent}.
      */
     private static final class TestPlayerEvent extends PlayerEvent {
+        private static final HandlerList handlers = new HandlerList();
+
         public TestPlayerEvent(Player player) {
             super(player);
         }
 
         @Override
+        @NotNull
         public HandlerList getHandlers() {
-            return null;
+            return handlers;
         }
     }
 }

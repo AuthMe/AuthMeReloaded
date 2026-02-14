@@ -24,6 +24,7 @@ import org.bukkit.World;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.entity.EntityAirChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
@@ -43,11 +44,12 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.InventoryView;
+import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -190,9 +192,10 @@ public class PlayerListenerTest {
             .check(listener::onPlayerHitPlayerEvent, EntityDamageByEntityEvent.class)
             .check(listener::onPlayerConsumeItem, PlayerItemConsumeEvent.class)
             .check(listener::onPlayerInteract, PlayerInteractEvent.class)
-            .check(listener::onPlayerPickupItem, PlayerPickupItemEvent.class)
             .check(listener::onPlayerInteractEntity, PlayerInteractEntityEvent.class)
-            .check(listener::onPlayerHeldItem, PlayerItemHeldEvent.class);
+            .check(listener::onPlayerHeldItem, PlayerItemHeldEvent.class)
+            .check(listener::onPlayerSwapHandItems, PlayerSwapHandItemsEvent.class)
+            .check(listener::onPlayerAirChange, EntityAirChangeEvent.class);
     }
 
     @Test
@@ -545,7 +548,7 @@ public class PlayerListenerTest {
         // given
         Player player = mock(Player.class);
         Location respawnLocation = mock(Location.class);
-        PlayerRespawnEvent event = spy(new PlayerRespawnEvent(player, respawnLocation, false));
+        PlayerRespawnEvent event = spy(new PlayerRespawnEvent(player, respawnLocation, false, false));
         given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(true);
 
         // when
@@ -561,7 +564,7 @@ public class PlayerListenerTest {
         // given
         Player player = mock(Player.class);
         Location respawnLocation = mock(Location.class);
-        PlayerRespawnEvent event = spy(new PlayerRespawnEvent(player, respawnLocation, false));
+        PlayerRespawnEvent event = spy(new PlayerRespawnEvent(player, respawnLocation, false, false));
         given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(false);
         given(listenerService.shouldCancelEvent(event)).willReturn(false);
 
@@ -581,7 +584,7 @@ public class PlayerListenerTest {
         Location newLocation = mock(Location.class);
         World world = mock(World.class);
         given(newLocation.getWorld()).willReturn(world);
-        PlayerRespawnEvent event = spy(new PlayerRespawnEvent(player, originalLocation, false));
+        PlayerRespawnEvent event = spy(new PlayerRespawnEvent(player, originalLocation, false, false));
         given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(false);
         given(listenerService.shouldCancelEvent(event)).willReturn(true);
         given(spawnLoader.getSpawnLocation(player)).willReturn(newLocation);
@@ -601,7 +604,7 @@ public class PlayerListenerTest {
         Location originalLocation = mock(Location.class);
         Location newLocation = mock(Location.class);
         given(newLocation.getWorld()).willReturn(null);
-        PlayerRespawnEvent event = spy(new PlayerRespawnEvent(player, originalLocation, false));
+        PlayerRespawnEvent event = spy(new PlayerRespawnEvent(player, originalLocation, false, false));
         given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(false);
         given(listenerService.shouldCancelEvent(event)).willReturn(true);
         given(spawnLoader.getSpawnLocation(player)).willReturn(newLocation);
@@ -619,7 +622,7 @@ public class PlayerListenerTest {
         // given
         Player player = mock(Player.class);
         Location originalLocation = mock(Location.class);
-        PlayerRespawnEvent event = spy(new PlayerRespawnEvent(player, originalLocation, false));
+        PlayerRespawnEvent event = spy(new PlayerRespawnEvent(player, originalLocation, false, false));
         given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(false);
         given(listenerService.shouldCancelEvent(event)).willReturn(true);
         given(spawnLoader.getSpawnLocation(player)).willReturn(null);
@@ -644,6 +647,23 @@ public class PlayerListenerTest {
         // then
         verify(teleportationService).teleportNewPlayerToFirstSpawn(player);
         verify(management).performJoin(player);
+    }
+
+    @Test
+    public void shouldSetSpawnLocation() {
+        // given
+        Player player = mock(Player.class);
+        Location spawnLocation = mock(Location.class);
+        PlayerSpawnLocationEvent event = spy(new PlayerSpawnLocationEvent(player, spawnLocation));
+        Location customSpawn = mock(Location.class);
+        given(teleportationService.prepareOnJoinSpawnLocation(player)).willReturn(customSpawn);
+
+        // when
+        listener.onPlayerSpawn(event);
+
+        // then
+        verify(teleportationService).prepareOnJoinSpawnLocation(player);
+        verify(event).setSpawnLocation(customSpawn);
     }
 
     @Test

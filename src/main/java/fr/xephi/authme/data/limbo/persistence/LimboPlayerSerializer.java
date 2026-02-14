@@ -11,6 +11,7 @@ import org.bukkit.Location;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +40,7 @@ class LimboPlayerSerializer implements JsonSerializer<LimboPlayer> {
     public JsonElement serialize(LimboPlayer limboPlayer, Type type, JsonSerializationContext context) {
         Location loc = limboPlayer.getLocation();
         JsonObject locationObject = new JsonObject();
-        locationObject.addProperty(LOC_WORLD, loc.getWorld().getName());
+        locationObject.addProperty(LOC_WORLD, Objects.requireNonNull(loc.getWorld()).getName());
         locationObject.addProperty(LOC_X, loc.getX());
         locationObject.addProperty(LOC_Y, loc.getY());
         locationObject.addProperty(LOC_Z, loc.getZ());
@@ -56,7 +57,7 @@ class LimboPlayerSerializer implements JsonSerializer<LimboPlayer> {
                 jsonGroup.addProperty("contextMap", GSON.toJson(g.getContextMap()));
             }
             return jsonGroup;
-        }).collect(Collectors.toList());
+        }).toList();
 
         JsonArray jsonGroups = new JsonArray();
         groups.forEach(jsonGroups::add);

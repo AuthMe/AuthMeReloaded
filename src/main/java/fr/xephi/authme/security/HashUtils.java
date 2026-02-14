@@ -76,7 +76,7 @@ public final class HashUtils {
      * @return True if the salt is valid, false otherwise
      */
     public static boolean isValidBcryptHash(String hash) {
-        return hash.length() == 60 && hash.substring(0, 2).equals("$2");
+        return hash.length() == 60 && hash.startsWith("$2");
     }
 
     /**

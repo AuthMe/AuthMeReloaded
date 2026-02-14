@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 public class LuckPermsHandler implements PermissionHandler {
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(LuckPermsHandler.class);
-    private LuckPerms luckPerms;
+    private final LuckPerms luckPerms;
 
     public LuckPermsHandler() throws PermissionHandlerException {
         try {
@@ -150,10 +150,9 @@ public class LuckPermsHandler implements PermissionHandler {
             return false;
         }
         user.data().clear(node -> {
-            if (!(node instanceof InheritanceNode)) {
+            if (!(node instanceof InheritanceNode inheritanceNode)) {
                 return false;
             }
-            InheritanceNode inheritanceNode = (InheritanceNode) node;
             return !inheritanceNode.equals(groupNode);
         });
 
@@ -204,6 +203,7 @@ public class LuckPermsHandler implements PermissionHandler {
         }
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     @NotNull
     private InheritanceNode buildGroupNode(UserGroup group) {
         ContextSetFactory contextSetFactory = luckPerms.getContextManager().getContextSetFactory();

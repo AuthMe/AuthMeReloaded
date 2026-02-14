@@ -67,7 +67,7 @@ public final class FileIoUtils {
      */
     public static String readFromFile(Path file) {
         try {
-            return new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
+            return Files.readString(file);
         } catch (IOException e) {
             throw new UnsupportedOperationException("Could not read from file '" + file + "'", e);
         }

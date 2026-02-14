@@ -8,7 +8,7 @@ import java.util.Map;
 
 public final class TagValueHolder {
 
-    private Map<String, TagValue<?>> values;
+    private final Map<String, TagValue<?>> values;
 
     private TagValueHolder() {
         this.values = new HashMap<>();

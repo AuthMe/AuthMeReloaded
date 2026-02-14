@@ -62,23 +62,12 @@ public class DataSourceProvider implements Provider<DataSource> {
      */
     private DataSource createDataSource() throws SQLException {
         DataSourceType dataSourceType = settings.getProperty(DatabaseSettings.BACKEND);
-        DataSource dataSource;
-        switch (dataSourceType) {
-            case MYSQL:
-                dataSource = new MySQL(settings, mySqlExtensionsFactory);
-                break;
-            case MARIADB:
-                dataSource = new MariaDB(settings, mySqlExtensionsFactory);
-                break;
-            case POSTGRESQL:
-                dataSource = new PostgreSqlDataSource(settings, mySqlExtensionsFactory);
-                break;
-            case SQLITE:
-                dataSource = new SQLite(settings, dataFolder);
-                break;
-            default:
-                throw new UnsupportedOperationException("Unknown data source type '" + dataSourceType + "'");
-        }
+        DataSource dataSource = switch (dataSourceType) {
+            case MYSQL -> new MySQL(settings, mySqlExtensionsFactory);
+            case MARIADB -> new MariaDB(settings, mySqlExtensionsFactory);
+            case POSTGRESQL -> new PostgreSqlDataSource(settings, mySqlExtensionsFactory);
+            case SQLITE -> new SQLite(settings, dataFolder);
+        };
 
         if (settings.getProperty(DatabaseSettings.USE_CACHING)) {
             dataSource = new CacheDataSource(dataSource, playerCache);

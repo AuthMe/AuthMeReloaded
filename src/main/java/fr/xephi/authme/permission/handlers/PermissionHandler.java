@@ -17,8 +17,8 @@ public interface PermissionHandler {
      * @param player    The player
      * @param group The name of the group.
      *
-     * @return True if succeed, false otherwise.
-     *         False is also returned if this feature isn't supported for the current permissions system.
+     * @return True if succeeded, false otherwise.
+     *         False is also returned if this feature isn't supported for the current permission system.
      */
     boolean addToGroup(OfflinePlayer player, UserGroup group);
 
@@ -48,7 +48,7 @@ public interface PermissionHandler {
      * @param group The group name.
      *
      * @return True if the player is in the specified group, false otherwise.
-     *         False is also returned if groups aren't supported by the used permissions system.
+     *         False is also returned if groups aren't supported by the used permission system.
      */
     default boolean isInGroup(OfflinePlayer player, UserGroup group) {
         return getGroups(player).contains(group);
@@ -60,8 +60,8 @@ public interface PermissionHandler {
      * @param player    The player
      * @param group The name of the group.
      *
-     * @return True if succeed, false otherwise.
-     *         False is also returned if this feature isn't supported for the current permissions system.
+     * @return True if succeeded, false otherwise.
+     *         False is also returned if this feature isn't supported for the current permission system.
      */
     boolean removeFromGroup(OfflinePlayer player, UserGroup group);
 
@@ -72,8 +72,8 @@ public interface PermissionHandler {
      * @param player    The player
      * @param group The name of the group.
      *
-     * @return True if succeed, false otherwise.
-     *         False is also returned if this feature isn't supported for the current permissions system.
+     * @return True if succeeded, false otherwise.
+     *         False is also returned if this feature isn't supported for the current permission system.
      */
     boolean setGroup(OfflinePlayer player, UserGroup group);
 

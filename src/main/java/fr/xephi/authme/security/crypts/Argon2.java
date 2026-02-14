@@ -15,9 +15,9 @@ import fr.xephi.authme.security.crypts.description.Usage;
 // and isn't exposed to the outside, so we treat it as an unsalted implementation
 public class Argon2 extends UnsaltedMethod {
 
-    private static ConsoleLogger logger = ConsoleLoggerFactory.get(Argon2.class);
+    private static final ConsoleLogger logger = ConsoleLoggerFactory.get(Argon2.class);
 
-    private de.mkammerer.argon2.Argon2 argon2;
+    private final de.mkammerer.argon2.Argon2 argon2;
 
     public Argon2() {
         argon2 = Argon2Factory.create();
@@ -41,11 +41,11 @@ public class Argon2 extends UnsaltedMethod {
 
     @Override
     public String computeHash(String password) {
-        return argon2.hash(2, 65536, 1, password);
+        return argon2.hash(2, 65536, 1, password.toCharArray());
     }
 
     @Override
     public boolean comparePassword(String password, HashedPassword hashedPassword, String name) {
-        return argon2.verify(hashedPassword.getHash(), password);
+        return argon2.verify(hashedPassword.getHash(), password.toCharArray());
     }
 }

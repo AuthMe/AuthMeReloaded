@@ -37,7 +37,7 @@ public class SettingsIntegrationTest {
     /** File name of the sample config missing certain {@link TestConfiguration} values. */
     private static final String INCOMPLETE_FILE = TestHelper.PROJECT_ROOT + "settings/config-incomplete-sample.yml";
 
-    private static ConfigurationData CONFIG_DATA =
+    private static final ConfigurationData CONFIG_DATA =
         ConfigurationDataBuilder.createConfiguration(TestConfiguration.class);
 
     @Rule
@@ -58,7 +58,7 @@ public class SettingsIntegrationTest {
     @Test
     public void shouldLoadAndReadAllProperties() throws IOException {
         // given
-        PropertyResource resource = new YamlFileResource(copyFileFromResources(COMPLETE_FILE));
+        PropertyResource resource = new YamlFileResource(copyFileFromResources(COMPLETE_FILE).toPath());
         // Pass another, non-existent file to check if the settings had to be rewritten
         File newFile = temporaryFolder.newFile();
 
@@ -88,12 +88,12 @@ public class SettingsIntegrationTest {
     public void shouldWriteMissingProperties() {
         // given/when
         File file = copyFileFromResources(INCOMPLETE_FILE);
-        PropertyResource resource = new YamlFileResource(file);
+        PropertyResource resource = new YamlFileResource(file.toPath());
         // Expectation: File is rewritten to since it does not have all configurations
         new Settings(testPluginFolder, resource, new PlainMigrationService(), CONFIG_DATA);
 
         // Load the settings again -> checks that what we wrote can be loaded again
-        resource = new YamlFileResource(file);
+        resource = new YamlFileResource(file.toPath());
 
         // then
         Settings settings = new Settings(testPluginFolder, resource,
@@ -120,7 +120,7 @@ public class SettingsIntegrationTest {
     public void shouldReloadSettings() throws IOException {
         // given
         File configFile = temporaryFolder.newFile();
-        PropertyResource resource = new YamlFileResource(configFile);
+        PropertyResource resource = new YamlFileResource(configFile.toPath());
         Settings settings = new Settings(testPluginFolder, resource, null, CONFIG_DATA);
 
         // when

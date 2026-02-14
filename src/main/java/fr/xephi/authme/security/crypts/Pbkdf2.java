@@ -18,7 +18,7 @@ public class Pbkdf2 extends HexSaltedMethod {
 
     private static final int DEFAULT_ROUNDS = 10_000;
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(Pbkdf2.class);
-    private int numberOfRounds;
+    private final int numberOfRounds;
 
     @Inject
     Pbkdf2(Settings settings) {

@@ -7,14 +7,15 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.util.StringUtils;
-import org.apache.commons.mail.EmailConstants;
-import org.apache.commons.mail.EmailException;
-import org.apache.commons.mail.HtmlEmail;
+import jakarta.activation.CommandMap;
+import jakarta.activation.MailcapCommandMap;
+import jakarta.mail.Session;
+import org.apache.commons.mail2.core.EmailConstants;
+import org.apache.commons.mail2.core.EmailException;
+import org.apache.commons.mail2.jakarta.HtmlEmail;
+import org.jetbrains.annotations.NotNull;
 
-import javax.activation.CommandMap;
-import javax.activation.MailcapCommandMap;
 import javax.inject.Inject;
-import javax.mail.Session;
 import java.security.Security;
 import java.util.Properties;
 
@@ -27,7 +28,7 @@ import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_PASSWORD;
  */
 public class SendMailSsl {
 
-    private ConsoleLogger logger = ConsoleLoggerFactory.get(SendMailSsl.class);
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(SendMailSsl.class);
 
     @Inject
     private Settings settings;
@@ -125,14 +126,7 @@ public class SendMailSsl {
                     if (Security.getProvider("Google OAuth2 Provider") == null) {
                         Security.addProvider(new OAuth2Provider());
                     }
-                    Properties mailProperties = email.getMailSession().getProperties();
-                    mailProperties.setProperty("mail.smtp.ssl.enable", "true");
-                    mailProperties.setProperty("mail.smtp.auth.mechanisms", "XOAUTH2");
-                    mailProperties.setProperty("mail.smtp.sasl.enable", "true");
-                    mailProperties.setProperty("mail.smtp.sasl.mechanisms", "XOAUTH2");
-                    mailProperties.setProperty("mail.smtp.auth.login.disable", "true");
-                    mailProperties.setProperty("mail.smtp.auth.plain.disable", "true");
-                    mailProperties.setProperty(OAuth2SaslClientFactory.OAUTH_TOKEN_PROP, oAuth2Token);
+                    Properties mailProperties = getProperties(email, oAuth2Token);
                     email.setMailSession(Session.getInstance(mailProperties));
                 } else {
                     email.setStartTLSEnabled(true);
@@ -155,5 +149,18 @@ public class SendMailSsl {
                 email.setSSLOnConnect(true);
                 email.setSSLCheckServerIdentity(true);
         }
+    }
+
+    @NotNull
+    private static Properties getProperties(HtmlEmail email, String oAuth2Token) throws EmailException {
+        Properties mailProperties = email.getMailSession().getProperties();
+        mailProperties.setProperty("mail.smtp.ssl.enable", "true");
+        mailProperties.setProperty("mail.smtp.auth.mechanisms", "XOAUTH2");
+        mailProperties.setProperty("mail.smtp.sasl.enable", "true");
+        mailProperties.setProperty("mail.smtp.sasl.mechanisms", "XOAUTH2");
+        mailProperties.setProperty("mail.smtp.auth.login.disable", "true");
+        mailProperties.setProperty("mail.smtp.auth.plain.disable", "true");
+        mailProperties.setProperty(OAuth2SaslClientFactory.OAUTH_TOKEN_PROP, oAuth2Token);
+        return mailProperties;
     }
 }

@@ -12,6 +12,7 @@ import fr.xephi.authme.data.limbo.UserGroup;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ class LimboPlayerDeserializer implements JsonDeserializer<LimboPlayer> {
     private static final String CONTEXT_MAP = "contextMap";
     private static final String GROUP_NAME = "groupName";
 
-    private BukkitService bukkitService;
+    private final BukkitService bukkitService;
 
     LimboPlayerDeserializer(BukkitService bukkitService) {
         this.bukkitService = bukkitService;
@@ -111,7 +112,7 @@ class LimboPlayerDeserializer implements JsonDeserializer<LimboPlayer> {
                 Map<String, String> contextMap = null;
                 if (jsonGroup.has(CONTEXT_MAP)) {
                     JsonElement contextMapJson = jsonGroup.get("contextMap");
-                    Type type = new TypeToken<Map<String, String>>() {
+                    Type type = new TypeToken<@NotNull Map<String, String>>() {
                     }.getType();
                     contextMap = new Gson().fromJson(contextMapJson.getAsString(), type);
                 }

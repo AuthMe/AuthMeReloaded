@@ -49,7 +49,7 @@ public class CommandMigrationServiceTest {
     public void shouldRewriteForEmptyFile() {
         // given
         File commandFile = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "settings/commandconfig/commands.empty.yml");
-        PropertyResource resource = new YamlFileResource(commandFile);
+        PropertyResource resource = new YamlFileResource(commandFile.toPath());
 
         // when
         boolean result = commandMigrationService.checkAndMigrate(
@@ -63,7 +63,7 @@ public class CommandMigrationServiceTest {
     public void shouldRewriteIncompleteFile() {
         // given
         File commandFile = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "settings/commandconfig/commands.incomplete.yml");
-        PropertyResource resource = new YamlFileResource(commandFile);
+        PropertyResource resource = new YamlFileResource(commandFile.toPath());
 
         // when
         boolean result = commandMigrationService.checkAndMigrate(
@@ -77,7 +77,7 @@ public class CommandMigrationServiceTest {
     public void shouldNotChangeCompleteFile() {
         // given
         File commandFile = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "settings/commandconfig/commands.complete.yml");
-        PropertyResource resource = new YamlFileResource(commandFile);
+        PropertyResource resource = new YamlFileResource(commandFile.toPath());
 
         // when
         boolean result = commandMigrationService.checkAndMigrate(
@@ -112,7 +112,7 @@ public class CommandMigrationServiceTest {
             .willReturn("helpop %playername% (%playerip%) has other accounts!");
         given(settingsMigrationService.getOldOtherAccountsCommandThreshold()).willReturn(3);
         File commandFile = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "settings/commandconfig/commands.complete.yml");
-        PropertyResource resource = new YamlFileResource(commandFile);
+        PropertyResource resource = new YamlFileResource(commandFile.toPath());
         ConfigurationData configurationData = ConfigurationDataBuilder.createConfiguration(CommandSettingsHolder.class);
 
         // when
@@ -136,7 +136,7 @@ public class CommandMigrationServiceTest {
         Set<String> knownKeys = newHashSet("welcome", "show_motd", "display_list", "warn_for_alts", "log_suspicious_user");
         List<String> unknownKeys = onLoginCommands.keySet().stream()
             .filter(key -> !knownKeys.contains(key))
-            .collect(Collectors.toList());
+            .toList();
         if (unknownKeys.size() == 1) {
             return onLoginCommands.get(unknownKeys.get(0));
         } else {

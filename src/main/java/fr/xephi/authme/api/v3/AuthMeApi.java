@@ -26,7 +26,7 @@ import java.util.Optional;
 
 /**
  * The current API of AuthMe.
- *
+ * <p>
  * Recommended method of retrieving the AuthMeApi object:
  * <code>
  * AuthMeApi authmeApi = AuthMeApi.getInstance();
@@ -101,7 +101,7 @@ public class AuthMeApi {
      * Check whether the given player is an NPC.
      *
      * @param player The player to verify
-     * @return true if the player is an npc
+     * @return true if the player is a npc
      */
     public boolean isNpc(Player player) {
         return PlayerUtils.isNpc(player);
@@ -166,10 +166,10 @@ public class AuthMeApi {
     }
 
     /**
-     * Get user names by ip.
+     * Get usernames by ip.
      *
      * @param address The ip address to process
-     * @return The list of user names related to the ip address
+     * @return The list of usernames related to the ip address
      */
     public List<String> getNamesByIp(String address) {
         return dataSource.getAllAuthsByIp(address);
@@ -317,7 +317,7 @@ public class AuthMeApi {
     /**
      * Change a user's password
      *
-     * @param name the user name
+     * @param name the username
      * @param newPassword the new password
      */
     public void changePassword(String name, String newPassword) {

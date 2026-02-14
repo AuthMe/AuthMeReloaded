@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 /**
  * Replaces tags lazily by first determining which tags are being used
- * and only applying those replacements afterwards.
+ * and only applying those replacements afterward.
  *
  * @param <A> the argument type
  */
@@ -48,7 +48,7 @@ public final class TagReplacer<A> {
      * @return the adapted messages
      */
     public List<String> getAdaptedMessages(A argument) {
-        // Note ljacqu 20170121: Using a Map might seem more natural here but we avoid doing so for performance
+        // Note ljacqu 20170121: Using a Map might seem more natural here, but we avoid doing so for performance
         // Although the performance gain here is probably minimal...
         List<TagValue> tagValues = new LinkedList<>();
         for (Tag<A> tag : tags) {

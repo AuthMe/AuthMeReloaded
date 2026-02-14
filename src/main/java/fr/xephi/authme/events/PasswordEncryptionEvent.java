@@ -2,6 +2,7 @@ package fr.xephi.authme.events;
 
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This event is called when we need to compare or hash a password for a player and allows
@@ -33,6 +34,7 @@ public class PasswordEncryptionEvent extends CustomEvent {
     }
 
     @Override
+    @NotNull
     public HandlerList getHandlers() {
         return handlers;
     }

@@ -21,6 +21,7 @@ import org.bukkit.entity.Player;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN;
@@ -132,7 +133,7 @@ public class TeleportationService implements Reloadable {
 
         // #856: If LimboPlayer comes from a persisted file, the Location might be null
         String worldName = (limbo != null && limbo.getLocation() != null)
-            ? limbo.getLocation().getWorld().getName()
+            ? Objects.requireNonNull(limbo.getLocation().getWorld()).getName()
             : null;
 
         // The world in LimboPlayer is from where the player comes, before any teleportation by AuthMe

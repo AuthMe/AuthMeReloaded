@@ -21,8 +21,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class Wbb4 implements EncryptionMethod {
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(Wbb4.class);
-    private BCryptHasher bCryptHasher = new BCryptHasher(BCrypt.Version.VERSION_2A, 8);
-    private SecureRandom random = new SecureRandom();
+    private final BCryptHasher bCryptHasher = new BCryptHasher(BCrypt.Version.VERSION_2A, 8);
+    private final SecureRandom random = new SecureRandom();
 
     @Override
     public HashedPassword computeHash(String password, String name) {

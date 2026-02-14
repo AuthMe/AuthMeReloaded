@@ -146,9 +146,9 @@ public class CommandManager implements Reloadable {
     }
 
     private static boolean shouldCommandBeRun(OnLoginCommand command, int numberOfOtherAccounts) {
-        return (!command.getIfNumberOfAccountsAtLeast().isPresent()
+        return (command.getIfNumberOfAccountsAtLeast().isEmpty()
                 || command.getIfNumberOfAccountsAtLeast().get() <= numberOfOtherAccounts)
-            && (!command.getIfNumberOfAccountsLessThan().isPresent()
+            && (command.getIfNumberOfAccountsLessThan().isEmpty()
                 || command.getIfNumberOfAccountsLessThan().get() > numberOfOtherAccounts);
     }
 

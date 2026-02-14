@@ -19,7 +19,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static org.hamcrest.Matchers.contains;
@@ -104,15 +103,12 @@ public class TaskCloserTest {
     public void shouldStopForInterruptedThread() throws InterruptedException, ExecutionException {
         // Note ljacqu 20160827: This test must be run in its own thread because we throw an InterruptedException.
         // Somehow the java.nio.Files API used in tests that are run subsequently don't like this and fail otherwise.
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    shouldStopForInterruptedThread0();
-                } catch (Exception e) {
-                    throw new IllegalStateException(e);
-                }
+        var executor = Executors.newSingleThreadExecutor();
+        executor.submit(() -> {
+            try {
+                shouldStopForInterruptedThread0();
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
             }
         }).get();
     }

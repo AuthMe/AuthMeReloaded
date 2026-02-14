@@ -2,8 +2,11 @@ package fr.xephi.authme.service;
 
 import ch.jalu.injector.annotations.NoFieldScan;
 import com.earth2me.essentials.Essentials;
-import com.onarandombox.MultiverseCore.MultiverseCore;
-import com.onarandombox.MultiverseCore.api.MVWorldManager;
+import org.mvplugins.multiverse.core.MultiverseCore;
+import org.mvplugins.multiverse.core.MultiverseCoreApi;
+import org.mvplugins.multiverse.core.world.LoadedMultiverseWorld;
+import org.mvplugins.multiverse.external.vavr.control.Option;
+
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import org.bukkit.Location;
@@ -65,7 +68,7 @@ public class PluginHookService {
     }
 
     /**
-     * If CMI is hooked into, return CMI' data folder.
+     * If CMI is hooked into, return CMI data folder.
      *
      * @return The CMI data folder, or null if unavailable
      */
@@ -85,10 +88,15 @@ public class PluginHookService {
      */
     public Location getMultiverseSpawn(World world) {
         if (multiverse != null) {
-            MVWorldManager manager = multiverse.getMVWorldManager();
-            if (manager.isMVWorld(world)) {
-                return manager.getMVWorld(world).getSpawnLocation();
-            }
+            return getSpawnFromMultiverse(world);
+        }
+        return null;
+    }
+
+    protected Location getSpawnFromMultiverse(World world) {
+        Option<LoadedMultiverseWorld> worldOption = MultiverseCoreApi.get().getWorldManager().getLoadedWorld(world.getName());
+        if (worldOption.isDefined()) {
+            return worldOption.get().getSpawnLocation();
         }
         return null;
     }

@@ -31,7 +31,7 @@ import static java.util.Collections.singletonList;
  */
 public class MessageUpdater {
 
-    private ConsoleLogger logger = ConsoleLoggerFactory.get(MessageUpdater.class);
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(MessageUpdater.class);
 
     /**
      * Applies any necessary migrations to the user's messages file and saves it if it has been modified.
@@ -167,7 +167,7 @@ public class MessageUpdater {
 
         // Create ConfigurationData instance
         Map<String, List<String>> commentsMap = comments.entrySet().stream()
-            .collect(Collectors.toMap(e -> e.getKey(), e -> singletonList(e.getValue())));
+            .collect(Collectors.toMap(Map.Entry::getKey, e -> singletonList(e.getValue())));
         return new MessageKeyConfigurationData(builder, commentsMap);
     }
 
@@ -185,7 +185,7 @@ public class MessageUpdater {
 
     static final class MessageKeyPropertyListBuilder {
 
-        private PropertyListBuilder propertyListBuilder = new PropertyListBuilder();
+        private final PropertyListBuilder propertyListBuilder = new PropertyListBuilder();
 
         void addMessageKey(MessageKey key) {
             propertyListBuilder.add(new MessageKeyProperty(key));

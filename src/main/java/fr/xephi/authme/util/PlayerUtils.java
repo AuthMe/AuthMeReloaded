@@ -2,6 +2,8 @@ package fr.xephi.authme.util;
 
 import org.bukkit.entity.Player;
 
+import java.util.Objects;
+
 /**
  * Player utilities.
  */
@@ -18,7 +20,7 @@ public final class PlayerUtils {
      * @return The player's IP address
      */
     public static String getPlayerIp(Player player) {
-        return player.getAddress().getAddress().getHostAddress();
+        return Objects.requireNonNull(player.getAddress()).getAddress().getHostAddress();
     }
 
     /**

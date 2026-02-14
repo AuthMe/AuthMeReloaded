@@ -9,6 +9,7 @@ import org.hamcrest.TypeSafeMatcher;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
@@ -25,13 +26,13 @@ public final class LimboPlayerMatchers {
     }
 
     public static Matcher<LimboPlayer> isLimbo(LimboPlayer limbo) {
-        UserGroup[] groups = limbo.getGroups().toArray(new UserGroup[limbo.getGroups().size()]);
+        UserGroup[] groups = limbo.getGroups().toArray(new UserGroup[0]);
         return isLimbo(limbo.isOperator(), limbo.isCanFly(), limbo.getWalkSpeed(), limbo.getFlySpeed(), groups);
     }
 
     public static Matcher<LimboPlayer> isLimbo(boolean isOp, boolean canFly, float walkSpeed, float flySpeed,
                                                UserGroup... groups) {
-        return new TypeSafeMatcher<LimboPlayer>() {
+        return new TypeSafeMatcher<>() {
             @Override
             protected boolean matchesSafely(LimboPlayer item) {
                 return item.isOperator() == isOp
@@ -62,11 +63,11 @@ public final class LimboPlayerMatchers {
     }
 
     public static Matcher<LimboPlayer> hasLocation(String world, double x, double y, double z) {
-        return new TypeSafeMatcher<LimboPlayer>() {
+        return new TypeSafeMatcher<>() {
             @Override
             protected boolean matchesSafely(LimboPlayer item) {
                 Location location = item.getLocation();
-                return location.getWorld().getName().equals(world)
+                return Objects.requireNonNull(location.getWorld()).getName().equals(world)
                     && location.getX() == x && location.getY() == y && location.getZ() == z;
             }
 
@@ -83,7 +84,7 @@ public final class LimboPlayerMatchers {
                     description.appendText("Limbo with location = null");
                 } else {
                     description.appendText(format("Limbo with location: world=%s, x=%f, y=%f, z=%f",
-                        location.getWorld().getName(), location.getX(), location.getY(), location.getZ()));
+                        Objects.requireNonNull(location.getWorld()).getName(), location.getX(), location.getY(), location.getZ()));
                 }
             }
         };
@@ -94,11 +95,11 @@ public final class LimboPlayerMatchers {
     }
 
     public static Matcher<LimboPlayer> hasLocation(String world, double x, double y, double z, float yaw, float pitch) {
-        return new TypeSafeMatcher<LimboPlayer>() {
+        return new TypeSafeMatcher<>() {
             @Override
             protected boolean matchesSafely(LimboPlayer item) {
                 Location location = item.getLocation();
-                return hasLocation(location.getWorld(), location.getX(), location.getY(), location.getZ()).matches(item)
+                return hasLocation(Objects.requireNonNull(location.getWorld()), location.getX(), location.getY(), location.getZ()).matches(item)
                     && location.getYaw() == yaw && location.getPitch() == pitch;
             }
 
@@ -115,7 +116,7 @@ public final class LimboPlayerMatchers {
                     description.appendText("Limbo with location = null");
                 } else {
                     description.appendText(format("Limbo with location: world=%s, x=%f, y=%f, z=%f, yaw=%f, pitch=%f",
-                        location.getWorld().getName(), location.getX(), location.getY(), location.getZ(),
+                        Objects.requireNonNull(location.getWorld()).getName(), location.getX(), location.getY(), location.getZ(),
                         location.getYaw(), location.getPitch()));
                 }
             }
@@ -123,7 +124,7 @@ public final class LimboPlayerMatchers {
     }
 
     public static Matcher<LimboPlayer> hasLocation(Location location) {
-        return hasLocation(location.getWorld().getName(), location.getX(), location.getY(), location.getZ(),
+        return hasLocation(Objects.requireNonNull(location.getWorld()).getName(), location.getX(), location.getY(), location.getZ(),
             location.getYaw(), location.getPitch());
     }
 

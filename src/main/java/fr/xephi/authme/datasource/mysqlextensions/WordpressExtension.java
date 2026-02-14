@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.OptionalInt;
 
 /**
- * MySQL extensions for Wordpress.
+ * MySQL extensions for WordPress.
  */
 class WordpressExtension extends MySqlExtension {
 
@@ -31,7 +31,7 @@ class WordpressExtension extends MySqlExtension {
     }
 
     /**
-     * Saves the required data to Wordpress tables.
+     * Saves the required data to WordPress tables.
      *
      * @param auth the player data
      * @param id the player id

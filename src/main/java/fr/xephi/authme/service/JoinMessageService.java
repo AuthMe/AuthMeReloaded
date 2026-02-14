@@ -11,9 +11,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class JoinMessageService {
 
-    private BukkitService bukkitService;
+    private final BukkitService bukkitService;
 
-    private Map<String, String> joinMessages;
+    private final Map<String, String> joinMessages;
 
     @Inject
     JoinMessageService(BukkitService bukkitService) {

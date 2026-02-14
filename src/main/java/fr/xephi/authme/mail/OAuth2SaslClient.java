@@ -76,13 +76,11 @@ class OAuth2SaslClient implements SaslClient {
     return isComplete;
   }
 
-  public byte[] unwrap(byte[] incoming, int offset, int len)
-      throws SaslException {
+  public byte[] unwrap(byte[] incoming, int offset, int len) {
     throw new IllegalStateException();
   }
 
-  public byte[] wrap(byte[] outgoing, int offset, int len)
-      throws SaslException {
+  public byte[] wrap(byte[] outgoing, int offset, int len) {
     throw new IllegalStateException();
   }
 
@@ -93,6 +91,6 @@ class OAuth2SaslClient implements SaslClient {
     return null;
   }
 
-  public void dispose() throws SaslException {
+  public void dispose() {
   }
 }

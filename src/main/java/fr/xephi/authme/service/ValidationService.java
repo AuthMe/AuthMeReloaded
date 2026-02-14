@@ -28,6 +28,7 @@ import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -158,7 +159,7 @@ public class ValidationService implements Reloadable {
         }
 
         String ip = PlayerUtils.getPlayerIp(player);
-        String domain = getHostName(player.getAddress());
+        String domain = getHostName(Objects.requireNonNull(player.getAddress()));
         for (String restriction : restrictions) {
             if (restriction.startsWith("regex:")) {
                 restriction = restriction.replace("regex:", "");

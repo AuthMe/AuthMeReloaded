@@ -26,19 +26,19 @@ public enum PermissionsSystemType {
     VAULT("Vault", "Vault");
 
     /**
-     * The display name of the permissions system.
+     * The display name of the permission system.
      */
-    private String displayName;
+    private final String displayName;
 
     /**
      * The name of the permissions system plugin.
      */
-    private String pluginName;
+    private final String pluginName;
 
     /**
      * Constructor for PermissionsSystemType.
      *
-     * @param displayName Display name of the permissions system.
+     * @param displayName Display name of the permission system.
      * @param pluginName Name of the plugin.
      */
     PermissionsSystemType(String displayName, String pluginName) {
@@ -47,7 +47,7 @@ public enum PermissionsSystemType {
     }
 
     /**
-     * Get the display name of the permissions system.
+     * Get the display name of the permission system.
      *
      * @return Display name.
      */
@@ -67,7 +67,7 @@ public enum PermissionsSystemType {
     /**
      * Cast the permissions system type to a string.
      *
-     * @return The display name of the permissions system.
+     * @return The display name of the permission system.
      */
     @Override
     public String toString() {
@@ -75,10 +75,10 @@ public enum PermissionsSystemType {
     }
 
     /**
-     * Check if a given plugin is a permissions system.
+     * Check if a given plugin is a permission system.
      *
      * @param name The name of the plugin to check.
-     * @return If the plugin is a valid permissions system.
+     * @return If the plugin is a valid permission system.
      */
     public static boolean isPermissionSystem(String name) {
         for (PermissionsSystemType permissionsSystemType : values()) {

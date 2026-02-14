@@ -75,7 +75,7 @@ public class OnStartupTasks {
             setLog4JFilter();
         } catch (ClassNotFoundException | NoClassDefFoundError e) {
             // log4j is not available
-            consoleLogger.info("You're using Minecraft 1.6.x or older, Log4J support will be disabled");
+            consoleLogger.info("Unable to inject into Log4j, falling back to the legacy Java logger");
             ConsoleFilter filter = new ConsoleFilter();
             logger.setFilter(filter);
             Bukkit.getLogger().setFilter(filter);

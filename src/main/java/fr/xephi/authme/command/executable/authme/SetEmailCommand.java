@@ -45,34 +45,31 @@ public class SetEmailCommand implements ExecutableCommand {
             return;
         }
 
-        bukkitService.runTaskOptionallyAsync(new Runnable() {
-            @Override
-            public void run() {
-                // Validate the user
-                PlayerAuth auth = dataSource.getAuth(playerName);
-                if (auth == null) {
-                    commonService.send(sender, MessageKey.UNKNOWN_USER);
-                    return;
-                } else if (!validationService.isEmailFreeForRegistration(playerEmail, sender)) {
-                    commonService.send(sender, MessageKey.EMAIL_ALREADY_USED_ERROR);
-                    return;
-                }
-
-                // Set the email address
-                auth.setEmail(playerEmail);
-                if (!dataSource.updateEmail(auth)) {
-                    commonService.send(sender, MessageKey.ERROR);
-                    return;
-                }
-
-                // Update the player cache
-                if (playerCache.getAuth(playerName) != null) {
-                    playerCache.updatePlayer(auth);
-                }
-
-                // Show a status message
-                commonService.send(sender, MessageKey.EMAIL_CHANGED_SUCCESS);
+        bukkitService.runTaskOptionallyAsync(() -> {
+            // Validate the user
+            PlayerAuth auth = dataSource.getAuth(playerName);
+            if (auth == null) {
+                commonService.send(sender, MessageKey.UNKNOWN_USER);
+                return;
+            } else if (!validationService.isEmailFreeForRegistration(playerEmail, sender)) {
+                commonService.send(sender, MessageKey.EMAIL_ALREADY_USED_ERROR);
+                return;
             }
+
+            // Set the email address
+            auth.setEmail(playerEmail);
+            if (!dataSource.updateEmail(auth)) {
+                commonService.send(sender, MessageKey.ERROR);
+                return;
+            }
+
+            // Update the player cache
+            if (playerCache.getAuth(playerName) != null) {
+                playerCache.updatePlayer(auth);
+            }
+
+            // Show a status message
+            commonService.send(sender, MessageKey.EMAIL_CHANGED_SUCCESS);
         });
     }
 }

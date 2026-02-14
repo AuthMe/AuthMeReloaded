@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class Messages {
 
-    // Custom Authme tag replaced to new line
+    // Custom AuthMe tag replaced to new line
     private static final String NEWLINE_TAG = "%nl%";
 
     // Global tag replacements
@@ -41,7 +41,7 @@ public class Messages {
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(EmailService.class);
 
-    private MessagesFileHandler messagesFileHandler;
+    private final MessagesFileHandler messagesFileHandler;
 
     /*
      * Constructor.
@@ -148,18 +148,7 @@ public class Messages {
                 .replace(DISPLAYNAME_TAG, name);
     }
 
-    /**
-     * Retrieve the given message code with the given tag replacements. Note that this method
-     * logs an error if the number of supplied replacements doesn't correspond to the number of tags
-     * the message key contains.
-     *
-     * @param sender The entity to send the message to
-     * @param key The key of the message to send
-     * @param replacements The replacements to apply for the tags
-     * @return The message from the file with replacements
-     */
-    public String retrieveSingle(CommandSender sender, MessageKey key, String... replacements) {
-        String message = retrieveMessage(key, sender);
+    private String retrieveSingle(MessageKey key, String message, String[] replacements) {
         String[] tags = key.getTags();
         if (replacements.length == tags.length) {
             for (int i = 0; i < tags.length; ++i) {
@@ -176,21 +165,26 @@ public class Messages {
      * logs an error if the number of supplied replacements doesn't correspond to the number of tags
      * the message key contains.
      *
+     * @param sender The entity to send the message to
+     * @param key The key of the message to send
+     * @param replacements The replacements to apply for the tags
+     * @return The message from the file with replacements
+     */
+    public String retrieveSingle(CommandSender sender, MessageKey key, String... replacements) {
+        return retrieveSingle(key, retrieveMessage(key, sender), replacements);
+    }
+
+    /**
+     * Retrieve the given message code with the given tag replacements. Note that this method
+     * logs an error if the number of supplied replacements doesn't correspond to the number of tags
+     * the message key contains.
+     *
      * @param name The name of the entity to send the message to
      * @param key The key of the message to send
      * @param replacements The replacements to apply for the tags
      * @return The message from the file with replacements
      */
     public String retrieveSingle(String name, MessageKey key, String... replacements) {
-        String message = retrieveMessage(key, name);
-        String[] tags = key.getTags();
-        if (replacements.length == tags.length) {
-            for (int i = 0; i < tags.length; ++i) {
-                message = message.replace(tags[i], replacements[i]);
-            }
-        } else {
-            logger.warning("Invalid number of replacements for message key '" + key + "'");
-        }
-        return message;
+        return retrieveSingle(key, retrieveMessage(key, name), replacements);
     }
 }

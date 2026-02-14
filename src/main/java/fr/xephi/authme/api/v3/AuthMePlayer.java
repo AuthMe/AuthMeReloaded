@@ -6,7 +6,7 @@ import java.util.UUID;
 
 /**
  * Read-only player info exposed in the AuthMe API. The data in this object is copied from the
- * database and not updated afterwards. As such, it may become outdated if the player data changes
+ * database and not updated afterward. As such, it may become outdated if the player data changes
  * in AuthMe.
  *
  * @see AuthMeApi#getPlayerInfo
@@ -19,7 +19,7 @@ public interface AuthMePlayer {
     String getName();
 
     /**
-     * Returns the UUID of the player as given by the server (may be offline UUID or not).
+     * Returns the UUID of the player as given by the server (maybe offline UUID or not).
      * The UUID is not present if AuthMe is configured not to store the UUID or if the data is not
      * present (e.g. older record).
      *

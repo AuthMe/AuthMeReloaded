@@ -21,7 +21,7 @@ import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Two factor authentication.
+ * Two-factor authentication.
  *
  * @see <a href="http://thegreyblog.blogspot.com/2011/12/google-authenticator-using-it-in-your.html">Original source</a>
  */

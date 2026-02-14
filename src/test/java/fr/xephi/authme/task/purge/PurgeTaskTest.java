@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
@@ -55,7 +54,7 @@ public class PurgeTaskTest {
 
     private static final PermissionNode BYPASS_NODE = PlayerStatePermission.BYPASS_PURGE;
 
-    private Map<OfflinePlayer, Boolean> playerBypassAssignments = new HashMap<>();
+    private final Map<OfflinePlayer, Boolean> playerBypassAssignments = new HashMap<>();
 
     @Mock
     private PermissionsManager permissionsManager;

@@ -21,7 +21,7 @@ public class DataSourceColumn<T> implements Column<T, ColumnContext> {
      *
      * @param type type of the column
      * @param nameProperty property defining the column name
-     * @param isOptional whether or not the column can be skipped (if name is configured to empty string)
+     * @param isOptional whether the column can be skipped (if name is configured to empty string)
      * @param useDefaultForNull whether SQL DEFAULT should be used for null values (if supported by the database)
      */
     DataSourceColumn(ColumnType<T> type, Property<String> nameProperty, boolean isOptional, boolean useDefaultForNull) {

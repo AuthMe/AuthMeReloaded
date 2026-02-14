@@ -28,7 +28,7 @@ checks:
   similar-code:
     enabled: false
   # The "identical-code" check would be cool to enable since Checkstyle offers no such functionality, but it is
-  # too aggressive and we'd have to suppress many reported warnings.
+  # too aggressive, and we'd have to suppress many reported warnings.
   identical-code:
     enabled: false
 

@@ -13,6 +13,7 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.LimboSettings;
 import fr.xephi.authme.util.FileUtils;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -32,7 +33,7 @@ import java.util.Optional;
  */
 class DistributedFilesPersistenceHandler implements LimboPersistenceHandler {
 
-    private static final Type LIMBO_MAP_TYPE = new TypeToken<Map<String, LimboPlayer>>(){}.getType();
+    private static final Type LIMBO_MAP_TYPE = new TypeToken<@NotNull Map<String, LimboPlayer>>(){}.getType();
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(DistributedFilesPersistenceHandler.class);
     private final File cacheFolder;

@@ -14,6 +14,7 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 import java.util.Optional;
@@ -68,7 +69,7 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
         // Parse type
         String typeId = dataIn.readUTF();
         Optional<MessageType> type = MessageType.fromId(typeId);
-        if (!type.isPresent()) {
+        if (type.isEmpty()) {
             logger.debug("Received unsupported forwarded bungeecord message type! ({0})", typeId);
             return;
         }
@@ -102,7 +103,7 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
         // Parse type
         String typeId = in.readUTF();
         Optional<MessageType> type = MessageType.fromId(typeId);
-        if (!type.isPresent()) {
+        if (type.isEmpty()) {
             logger.debug("Received unsupported bungeecord message type! ({0})", typeId);
             return;
         }
@@ -118,16 +119,13 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
         }
 
         // Handle type
-        switch (type.get()) {
-            case PERFORM_LOGIN:
-                performLogin(argument);
-                break;
-            default:
+        if (type.get() == MessageType.PERFORM_LOGIN) {
+            performLogin(argument);
         }
     }
 
     @Override
-    public void onPluginMessageReceived(String channel, Player player, byte[] data) {
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte[] data) {
         if (!isEnabled) {
             return;
         }

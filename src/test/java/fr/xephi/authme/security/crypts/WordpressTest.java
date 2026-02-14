@@ -15,7 +15,7 @@ public class WordpressTest extends AbstractEncryptionMethodTest {
 
     @Override
     protected boolean testHashEqualityForSameSalt() {
-        // We need to skip the test because Wordpress uses an "internal salt" that is not exposed to the outside
+        // We need to skip the test because WordPress uses an "internal salt" that is not exposed to the outside
         return false;
     }
 }

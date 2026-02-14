@@ -84,14 +84,14 @@ public final class CommandUtils {
      * @return formatted command syntax incl. arguments
      */
     public static String buildSyntax(CommandDescription command, List<String> correctLabels) {
-        String commandSyntax = ChatColor.WHITE + "/" + correctLabels.get(0) + ChatColor.YELLOW;
+        var commandSyntax = new StringBuilder(ChatColor.WHITE + "/" + correctLabels.get(0) + ChatColor.YELLOW);
         for (int i = 1; i < correctLabels.size(); ++i) {
-            commandSyntax += " " + correctLabels.get(i);
+            commandSyntax.append(" ").append(correctLabels.get(i));
         }
         for (CommandArgumentDescription argument : command.getArguments()) {
-            commandSyntax += " " + formatArgument(argument);
+            commandSyntax.append(" ").append(formatArgument(argument));
         }
-        return commandSyntax;
+        return commandSyntax.toString();
     }
 
     /**

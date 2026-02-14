@@ -4,8 +4,8 @@ import net.luckperms.api.context.ImmutableContextSet;
 import net.luckperms.api.model.group.Group;
 
 public class LuckPermGroup {
-    private Group group;
-    private ImmutableContextSet contexts;
+    private final Group group;
+    private final ImmutableContextSet contexts;
 
     public LuckPermGroup(Group group, ImmutableContextSet contexts) {
         this.group = group;

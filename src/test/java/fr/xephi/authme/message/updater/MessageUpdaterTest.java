@@ -28,7 +28,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class MessageUpdaterTest {
 
-    private MessageUpdater messageUpdater = new MessageUpdater();
+    private final MessageUpdater messageUpdater = new MessageUpdater();
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -65,7 +65,7 @@ public class MessageUpdaterTest {
 
         // then
         assertThat(wasChanged, equalTo(true));
-        PropertyReader reader = new YamlFileReader(messagesFile);
+        PropertyReader reader = new YamlFileReader(messagesFile.toPath());
         // Existing keys should not be overridden
         assertThat(reader.getString(MessageKey.LOGIN_SUCCESS.getKey()), equalTo("&cHere we have&bdefined some colors &dand some other &lthings"));
         assertThat(reader.getString(MessageKey.EMAIL_ALREADY_USED_ERROR.getKey()), equalTo(""));
@@ -85,7 +85,7 @@ public class MessageUpdaterTest {
 
         // then
         assertThat(wasChanged, equalTo(true));
-        PropertyReader reader = new YamlFileReader(messagesFile);
+        PropertyReader reader = new YamlFileReader(messagesFile.toPath());
         assertThat(reader.getString(MessageKey.PASSWORD_MATCH_ERROR.getKey()),
             equalTo("Password error message"));
         assertThat(reader.getString(MessageKey.INVALID_NAME_CHARACTERS.getKey()),
@@ -111,7 +111,7 @@ public class MessageUpdaterTest {
 
         // then
         assertThat(wasChanged, equalTo(true));
-        PropertyReader reader = new YamlFileReader(messagesFile);
+        PropertyReader reader = new YamlFileReader(messagesFile.toPath());
         assertThat(reader.getString(MessageKey.TWO_FACTOR_CREATE.getKey()), equalTo("Old 2fa create text"));
         assertThat(reader.getString(MessageKey.WRONG_PASSWORD.getKey()), equalTo("test2 - wrong password")); // from pre-5.5 key
         assertThat(reader.getString(MessageKey.SECOND.getKey()), equalTo("second")); // from messages_en.yml

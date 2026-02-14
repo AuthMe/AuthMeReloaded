@@ -14,7 +14,7 @@ import java.util.TreeMap;
  */
 public final class ToolsRunner {
 
-    private Map<String, ToolTask> tasks;
+    private final Map<String, ToolTask> tasks;
 
     private ToolsRunner(Map<String, ToolTask> tasks) {
         this.tasks = tasks;

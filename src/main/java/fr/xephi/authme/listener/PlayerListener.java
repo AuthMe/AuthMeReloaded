@@ -27,6 +27,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityAirChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -45,11 +46,12 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.InventoryView;
+import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import javax.inject.Inject;
 import java.util.Locale;
@@ -101,6 +103,7 @@ public class PlayerListener implements Listener {
         final String name = event.getName();
 
         // NOTE: getAddress() sometimes returning null, we don't want to handle this race condition
+        //noinspection ConstantValue
         if (event.getAddress() == null) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                 messages.retrieveSingle(name, MessageKey.KICK_UNRESOLVED_HOSTNAME));
@@ -179,10 +182,6 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-
-        if (!PlayerListener19Spigot.isPlayerSpawnLocationEventCalled()) {
-            teleportationService.teleportOnJoin(player);
-        }
 
         quickCommandsProtectionManager.processJoin(player);
 
@@ -312,6 +311,13 @@ public class PlayerListener implements Listener {
         }
     }
 
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerSwapHandItems(PlayerSwapHandItemsEvent event) {
+        if (listenerService.shouldCancelEvent(event)) {
+            event.setCancelled(true);
+        }
+    }
+
     /*
      * Movement events
      */
@@ -383,6 +389,13 @@ public class PlayerListener implements Listener {
      */
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerAirChange(EntityAirChangeEvent event) {
+        if (listenerService.shouldCancelEvent(event)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
@@ -451,13 +464,6 @@ public class PlayerListener implements Listener {
      */
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        if (listenerService.shouldCancelEvent(event)) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
@@ -507,6 +513,16 @@ public class PlayerListener implements Listener {
         if (listenerService.shouldCancelEvent(event.getWhoClicked())
             && !isInventoryWhitelisted(event.getView())) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerSpawn(PlayerSpawnLocationEvent event) {
+        final Player player = event.getPlayer();
+
+        Location customSpawnLocation = teleportationService.prepareOnJoinSpawnLocation(player);
+        if (customSpawnLocation != null) {
+            event.setSpawnLocation(customSpawnLocation);
         }
     }
 }

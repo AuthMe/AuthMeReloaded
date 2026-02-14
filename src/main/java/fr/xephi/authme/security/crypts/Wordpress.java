@@ -7,7 +7,7 @@ import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.SaltType;
 import fr.xephi.authme.security.crypts.description.Usage;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -16,7 +16,7 @@ import static fr.xephi.authme.security.HashUtils.isEqual;
 
 @Recommendation(Usage.ACCEPTABLE)
 @HasSalt(value = SaltType.TEXT, length = 9)
-// Note ljacqu 20151228: Wordpress is actually a salted algorithm but salt generation is handled internally
+// Note ljacqu 20151228: WordPress is actually a salted algorithm but salt generation is handled internally
 // and isn't exposed to the outside, so we treat it as an unsalted implementation
 public class Wordpress extends UnsaltedMethod {
 
@@ -73,9 +73,6 @@ public class Wordpress extends UnsaltedMethod {
         }
         int count = 1 << countLog2;
         String salt = setting.substring(4, 4 + 8);
-        if (salt.length() != 8) {
-            return output;
-        }
         MessageDigest md = HashUtils.getDigest(MessageDigestAlgorithm.MD5);
         byte[] pass = stringToUtf8(password);
         byte[] hash = md.digest(stringToUtf8(salt + password));
@@ -99,16 +96,12 @@ public class Wordpress extends UnsaltedMethod {
     }
 
     private byte[] stringToUtf8(String string) {
-        try {
-            return string.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new UnsupportedOperationException("This system doesn't support UTF-8!", e);
-        }
+        return string.getBytes(StandardCharsets.UTF_8);
     }
 
     @Override
     public String computeHash(String password) {
-        byte random[] = new byte[6];
+        byte[] random = new byte[6];
         randomGen.nextBytes(random);
         return crypt(password, gensaltPrivate(stringToUtf8(new String(random))));
     }

@@ -27,7 +27,7 @@ public final class AuthMeMatchers {
     }
 
     public static Matcher<? super HashedPassword> equalToHash(HashedPassword hash) {
-        return new TypeSafeMatcher<HashedPassword>() {
+        return new TypeSafeMatcher<>() {
             @Override
             public boolean matchesSafely(HashedPassword item) {
                 return Objects.equals(hash.getHash(), item.getHash())
@@ -47,7 +47,7 @@ public final class AuthMeMatchers {
 
     public static Matcher<PlayerAuth> hasAuthBasicData(String name, String realName,
                                                        String email, String lastIp) {
-        return new TypeSafeMatcher<PlayerAuth>() {
+        return new TypeSafeMatcher<>() {
             @Override
             public boolean matchesSafely(PlayerAuth item) {
                 return Objects.equals(name, item.getNickname())
@@ -71,7 +71,7 @@ public final class AuthMeMatchers {
     }
 
     public static Matcher<? super PlayerAuth> hasRegistrationInfo(String registrationIp, long registrationDate) {
-        return new TypeSafeMatcher<PlayerAuth>() {
+        return new TypeSafeMatcher<>() {
             @Override
             public boolean matchesSafely(PlayerAuth item) {
                 return Objects.equals(registrationIp, item.getRegistrationIp())
@@ -99,7 +99,7 @@ public final class AuthMeMatchers {
 
     public static Matcher<? super PlayerAuth> hasAuthLocation(double x, double y, double z,
                                                               String world, float yaw, float pitch) {
-        return new TypeSafeMatcher<PlayerAuth>() {
+        return new TypeSafeMatcher<>() {
             @Override
             public boolean matchesSafely(PlayerAuth item) {
                 return Objects.equals(x, item.getQuitLocX())
@@ -120,7 +120,7 @@ public final class AuthMeMatchers {
     }
 
     public static Matcher<String> stringWithLength(int length) {
-        return new TypeSafeMatcher<String>() {
+        return new TypeSafeMatcher<>() {
             @Override
             protected boolean matchesSafely(String item) {
                 return item != null && item.length() == length;

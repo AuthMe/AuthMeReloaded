@@ -95,7 +95,7 @@ public class GeneratePluginYml implements AutoToolTask {
 
         permissionNodes = gatherer.getPermissionClasses().stream()
             // Note ljacqu 20161023: The compiler fails if we use method references below
-            .map(clz -> clz.getEnumConstants())
+            .map(Class::getEnumConstants)
             .flatMap((PermissionNode[] nodes) -> Arrays.stream(nodes))
             .collect(Collectors.toList());
 
@@ -170,13 +170,11 @@ public class GeneratePluginYml implements AutoToolTask {
     }
 
     private static Object convertDefaultPermission(DefaultPermission defaultPermission) {
-        switch (defaultPermission) {
+        return switch (defaultPermission) {
             // Returning true/false as booleans will make SnakeYAML avoid using quotes
-            case ALLOWED: return true;
-            case NOT_ALLOWED: return false;
-            case OP_ONLY: return "op";
-            default:
-                throw new IllegalArgumentException("Unknown default permission '" + defaultPermission + "'");
-        }
+            case ALLOWED -> true;
+            case NOT_ALLOWED -> false;
+            case OP_ONLY -> "op";
+        };
     }
 }

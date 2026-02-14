@@ -95,7 +95,7 @@ public final class TestCommandsUtil {
             .detailedDescription("'" + labels.get(0) + "' test command")
             .executableCommand(commandClass);
 
-        if (arguments != null && arguments.length > 0) {
+        if (arguments != null) {
             for (CommandArgumentDescription argument : arguments) {
                 command.withArgument(argument.getName(), argument.getDescription(), argument.isOptional());
             }

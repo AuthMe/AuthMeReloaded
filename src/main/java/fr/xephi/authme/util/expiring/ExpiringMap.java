@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  * Time starts counting directly after insertion. Inserting a new entry with
  * a key that already has a value will "reset" the expiration. Although the
  * expiration can be redefined later on, only entries which are inserted
- * afterwards will use the new expiration.
+ * afterward will use the new expiration.
  * <p>
  * An expiration of {@code <= 0} will make the map expire all entries
  * immediately after insertion. Note that the map does not remove expired

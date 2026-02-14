@@ -89,7 +89,7 @@ public class TempbanManager implements SettingsDependent, HasCleanup {
 
     /**
      * Tempban a player's IP address for failing to log in too many times.
-     * This calculates the expire time based on the time the method was called.
+     * This calculates the expiry time based on the time the method was called.
      *
      * @param player The player to tempban
      */

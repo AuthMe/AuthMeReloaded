@@ -1,51 +1,53 @@
 package fr.xephi.authme.security.crypts;
 
+import fr.xephi.authme.security.crypts.description.Recommendation;
+import fr.xephi.authme.security.crypts.description.Usage;
+
+import java.util.Arrays;
+
 /**
  * The Whirlpool hashing function.
- * <p/>
- * <p/>
+ * <p>
  * <b>References</b>
- * <p/>
- * <p/>
+ * <p>
  * The Whirlpool algorithm was developed by <a
  * href="mailto:pbarreto@scopus.com.br">Paulo S. L. M. Barreto</a> and <a
  * href="mailto:vincent.rijmen@cryptomathic.com">Vincent Rijmen</a>.
- * <p/>
+ * <p>
  * See P.S.L.M. Barreto, V. Rijmen, ``The Whirlpool hashing function,'' First
  * NESSIE workshop, 2000 (tweaked version, 2003),
- * <https://www.cosic.esat.kuleuven
- * .ac.be/nessie/workshop/submissions/whirlpool.zip>
+ * &lt;https://www.cosic.esat.kuleuven.ac.be/nessie/workshop/submissions/whirlpool.zip&gt;
  *
  * @author Paulo S.L.M. Barreto
  * @author Vincent Rijmen.
  * @version 3.0 (2003.03.12)
- * <p/>
+ * <p>
  * ====================================================================
  * =========
- * <p/>
+ * <p>
  * Differences from version 2.1:
- * <p/>
+ * <p>
  * - Suboptimal diffusion matrix replaced by cir(1, 1, 4, 1, 8, 5, 2,
  * 9).
- * <p/>
+ * <p>
  * ====================================================================
  * =========
- * <p/>
+ * <p>
  * Differences from version 2.0:
- * <p/>
+ * <p>
  * - Generation of ISO/IEC 10118-3 test vectors. - Bug fix: nonzero
  * carry was ignored when tallying the data length (this bug apparently
  * only manifested itself when feeding data in pieces rather than in a
  * single chunk at once).
- * <p/>
+ * <p>
  * Differences from version 1.0:
- * <p/>
+ * <p>
  * - Original S-box replaced by the tweaked, hardware-efficient
  * version.
- * <p/>
+ * <p>
  * ====================================================================
  * =========
- * <p/>
+ * <p>
  * THIS SOFTWARE IS PROVIDED BY THE AUTHORS ''AS IS'' AND ANY EXPRESS
  * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -58,12 +60,6 @@ package fr.xephi.authme.security.crypts;
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-import fr.xephi.authme.security.crypts.description.Recommendation;
-import fr.xephi.authme.security.crypts.description.Usage;
-
-import java.util.Arrays;
-
 @Deprecated
 @Recommendation(Usage.DEPRECATED)
 public class Whirlpool extends UnsaltedMethod {
@@ -206,9 +202,7 @@ public class Whirlpool extends UnsaltedMethod {
                     L[i] ^= C[t][(int) (K[(i - t) & 7] >>> s) & 0xff];
                 }
             }
-            for (int i = 0; i < 8; i++) {
-                K[i] = L[i];
-            }
+            System.arraycopy(L, 0, K, 0, 8);
             K[0] ^= rc[r];
             /*
              * apply the r-th round transformation:
@@ -219,9 +213,7 @@ public class Whirlpool extends UnsaltedMethod {
                     L[i] ^= C[t][(int) (state[(i - t) & 7] >>> s) & 0xff];
                 }
             }
-            for (int i = 0; i < 8; i++) {
-                state[i] = L[i];
-            }
+            System.arraycopy(L, 0, state, 0, 8);
         }
         /*
          * apply the Miyaguchi-Preneel compression function:
@@ -258,8 +250,7 @@ public class Whirlpool extends UnsaltedMethod {
          * |||||||||||||||||||||| buffer
          * +-------+-------+-------+-------+-------+------- | bufferPos
          */
-        int sourcePos = 0; // index of leftmost source byte containing data (1
-        // to 8 bits).
+        int sourcePos = 0; // index of leftmost source byte containing data (1 to 8 bits).
         int sourceGap = (8 - ((int) sourceBits & 7)) & 7; // space on
         // source[sourcePos].
         int bufferRem = bufferBits & 7; // occupied bits on buffer[bufferPos].
@@ -277,11 +268,8 @@ public class Whirlpool extends UnsaltedMethod {
             // source[sourcePos+1] contain data.
             // take a byte from the source:
             b = ((source[sourcePos] << sourceGap) & 0xff) | ((source[sourcePos + 1] & 0xff) >>> (8 - sourceGap));
-            if (b < 0 || b >= 256) {
-                throw new RuntimeException("LOGIC ERROR");
-            }
             // process this byte:
-            buffer[bufferPos++] |= b >>> bufferRem;
+            buffer[bufferPos++] |= (byte) (b >>> bufferRem);
             bufferBits += 8 - bufferRem; // bufferBits = 8*bufferPos;
             if (bufferBits == 512) {
                 // process data block:
@@ -301,14 +289,14 @@ public class Whirlpool extends UnsaltedMethod {
             b = (source[sourcePos] << sourceGap) & 0xff; // bits are
             // left-justified on b.
             // process the remaining bits:
-            buffer[bufferPos] |= b >>> bufferRem;
+            buffer[bufferPos] |= (byte) (b >>> bufferRem);
         } else {
             b = 0;
         }
         if (bufferRem + sourceBits < 8) {
             // all remaining data fits on buffer[bufferPos], and there still
             // remains some space.
-            bufferBits += sourceBits;
+            bufferBits += (int) sourceBits;
         } else {
             // buffer[bufferPos] is full:
             bufferPos++;
@@ -338,7 +326,7 @@ public class Whirlpool extends UnsaltedMethod {
      */
     public void NESSIEfinalize(byte[] digest) {
         // append a '1'-bit:
-        buffer[bufferPos] |= 0x80 >>> (bufferBits & 7);
+        buffer[bufferPos] |= (byte) (0x80 >>> (bufferBits & 7));
         bufferPos++; // all remaining bits on the current byte are set to zero.
         // pad with zero bits to complete 512N + 256 bits:
         if (bufferPos > 32) {
@@ -378,12 +366,12 @@ public class Whirlpool extends UnsaltedMethod {
      *               This method maintains the invariant: bufferBits &lt; 512
      */
     public void NESSIEadd(String source) {
-        if (source.length() > 0) {
+        if (!source.isEmpty()) {
             byte[] data = new byte[source.length()];
             for (int i = 0; i < source.length(); i++) {
                 data[i] = (byte) source.charAt(i);
             }
-            NESSIEadd(data, 8 * data.length);
+            NESSIEadd(data, 8L * data.length);
         }
     }
 

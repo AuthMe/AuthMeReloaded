@@ -32,7 +32,7 @@ class Pbkdf2 extends AuthMeController {
 	
 	private function computeHash($iterations, $salt, $password) {
 	    return 'pbkdf2_sha256$' . self::NUMBER_OF_ITERATIONS . '$' . $salt 
-			. '$' . hash_pbkdf2('sha256', $password, $salt, self::NUMBER_OF_ITERATIONS, 64, false);
+			. '$' . hash_pbkdf2('sha256', $password, $salt, self::NUMBER_OF_ITERATIONS, 64);
 	}
 
     /**

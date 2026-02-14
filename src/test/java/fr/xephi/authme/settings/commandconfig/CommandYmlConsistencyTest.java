@@ -38,7 +38,7 @@ public class CommandYmlConsistencyTest {
     public void shouldLoadWithNoMigrations() {
         // given
         File commandFile = TestHelper.getJarFile("/commands.yml");
-        PropertyResource resource = new YamlFileResource(commandFile);
+        PropertyResource resource = new YamlFileResource(commandFile.toPath());
 
         // when
         boolean result = commandMigrationService.checkAndMigrate(

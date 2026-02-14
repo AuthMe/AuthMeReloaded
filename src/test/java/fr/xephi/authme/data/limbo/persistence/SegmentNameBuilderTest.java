@@ -54,11 +54,11 @@ public class SegmentNameBuilderTest {
     }
 
     private static String toPaddedHex(int dec, int padLength) {
-        String hexResult = Integer.toString(dec, 16);
+        var hexResult = new StringBuilder(Integer.toString(dec, 16));
         while (hexResult.length() < padLength) {
-            hexResult = "0" + hexResult;
+            hexResult.insert(0, "0");
         }
-        return hexResult;
+        return hexResult.toString();
     }
 
     @Test

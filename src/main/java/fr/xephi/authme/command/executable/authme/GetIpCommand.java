@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Objects;
 
 public class GetIpCommand implements ExecutableCommand {
 
@@ -27,7 +28,7 @@ public class GetIpCommand implements ExecutableCommand {
 
         if (player != null) {
             sender.sendMessage("Current IP of " + player.getName() + " is " + PlayerUtils.getPlayerIp(player)
-                + ":" + player.getAddress().getPort());
+                + ":" + Objects.requireNonNull(player.getAddress()).getPort());
         }
 
         if (auth == null) {

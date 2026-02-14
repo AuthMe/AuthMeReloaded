@@ -9,7 +9,6 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.service.BukkitService;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -60,13 +59,9 @@ class HasPermissionChecker implements DebugSection {
 
         Player player = bukkitService.getPlayerExact(playerName);
         if (player == null) {
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
-            if (offlinePlayer == null) {
-                sender.sendMessage(ChatColor.DARK_RED + "Player '" + playerName + "' does not exist");
-            } else {
-                sender.sendMessage("Player '" + playerName + "' not online; checking with offline player");
-                performPermissionCheck(offlinePlayer, permissionNode, permissionsManager::hasPermissionOffline, sender);
-            }
+            var offlinePlayer = bukkitService.getOfflinePlayer(playerName);
+            sender.sendMessage("Player '" + playerName + "' not online; checking with offline player");
+            performPermissionCheck(offlinePlayer, permissionNode, permissionsManager::hasPermissionOffline, sender);
         } else {
             performPermissionCheck(player, permissionNode, permissionsManager::hasPermission, sender);
         }

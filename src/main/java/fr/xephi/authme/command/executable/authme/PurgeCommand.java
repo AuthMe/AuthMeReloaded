@@ -40,7 +40,7 @@ public class PurgeCommand implements ExecutableCommand {
             return;
         }
 
-        // Create a calender instance to determine the date
+        // Create a calendar instance to determine the date
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, -days);
         long until = calendar.getTimeInMillis();

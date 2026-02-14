@@ -3,6 +3,7 @@ package fr.xephi.authme.events;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This event is called when a player uses the login command,
@@ -45,7 +46,7 @@ public class AuthMeAsyncPreLoginEvent extends CustomEvent {
     }
 
     /**
-     * Define whether or not the player may log in.
+     * Define whether the player may log in.
      *
      * @param canLogin True to allow the player to log in; false to prevent him
      */
@@ -63,6 +64,7 @@ public class AuthMeAsyncPreLoginEvent extends CustomEvent {
     }
 
     @Override
+    @NotNull
     public HandlerList getHandlers() {
         return handlers;
     }

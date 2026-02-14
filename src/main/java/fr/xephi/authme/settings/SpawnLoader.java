@@ -20,6 +20,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Manager for spawn points. It loads spawn definitions from AuthMe and third-party plugins
@@ -171,7 +172,7 @@ public class SpawnLoader implements Reloadable {
      * @see RestrictionSettings#SPAWN_PRIORITY
      */
     public Location getSpawnLocation(Player player) {
-        if (player == null || player.getWorld() == null) {
+        if (player == null) {
             return null;
         }
 
@@ -180,19 +181,17 @@ public class SpawnLoader implements Reloadable {
         for (String priority : spawnPriority) {
             switch (priority.toLowerCase(Locale.ROOT).trim()) {
                 case "default":
-                    if (world.getSpawnLocation() != null) {
-                        if (!isValidSpawnPoint(world.getSpawnLocation())) {
-                            for (World spawnWorld : Bukkit.getWorlds()) {
-                                if (isValidSpawnPoint(spawnWorld.getSpawnLocation())) {
-                                    world = spawnWorld;
-                                    break;
-                                }
+                    if (!isValidSpawnPoint(world.getSpawnLocation())) {
+                        for (World spawnWorld : Bukkit.getWorlds()) {
+                            if (isValidSpawnPoint(spawnWorld.getSpawnLocation())) {
+                                world = spawnWorld;
+                                break;
                             }
-                            logger.warning("Seems like AuthMe is unable to find a proper spawn location. "
-                                + "Set a location with the command '/authme setspawn'");
                         }
-                        spawnLoc = world.getSpawnLocation();
+                        logger.warning("Seems like AuthMe is unable to find a proper spawn location. "
+                            + "Set a location with the command '/authme setspawn'");
                     }
+                    spawnLoc = world.getSpawnLocation();
                     break;
                 case "multiverse":
                     if (settings.getProperty(HooksSettings.MULTIVERSE)) {
@@ -229,10 +228,7 @@ public class SpawnLoader implements Reloadable {
      * @return True upon success, false otherwise
      */
     private boolean isValidSpawnPoint(Location location) {
-        if (location.getX() == 0 && location.getY() == 0 && location.getZ() == 0) {
-            return false;
-        }
-        return true;
+        return location.getX() != 0 || location.getY() != 0 || location.getZ() != 0;
     }
 
     /**
@@ -292,7 +288,7 @@ public class SpawnLoader implements Reloadable {
         if (containsAllSpawnFields(configuration, pathPrefix)) {
             String prefix = pathPrefix + ".";
             String worldName = configuration.getString(prefix + "world");
-            World world = Bukkit.getWorld(worldName);
+            World world = Bukkit.getWorld(Objects.requireNonNull(worldName));
             if (!StringUtils.isBlank(worldName) && world != null) {
                 return new Location(world, configuration.getDouble(prefix + "x"),
                     configuration.getDouble(prefix + "y"), configuration.getDouble(prefix + "z"),
@@ -314,7 +310,7 @@ public class SpawnLoader implements Reloadable {
         if (isLocationCompleteInCmiConfig(configuration, pathPrefix)) {
             String prefix = pathPrefix + ".";
             String worldName = configuration.getString(prefix + "World");
-            World world = Bukkit.getWorld(worldName);
+            World world = Bukkit.getWorld(Objects.requireNonNull(worldName));
             if (!StringUtils.isBlank(worldName) && world != null) {
                 return new Location(world, configuration.getDouble(prefix + "X"),
                     configuration.getDouble(prefix + "Y"), configuration.getDouble(prefix + "Z"),

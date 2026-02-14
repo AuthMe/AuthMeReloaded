@@ -73,7 +73,7 @@ public class AntiBotService implements SettingsDependent {
         // Delay the schedule on first start
         if (startup) {
             int delay = settings.getProperty(ProtectionSettings.ANTIBOT_DELAY);
-            bukkitService.scheduleSyncDelayedTask(enableTask, delay * TICKS_PER_SECOND);
+            bukkitService.scheduleSyncDelayedTask(enableTask, (long) delay * TICKS_PER_SECOND);
             startup = false;
         } else {
             enableTask.run();
@@ -91,7 +91,7 @@ public class AntiBotService implements SettingsDependent {
             disableTask.cancel();
         }
         // Schedule auto-disable
-        disableTask = bukkitService.runTaskLater(this::stopProtection, duration * TICKS_PER_MINUTE);
+        disableTask = bukkitService.runTaskLater(this::stopProtection, (long) duration * TICKS_PER_MINUTE);
         antiBotStatus = AntiBotStatus.ACTIVE;
         bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
             // Inform admins

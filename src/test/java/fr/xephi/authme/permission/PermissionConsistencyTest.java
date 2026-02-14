@@ -8,6 +8,7 @@ import fr.xephi.authme.TestHelper;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -18,6 +19,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -133,6 +135,7 @@ public class PermissionConsistencyTest {
         MemorySection permsList = (MemorySection) pluginFile.get("permissions");
 
         Map<String, PermissionDefinition> permissions = new HashMap<>();
+        Assert.assertNotNull(permsList);
         addChildren(permsList, permissions);
         return ImmutableMap.copyOf(permissions);
     }
@@ -148,7 +151,7 @@ public class PermissionConsistencyTest {
         boolean hasPermissionEntry = false;
         for (String key : node.getKeys(false)) {
             if (node.get(key) instanceof MemorySection && !"children".equals(key)) {
-                addChildren((MemorySection) node.get(key), collection);
+                addChildren((MemorySection) Objects.requireNonNull(node.get(key)), collection);
             } else if (PERMISSION_FIELDS.contains(key)) {
                 hasPermissionEntry = true;
             } else {
@@ -199,7 +202,7 @@ public class PermissionConsistencyTest {
 
             if (memorySection.get("children") instanceof MemorySection) {
                 List<String> children = new ArrayList<>();
-                collectChildren((MemorySection) memorySection.get("children"), children);
+                collectChildren((MemorySection) Objects.requireNonNull(memorySection.get("children")), children);
                 this.children = removeStart(memorySection.getCurrentPath() + ".children.", children);
             } else {
                 this.children = Collections.emptySet();
@@ -269,7 +272,7 @@ public class PermissionConsistencyTest {
          *
          * @param start the start to remove
          * @param list the entries to modify
-         * @return list with shortened entries
+         * @return The list with shortened entries
          */
         private static Set<String> removeStart(String start, List<String> list) {
             Set<String> result = new HashSet<>(list.size());

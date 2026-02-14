@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
@@ -65,7 +66,6 @@ public class EntityListener implements Listener {
         }
     }
 
-    //TODO sgdc3 20190808: We listen at the same event twice, does it make any sense?
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onEntityInteract(EntityInteractEvent event) {
         if (listenerService.shouldCancelEvent(event)) {
@@ -92,6 +92,13 @@ public class EntityListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onShoot(EntityShootBowEvent event) {
+        if (listenerService.shouldCancelEvent(event)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPickupItem(EntityPickupItemEvent event) {
         if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }

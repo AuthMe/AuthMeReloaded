@@ -38,7 +38,7 @@ public class LogoutCommandTest {
         CommandSender sender = mock(BlockCommandSender.class);
 
         // when
-        command.executeCommand(sender, new ArrayList<String>());
+        command.executeCommand(sender, new ArrayList<>());
 
         // then
         verifyNoInteractions(management);

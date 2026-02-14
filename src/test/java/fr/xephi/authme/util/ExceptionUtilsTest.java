@@ -1,6 +1,5 @@
 package fr.xephi.authme.util;
 
-import fr.xephi.authme.ReflectionTestUtils;
 import org.junit.Test;
 
 import java.net.MalformedURLException;
@@ -42,8 +41,7 @@ public class ExceptionUtilsTest {
         // given
         ExceptionWithSettableCause exceptionWithSettableCause = new ExceptionWithSettableCause();
         UnsupportedOperationException uoe = new UnsupportedOperationException(exceptionWithSettableCause);
-        ReflectiveOperationException roe = new ReflectiveOperationException(uoe);
-        exceptionWithSettableCause.cause = roe;
+        exceptionWithSettableCause.cause = new ReflectiveOperationException(uoe);
 
         // when
         NullPointerException resultNpe = ExceptionUtils.findThrowableInCause(NullPointerException.class, uoe);

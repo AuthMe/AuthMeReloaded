@@ -14,7 +14,7 @@ import java.sql.Types;
  */
 final class MySqlMigrater {
     
-    private static ConsoleLogger logger = ConsoleLoggerFactory.get(MySqlMigrater.class);
+    private static final ConsoleLogger logger = ConsoleLoggerFactory.get(MySqlMigrater.class);
 
     private MySqlMigrater() {
     }

@@ -57,7 +57,7 @@ public class LimboPlayer {
     /**
      * Return the player's permissions groups.
      *
-     * @return The permissions groups the player belongs to
+     * @return The permission groups the player belongs to
      */
     public Collection<UserGroup> getGroups() {
         return groups;

@@ -60,7 +60,7 @@ public class MessagesIntegrationTest {
     }
 
     /**
-     * Loads the messages in the file {@code messages_test.yml} in the test resources folder.
+     * Loads the messages in the file {@code messages_test.yml} in the test resources' folder.
      * The file does not contain all messages defined in {@link MessageKey} and its contents
      * reflect various test cases -- not what the keys stand for.
      * <p>

@@ -78,7 +78,7 @@ public class PurgeCommandTest {
         // Check the timestamp with a certain tolerance
         int toleranceMillis = 100;
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, -Integer.valueOf(interval));
+        calendar.add(Calendar.DATE, -Integer.parseInt(interval));
         assertIsCloseTo(captor.getValue(), calendar.getTimeInMillis(), toleranceMillis);
     }
 

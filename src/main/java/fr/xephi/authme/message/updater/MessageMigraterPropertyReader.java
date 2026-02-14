@@ -24,7 +24,7 @@ final class MessageMigraterPropertyReader implements PropertyReader {
 
     private static final Charset CHARSET = StandardCharsets.UTF_8;
 
-    private Map<String, Object> root;
+    private final Map<String, Object> root;
 
     private MessageMigraterPropertyReader(Map<String, Object> valuesMap) {
         root = valuesMap;

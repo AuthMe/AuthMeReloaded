@@ -8,8 +8,8 @@ import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
-import org.apache.commons.mail.EmailException;
-import org.apache.commons.mail.HtmlEmail;
+import org.apache.commons.mail2.core.EmailException;
+import org.apache.commons.mail2.jakarta.HtmlEmail;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,7 +48,7 @@ public class SendMailSslTest {
     }
 
     @BeforeInjecting
-    public void initFields() throws IOException {
+    public void initFields() {
         given(settings.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("mail@example.org");
         given(settings.getProperty(EmailSettings.MAIL_PASSWORD)).willReturn("pass1234");
         given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(LogLevel.INFO);

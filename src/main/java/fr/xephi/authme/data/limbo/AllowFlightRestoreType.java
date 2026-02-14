@@ -55,7 +55,7 @@ public enum AllowFlightRestoreType {
     public abstract void restoreAllowFlight(Player player, LimboPlayer limbo);
 
     /**
-     * Processes the player when a LimboPlayer instance is created based on him. Typically this
+     * Processes the player when a LimboPlayer instance is created based on him. Typically, this
      * method revokes the {@code allowFlight} property to be restored again later.
      *
      * @param player the player to process

@@ -53,7 +53,7 @@ public class LimboService {
      * Creates a LimboPlayer for the given player and revokes all "limbo data" from the player.
      *
      * @param player the player to process
-     * @param isRegistered whether or not the player is registered
+     * @param isRegistered whether the player is registered
      */
     public void createLimboPlayer(Player player, boolean isRegistered) {
         final String name = player.getName().toLowerCase(Locale.ROOT);

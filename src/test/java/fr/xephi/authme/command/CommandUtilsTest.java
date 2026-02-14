@@ -21,7 +21,7 @@ public class CommandUtilsTest {
 
     @BeforeClass
     public static void setUpTestCommands() {
-        commands = Collections.unmodifiableCollection(TestCommandsUtil.generateCommands());
+        commands = TestCommandsUtil.generateCommands();
     }
 
     @Test

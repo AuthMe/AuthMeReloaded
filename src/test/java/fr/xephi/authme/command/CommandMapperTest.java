@@ -305,7 +305,6 @@ public class CommandMapperTest {
         assertThat(result.getCommandDescription(), equalTo(getCommandWithLabel(commands, "unregister")));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void shouldReturnExecutableCommandClasses() {
         // given / when

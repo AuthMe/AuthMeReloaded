@@ -2,7 +2,7 @@ package fr.xephi.authme.permission;
 
 /**
  * Permission nodes that give a player a status (e.g. VIP)
- * or grant them more freedom (e.g. less restrictions).
+ * or grant them more freedom (e.g. fewer restrictions).
  */
 public enum PlayerStatePermission implements PermissionNode {
 
@@ -49,12 +49,12 @@ public enum PlayerStatePermission implements PermissionNode {
     /**
      * The permission node.
      */
-    private String node;
+    private final String node;
 
     /**
      * The default permission level.
      */
-    private DefaultPermission defaultPermission;
+    private final DefaultPermission defaultPermission;
 
     /**
      * Constructor.

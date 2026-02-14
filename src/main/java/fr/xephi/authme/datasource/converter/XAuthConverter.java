@@ -77,7 +77,7 @@ public class XAuthConverter implements Converter {
     }
 
     private String getIdPlayer(int id) {
-        String realPass = "";
+        String realPass;
         Connection conn = xAuth.getPlugin().getDatabaseController().getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -123,7 +123,7 @@ public class XAuthConverter implements Converter {
     }
 
     private String getPassword(int accountId) {
-        String realPass = "";
+        String realPass;
         Connection conn = xAuth.getPlugin().getDatabaseController().getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;

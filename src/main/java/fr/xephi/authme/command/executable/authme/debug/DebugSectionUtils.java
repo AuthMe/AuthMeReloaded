@@ -20,14 +20,14 @@ import java.util.function.Function;
  */
 final class DebugSectionUtils {
 
-    private static ConsoleLogger logger = ConsoleLoggerFactory.get(DebugSectionUtils.class);
+    private static final ConsoleLogger logger = ConsoleLoggerFactory.get(DebugSectionUtils.class);
     private static Field limboEntriesField;
 
     private DebugSectionUtils() {
     }
 
     /**
-     * Formats the given location in a human readable way. Null-safe.
+     * Formats the given location in a human-readable way. Null-safe.
      *
      * @param location the location to format
      * @return the formatted location
@@ -42,7 +42,7 @@ final class DebugSectionUtils {
     }
 
     /**
-     * Formats the given location in a human readable way.
+     * Formats the given location in a human-readable way.
      *
      * @param x the x coordinate
      * @param y the y coordinate

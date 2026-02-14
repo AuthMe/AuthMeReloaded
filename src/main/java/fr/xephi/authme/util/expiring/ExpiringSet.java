@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ExpiringSet<E> {
 
-    private Map<E, Long> entries = new ConcurrentHashMap<>();
+    private final Map<E, Long> entries = new ConcurrentHashMap<>();
     private long expirationMillis;
 
     /**
@@ -86,7 +86,7 @@ public class ExpiringSet<E> {
      * If the entry does not exist, a duration of -1 seconds is returned.
      *
      * @param entry the entry whose duration before it expires should be returned
-     * @return duration the entry will remain in the set (if there are not modifications)
+     * @return duration the entry will remain in the set (if there are no modifications)
      */
     public Duration getExpiration(E entry) {
         Long expiration = entries.get(entry);

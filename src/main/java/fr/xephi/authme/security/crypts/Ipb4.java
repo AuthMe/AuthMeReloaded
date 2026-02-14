@@ -22,7 +22,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @HasSalt(value = SaltType.TEXT, length = BCryptHasher.SALT_LENGTH_ENCODED)
 public class Ipb4 implements EncryptionMethod {
 
-    private BCryptHasher bCryptHasher = new BCryptHasher(BCrypt.Version.VERSION_2A, 13);
+    private final BCryptHasher bCryptHasher = new BCryptHasher(BCrypt.Version.VERSION_2A, 13);
 
     @Override
     public String computeHash(String password, String salt, String name) {

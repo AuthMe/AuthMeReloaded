@@ -2,9 +2,7 @@ package fr.xephi.authme.service;
 
 import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.User;
-import com.onarandombox.MultiverseCore.MultiverseCore;
-import com.onarandombox.MultiverseCore.api.MVWorldManager;
-import com.onarandombox.MultiverseCore.api.MultiverseWorld;
+import org.mvplugins.multiverse.core.MultiverseCore;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import org.bukkit.Location;
@@ -23,9 +21,10 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -212,50 +211,41 @@ public class PluginHookServiceTest {
     public void shouldGetMultiverseSpawn() {
         // given
         Location location = mock(Location.class);
-        MultiverseWorld multiverseWorld = mock(MultiverseWorld.class);
-        given(multiverseWorld.getSpawnLocation()).willReturn(location);
-
         World world = mock(World.class);
-        MVWorldManager mvWorldManager = mock(MVWorldManager.class);
-        given(mvWorldManager.isMVWorld(world)).willReturn(true);
-        given(mvWorldManager.getMVWorld(world)).willReturn(multiverseWorld);
-        MultiverseCore multiverse = mock(MultiverseCore.class);
-        given(multiverse.getMVWorldManager()).willReturn(mvWorldManager);
 
+        MultiverseCore multiverse = mock(MultiverseCore.class);
         PluginManager pluginManager = mock(PluginManager.class);
         setPluginAvailable(pluginManager, MULTIVERSE, multiverse);
-        PluginHookService pluginHookService = new PluginHookService(pluginManager);
+        PluginHookService pluginHookService = spy(new PluginHookService(pluginManager));
+        doReturn(location).when(pluginHookService).getSpawnFromMultiverse(world);
 
         // when
         Location spawn = pluginHookService.getMultiverseSpawn(world);
 
         // then
         assertThat(spawn, equalTo(location));
-        verify(mvWorldManager).isMVWorld(world);
-        verify(mvWorldManager).getMVWorld(world);
-        verify(multiverseWorld).getSpawnLocation();
+        
+        // Ensure the protected method was called
+        verify(pluginHookService).getSpawnFromMultiverse(world);
     }
 
     @Test
     public void shouldReturnNullForNonMvWorld() {
         // given
         World world = mock(World.class);
-        MVWorldManager mvWorldManager = mock(MVWorldManager.class);
-        given(mvWorldManager.isMVWorld(world)).willReturn(false);
 
         PluginManager pluginManager = mock(PluginManager.class);
         MultiverseCore multiverse = mock(MultiverseCore.class);
         setPluginAvailable(pluginManager, MULTIVERSE, multiverse);
-        given(multiverse.getMVWorldManager()).willReturn(mvWorldManager);
-        PluginHookService pluginHookService = new PluginHookService(pluginManager);
+        PluginHookService pluginHookService = spy(new PluginHookService(pluginManager));
+        doReturn(null).when(pluginHookService).getSpawnFromMultiverse(world);
 
         // when
         Location spawn = pluginHookService.getMultiverseSpawn(world);
 
         // then
         assertThat(spawn, nullValue());
-        verify(mvWorldManager).isMVWorld(world);
-        verify(mvWorldManager, never()).getMVWorld(world);
+        verify(pluginHookService).getSpawnFromMultiverse(world);
     }
 
     private static void setPluginAvailable(PluginManager managerMock, String pluginName,

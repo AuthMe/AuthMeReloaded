@@ -33,9 +33,9 @@ public class EncryptionMethodInfoGatherer {
     private static final Set<Class<? extends Annotation>> RELEVANT_ANNOTATIONS =
         ImmutableSet.of(HasSalt.class, Recommendation.class, AsciiRestricted.class);
 
-    private static Injector injector = createInitializer();
+    private static final Injector injector = createInitializer();
 
-    private Map<HashAlgorithm, MethodDescription> descriptions;
+    private final Map<HashAlgorithm, MethodDescription> descriptions;
 
     public EncryptionMethodInfoGatherer() {
         ConsoleLogger.initialize(Logger.getAnonymousLogger(), null); // set logger because of Argon2.isLibraryLoaded()

@@ -17,6 +17,7 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -368,6 +369,7 @@ public class ValidationServiceTest {
         ValidationService validationServiceSpy = Mockito.spy(validationService);
         willReturn("bogus.tld").given(validationServiceSpy).getHostName(any(InetSocketAddress.class));
         InetSocketAddress imYourIspSocketAddr = imYourIsp.getAddress();
+        Assert.assertNotNull(imYourIspSocketAddr);
         willReturn("bazinga.yourisp.net").given(validationServiceSpy).getHostName(imYourIspSocketAddr);
 
         // when

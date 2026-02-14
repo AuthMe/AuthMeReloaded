@@ -440,7 +440,7 @@ public class HelpProviderTest {
     private static List<String> getLines(CommandSender sender) {
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(sender, atLeastOnce()).sendMessage(captor.capture());
-        return captor.getAllValues().stream().map(s -> removeColors(s)).collect(Collectors.toList());
+        return captor.getAllValues().stream().map(HelpProviderTest::removeColors).collect(Collectors.toList());
     }
 
     private static void setDefaultHelpMessages(HelpMessagesService helpMessagesService) {

@@ -63,7 +63,7 @@ public class SettingsMigrationServiceTest {
         File dataFolder = temporaryFolder.newFolder();
         File configFile = new File(dataFolder, "config.yml");
         Files.copy(getJarFile(OLD_CONFIG_FILE), configFile);
-        PropertyResource resource = new YamlFileResource(configFile);
+        PropertyResource resource = new YamlFileResource(configFile.toPath());
         SettingsMigrationService migrationService = new SettingsMigrationService(dataFolder);
 
         // when
@@ -84,13 +84,13 @@ public class SettingsMigrationServiceTest {
         File dataFolder = temporaryFolder.newFolder();
         File configFile = new File(dataFolder, "config.yml");
         Files.copy(getJarFile(OLD_CONFIG_FILE), configFile);
-        PropertyResource resource = new YamlFileResource(configFile);
+        PropertyResource resource = new YamlFileResource(configFile.toPath());
         TestMigrationServiceExtension migrationService = new TestMigrationServiceExtension(dataFolder);
         ConfigurationData configurationData = AuthMeSettingsRetriever.buildConfigurationData();
 
         // when
         new Settings(dataFolder, resource, migrationService, configurationData);
-        resource = new YamlFileResource(configFile);
+        resource = new YamlFileResource(configFile.toPath());
         Settings settings = new Settings(dataFolder, resource, migrationService, configurationData);
 
         // then
@@ -104,7 +104,7 @@ public class SettingsMigrationServiceTest {
         File dataFolder = temporaryFolder.newFolder();
         File configFile = new File(dataFolder, "config.yml");
         Files.copy(getJarFile(OLD_CONFIG_FILE), configFile);
-        PropertyResource resource = new YamlFileResource(configFile);
+        PropertyResource resource = new YamlFileResource(configFile.toPath());
         SettingsMigrationService migrationService = new SettingsMigrationService(dataFolder);
 
         // when
@@ -139,7 +139,7 @@ public class SettingsMigrationServiceTest {
     }
 
     private static class TestMigrationServiceExtension extends SettingsMigrationService {
-        private List<Boolean> returnedValues = new ArrayList<>();
+        private final List<Boolean> returnedValues = new ArrayList<>();
 
         TestMigrationServiceExtension(@DataFolder File pluginFolder) {
             super(pluginFolder);

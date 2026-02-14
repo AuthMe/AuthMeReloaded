@@ -46,7 +46,7 @@ public class HelpMessageConsistencyTest {
     public void shouldHaveRequiredEntries() {
         for (File file : helpFiles) {
             // given
-            PropertyReader reader = new YamlFileReader(file);
+            PropertyReader reader = new YamlFileReader(file.toPath());
 
             // when / then
             assertHasAllHelpSectionEntries(file.getName(), reader);
@@ -72,16 +72,11 @@ public class HelpMessageConsistencyTest {
 
     private static String getPathForDefaultPermission(DefaultPermission defaultPermission) {
         String path = "common.defaultPermissions.";
-        switch (defaultPermission) {
-            case ALLOWED:
-                return path + "allowed";
-            case NOT_ALLOWED:
-                return path + "notAllowed";
-            case OP_ONLY:
-                return path + "opOnly";
-            default:
-                throw new IllegalStateException("Unknown default permission '" + defaultPermission + "'");
-        }
+        return switch (defaultPermission) {
+            case ALLOWED -> path + "allowed";
+            case NOT_ALLOWED -> path + "notAllowed";
+            case OP_ONLY -> path + "opOnly";
+        };
     }
 
     private static Matcher<String> notEmptyString() {

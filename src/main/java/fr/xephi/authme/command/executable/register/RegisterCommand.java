@@ -59,11 +59,11 @@ public class RegisterCommand extends PlayerCommand {
         }
 
         if (commonService.getProperty(SecuritySettings.PASSWORD_HASH) == HashAlgorithm.TWO_FACTOR) {
-            //for two factor auth we don't need to check the usage
+            //for two-factor auth we don't need to check the usage
             management.performRegister(RegistrationMethod.TWO_FACTOR_REGISTRATION,
                 TwoFactorRegisterParams.of(player));
             return;
-        } else if (arguments.size() < 1) {
+        } else if (arguments.isEmpty()) {
             commonService.send(player, MessageKey.USAGE_REGISTER);
             return;
         }

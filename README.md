@@ -7,7 +7,7 @@
 |-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Code quality:** | [![Code Climate](https://codeclimate.com/github/AuthMe/AuthMeReloaded/badges/gpa.svg)](https://codeclimate.com/github/AuthMe/AuthMeReloaded) [![Coverage status](https://coveralls.io/repos/AuthMe-Team/AuthMeReloaded/badge.svg?branch=master&service=github)](https://coveralls.io/github/AuthMe-Team/AuthMeReloaded?branch=master)                                                 |
 | **Jenkins CI:**   | [![Jenkins Status](https://img.shields.io/website-up-down-green-red/http/shields.io.svg?label=ci.codemc.org)](https://ci.codemc.org/) [![Build Status](https://ci.codemc.org/buildStatus/icon?job=AuthMe/AuthMeReloaded)](https://ci.codemc.org/job/AuthMe/job/AuthMeReloaded) ![Build Tests](https://img.shields.io/jenkins/t/https/ci.codemc.org/job/AuthMe/job/AuthMeReloaded.svg) |
-| **Other CIs:**    | [![Build Status](https://www.travis-ci.com/AuthMe/AuthMeReloaded.svg?branch=master)](https://www.travis-ci.com/AuthMe/AuthMeReloaded)                                                                                                                                                                                                                                                             |
+| **Other CIs:**    | [![Build Status](https://www.travis-ci.com/AuthMe/AuthMeReloaded.svg?branch=master)](https://www.travis-ci.com/AuthMe/AuthMeReloaded)                                                                                                                                                                                                                                                 |
 
 ## Description
 
@@ -18,7 +18,7 @@ AuthMeReloaded disallows players who aren't authenticated to do actions like pla
 typing commands or using the inventory. It can also kick players with uncommonly long or short player names or kick players from banned countries.
 
 With the Session Login feature you don't have to execute the authentication command every time you connect to the server! 
-Each command and every feature can be enabled or disabled from our well structured configuration file.
+Each command and every feature can be enabled or disabled from our well-structured configuration file.
 
 You can also create your own translation file and, if you want, you can share it with us! :)
 
@@ -28,7 +28,7 @@ You can also create your own translation file and, if you want, you can share it
   <li>Username spoofing protection.</li>
   <li>Countries Whitelist/Blacklist! <a href="https://dev.maxmind.com/geoip/legacy/codes/iso3166/">(country codes)</a></li>
   <li><strong>Built-in AntiBot System!</strong></li>
-  <li><strong>ForceLogin Feature: Admins can login with all account via console command!</strong></li>
+  <li><strong>ForceLogin Feature: Admins can log in with all account via console command!</strong></li>
   <li><strong>Avoid the "Logged in from another location" message!</strong></li>
   <li>Two-factor (2FA) support!</li>
   <li>Session Login!</li>
@@ -125,7 +125,7 @@ You can also create your own translation file and, if you want, you can share it
 
 ##### Running requirements:
 >- Java 17+
->- Paper or Spigot (1.16.5 and up)
+>- Paper or Spigot (1.18.2 and up)
 >- ProtocolLib (optional, required by some features)
 
 ## Credits

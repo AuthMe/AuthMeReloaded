@@ -17,11 +17,11 @@ import static java.util.stream.Collectors.toList;
  * Handler for PermissionsEx.
  *
  * @see <a href="https://dev.bukkit.org/projects/permissionsex">PermissionsEx Bukkit page</a>
- * @see <a href="https://github.com/PEXPlugins/PermissionsEx">PermissionsEx on Github</a>
+ * @see <a href="https://github.com/PEXPlugins/PermissionsEx">PermissionsEx on GitHub</a>
  */
 public class PermissionsExHandler implements PermissionHandler {
 
-    private PermissionManager permissionManager;
+    private final PermissionManager permissionManager;
 
     public PermissionsExHandler() throws PermissionHandlerException {
         permissionManager = PermissionsEx.getPermissionManager();
@@ -32,7 +32,7 @@ public class PermissionsExHandler implements PermissionHandler {
 
     @Override
     public boolean addToGroup(OfflinePlayer player, UserGroup group) {
-        if (!PermissionsEx.getPermissionManager().getGroupNames().contains(group)) {
+        if (!PermissionsEx.getPermissionManager().getGroupNames().contains(group.getGroupName())) {
             return false;
         }
 

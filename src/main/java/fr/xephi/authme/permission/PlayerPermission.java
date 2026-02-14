@@ -88,7 +88,7 @@ public enum PlayerPermission implements PermissionNode {
     /**
      * The permission node.
      */
-    private String node;
+    private final String node;
 
     /**
      * Constructor.

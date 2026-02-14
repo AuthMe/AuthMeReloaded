@@ -47,7 +47,7 @@ public class WrappedTagReplacerTest {
 
 
     private static Matcher<SampleClass> sampleClass(int number, String description) {
-        return new TypeSafeMatcher<SampleClass>() {
+        return new TypeSafeMatcher<>() {
             @Override
             protected boolean matchesSafely(SampleClass item) {
                 return number == item.number && description.equals(item.description);

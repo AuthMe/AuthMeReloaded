@@ -67,7 +67,7 @@ public class CommandHandlerTest {
     @Mock
     private HelpProvider helpProvider;
 
-    private Map<Class<? extends ExecutableCommand>, ExecutableCommand> mockedCommands = new HashMap<>();
+    private final Map<Class<? extends ExecutableCommand>, ExecutableCommand> mockedCommands = new HashMap<>();
 
     @Before
     @SuppressWarnings("unchecked")
@@ -87,19 +87,16 @@ public class CommandHandlerTest {
      */
     @SuppressWarnings("unchecked")
     private void setInjectorToMockExecutableCommandClasses() {
-        given(commandFactory.newInstance(any(Class.class))).willAnswer(new Answer<Object>() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Class<?> clazz = invocation.getArgument(0);
-                if (ExecutableCommand.class.isAssignableFrom(clazz)) {
-                    Class<? extends ExecutableCommand> commandClass = (Class<? extends ExecutableCommand>) clazz;
-                    ExecutableCommand mock = mock(commandClass);
-                    mockedCommands.put(commandClass, mock);
-                    return mock;
-                }
-                throw new IllegalStateException("Unexpected class '" + clazz.getName()
-                    + "': Not a child of ExecutableCommand");
+        given(commandFactory.newInstance(any(Class.class))).willAnswer(invocation -> {
+            Class<?> clazz = invocation.getArgument(0);
+            if (ExecutableCommand.class.isAssignableFrom(clazz)) {
+                Class<? extends ExecutableCommand> commandClass = (Class<? extends ExecutableCommand>) clazz;
+                ExecutableCommand mock = mock(commandClass);
+                mockedCommands.put(commandClass, mock);
+                return mock;
             }
+            throw new IllegalStateException("Unexpected class '" + clazz.getName()
+                + "': Not a child of ExecutableCommand");
         });
     }
 

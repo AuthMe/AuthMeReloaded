@@ -19,11 +19,11 @@ import static java.util.stream.Collectors.toList;
  * Handler for permissions via Vault.
  *
  * @see <a href="https://dev.bukkit.org/projects/vault">Vault Bukkit page</a>
- * @see <a href="https://github.com/milkbowl/Vault">Vault on Github</a>
+ * @see <a href="https://github.com/milkbowl/Vault">Vault on GitHub</a>
  */
 public class VaultHandler implements PermissionHandler {
 
-    private Permission vaultProvider;
+    private final Permission vaultProvider;
 
     public VaultHandler(Server server) throws PermissionHandlerException {
         this.vaultProvider = getVaultPermission(server);
@@ -45,12 +45,8 @@ public class VaultHandler implements PermissionHandler {
             throw new PermissionHandlerException("Could not load permissions provider service");
         }
 
-        // Get the Vault provider and make sure it's valid
-        Permission vaultPerms = permissionProvider.getProvider();
-        if (vaultPerms == null) {
-            throw new PermissionHandlerException("Could not load Vault permissions provider");
-        }
-        return vaultPerms;
+        // Get the Vault provider
+        return permissionProvider.getProvider();
     }
 
     @Override

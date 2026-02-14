@@ -78,7 +78,7 @@ public class PlayerAuth {
         x = location.getBlockX();
         y = location.getBlockY();
         z = location.getBlockZ();
-        world = location.getWorld().getName();
+        world = Objects.requireNonNull(location.getWorld()).getName();
     }
 
     public double getQuitLocX() {
@@ -183,10 +183,9 @@ public class PlayerAuth {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof PlayerAuth)) {
+        if (!(obj instanceof PlayerAuth other)) {
             return false;
         }
-        PlayerAuth other = (PlayerAuth) obj;
         return Objects.equals(other.lastIp, this.lastIp) && Objects.equals(other.nickname, this.nickname);
     }
 
@@ -304,7 +303,7 @@ public class PlayerAuth {
             this.x = location.getX();
             this.y = location.getY();
             this.z = location.getZ();
-            this.world = location.getWorld().getName();
+            this.world = Objects.requireNonNull(location.getWorld()).getName();
             this.yaw = location.getYaw();
             this.pitch = location.getPitch();
             return this;

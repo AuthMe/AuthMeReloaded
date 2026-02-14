@@ -37,7 +37,7 @@ public class CommandHandler {
     /**
      * Map with ExecutableCommand children. The key is the type of the value.
      */
-    private Map<Class<? extends ExecutableCommand>, ExecutableCommand> commands = new HashMap<>();
+    private final Map<Class<? extends ExecutableCommand>, ExecutableCommand> commands = new HashMap<>();
 
     @Inject
     CommandHandler(Factory<ExecutableCommand> commandFactory, CommandMapper commandMapper,

@@ -14,7 +14,7 @@ public enum LogLevel {
     /** Debug: very detailed messages for debugging. */
     DEBUG(1);
 
-    private int value;
+    private final int value;
 
     /**
      * Constructor.

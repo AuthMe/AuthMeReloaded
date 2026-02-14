@@ -128,7 +128,7 @@ public class LoginSecurityConverterTest {
         HikariConfig config = new HikariConfig();
         config.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
         config.setConnectionTestQuery("VALUES 1");
-        config.addDataSourceProperty("URL", "jdbc:h2:mem:test");
+        config.addDataSourceProperty("URL", "jdbc:h2:mem:test;MODE=MySQL");
         config.addDataSourceProperty("user", "sa");
         config.addDataSourceProperty("password", "sa");
         HikariDataSource ds = new HikariDataSource(config);

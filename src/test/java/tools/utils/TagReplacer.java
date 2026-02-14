@@ -35,12 +35,10 @@ public final class TagReplacer {
         for (Map.Entry<String, TagValue<?>> tagRule : tagValues.getValues().entrySet()) {
             final String name = tagRule.getKey();
 
-            if (tagRule.getValue() instanceof TextTagValue) {
-                final TextTagValue value = (TextTagValue) tagRule.getValue();
+            if (tagRule.getValue() instanceof TextTagValue value) {
                 result = replaceOptionalTag(result, name, value)
                     .replace("{" + name + "}", value.getValue());
-            } else if (tagRule.getValue() instanceof NestedTagValue) {
-                final NestedTagValue value = (NestedTagValue) tagRule.getValue();
+            } else if (tagRule.getValue() instanceof NestedTagValue value) {
                 result = replaceIterateTag(replaceOptionalTag(result, name, value), name, value);
             } else {
                 throw new IllegalStateException("Unknown tag value type");
@@ -100,11 +98,11 @@ public final class TagReplacer {
             return matcher.replaceAll("");
         }
         final String innerTemplate = matcher.group(1).trim() + "\n";
-        String result = "";
+        var result = new StringBuilder();
         for (TagValueHolder entry : tagValue.getValue()) {
-            result += applyReplacements(innerTemplate, entry);
+            result.append(applyReplacements(innerTemplate, entry));
         }
-        return matcher.replaceAll(result);
+        return matcher.replaceAll(result.toString());
     }
 
 }

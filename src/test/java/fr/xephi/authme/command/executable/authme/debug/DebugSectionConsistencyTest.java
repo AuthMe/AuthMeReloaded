@@ -5,6 +5,7 @@ import fr.xephi.authme.TestHelper;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.List;
@@ -45,7 +46,7 @@ public class DebugSectionConsistencyTest {
     }
 
     @Test
-    public void shouldHaveDifferentSubcommandName() throws IllegalAccessException, InstantiationException {
+    public void shouldHaveDifferentSubcommandName() {
         Set<String> names = new HashSet<>();
         for (DebugSection debugSection : debugSections) {
             if (!names.add(debugSection.getName())) {
@@ -64,8 +65,8 @@ public class DebugSectionConsistencyTest {
 
     private static DebugSection instantiate(Class<? extends DebugSection> clazz) {
         try {
-            return ClassCollector.canInstantiate(clazz) ? clazz.newInstance() : null;
-        } catch (InstantiationException | IllegalAccessException e) {
+            return ClassCollector.canInstantiate(clazz) ? clazz.getDeclaredConstructor().newInstance() : null;
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new IllegalStateException(e);
         }
     }

@@ -6,6 +6,7 @@ import ch.jalu.configme.resource.PropertyReader;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,7 +33,7 @@ public class EnumSetProperty<E extends Enum<E>> extends BaseProperty<Set<E>> {
         if (entry instanceof Collection<?>) {
             return ((Collection<?>) entry).stream()
                 .map(val -> toEnum(String.valueOf(val)))
-                .filter(e -> e != null)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         }
         return null;

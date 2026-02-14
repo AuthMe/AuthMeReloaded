@@ -15,6 +15,7 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.util.Utils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.List;
@@ -31,7 +32,7 @@ public class CacheDataSource implements DataSource {
 
     private final DataSource source;
     private final PlayerCache playerCache;
-    private final LoadingCache<String, Optional<PlayerAuth>> cachedAuths;
+    private final LoadingCache<@NotNull String, @NotNull Optional<PlayerAuth>> cachedAuths;
     private final ListeningExecutorService executorService;
 
     /**
@@ -53,20 +54,21 @@ public class CacheDataSource implements DataSource {
         cachedAuths = CacheBuilder.newBuilder()
             .refreshAfterWrite(5, TimeUnit.MINUTES)
             .expireAfterAccess(15, TimeUnit.MINUTES)
-            .build(new CacheLoader<String, Optional<PlayerAuth>>() {
+            .build(new CacheLoader<>() {
                 @Override
                 public Optional<PlayerAuth> load(String key) {
                     return Optional.ofNullable(source.getAuth(key));
                 }
 
                 @Override
+                @NotNull
                 public ListenableFuture<Optional<PlayerAuth>> reload(final String key, Optional<PlayerAuth> oldValue) {
                     return executorService.submit(() -> load(key));
                 }
             });
     }
 
-    public LoadingCache<String, Optional<PlayerAuth>> getCachedAuths() {
+    public LoadingCache<@NotNull String, @NotNull Optional<PlayerAuth>> getCachedAuths() {
         return cachedAuths;
     }
 
@@ -293,6 +295,7 @@ public class CacheDataSource implements DataSource {
         cachedAuths.invalidate(playerName);
     }
 
+    @SuppressWarnings("OptionalAssignedToNull")
     @Override
     public void refreshCache(String playerName) {
         if (cachedAuths.getIfPresent(playerName) != null) {

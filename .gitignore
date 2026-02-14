@@ -110,6 +110,11 @@ nb-configuration.xml
 
 
 
+### VSCode ###
+.vscode
+
+
+
 ### Git ###
 # Don't exclude the .gitignore itself
 !.gitignore

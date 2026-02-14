@@ -52,7 +52,7 @@ public interface EncryptionMethod {
      * Return whether the encryption method requires the salt to be stored separately and
      * passed again to {@link #comparePassword(String, HashedPassword, String)}. Note that
      * an encryption method returning {@code false} does not imply that it uses no salt; it
-     * may be embedded into the hash or it may use the username as salt.
+     * may be embedded into the hash, or it may use the username as salt.
      *
      * @return True if the salt has to be stored and retrieved separately, false otherwise
      */

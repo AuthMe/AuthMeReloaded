@@ -18,7 +18,7 @@ import java.util.Optional;
 /**
  * Logs warning messages in cases where the configured values suggest a misconfiguration.
  * <p>
- * Note that this class does not modify any settings and it is called after the settings have been fully loaded.
+ * Note that this class does not modify any settings, and it is called after the settings have been fully loaded.
  * For actual migrations (= verifications which trigger changes and a resave of the settings),
  * see {@link SettingsMigrationService}.
  */

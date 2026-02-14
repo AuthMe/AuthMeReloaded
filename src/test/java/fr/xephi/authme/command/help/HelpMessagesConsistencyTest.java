@@ -9,6 +9,7 @@ import fr.xephi.authme.message.MessagePathHelper;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
@@ -59,13 +60,14 @@ public class HelpMessagesConsistencyTest {
 
         // then
         assertThat(commands, instanceOf(MemorySection.class));
+        Assert.assertNotNull(commands);
         assertThat(((MemorySection) commands).getKeys(false), contains("authme"));
     }
 
     @Test
     public void shouldHaveEntryForEachHelpMessageKey() {
         // given
-        PropertyReader reader = new YamlFileReader(DEFAULT_MESSAGES_FILE);
+        PropertyReader reader = new YamlFileReader(DEFAULT_MESSAGES_FILE.toPath());
 
         // when / then
         for (HelpMessage message : HelpMessage.values()) {

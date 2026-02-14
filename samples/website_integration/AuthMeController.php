@@ -58,7 +58,7 @@ abstract class AuthMeController {
      * @return bool whether or not the registration was successful
      */
     function register($username, $password, $email) {
-        $email = $email ? $email : 'your@email.com';
+        $email = $email ?: 'your@email.com';
         $mysqli = $this->getAuthmeMySqli();
         if ($mysqli !== null) {
             $hash = $this->hash($password);

@@ -42,7 +42,7 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.FORCE_SPAW
  */
 public class SettingsMigrationService extends PlainMigrationService {
     
-    private static ConsoleLogger logger = ConsoleLoggerFactory.get(SettingsMigrationService.class);
+    private static final ConsoleLogger logger = ConsoleLoggerFactory.get(SettingsMigrationService.class);
     private final File pluginFolder;
 
     // Stores old "other accounts command" config if present.

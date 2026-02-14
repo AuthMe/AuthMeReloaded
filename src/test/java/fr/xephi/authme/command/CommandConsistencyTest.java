@@ -3,6 +3,7 @@ package fr.xephi.authme.command;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -68,6 +69,7 @@ public class CommandConsistencyTest {
     private static Map<String, List<String>> getLabelsFromPluginFile() {
         FileConfiguration pluginFile = YamlConfiguration.loadConfiguration(getJarFile("/plugin.yml"));
         MemorySection commandList = (MemorySection) pluginFile.get("commands");
+        Assert.assertNotNull(commandList);
         Map<String, Object> commandDefinitions = commandList.getValues(false);
 
         Map<String, List<String>> commandLabels = new HashMap<>();

@@ -46,14 +46,13 @@ class ListenerService implements SettingsDependent {
     }
 
     /**
-     * Returns, based on the entity associated with the event, whether or not the event should be canceled.
+     * Returns, based on the entity associated with the event, whether the event should be canceled.
      *
      * @param entity the player entity to verify
      * @return true if the associated event should be canceled, false otherwise
      */
     public boolean shouldCancelEvent(Entity entity) {
-        if (entity instanceof Player) {
-            Player player = (Player) entity;
+        if (entity instanceof Player player) {
             return shouldCancelEvent(player);
         }
         return false;
@@ -71,7 +70,7 @@ class ListenerService implements SettingsDependent {
     }
 
     /**
-     * Returns, based on the player associated with the event, whether or not the event should be canceled.
+     * Returns, based on the player associated with the event, whether the event should be canceled.
      *
      * @param player the player to verify
      * @return true if the associated event should be canceled, false otherwise
@@ -96,9 +95,6 @@ class ListenerService implements SettingsDependent {
         if (validationService.isUnrestricted(name) || playerCache.isAuthenticated(name)) {
             return true;
         }
-        if (!isRegistrationForced && !dataSource.isAuthAvailable(name)) {
-            return true;
-        }
-        return false;
+        return !isRegistrationForced && !dataSource.isAuthAvailable(name);
     }
 }

@@ -1,6 +1,7 @@
 package fr.xephi.authme.command;
 
 import fr.xephi.authme.util.StringUtils;
+import org.hamcrest.MatcherAssert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -29,7 +30,7 @@ public class CommandInitializerTest {
      * Defines the maximum allowed depths for nesting CommandDescription instances.
      * Note that the depth starts at 0 (e.g. /authme), so a depth of 2 is something like /authme hello world
      */
-    private static int MAX_ALLOWED_DEPTH = 1;
+    private static final int MAX_ALLOWED_DEPTH = 1;
 
     private static Collection<CommandDescription> commands;
 
@@ -44,7 +45,7 @@ public class CommandInitializerTest {
         // given/when/then
         // It obviously doesn't make sense to test much of the concrete data
         // that is being initialized; we just want to guarantee with this test
-        // that data is indeed being initialized and we take a few "probes"
+        // that data is indeed being initialized, and we take a few "probes"
         assertThat(commands, hasSize(10));
         assertThat(commandsIncludeLabel(commands, "authme"), equalTo(true));
         assertThat(commandsIncludeLabel(commands, "register"), equalTo(true));
@@ -65,18 +66,15 @@ public class CommandInitializerTest {
     @Test
     public void shouldHaveConnectionBetweenParentAndChild() {
         // given
-        BiConsumer<CommandDescription, Integer> connectionTester = new BiConsumer<CommandDescription, Integer>() {
-            @Override
-            public void accept(CommandDescription command, Integer depth) {
-                if (!command.getChildren().isEmpty()) {
-                    for (CommandDescription child : command.getChildren()) {
-                        assertThat(command.equals(child.getParent()), equalTo(true));
-                    }
+        BiConsumer<CommandDescription, Integer> connectionTester = (command, depth) -> {
+            if (!command.getChildren().isEmpty()) {
+                for (CommandDescription child : command.getChildren()) {
+                    MatcherAssert.assertThat(command.equals(child.getParent()), equalTo(true));
                 }
-                // Checking that the parent has the current command as child is redundant as this is how we can traverse
-                // the "command tree" in the first place - if we're here, it's that the parent definitely has the
-                // command as child.
             }
+            // Checking that the parent has the current command as child is redundant as this is how we can traverse
+            // the "command tree" in the first place - if we're here, it's that the parent definitely has the
+            // command as child.
         };
 
         // when/then
@@ -87,15 +85,12 @@ public class CommandInitializerTest {
     public void shouldUseProperLowerCaseLabels() {
         // given
         final Pattern invalidPattern = Pattern.compile("\\s");
-        BiConsumer<CommandDescription, Integer> labelFormatTester = new BiConsumer<CommandDescription, Integer>() {
-            @Override
-            public void accept(CommandDescription command, Integer depth) {
-                for (String label : command.getLabels()) {
-                    if (!label.equals(label.toLowerCase(Locale.ROOT))) {
-                        fail("Label '" + label + "' should be lowercase");
-                    } else if (invalidPattern.matcher(label).matches()) {
-                        fail("Label '" + label + "' has whitespace");
-                    }
+        BiConsumer<CommandDescription, Integer> labelFormatTester = (command, depth) -> {
+            for (String label : command.getLabels()) {
+                if (!label.equals(label.toLowerCase(Locale.ROOT))) {
+                    fail("Label '" + label + "' should be lowercase");
+                } else if (invalidPattern.matcher(label).matches()) {
+                    fail("Label '" + label + "' has whitespace");
                 }
             }
         };
@@ -108,17 +103,14 @@ public class CommandInitializerTest {
     public void shouldNotDefineSameLabelTwice() {
         // given
         final Set<String> commandMappings = new HashSet<>();
-        BiConsumer<CommandDescription, Integer> uniqueMappingTester = new BiConsumer<CommandDescription, Integer>() {
-            @Override
-            public void accept(CommandDescription command, Integer depth) {
-                int initialSize = commandMappings.size();
-                List<String> newMappings = getAbsoluteLabels(command);
-                commandMappings.addAll(newMappings);
-                // Set only contains unique entries, so we just check after adding all new mappings that the size
-                // of the Set corresponds to our expectation
-                assertThat("All bindings are unique for command with bindings '" + newMappings + "'",
-                    commandMappings.size() == initialSize + newMappings.size(), equalTo(true));
-            }
+        BiConsumer<CommandDescription, Integer> uniqueMappingTester = (command, depth) -> {
+            int initialSize = commandMappings.size();
+            List<String> newMappings = getAbsoluteLabels(command);
+            commandMappings.addAll(newMappings);
+            // Set only contains unique entries, so we just check after adding all new mappings that the size
+            // of the Set corresponds to our expectation
+            assertThat("All bindings are unique for command with bindings '" + newMappings + "'",
+                commandMappings.size() == initialSize + newMappings.size(), equalTo(true));
         };
 
         // when/then
@@ -132,20 +124,17 @@ public class CommandInitializerTest {
     @Test
     public void shouldHaveProperDescription() {
         // given
-        BiConsumer<CommandDescription, Integer> descriptionTester = new BiConsumer<CommandDescription, Integer>() {
-            @Override
-            public void accept(CommandDescription command, Integer depth) {
-                String forCommandText = " for command with labels '" + command.getLabels() + "'";
+        BiConsumer<CommandDescription, Integer> descriptionTester = (command, depth) -> {
+            String forCommandText = " for command with labels '" + command.getLabels() + "'";
 
-                assertThat("has description" + forCommandText,
-                    StringUtils.isBlank(command.getDescription()), equalTo(false));
-                assertThat("short description doesn't end in '.'" + forCommandText,
-                    command.getDescription().endsWith("."), equalTo(false));
-                assertThat("has detailed description" + forCommandText,
-                    StringUtils.isBlank(command.getDetailedDescription()), equalTo(false));
-                assertThat("detailed description ends in '.'" + forCommandText,
-                    command.getDetailedDescription().endsWith("."), equalTo(true));
-            }
+            assertThat("has description" + forCommandText,
+                StringUtils.isBlank(command.getDescription()), equalTo(false));
+            assertThat("short description doesn't end in '.'" + forCommandText,
+                command.getDescription().endsWith("."), equalTo(false));
+            assertThat("has detailed description" + forCommandText,
+                StringUtils.isBlank(command.getDetailedDescription()), equalTo(false));
+            assertThat("detailed description ends in '.'" + forCommandText,
+                command.getDetailedDescription().endsWith("."), equalTo(true));
         };
 
         // when/then
@@ -155,17 +144,14 @@ public class CommandInitializerTest {
     @Test
     public void shouldHaveOptionalArgumentsAfterMandatoryOnes() {
         // given
-        BiConsumer<CommandDescription, Integer> argumentOrderTester = new BiConsumer<CommandDescription, Integer>() {
-            @Override
-            public void accept(CommandDescription command, Integer depth) {
-                boolean encounteredOptionalArg = false;
-                for (CommandArgumentDescription argument : command.getArguments()) {
-                    if (argument.isOptional()) {
-                        encounteredOptionalArg = true;
-                    } else if (encounteredOptionalArg) {
-                        fail("Mandatory arguments should come before optional ones for command with labels '"
-                            + command.getLabels() + "'");
-                    }
+        BiConsumer<CommandDescription, Integer> argumentOrderTester = (command, depth) -> {
+            boolean encounteredOptionalArg = false;
+            for (CommandArgumentDescription argument : command.getArguments()) {
+                if (argument.isOptional()) {
+                    encounteredOptionalArg = true;
+                } else if (encounteredOptionalArg) {
+                    fail("Mandatory arguments should come before optional ones for command with labels '"
+                        + command.getLabels() + "'");
                 }
             }
         };
@@ -181,15 +167,12 @@ public class CommandInitializerTest {
     @Test
     public void shouldNotHaveArgumentsIfCommandHasChildren() {
         // given
-        BiConsumer<CommandDescription, Integer> noArgumentForParentChecker = new BiConsumer<CommandDescription, Integer>() {
-            @Override
-            public void accept(CommandDescription command, Integer depth) {
-                // Fail if the command has children and has arguments at the same time
-                // Exception: If the parent only has one child defining the help label, it is acceptable
-                if (!command.getChildren().isEmpty() && !command.getArguments().isEmpty()
-                        && (command.getChildren().size() != 1 || !command.getChildren().get(0).hasLabel("help"))) {
-                    fail("Parent command (labels='" + command.getLabels() + "') should not have any arguments");
-                }
+        BiConsumer<CommandDescription, Integer> noArgumentForParentChecker = (command, depth) -> {
+            // Fail if the command has children and has arguments at the same time
+            // Exception: If the parent only has one child defining the help label, it is acceptable
+            if (!command.getChildren().isEmpty() && !command.getArguments().isEmpty()
+                    && (command.getChildren().size() != 1 || !command.getChildren().get(0).hasLabel("help"))) {
+                fail("Parent command (labels='" + command.getLabels() + "') should not have any arguments");
             }
         };
 
@@ -207,7 +190,7 @@ public class CommandInitializerTest {
         final Map<Class<? extends ExecutableCommand>, Integer> mandatoryArguments = new HashMap<>();
         final Map<Class<? extends ExecutableCommand>, Integer> totalArguments = new HashMap<>();
 
-        BiConsumer<CommandDescription, Integer> argChecker = new BiConsumer<CommandDescription, Integer>() {
+        BiConsumer<CommandDescription, Integer> argChecker = new BiConsumer<>() {
             @Override
             public void accept(CommandDescription command, Integer depth) {
                 testCollectionForCommand(command, CommandUtils.getMinNumberOfArguments(command), mandatoryArguments);
@@ -263,7 +246,7 @@ public class CommandInitializerTest {
 
     /**
      * Get the absolute binding that a command defines. Note: Assumes that only the passed command can have
-     * multiple labels; only considering the first label for all of the command's parents.
+     * multiple labels; only considering the first label for all the command's parents.
      *
      * @param command The command to process
      *

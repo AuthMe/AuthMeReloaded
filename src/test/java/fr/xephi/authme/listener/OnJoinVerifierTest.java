@@ -21,9 +21,8 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.function.ThrowingRunnable;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -35,7 +34,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -68,8 +67,6 @@ public class OnJoinVerifierTest {
     @Mock
     private Server server;
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     @BeforeClass
     public static void setUpLogger() {
@@ -161,15 +158,13 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldKickNonRegistered() throws FailedVerificationException {
+    public void shouldKickNonRegistered() {
         // given
         given(settings.getProperty(RestrictionSettings.KICK_NON_REGISTERED)).willReturn(true);
 
-        // expect
-        expectValidationExceptionWith(MessageKey.MUST_REGISTER_MESSAGE);
-
-        // when
-        onJoinVerifier.checkKickNonRegistered(false);
+        // when / then
+        assertThrowsValidationException(MessageKey.MUST_REGISTER_MESSAGE,
+            () -> onJoinVerifier.checkKickNonRegistered(false));
     }
 
     @Test
@@ -200,47 +195,41 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldRejectTooLongName() throws FailedVerificationException {
+    public void shouldRejectTooLongName() {
         // given
         given(settings.getProperty(RestrictionSettings.MAX_NICKNAME_LENGTH)).willReturn(8);
         given(settings.getProperty(RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS)).willReturn("[a-zA-Z0-9]+");
         onJoinVerifier.reload(); // @PostConstruct method
 
-        // expect
-        expectValidationExceptionWith(MessageKey.INVALID_NAME_LENGTH);
-
-        // when
-        onJoinVerifier.checkIsValidName("longerthaneight");
+        // when / then
+        assertThrowsValidationException(MessageKey.INVALID_NAME_LENGTH,
+            () -> onJoinVerifier.checkIsValidName("longerthaneight"));
     }
 
     @Test
-    public void shouldRejectTooShortName() throws FailedVerificationException {
+    public void shouldRejectTooShortName() {
         // given
         given(settings.getProperty(RestrictionSettings.MIN_NICKNAME_LENGTH)).willReturn(4);
         given(settings.getProperty(RestrictionSettings.MAX_NICKNAME_LENGTH)).willReturn(8);
         given(settings.getProperty(RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS)).willReturn("[a-zA-Z0-9]+");
         onJoinVerifier.reload(); // @PostConstruct method
 
-        // expect
-        expectValidationExceptionWith(MessageKey.INVALID_NAME_LENGTH);
-
-        // when
-        onJoinVerifier.checkIsValidName("abc");
+        // when / then
+        assertThrowsValidationException(MessageKey.INVALID_NAME_LENGTH,
+            () -> onJoinVerifier.checkIsValidName("abc"));
     }
 
     @Test
-    public void shouldRejectNameWithInvalidCharacters() throws FailedVerificationException {
+    public void shouldRejectNameWithInvalidCharacters() {
         // given
         given(settings.getProperty(RestrictionSettings.MIN_NICKNAME_LENGTH)).willReturn(4);
         given(settings.getProperty(RestrictionSettings.MAX_NICKNAME_LENGTH)).willReturn(8);
         given(settings.getProperty(RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS)).willReturn("[a-zA-Z0-9]+");
         onJoinVerifier.reload(); // @PostConstruct method
 
-        // expect
-        expectValidationExceptionWith(MessageKey.INVALID_NAME_CHARACTERS, "[a-zA-Z0-9]+");
-
-        // when
-        onJoinVerifier.checkIsValidName("Tester!");
+        // when / then
+        assertThrowsValidationException(MessageKey.INVALID_NAME_CHARACTERS,
+            () -> onJoinVerifier.checkIsValidName("Tester!"), "[a-zA-Z0-9]+");
     }
 
     @Test
@@ -258,17 +247,15 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldRejectNameWithWrongCasing() throws FailedVerificationException {
+    public void shouldRejectNameWithWrongCasing() {
         // given
         String name = "Tester";
         PlayerAuth auth = PlayerAuth.builder().name("tester").realName("testeR").build();
         given(settings.getProperty(RegistrationSettings.PREVENT_OTHER_CASE)).willReturn(true);
 
-        // expect
-        expectValidationExceptionWith(MessageKey.INVALID_NAME_CASE, "testeR", "Tester");
-
         // when / then
-        onJoinVerifier.checkNameCasing(name, auth);
+        assertThrowsValidationException(MessageKey.INVALID_NAME_CASE,
+            () -> onJoinVerifier.checkNameCasing(name, auth), "testeR", "Tester");
         verifyNoInteractions(dataSource);
     }
 
@@ -342,7 +329,7 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldRejectNameAlreadyOnline() throws FailedVerificationException {
+    public void shouldRejectNameAlreadyOnline() {
         // given
         String name = "Charlie";
 
@@ -351,11 +338,9 @@ public class OnJoinVerifierTest {
         given(bukkitService.getPlayerExact("Charlie")).willReturn(onlinePlayer);
         given(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)).willReturn(true);
 
-        // expect
-        expectValidationExceptionWith(MessageKey.USERNAME_ALREADY_ONLINE_ERROR);
-
         // when / then
-        onJoinVerifier.checkSingleSession(name);
+        assertThrowsValidationException(MessageKey.USERNAME_ALREADY_ONLINE_ERROR,
+            () -> onJoinVerifier.checkSingleSession(name));
     }
 
     @Test
@@ -424,14 +409,9 @@ public class OnJoinVerifierTest {
         given(antiBotService.shouldKick()).willReturn(true);
 
         // when / then
-        try {
-            onJoinVerifier.checkAntibot(name, isAuthAvailable);
-            fail("Expected exception to be thrown");
-        } catch (FailedVerificationException e) {
-            verify(permissionsManager).hasPermissionOffline(name, PlayerStatePermission.BYPASS_ANTIBOT);
-            verify(antiBotService).shouldKick();
-        }
-
+        assertThrows(FailedVerificationException.class, () -> onJoinVerifier.checkAntibot(name, isAuthAvailable));
+        verify(permissionsManager).hasPermissionOffline(name, PlayerStatePermission.BYPASS_ANTIBOT);
+        verify(antiBotService).shouldKick();
     }
 
     /**
@@ -486,27 +466,26 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldThrowForBannedCountry() throws FailedVerificationException {
+    public void shouldThrowForBannedCountry() {
         // given
         String ip = "192.168.40.0";
         String name = "bob";
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(true);
         given(validationService.isCountryAdmitted(ip)).willReturn(false);
 
-        // expect
-        expectValidationExceptionWith(MessageKey.COUNTRY_BANNED_ERROR);
-
-        // when
-        onJoinVerifier.checkPlayerCountry(name, ip, false);
+        // when / then
+        assertThrowsValidationException(MessageKey.COUNTRY_BANNED_ERROR,
+            () -> onJoinVerifier.checkPlayerCountry(name, ip, false));
     }
 
-    private void expectValidationExceptionWith(MessageKey messageKey, String... args) {
-        expectedException.expect(exceptionWithData(messageKey, args));
+    private void assertThrowsValidationException(MessageKey messageKey, ThrowingRunnable runnable, String... args) {
+        FailedVerificationException ex = assertThrows(FailedVerificationException.class, runnable);
+        assertThat(ex, exceptionWithData(messageKey, args));
     }
 
     private static Matcher<FailedVerificationException> exceptionWithData(final MessageKey messageKey,
                                                                           final String... args) {
-        return new TypeSafeMatcher<FailedVerificationException>() {
+        return new TypeSafeMatcher<>() {
             @Override
             protected boolean matchesSafely(FailedVerificationException item) {
                 return messageKey.equals(item.getReason()) && Arrays.equals(args, item.getArgs());

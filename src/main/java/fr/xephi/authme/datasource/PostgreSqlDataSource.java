@@ -116,7 +116,7 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
 
         // Pool Settings
         ds.setMaximumPoolSize(poolSize);
-        ds.setMaxLifetime(maxLifetime * 1000);
+        ds.setMaxLifetime(maxLifetime * 1000L);
 
         // Database URL
         ds.setDriverClassName("org.postgresql.Driver");

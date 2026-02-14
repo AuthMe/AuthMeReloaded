@@ -53,10 +53,10 @@ public abstract class AbstractResourceClosingTest {
     private static final Map<Class<?>, Object> PARAM_VALUES = getDefaultParameters();
 
     /** The DataSource method to test. */
-    private Method method;
+    private final Method method;
 
     /** Keeps track of the closeables which are created during the tested call. */
-    private List<AutoCloseable> closeables = new ArrayList<>();
+    private final List<AutoCloseable> closeables = new ArrayList<>();
 
     private boolean hasCreatedConnection = false;
 
@@ -144,8 +144,7 @@ public abstract class AbstractResourceClosingTest {
      * @return Test collection with sample elements of the correct type
      */
     private static Collection<?> getTypedCollection(Type type) {
-        if (type instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) type;
+        if (type instanceof ParameterizedType parameterizedType) {
             Preconditions.checkArgument(Collection.class.isAssignableFrom((Class<?>) parameterizedType.getRawType()),
                 type + " should extend from Collection");
             Type genericType = parameterizedType.getActualTypeArguments()[0];
@@ -202,27 +201,21 @@ public abstract class AbstractResourceClosingTest {
 
     /* Create Answer that returns a PreparedStatement mock. */
     private Answer<PreparedStatement> preparedStatementAnswer() {
-        return new Answer<PreparedStatement>() {
-            @Override
-            public PreparedStatement answer(InvocationOnMock invocation) throws SQLException {
-                PreparedStatement pst = mock(PreparedStatement.class);
-                closeables.add(pst);
-                given(pst.executeQuery()).willAnswer(resultSetAnswer());
-                given(pst.executeQuery(anyString())).willAnswer(resultSetAnswer());
-                return pst;
-            }
+        return invocation -> {
+            PreparedStatement pst = mock(PreparedStatement.class);
+            closeables.add(pst);
+            given(pst.executeQuery()).willAnswer(resultSetAnswer());
+            given(pst.executeQuery(anyString())).willAnswer(resultSetAnswer());
+            return pst;
         };
     }
 
     /* Create Answer that returns a ResultSet mock. */
-    private Answer<ResultSet> resultSetAnswer() throws SQLException {
-        return new Answer<ResultSet>() {
-            @Override
-            public ResultSet answer(InvocationOnMock invocation) throws Throwable {
-                ResultSet rs = initResultSet();
-                closeables.add(rs);
-                return rs;
-            }
+    private Answer<ResultSet> resultSetAnswer() {
+        return invocation -> {
+            ResultSet rs = initResultSet();
+            closeables.add(rs);
+            return rs;
         };
     }
 

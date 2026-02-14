@@ -143,7 +143,7 @@ public enum AdminPermission implements PermissionNode {
     /**
      * The permission node.
      */
-    private String node;
+    private final String node;
 
     /**
      * Constructor.

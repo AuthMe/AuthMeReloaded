@@ -18,7 +18,7 @@ public class ColumnContext {
      * Constructor.
      *
      * @param settings plugin settings
-     * @param hasDefaultSupport whether or not the underlying database has support for the {@code DEFAULT} keyword
+     * @param hasDefaultSupport whether the underlying database has support for the {@code DEFAULT} keyword
      */
     public ColumnContext(Settings settings, boolean hasDefaultSupport) {
         this.settings = settings;

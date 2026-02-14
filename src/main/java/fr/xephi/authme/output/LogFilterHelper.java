@@ -44,7 +44,7 @@ final class LogFilterHelper {
         List<String> commandList = new ArrayList<>(commands.length * 2);
         for (String command : commands) {
             commandList.add(command);
-            commandList.add(command.substring(0, 1) + "authme:" + command.substring(1));
+            commandList.add(command.charAt(0) + "authme:" + command.substring(1));
         }
         return Collections.unmodifiableList(commandList);
     }

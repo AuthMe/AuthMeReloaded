@@ -99,7 +99,7 @@ class PlayerAuthViewer implements DebugSection {
     }
 
     /**
-     * Formats the given timestamp to a human readable date.
+     * Formats the given timestamp to a human-readable date.
      *
      * @param timestamp the timestamp to format (nullable)
      * @return the formatted timestamp

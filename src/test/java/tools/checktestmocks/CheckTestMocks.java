@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  */
 public class CheckTestMocks implements AutoToolTask {
 
-    private List<String> errors = new ArrayList<>();
+    private final List<String> errors = new ArrayList<>();
 
     @Override
     public String getTaskName() {
@@ -31,7 +31,7 @@ public class CheckTestMocks implements AutoToolTask {
     @Override
     public void executeDefault() {
         ClassCollector collector = new ClassCollector(TestHelper.TEST_SOURCES_FOLDER, TestHelper.PROJECT_ROOT);
-        for (Class<?> clazz : collector.collectClasses(c -> isTestClassWithMocks(c))) {
+        for (Class<?> clazz : collector.collectClasses(CheckTestMocks::isTestClassWithMocks)) {
             checkClass(clazz);
         }
         System.out.println(String.join("\n", errors));

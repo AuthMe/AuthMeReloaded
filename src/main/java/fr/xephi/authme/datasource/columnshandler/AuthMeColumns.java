@@ -3,8 +3,6 @@ package fr.xephi.authme.datasource.columnshandler;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 
-import java.util.UUID;
-
 import static fr.xephi.authme.datasource.columnshandler.AuthMeColumnsFactory.ColumnOptions.DEFAULT_FOR_NULL;
 import static fr.xephi.authme.datasource.columnshandler.AuthMeColumnsFactory.ColumnOptions.OPTIONAL;
 import static fr.xephi.authme.datasource.columnshandler.AuthMeColumnsFactory.createDouble;

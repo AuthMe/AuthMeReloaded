@@ -34,7 +34,7 @@ public interface DataSource extends Reloadable {
     /**
      * Return the hashed password of the player.
      *
-     * @param user The user whose password should be retrieve
+     * @param user The user whose password should be retrieved
      * @return The password hash of the player
      */
     HashedPassword getPassword(String user);
@@ -236,7 +236,7 @@ public interface DataSource extends Reloadable {
     List<PlayerAuth> getAllAuths();
 
     /**
-     * Returns the last ten players who have recently logged in (first ten players with highest last login date).
+     * Returns the last ten players who have recently logged in (first ten players with the highest last login date).
      *
      * @return the 10 last players who last logged in
      */

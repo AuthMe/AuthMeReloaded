@@ -215,7 +215,7 @@ public enum MessageKey {
     /** Two-factor authentication is already enabled for your account! */
     TWO_FACTOR_ALREADY_ENABLED("two_factor.already_enabled"),
 
-    /** No 2fa key has been generated for you or it has expired. Please run /2fa add */
+    /** No 2fa key has been generated for you, or it has expired. Please run /2fa add */
     TWO_FACTOR_ENABLE_ERROR_NO_CODE("two_factor.enable_error_no_code"),
 
     /** Successfully enabled two-factor authentication for your account */
@@ -333,8 +333,8 @@ public enum MessageKey {
     DAYS("time.days");
 
 
-    private String key;
-    private String[] tags;
+    private final String key;
+    private final String[] tags;
 
     MessageKey(String key, String... tags) {
         this.key = key;
@@ -353,7 +353,7 @@ public enum MessageKey {
     /**
      * Return a list of tags (texts) that are replaced with actual content in AuthMe.
      *
-     * @return List of tags
+     * @return The list of tags
      */
     public String[] getTags() {
         return tags;

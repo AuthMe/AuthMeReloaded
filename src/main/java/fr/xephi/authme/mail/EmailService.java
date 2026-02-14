@@ -9,11 +9,11 @@ import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.FileUtils;
-import org.apache.commons.mail.EmailException;
-import org.apache.commons.mail.HtmlEmail;
+import jakarta.activation.DataSource;
+import jakarta.activation.FileDataSource;
+import org.apache.commons.mail2.core.EmailException;
+import org.apache.commons.mail2.jakarta.HtmlEmail;
 
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import java.io.File;

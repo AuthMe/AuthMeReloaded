@@ -73,7 +73,7 @@ public final class SqlDataSourceUtils {
      * @param metaData the database meta data
      * @param tableName the name of the table in which the column is
      * @param columnName the name of the column to check
-     * @return the default value of the column (may be null)
+     * @return the default value of the column (maybe null)
      * @throws SQLException :)
      */
     public static Object getColumnDefaultValue(DatabaseMetaData metaData, String tableName,

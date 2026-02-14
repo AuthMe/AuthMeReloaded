@@ -80,7 +80,7 @@ public class YamlTextFileCheckerTest {
      */
     private void checkFile(File file, String mandatoryKey, List<String> errors) {
         try {
-            PropertyReader reader = new YamlFileReader(file);
+            PropertyReader reader = new YamlFileReader(file.toPath());
             if (StringUtils.isBlank(reader.getString(mandatoryKey))) {
                 errors.add("Message for '" + mandatoryKey + "' is empty");
             }

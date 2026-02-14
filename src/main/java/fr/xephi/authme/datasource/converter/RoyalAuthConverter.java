@@ -13,6 +13,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.Locale;
+import java.util.Objects;
 
 import static fr.xephi.authme.util.FileUtils.makePath;
 
@@ -36,7 +37,7 @@ public class RoyalAuthConverter implements Converter {
     public void execute(CommandSender sender) {
         for (OfflinePlayer player : plugin.getServer().getOfflinePlayers()) {
             try {
-                String name = player.getName().toLowerCase(Locale.ROOT);
+                String name = Objects.requireNonNull(player.getName()).toLowerCase(Locale.ROOT);
                 File file = new File(makePath(".", "plugins", "RoyalAuth", "userdata", name + ".yml"));
 
                 if (dataSource.isAuthAvailable(name) || !file.exists()) {

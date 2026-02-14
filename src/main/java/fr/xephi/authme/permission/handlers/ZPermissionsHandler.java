@@ -16,11 +16,11 @@ import static java.util.stream.Collectors.toList;
  * Handler for zPermissions.
  *
  * @see <a href="https://dev.bukkit.org/projects/zpermissions">zPermissions Bukkit page</a>
- * @see <a href="https://github.com/ZerothAngel/zPermissions">zPermissions on Github</a>
+ * @see <a href="https://github.com/ZerothAngel/zPermissions">zPermissions on GitHub</a>
  */
 public class ZPermissionsHandler implements PermissionHandler {
 
-    private ZPermissionsService zPermissionsService;
+    private final ZPermissionsService zPermissionsService;
 
     public ZPermissionsHandler() throws PermissionHandlerException {
         // Set the zPermissions service and make sure it's valid

@@ -12,7 +12,7 @@ public final class UuidUtils {
     }
 
     /**
-     * Returns the given string as an UUID or null.
+     * Returns the given string as a UUID or null.
      *
      * @param string the uuid to parse
      * @return parsed UUID if succeeded or null

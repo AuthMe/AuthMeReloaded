@@ -5,6 +5,7 @@ import ch.jalu.configme.resource.YamlFileReader;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import fr.xephi.authme.TestHelper;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -33,8 +34,8 @@ public class MessageFilePlaceholderTest {
         .putAll(MessageKey.MAX_REGISTER_EXCEEDED, "%max_acc", "%reg_count", "%reg_names")
         .build();
 
-    private File messagesFile;
-    private String messagesFilename;
+    private final File messagesFile;
+    private final String messagesFilename;
 
     // Note ljacqu 20170506: We pass the file name separately so we can reference it for the name in @Parameters
     public MessageFilePlaceholderTest(File messagesFile, String name) {
@@ -45,7 +46,7 @@ public class MessageFilePlaceholderTest {
     @Test
     public void shouldHaveAllPlaceholders() {
         // given
-        PropertyReader reader = new YamlFileReader(messagesFile);
+        PropertyReader reader = new YamlFileReader(messagesFile.toPath());
         List<String> errors = new ArrayList<>(0);
 
         // when
@@ -66,7 +67,11 @@ public class MessageFilePlaceholderTest {
         if (key.getTags().length > 0 && reader.contains(key.getKey())) {
             String message = reader.getString(key.getKey());
             return Arrays.stream(key.getTags())
-                .filter(tag -> !EXCLUSIONS.get(key).contains(tag) && !message.contains(tag))
+                .filter(tag -> {
+                    if (EXCLUSIONS.get(key).contains(tag)) return false;
+                    Assert.assertNotNull(message);
+                    return !message.contains(tag);
+                })
                 .collect(Collectors.toList());
         }
         return Collections.emptyList();

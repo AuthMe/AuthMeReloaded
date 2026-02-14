@@ -26,35 +26,35 @@ public class CommandDescription {
      * Defines the labels to execute the command. For example, if labels are "register" and "r" and the parent is
      * the command for "/authme", then both "/authme register" and "/authme r" will be handled by this command.
      */
-    private List<String> labels;
+    private final List<String> labels;
     /**
      * Short description of the command.
      */
-    private String description;
+    private final String description;
     /**
      * Detailed description of what the command does.
      */
-    private String detailedDescription;
+    private final String detailedDescription;
     /**
      * The class implementing the command described by this object.
      */
-    private Class<? extends ExecutableCommand> executableCommand;
+    private final Class<? extends ExecutableCommand> executableCommand;
     /**
      * The parent command.
      */
-    private CommandDescription parent;
+    private final CommandDescription parent;
     /**
      * The child commands that extend this command.
      */
-    private List<CommandDescription> children = new ArrayList<>();
+    private final List<CommandDescription> children = new ArrayList<>();
     /**
      * The arguments the command takes.
      */
-    private List<CommandArgumentDescription> arguments;
+    private final List<CommandArgumentDescription> arguments;
     /**
      * Permission node required to execute this command.
      */
-    private PermissionNode permission;
+    private final PermissionNode permission;
 
     /**
      * Private constructor.
@@ -202,7 +202,7 @@ public class CommandDescription {
         private String detailedDescription;
         private Class<? extends ExecutableCommand> executableCommand;
         private CommandDescription parent;
-        private List<CommandArgumentDescription> arguments = new ArrayList<>();
+        private final List<CommandArgumentDescription> arguments = new ArrayList<>();
         private PermissionNode permission;
 
         /**

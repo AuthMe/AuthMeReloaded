@@ -1,9 +1,11 @@
 package fr.xephi.authme;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -82,8 +84,8 @@ public class ClassCollector {
     public <T> List<T> getInstancesOfType(Class<T> parent) {
         return getInstancesOfType(parent, (clz) -> {
            try {
-               return canInstantiate(clz) ? clz.newInstance() : null;
-           } catch (InstantiationException | IllegalAccessException e) {
+               return canInstantiate(clz) ? clz.getDeclaredConstructor().newInstance() : null;
+           } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                throw new IllegalStateException(e);
            }
         });
@@ -102,7 +104,7 @@ public class ClassCollector {
         return collectClasses(parent)
             .stream()
             .map(instantiator)
-            .filter(o -> o != null)
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
     }
 

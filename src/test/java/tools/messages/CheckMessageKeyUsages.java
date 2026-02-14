@@ -34,7 +34,7 @@ public class CheckMessageKeyUsages implements AutoToolTask {
             System.out.println("No unused MessageKey entries found :)");
         } else {
             System.out.println("Did not find usages for keys:\n- "
-                + String.join("\n- ", Lists.transform(unusedKeys, MessageKey::name)));
+                + String.join("\n- ", Lists.transform(unusedKeys, messageKey -> messageKey != null ? messageKey.name() : null)));
         }
     }
 

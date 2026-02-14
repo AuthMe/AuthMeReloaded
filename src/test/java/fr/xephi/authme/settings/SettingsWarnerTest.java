@@ -1,6 +1,5 @@
 package fr.xephi.authme.settings;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.service.BukkitService;

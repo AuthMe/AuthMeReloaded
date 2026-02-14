@@ -21,7 +21,7 @@ public final class FileUtils {
     private static final DateTimeFormatter CURRENT_DATE_STRING_FORMATTER =
         DateTimeFormatter.ofPattern("yyyyMMdd_HHmm");
 
-    private static ConsoleLogger logger = ConsoleLoggerFactory.get(FileUtils.class);
+    private static final ConsoleLogger logger = ConsoleLoggerFactory.get(FileUtils.class);
 
     // Utility class
     private FileUtils() {

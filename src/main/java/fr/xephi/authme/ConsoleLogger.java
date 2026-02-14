@@ -26,7 +26,7 @@ import java.util.logging.Logger;
  */
 public final class ConsoleLogger {
 
-    private static final String NEW_LINE = System.getProperty("line.separator");
+    private static final String NEW_LINE = System.lineSeparator();
     /** Formatter which formats dates to something like "[08-16 21:18:46]" for any given LocalDateTime. */
     private static final DateTimeFormatter DATE_FORMAT = new DateTimeFormatterBuilder()
         .appendLiteral('[')

@@ -10,6 +10,7 @@ import tools.utils.ToolsConstants;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Task to add English messages as javadoc comment to each MessageKey enum entry.
@@ -44,7 +45,7 @@ public class AddJavaDocToMessageEnumTask implements AutoToolTask {
     }
 
     private String getMessageForJavaDoc(MessageKey key) {
-        return configuration.getString(key.getKey())
+        return Objects.requireNonNull(configuration.getString(key.getKey()))
             .replaceAll("&[0-9a-f]", "")
             .replace("&", "&amp;")
             .replace("<", "&lt;")

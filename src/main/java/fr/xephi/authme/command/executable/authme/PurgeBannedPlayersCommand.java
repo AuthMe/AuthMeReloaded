@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -30,9 +31,9 @@ public class PurgeBannedPlayersCommand implements ExecutableCommand {
         Set<OfflinePlayer> bannedPlayers = bukkitService.getBannedPlayers();
         Set<String> namedBanned = new HashSet<>(bannedPlayers.size());
         for (OfflinePlayer offlinePlayer : bannedPlayers) {
-            namedBanned.add(offlinePlayer.getName().toLowerCase(Locale.ROOT));
+            namedBanned.add(Objects.requireNonNull(offlinePlayer.getName()).toLowerCase(Locale.ROOT));
         }
 
-        purgeService.purgePlayers(sender, namedBanned, bannedPlayers.toArray(new OfflinePlayer[bannedPlayers.size()]));
+        purgeService.purgePlayers(sender, namedBanned, bannedPlayers.toArray(new OfflinePlayer[0]));
     }
 }

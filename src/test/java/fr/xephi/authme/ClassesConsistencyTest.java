@@ -94,8 +94,8 @@ public class ClassesConsistencyTest {
             .map(Class::getDeclaredFields)
             .flatMap(Arrays::stream)
             .filter(f -> !f.getName().contains("$"))
-            .filter(f -> hasIllegalFieldVisibility(f))
-            .map(f -> formatField(f))
+            .filter(ClassesConsistencyTest::hasIllegalFieldVisibility)
+            .map(ClassesConsistencyTest::formatField)
             .collect(Collectors.toSet());
 
         // then

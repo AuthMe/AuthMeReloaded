@@ -69,7 +69,7 @@ public class OnJoinVerifier implements Reloadable {
      * Checks if Antibot is enabled.
      *
      * @param name            the joining player name to check
-     * @param isAuthAvailable whether or not the player is registered
+     * @param isAuthAvailable whether the player is registered
      * @throws FailedVerificationException if the verification fails
      */
     public void checkAntibot(String name, boolean isAuthAvailable) throws FailedVerificationException {
@@ -85,7 +85,7 @@ public class OnJoinVerifier implements Reloadable {
     /**
      * Checks whether non-registered players should be kicked, and if so, whether the player should be kicked.
      *
-     * @param isAuthAvailable whether or not the player is registered
+     * @param isAuthAvailable whether the player is registered
      * @throws FailedVerificationException if the verification fails
      */
     public void checkKickNonRegistered(boolean isAuthAvailable) throws FailedVerificationException {
@@ -173,7 +173,7 @@ public class OnJoinVerifier implements Reloadable {
      *
      * @param name            the joining player name to verify
      * @param address         the player address
-     * @param isAuthAvailable whether or not the user is registered
+     * @param isAuthAvailable whether the user is registered
      * @throws FailedVerificationException if the verification fails
      */
     public void checkPlayerCountry(String name, String address,

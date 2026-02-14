@@ -146,15 +146,14 @@ public class HelpTranslationVerifier {
      *         empty set if the configuration does not have a memory section at the given path
      */
     private Set<String> getLeafKeys(String path) {
-        if (!(configuration.get(path) instanceof MemorySection)) {
+        if (!(configuration.get(path) instanceof MemorySection memorySection)) {
             return Collections.emptySet();
         }
-        MemorySection memorySection = (MemorySection) configuration.get(path);
 
         // MemorySection#getKeys(true) returns all keys on all levels, e.g. if the configuration has
         // 'commands.authme.register' then it also has 'commands.authme' and 'commands'. We can traverse each node and
         // build its parents (e.g. for commands.authme.register.description: commands.authme.register, commands.authme,
-        // and commands, which we can remove from the collection since we know they are not a leaf.
+        // and commands, which we can remove from the collection since we know they are not a leaf).
         Set<String> leafKeys = memorySection.getKeys(true);
         Set<String> allKeys = new HashSet<>(leafKeys);
 

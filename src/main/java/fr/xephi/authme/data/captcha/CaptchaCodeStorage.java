@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 public class CaptchaCodeStorage {
 
     /** Map of captcha codes (with player name as key, case-insensitive). */
-    private ExpiringMap<String, String> captchaCodes;
+    private final ExpiringMap<String, String> captchaCodes;
     /** Number of characters newly generated captcha codes should have. */
     private int captchaLength;
 

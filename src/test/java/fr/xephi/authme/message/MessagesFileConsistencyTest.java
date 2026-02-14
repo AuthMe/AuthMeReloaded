@@ -24,7 +24,7 @@ public class MessagesFileConsistencyTest {
     @Test
     public void shouldHaveAllMessages() {
         File file = TestHelper.getJarFile("/" + MESSAGES_FILE);
-        PropertyReader reader = new YamlFileReader(file);
+        PropertyReader reader = new YamlFileReader(file.toPath());
         List<String> errors = new ArrayList<>();
         for (MessageKey messageKey : MessageKey.values()) {
             validateMessage(messageKey, reader, errors);

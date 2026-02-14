@@ -11,11 +11,13 @@ import fr.xephi.authme.settings.properties.PurgeSettings;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Objects;
 
 import static fr.xephi.authme.util.FileUtils.makePath;
 
@@ -23,7 +25,7 @@ import static fr.xephi.authme.util.FileUtils.makePath;
  * Executes the purge operations.
  */
 public class PurgeExecutor {
-    
+
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(PurgeExecutor.class);
 
     @Inject
@@ -80,7 +82,7 @@ public class PurgeExecutor {
             return;
         }
 
-        for (String file : dataFolder.list()) {
+        for (String file : Objects.requireNonNull(dataFolder.list())) {
             if (cleared.contains(file.toLowerCase(Locale.ROOT))) {
                 File playerFile = new File(dataFolder, file);
                 if (playerFile.exists() && playerFile.delete()) {
@@ -118,23 +120,8 @@ public class PurgeExecutor {
         if (!dataFolder.exists() || !dataFolder.isDirectory()) {
             return;
         }
-        for (String file : dataFolder.list()) {
-            String name = file;
-            int idx;
-            idx = file.lastIndexOf("_creative.yml");
-            if (idx != -1) {
-                name = name.substring(0, idx);
-            } else {
-                idx = file.lastIndexOf("_adventure.yml");
-                if (idx != -1) {
-                    name = name.substring(0, idx);
-                } else {
-                    idx = file.lastIndexOf(".yml");
-                    if (idx != -1) {
-                        name = name.substring(0, idx);
-                    }
-                }
-            }
+        for (String file : Objects.requireNonNull(dataFolder.list())) {
+            String name = getFileName(file);
             if (name.equals(file)) {
                 continue;
             }
@@ -146,6 +133,27 @@ public class PurgeExecutor {
             }
         }
         logger.info("AutoPurge: Removed " + i + " LimitedCreative Survival, Creative and Adventure files");
+    }
+
+    @NotNull
+    private static String getFileName(String file) {
+        String name = file;
+        int idx;
+        idx = file.lastIndexOf("_creative.yml");
+        if (idx != -1) {
+            name = name.substring(0, idx);
+        } else {
+            idx = file.lastIndexOf("_adventure.yml");
+            if (idx != -1) {
+                name = name.substring(0, idx);
+            } else {
+                idx = file.lastIndexOf(".yml");
+                if (idx != -1) {
+                    name = name.substring(0, idx);
+                }
+            }
+        }
+        return name;
     }
 
     /**

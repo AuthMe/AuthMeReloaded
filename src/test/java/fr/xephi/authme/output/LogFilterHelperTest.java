@@ -33,7 +33,7 @@ public class LogFilterHelperTest {
         );
         // Build array with entries like "/register ", "/authme cp ", "/authme changepass "
         String[] expectedEntries = sensitiveCommands.stream()
-            .map(cmd -> buildCommandSyntaxes(cmd))
+            .map(LogFilterHelperTest::buildCommandSyntaxes)
             .flatMap(List::stream)
             .map(syntax -> syntax + " ")
             .toArray(String[]::new);

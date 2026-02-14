@@ -15,12 +15,12 @@ public class MigraterYamlFileResource extends YamlFileResource {
     private Yaml singleQuoteYaml;
 
     public MigraterYamlFileResource(File file) {
-        super(file);
+        super(file.toPath());
     }
 
     @Override
     public PropertyReader createReader() {
-        return MessageMigraterPropertyReader.loadFromFile(getFile());
+        return MessageMigraterPropertyReader.loadFromFile(getPath().toFile());
     }
 
     @Override

@@ -81,17 +81,13 @@ public class PasswordSecurityTest {
         caughtClassInEvent = null;
 
         // When the password encryption event is emitted, replace the encryption method with our mock.
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                Object[] arguments = invocation.getArguments();
-                if (arguments[0] instanceof PasswordEncryptionEvent) {
-                    PasswordEncryptionEvent event = (PasswordEncryptionEvent) arguments[0];
-                    caughtClassInEvent = event.getMethod() == null ? null : event.getMethod().getClass();
-                    event.setMethod(method);
-                }
-                return null;
+        doAnswer((Answer<Void>) invocation -> {
+            Object[] arguments = invocation.getArguments();
+            if (arguments[0] instanceof PasswordEncryptionEvent event) {
+                caughtClassInEvent = event.getMethod() == null ? null : event.getMethod().getClass();
+                event.setMethod(method);
             }
+            return null;
         }).when(pluginManager).callEvent(any(Event.class));
 
         given(settings.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.BCRYPT);

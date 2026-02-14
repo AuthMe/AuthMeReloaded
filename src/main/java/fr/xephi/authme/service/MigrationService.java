@@ -17,7 +17,7 @@ import java.util.List;
  */
 public final class MigrationService {
     
-    private static ConsoleLogger logger = ConsoleLoggerFactory.get(MigrationService.class);
+    private static final ConsoleLogger logger = ConsoleLoggerFactory.get(MigrationService.class);
 
     private MigrationService() {
     }

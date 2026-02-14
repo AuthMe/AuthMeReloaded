@@ -15,9 +15,6 @@ import fr.xephi.authme.initialization.TaskCloser;
 import fr.xephi.authme.listener.BlockListener;
 import fr.xephi.authme.listener.EntityListener;
 import fr.xephi.authme.listener.PlayerListener;
-import fr.xephi.authme.listener.PlayerListener111;
-import fr.xephi.authme.listener.PlayerListener19;
-import fr.xephi.authme.listener.PlayerListener19Spigot;
 import fr.xephi.authme.listener.ServerListener;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.security.crypts.Sha256;
@@ -40,6 +37,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.function.Consumer;
@@ -123,15 +121,6 @@ public class AuthMe extends JavaPlugin {
         ConsoleLogger.initialize(getLogger(), new File(getDataFolder(), LOG_FILENAME));
         logger = ConsoleLoggerFactory.get(AuthMe.class);
 
-        // Check server version
-        if (!isClassLoaded("org.spigotmc.event.player.PlayerSpawnLocationEvent")
-            || !isClassLoaded("org.bukkit.event.player.PlayerInteractAtEntityEvent")) {
-            logger.warning("You are running an unsupported server version (" + getServerNameVersionSafe() + "). "
-                + "AuthMe requires Spigot 1.8.X or later!");
-            stopOrUnload();
-            return;
-        }
-
         // Prevent running AuthMeBridge due to major exploit issues
         if (getServer().getPluginManager().isPluginEnabled("AuthMeBridge")) {
             logger.warning("Detected AuthMeBridge, support for it has been dropped as it was "
@@ -150,7 +139,7 @@ public class AuthMe extends JavaPlugin {
                 th.printStackTrace();
             } else {
                 logger.logException("File '" + yamlParseException.getFile() + "' contains invalid YAML. "
-                    + "Please run its contents through http://yamllint.com", yamlParseException);
+                    + "Please run its contents through https://yamllint.com", yamlParseException);
             }
             stopOrUnload();
             return;
@@ -268,21 +257,6 @@ public class AuthMe extends JavaPlugin {
         pluginManager.registerEvents(injector.getSingleton(BlockListener.class), this);
         pluginManager.registerEvents(injector.getSingleton(EntityListener.class), this);
         pluginManager.registerEvents(injector.getSingleton(ServerListener.class), this);
-
-        // Try to register 1.9 player listeners
-        if (isClassLoaded("org.bukkit.event.player.PlayerSwapHandItemsEvent")) {
-            pluginManager.registerEvents(injector.getSingleton(PlayerListener19.class), this);
-        }
-
-        // Try to register 1.9 spigot player listeners
-        if (isClassLoaded("org.spigotmc.event.player.PlayerSpawnLocationEvent")) {
-            pluginManager.registerEvents(injector.getSingleton(PlayerListener19Spigot.class), this);
-        }
-
-        // Register listener for 1.11 events if available
-        if (isClassLoaded("org.bukkit.event.entity.EntityAirChangeEvent")) {
-            pluginManager.registerEvents(injector.getSingleton(PlayerListener111.class), this);
-        }
     }
 
     /**
@@ -332,8 +306,8 @@ public class AuthMe extends JavaPlugin {
      * @return True if the command was executed, false otherwise.
      */
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd,
-                             String commandLabel, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd,
+                             @NotNull String commandLabel, String[] args) {
         // Make sure the command handler has been initialized
         if (commandHandler == null) {
             getLogger().severe("AuthMe command handler is not available");

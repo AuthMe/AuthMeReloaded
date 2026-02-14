@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Called if a player is teleported to a specific spawn upon joining or logging in.
@@ -18,7 +19,7 @@ public class SpawnTeleportEvent extends AbstractTeleportEvent {
      *
      * @param player The player
      * @param to The teleport destination
-     * @param isAuthenticated Whether or not the player is logged in
+     * @param isAuthenticated Whether the player is logged in
      */
     public SpawnTeleportEvent(Player player, Location to, boolean isAuthenticated) {
         super(false, player, to);
@@ -26,7 +27,7 @@ public class SpawnTeleportEvent extends AbstractTeleportEvent {
     }
 
     /**
-     * Return whether or not the player is authenticated.
+     * Return whether the player is authenticated.
      *
      * @return true if the player is logged in, false otherwise
      */
@@ -44,6 +45,7 @@ public class SpawnTeleportEvent extends AbstractTeleportEvent {
     }
 
     @Override
+    @NotNull
     public HandlerList getHandlers() {
         return handlers;
     }

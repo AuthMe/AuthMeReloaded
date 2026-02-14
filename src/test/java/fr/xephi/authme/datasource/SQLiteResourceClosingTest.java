@@ -15,7 +15,7 @@ public class SQLiteResourceClosingTest extends AbstractSqlDataSourceResourceClos
     }
 
     @Override
-    protected DataSource createDataSource(Settings settings, Connection connection) throws Exception {
+    protected DataSource createDataSource(Settings settings, Connection connection) {
         return new SQLite(settings, null, connection);
     }
 

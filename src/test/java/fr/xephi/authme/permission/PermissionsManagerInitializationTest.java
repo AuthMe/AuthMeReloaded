@@ -51,16 +51,16 @@ import static org.mockito.Mockito.verify;
 @RunWith(Parameterized.class)
 public class PermissionsManagerInitializationTest {
 
-    @Parameterized.Parameter(0)
+    @Parameterized.Parameter()
     public PermissionsSystemType permissionsSystemType;
     @Parameterized.Parameter(1)
     public Class<?> expectedHandlerType;
 
-    private Settings settings = mock(Settings.class);
-    private ServicesManager servicesManager = mock(ServicesManager.class);
-    private Server server = mock(Server.class);
-    private PluginManager pluginManager = mock(PluginManager.class);
-    private PermissionsManager permissionsManager = new PermissionsManager(server, pluginManager, settings);
+    private final Settings settings = mock(Settings.class);
+    private final ServicesManager servicesManager = mock(ServicesManager.class);
+    private final Server server = mock(Server.class);
+    private final PluginManager pluginManager = mock(PluginManager.class);
+    private final PermissionsManager permissionsManager = new PermissionsManager(server, pluginManager, settings);
 
     @BeforeClass
     public static void setUpLogger() {
@@ -129,7 +129,7 @@ public class PermissionsManagerInitializationTest {
         // given
         given(settings.getProperty(PluginSettings.FORCE_VAULT_HOOK)).willReturn(false);
         Plugin plugin = mock(Plugin.class);
-        // Typically we'd expect a PermissionHandler exception further down the line but we can test it easily like this
+        // Typically we'd expect a PermissionHandler exception further down the line, but we can test it easily like this
         given(plugin.isEnabled()).willThrow(new IllegalStateException("Some exception occurred"));
         given(pluginManager.getPlugin(permissionsSystemType.getPluginName())).willReturn(plugin);
 

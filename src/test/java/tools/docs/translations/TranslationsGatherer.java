@@ -20,7 +20,7 @@ public class TranslationsGatherer {
 
     private static final String MESSAGES_FOLDER = MAIN_RESOURCES_ROOT + MessagePathHelper.MESSAGES_FOLDER;
 
-    private List<TranslationInfo> translationInfo = new ArrayList<>();
+    private final List<TranslationInfo> translationInfo = new ArrayList<>();
 
     public TranslationsGatherer() {
         gatherTranslations();
@@ -42,7 +42,7 @@ public class TranslationsGatherer {
     }
 
     private void processMessagesFile(String code, File file) {
-        PropertyReader reader = new YamlFileReader(file);
+        PropertyReader reader = new YamlFileReader(file.toPath());
         int availableMessages = 0;
         for (MessageKey key : MessageKey.values()) {
             if (reader.contains(key.getKey())) {

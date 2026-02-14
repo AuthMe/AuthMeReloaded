@@ -17,9 +17,9 @@ public class MethodDescription {
     private Integer saltLength;
     /** The usage recommendation. */
     private Usage usage;
-    /** Whether or not the encryption method is restricted to ASCII characters for proper functioning. */
+    /** Whether the encryption method is restricted to ASCII characters for proper functioning. */
     private boolean asciiRestricted;
-    /** Whether or not the encryption method requires its salt stored separately. */
+    /** Whether the encryption method requires its salt stored separately. */
     private boolean hasSeparateSalt;
     /** The length of the hash output, based on a test hash (i.e. assumes same length for all hashes.) */
     private int hashLength;

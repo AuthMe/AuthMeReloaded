@@ -17,7 +17,7 @@ public final class Utils {
     /** Number of milliseconds in a minute. */
     public static final long MILLIS_PER_MINUTE = 60_000L;
 
-    private static ConsoleLogger logger = ConsoleLoggerFactory.get(Utils.class);
+    private static final ConsoleLogger logger = ConsoleLoggerFactory.get(Utils.class);
 
     // Utility class
     private Utils() {

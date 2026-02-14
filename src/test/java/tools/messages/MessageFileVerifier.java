@@ -38,7 +38,7 @@ public class MessageFileVerifier {
      * Return the list of unknown keys, i.e. the list of keys present in the file that are not
      * part of the {@link MessageKey} enum.
      *
-     * @return List of unknown keys
+     * @return The list of unknown keys
      */
     public Set<String> getUnknownKeys() {
         return unknownKeys;

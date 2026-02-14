@@ -16,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -52,7 +51,7 @@ public class HasPermissionCheckerTest {
             new ClassCollector(TestHelper.SOURCES_FOLDER, TestHelper.PROJECT_ROOT)
                 .collectClasses(PermissionNode.class).stream()
                 .filter(clz -> !clz.isInterface())
-                .collect(Collectors.toList());
+                .toList();
 
         // when / then
         assertThat(HasPermissionChecker.PERMISSION_NODE_CLASSES, containsInAnyOrder(permissionClasses.toArray()));

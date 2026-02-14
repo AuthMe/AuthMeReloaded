@@ -16,6 +16,7 @@ import org.bukkit.command.CommandSender;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -206,7 +207,7 @@ public class HelpProvider implements Reloadable {
 
         if (correctLabels.size() == 1) {
             usedLabel = correctLabels.get(0);
-            commandLabelsFn = label -> singletonList(label);
+            commandLabelsFn = Collections::singletonList;
         } else {
             usedLabel = correctLabels.get(1);
             commandLabelsFn = label -> Arrays.asList(correctLabels.get(0), label);

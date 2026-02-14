@@ -53,7 +53,7 @@ class LimboPlayerTaskManager {
         if (interval > 0) {
             String[] joinMessage = messages.retrieveSingle(player, result.messageKey, result.args).split("\n");
             MessageTask messageTask = new MessageTask(player, joinMessage);
-            bukkitService.runTaskTimer(messageTask, 2 * TICKS_PER_SECOND, interval * TICKS_PER_SECOND);
+            bukkitService.runTaskTimer(messageTask, 2 * TICKS_PER_SECOND, (long) interval * TICKS_PER_SECOND);
             limbo.setMessageTask(messageTask);
         }
     }

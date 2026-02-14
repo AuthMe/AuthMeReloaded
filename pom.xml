@@ -64,7 +64,7 @@
         <java.target>17</java.target>
         <java.apiVersion>17</java.apiVersion>
         <java.compiler.minimumVersion>17</java.compiler.minimumVersion>
-        <maven.minimumVersion>3.8.8</maven.minimumVersion>
+        <maven.minimumVersion>3.9.0</maven.minimumVersion>
 
         <!-- Versioning properties -->
         <project.outputName>AuthMe</project.outputName>
@@ -79,27 +79,28 @@
         <pluginDescription.authors>sgdc3, games647, Hex3l, krusic22</pluginDescription.authors>
 
         <!-- Java libraries -->
+        <dependencies.guava.version>33.5.0-jre</dependencies.guava.version>
         <dependencies.injector.version>1.0</dependencies.injector.version>
         <dependencies.string-similarity.version>1.0.0</dependencies.string-similarity.version>
-        <dependencies.geoip2.version>4.2.0</dependencies.geoip2.version>
+        <dependencies.geoip2.version>5.0.2</dependencies.geoip2.version>
         <dependencies.javatar.version>2.5</dependencies.javatar.version>
-        <dependencies.commons-email.version>1.6.0</dependencies.commons-email.version>
-        <dependencies.hikaricp.version>5.1.0</dependencies.hikaricp.version>
-        <dependencies.slf4j.version>2.0.13</dependencies.slf4j.version>
+        <dependencies.commons-email2.version>2.0.0-M1</dependencies.commons-email2.version>
+        <dependencies.hikaricp.version>7.0.2</dependencies.hikaricp.version>
+        <dependencies.slf4j.version>2.0.17</dependencies.slf4j.version>
         <dependencies.datasourcecolumns.version>0.1.2</dependencies.datasourcecolumns.version>
-        <dependencies.mysql-connector-j.version>8.4.0</dependencies.mysql-connector-j.version>
-        <dependencies.mariadb-java-client.version>3.4.0</dependencies.mariadb-java-client.version>
-        <dependencies.postgresql.version>42.7.3</dependencies.postgresql.version>
+        <dependencies.mysql-connector-j.version>9.6.0</dependencies.mysql-connector-j.version>
+        <dependencies.mariadb-java-client.version>3.5.7</dependencies.mariadb-java-client.version>
+        <dependencies.postgresql.version>42.7.10</dependencies.postgresql.version>
         <dependencies.pbkdf2.version>1.1.4</dependencies.pbkdf2.version>
-        <dependencies.argon2-jvm-nolibs.version>2.11</dependencies.argon2-jvm-nolibs.version>
+        <dependencies.argon2-jvm-nolibs.version>2.12</dependencies.argon2-jvm-nolibs.version>
         <dependencies.bcrypt.version>0.10.2</dependencies.bcrypt.version>
         <dependencies.googleauth.version>1.5.0</dependencies.googleauth.version>
         <dependencies.configme.version>1.3.1</dependencies.configme.version>
         <!-- Spigot -->
-        <dependencies.spigot.version>1.16.5-R0.1-SNAPSHOT</dependencies.spigot.version>
-        <dependencies.log4j-core.version>2.8.1</dependencies.log4j-core.version> <!-- version bundled 1.16.5 -->
+        <dependencies.spigot.version>1.18.2-R0.1-SNAPSHOT</dependencies.spigot.version>
+        <dependencies.log4j-core.version>2.17.0</dependencies.log4j-core.version> <!-- version bundled 1.18.2 -->
         <!-- Spigot libraries -->
-        <dependencies.bstats.version>3.0.2</dependencies.bstats.version>
+        <dependencies.bstats.version>3.1.0</dependencies.bstats.version>
     </properties>
 
     <!-- Jenkins profile -->
@@ -176,7 +177,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.7.0</version>
+                    <version>3.12.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -186,7 +187,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.6.2</version>
                 <executions>
                     <execution>
                         <id>enforce-environment</id>
@@ -211,19 +212,19 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>3.4.0</version>
+                <version>3.5.0</version>
             </plugin>
             <!-- Include resource files -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.4.0</version>
             </plugin>
             <!-- Compile and include classes -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
+                <version>3.15.0</version>
                 <configuration>
                     <source>${java.source}</source>
                     <target>${java.target}</target>
@@ -234,7 +235,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.12</version>
+                <version>0.8.14</version>
                 <configuration>
                     <includes>
                         <include>fr/xephi/authme/*</include>
@@ -260,7 +261,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.5.4</version>
                 <configuration>
                     <!-- Fix java.base opens for new JDK versions -->
                     <!-- Force the right file encoding during unit testing -->
@@ -277,7 +278,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.4.2</version>
+                <version>3.5.0</version>
             </plugin>
             <!-- Generate a jar containing the source javadoc -->
             <plugin>
@@ -301,7 +302,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.4.0</version>
                 <configuration>
                     <finalName>${project.finalNameBase}</finalName>
                 </configuration>
@@ -318,7 +319,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>3.6.1</version>
                 <executions>
                     <!-- Disable, we aren't using shading atm
                     <execution>
@@ -377,19 +378,19 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-install-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>3.1.4</version>
             </plugin>
             <!-- Deploy the jars as artifacts into the remote repository -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>3.1.4</version>
             </plugin>
             <!-- Handle documentation generation, required by other plugins -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.12.1</version>
+                <version>3.21.0</version>
             </plugin>
             <!-- Publish coveralls test coverage reports, not included in the build cycle by default -->
             <plugin>
@@ -400,13 +401,6 @@
                     <!-- The secret token is provided with a command-line parameter -->
                     <failOnServiceError>false</failOnServiceError>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>javax.xml.bind</groupId>
-                        <artifactId>jaxb-api</artifactId>
-                        <version>2.3.1</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>
@@ -508,6 +502,14 @@
     <dependencies>
         <!-- Java Libraries -->
 
+        <!-- Google Guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${dependencies.guava.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Jalu Injector -->
         <dependency>
             <groupId>ch.jalu</groupId>
@@ -543,8 +545,8 @@
         <!-- Java Email Library -->
         <dependency>
             <groupId>org.apache.commons</groupId>
-            <artifactId>commons-email</artifactId>
-            <version>${dependencies.commons-email.version}</version>
+            <artifactId>commons-email2-jakarta</artifactId>
+            <version>${dependencies.commons-email2.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -670,8 +672,8 @@
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>org.joml</groupId>
-                    <artifactId>joml</artifactId>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>net.md-5</groupId>
@@ -700,22 +702,14 @@
 
         <!-- ProtocolLib -->
         <dependency>
-            <groupId>com.comphenix.protocol</groupId>
+            <groupId>net.dmulloy2</groupId>
             <artifactId>ProtocolLib</artifactId>
-            <version>5.3.0</version>
+            <version>5.4.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <artifactId>cglib-nodep</artifactId>
-                    <groupId>cglib</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>BukkitExecutors</artifactId>
-                    <groupId>com.comphenix.executors</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>byte-buddy</artifactId>
-                    <groupId>net.bytebuddy</groupId>
+                    <artifactId>*</artifactId>
+                    <groupId>*</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -724,7 +718,7 @@
         <dependency>
             <groupId>net.luckperms</groupId>
             <artifactId>api</artifactId>
-            <version>5.4</version>
+            <version>5.5</version>
             <scope>provided</scope>
         </dependency>
 
@@ -736,12 +730,8 @@
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <artifactId>commons-dbcp</artifactId>
-                    <groupId>commons-dbcp</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>accounts-client</artifactId>
-                    <groupId>com.mojang</groupId>
+                    <artifactId>*</artifactId>
+                    <groupId>*</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -754,8 +744,8 @@
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>org.avaje</groupId>
-                    <artifactId>ebean</artifactId>
+                    <artifactId>*</artifactId>
+                    <groupId>*</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -768,75 +758,23 @@
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>bukkit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>craftbukkit</artifactId>
+                    <artifactId>*</artifactId>
+                    <groupId>*</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
 
         <!-- Multi World plugin, https://www.spigotmc.org/resources/multiverse-core.390/ -->
         <dependency>
-            <groupId>com.onarandombox.multiversecore</groupId>
+            <groupId>org.mvplugins.multiverse.core</groupId>
             <artifactId>multiverse-core</artifactId>
-            <version>4.3.16</version>
+            <version>5.5.2</version>
             <type>jar</type>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>bukkit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>craftbukkit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>AllPay</artifactId>
-                    <groupId>com.fernferret.allpay</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>Vault</artifactId>
-                    <groupId>net.milkbowl.vault</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>VaultAPI</artifactId>
-                    <groupId>net.milkbowl.vault</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>CommandHandler</artifactId>
-                    <groupId>com.pneumaticraft.commandhandler</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>SerializationConfig</artifactId>
-                    <groupId>me.main__.util</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>Logging</artifactId>
-                    <groupId>com.dumptruckman.minecraft</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>metrics</artifactId>
-                    <groupId>org.mcstats.bukkit</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>buscript</artifactId>
-                    <groupId>com.dumptruckman.minecraft</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>junit</artifactId>
-                    <groupId>junit</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>spigot-api</artifactId>
-                    <groupId>org.spigotmc</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jettison</artifactId>
-                    <groupId>org.codehaus.jettison</groupId>
+                    <artifactId>*</artifactId>
+                    <groupId>*</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -845,48 +783,12 @@
         <dependency>
             <groupId>net.essentialsx</groupId>
             <artifactId>EssentialsX</artifactId>
-            <version>2.20.1</version>
+            <version>2.21.2</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>io.papermc</groupId>
-                    <artifactId>paperlib</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.bstats</groupId>
-                    <artifactId>bstats-bukkit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>net.essentialsx</groupId>
-                    <artifactId>BaseProviders</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>net.essentialsx</groupId>
-                    <artifactId>PaperProvider</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>net.essentialsx</groupId>
-                    <artifactId>NMSReflectionProvider</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>net.essentialsx</groupId>
-                    <artifactId>1_8Provider</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>net.essentialsx</groupId>
-                    <artifactId>1_12Provider</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.spigotmc</groupId>
-                    <artifactId>spigot-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.spongepowered</groupId>
-                    <artifactId>configurate-yaml</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.checkerframework</groupId>
-                    <artifactId>checker-qual</artifactId>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -932,17 +834,17 @@
 
         <!-- Required to mock the LuckPerms API-->
         <dependency>
-            <groupId>org.checkerframework</groupId>
-            <artifactId>checker-qual</artifactId>
-            <version>3.44.0</version>
-            <scope>test</scope>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>26.0.2</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- JDBC drivers for datasource integration tests -->
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>3.46.0.0</version>
+            <version>3.51.2.0</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -954,7 +856,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>2.2.224</version>
+            <version>2.4.240</version>
             <scope>test</scope>
         </dependency>
 

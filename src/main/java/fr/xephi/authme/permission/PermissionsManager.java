@@ -131,18 +131,12 @@ public class PermissionsManager implements Reloadable {
             return null;
         }
 
-        switch (type) {
-            case LUCK_PERMS:
-                return new LuckPermsHandler();
-            case PERMISSIONS_EX:
-                return new PermissionsExHandler();
-            case Z_PERMISSIONS:
-                return new ZPermissionsHandler();
-            case VAULT:
-                return new VaultHandler(server);
-            default:
-                throw new IllegalStateException("Unhandled permission type '" + type + "'");
-        }
+        return switch (type) {
+            case LUCK_PERMS -> new LuckPermsHandler();
+            case PERMISSIONS_EX -> new PermissionsExHandler();
+            case Z_PERMISSIONS -> new ZPermissionsHandler();
+            case VAULT -> new VaultHandler(server);
+        };
     }
 
     /**
@@ -204,7 +198,7 @@ public class PermissionsManager implements Reloadable {
     }
 
     /**
-     * Check if the command sender has permission for the given permissions node. If no permissions system is used or
+     * Check if the command sender has permission for the given permission node. If no permissions system is used or
      * if the sender is not a player (e.g. console user), the player has to be OP in order to have the permission.
      *
      * @param sender         The command sender.
@@ -219,11 +213,10 @@ public class PermissionsManager implements Reloadable {
         }
 
         // Return default if sender is not a player or no permission system is in use
-        if (!(sender instanceof Player) || !isEnabled()) {
+        if (!(sender instanceof Player player) || !isEnabled()) {
             return permissionNode.getDefaultPermission().evaluate(sender);
         }
 
-        Player player = (Player) sender;
         return player.hasPermission(permissionNode.getNode());
     }
 
@@ -308,7 +301,7 @@ public class PermissionsManager implements Reloadable {
      * @param groupName The group name.
      *
      * @return True if the player is in the specified group, false otherwise.
-     *         False is also returned if groups aren't supported by the used permissions system.
+     *         False is also returned if groups aren't supported by the used permission system.
      */
     public boolean isInGroup(OfflinePlayer player, UserGroup groupName) {
         return isEnabled() && handler.isInGroup(player, groupName);
@@ -320,8 +313,8 @@ public class PermissionsManager implements Reloadable {
      * @param player    The player
      * @param groupName The name of the group.
      *
-     * @return True if succeed, false otherwise.
-     *         False is also returned if this feature isn't supported for the current permissions system.
+     * @return True if succeeded, false otherwise.
+     *         False is also returned if this feature isn't supported for the current permission system.
      */
     public boolean addGroup(OfflinePlayer player, UserGroup groupName) {
         if (!isEnabled() || StringUtils.isBlank(groupName.getGroupName())) {
@@ -337,7 +330,7 @@ public class PermissionsManager implements Reloadable {
      * @param groupNames The name of the groups to add.
      *
      * @return True if at least one group was added, false otherwise.
-     *         False is also returned if this feature isn't supported for the current permissions system.
+     *         False is also returned if this feature isn't supported for the current permission system.
      */
     public boolean addGroups(OfflinePlayer player, Collection<UserGroup> groupNames) {
         // If no permissions system is used, return false
@@ -363,8 +356,8 @@ public class PermissionsManager implements Reloadable {
      * @param player    The player
      * @param group The name of the group.
      *
-     * @return True if succeed, false otherwise.
-     *         False is also returned if this feature isn't supported for the current permissions system.
+     * @return True if succeeded, false otherwise.
+     *         False is also returned if this feature isn't supported for the current permission system.
      */
     public boolean removeGroup(OfflinePlayer player, UserGroup group) {
         return isEnabled() && handler.removeFromGroup(player, group);
@@ -377,7 +370,7 @@ public class PermissionsManager implements Reloadable {
      * @param groupNames The name of the groups to remove.
      *
      * @return True if at least one group was removed, false otherwise.
-     *         False is also returned if this feature isn't supported for the current permissions system.
+     *         False is also returned if this feature isn't supported for the current permission system.
      */
     public boolean removeGroups(OfflinePlayer player, Collection<UserGroup> groupNames) {
         // If no permissions system is used, return false
@@ -404,8 +397,8 @@ public class PermissionsManager implements Reloadable {
      * @param player    The player
      * @param group The name of the group.
      *
-     * @return True if succeed, false otherwise.
-     *         False is also returned if this feature isn't supported for the current permissions system.
+     * @return True if succeeded, false otherwise.
+     *         False is also returned if this feature isn't supported for the current permission system.
      */
     public boolean setGroup(OfflinePlayer player, UserGroup group) {
         return isEnabled() && handler.setGroup(player, group);
@@ -418,8 +411,8 @@ public class PermissionsManager implements Reloadable {
      *
      * @param player The player to remove all groups from.
      *
-     * @return True if succeed, false otherwise.
-     *         False will also be returned if this feature isn't supported for the used permissions system.
+     * @return True if succeeded, false otherwise.
+     *         False will also be returned if this feature isn't supported for the used permission system.
      */
     public boolean removeAllGroups(OfflinePlayer player) {
         // If no permissions system is used, return false

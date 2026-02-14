@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 
 import java.util.Locale;
+import java.util.Objects;
 
 import static fr.xephi.authme.util.Utils.MILLIS_PER_MINUTE;
 
@@ -76,7 +77,7 @@ public class TotpAuthenticator implements HasCleanup {
     @Override
     public void performCleanup() {
         long threshold = System.currentTimeMillis() - CODE_RETENTION_MINUTES * MILLIS_PER_MINUTE;
-        usedCodes.values().removeIf(value -> value < threshold);
+        usedCodes.values().removeIf(value -> Objects.requireNonNull(value) < threshold);
     }
 
     public static final class TotpGenerationResult {

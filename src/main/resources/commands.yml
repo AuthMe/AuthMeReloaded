@@ -2,7 +2,7 @@
 # This configuration file allows you to execute commands on various events.
 # Supported placeholders in commands:
 #   %p is replaced with the player name.
-#   %nick is replaced with the player's nick name
+#   %nick is replaced with the player's nickname
 #   %ip is replaced with the player's IP address
 #   %country is replaced with the player's country
 # 

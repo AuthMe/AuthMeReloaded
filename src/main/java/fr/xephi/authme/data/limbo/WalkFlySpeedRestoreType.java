@@ -55,7 +55,7 @@ public enum WalkFlySpeedRestoreType {
                     + limboWalkSpeed + " (RESTORE_NO_ZERO mode)");
                 player.setWalkSpeed(limboWalkSpeed);
             } else {
-                logger.debug(() -> "Restoring walk speed for LimboPlayer " + player.getName() + ""
+                logger.debug(() -> "Restoring walk speed for LimboPlayer " + player.getName()
                     + " to DEFAULT, it was 0! (RESTORE_NO_ZERO mode)");
                 player.setWalkSpeed(LimboPlayer.DEFAULT_WALK_SPEED);
             }

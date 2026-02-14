@@ -26,7 +26,7 @@ public abstract class AbstractPasswordRegisterParams extends RegistrationParamet
 
     /**
      * Constructor with no defined password. Use for registration methods which
-     * have no implicit password (like two factor authentication).
+     * have no implicit password (like two-factor authentication).
      *
      * @param player the player to register
      */

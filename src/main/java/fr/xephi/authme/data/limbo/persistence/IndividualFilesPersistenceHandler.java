@@ -62,8 +62,7 @@ class IndividualFilesPersistenceHandler implements LimboPersistenceHandler {
         try {
             File file = new File(cacheDir, id + File.separator + "data.json");
             Files.createParentDirs(file);
-            Files.touch(file);
-            Files.write(gson.toJson(limboPlayer), file, StandardCharsets.UTF_8);
+            Files.asCharSink(file, StandardCharsets.UTF_8).write(gson.toJson(limboPlayer));
         } catch (IOException e) {
             logger.logException("Failed to write " + player.getName() + " data:", e);
         }

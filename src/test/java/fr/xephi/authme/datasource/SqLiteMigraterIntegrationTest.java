@@ -56,14 +56,14 @@ public class SqLiteMigraterIntegrationTest {
     }
 
     @Test
-    public void shouldRun() throws ClassNotFoundException, SQLException {
+    public void shouldRun() throws SQLException {
         // given / when
         sqLite.setup();
         sqLite.migrateIfNeeded();
 
         // then
         List<PlayerAuth> auths = sqLite.getAllAuths();
-        assertThat(Lists.transform(auths, PlayerAuth::getNickname),
+        assertThat(Lists.transform(auths, playerAuth -> playerAuth != null ? playerAuth.getNickname() : null),
             containsInAnyOrder("mysql1", "mysql2", "mysql3", "mysql4", "mysql5", "mysql6"));
         PlayerAuth auth1 = getByNameOrFail("mysql1", auths);
         assertThat(auth1, hasAuthBasicData("mysql1", "mysql1", "user1@example.com", "192.168.4.41"));

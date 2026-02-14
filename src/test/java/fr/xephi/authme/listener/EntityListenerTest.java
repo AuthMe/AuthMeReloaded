@@ -6,6 +6,7 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
@@ -47,7 +48,8 @@ public class EntityListenerTest {
             .check(listener::onFoodLevelChange, FoodLevelChangeEvent.class)
             .check(listener::onShoot, EntityShootBowEvent.class)
             .check(listener::onEntityInteract, EntityInteractEvent.class)
-            .check(listener::onLowestEntityInteract, EntityInteractEvent.class);
+            .check(listener::onLowestEntityInteract, EntityInteractEvent.class)
+            .check(listener::onPickupItem, EntityPickupItemEvent.class);
     }
 
     @Test

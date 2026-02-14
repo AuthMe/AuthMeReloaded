@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class UserGroup {
 
-    private String groupName;
+    private final String groupName;
     private Map<String, String> contextMap;
 
     public UserGroup(String groupName) {

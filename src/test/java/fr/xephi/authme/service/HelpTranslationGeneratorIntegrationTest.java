@@ -146,8 +146,7 @@ public class HelpTranslationGeneratorIntegrationTest {
     }
 
     private static void checkDescription(Object memorySection, String description, String detailedDescription) {
-        if (memorySection instanceof MemorySection) {
-            MemorySection memSection = (MemorySection) memorySection;
+        if (memorySection instanceof MemorySection memSection) {
             assertThat(memSection.getString("description"), equalTo(description));
             assertThat(memSection.getString("detailedDescription"), equalTo(detailedDescription));
         } else {
@@ -156,8 +155,7 @@ public class HelpTranslationGeneratorIntegrationTest {
     }
 
     private static void checkArgs(Object memorySection, Argument... arguments) {
-        if (memorySection instanceof MemorySection) {
-            MemorySection memSection = (MemorySection) memorySection;
+        if (memorySection instanceof MemorySection memSection) {
             int i = 1;
             for (Argument arg : arguments) {
                 assertThat(memSection.getString("arg" + i + ".label"), equalTo(arg.label));
