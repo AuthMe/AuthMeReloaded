@@ -136,7 +136,14 @@ public class TeleportationService implements Reloadable {
             ? Objects.requireNonNull(limbo.getLocation().getWorld()).getName()
             : null;
 
-        // The world in LimboPlayer is from where the player comes, before any teleportation by AuthMe
+        // Use the quit location from the database instead of the Limbo world, as the Limbo
+        // location might have been updated to the spawn world during the unauthenticated phase.
+        if (auth.getWorld() != null) {
+            worldName = auth.getWorld();
+            logger.debug("Using stored quit world for player `{0}`: {1}", player.getName(), worldName);
+        }
+
+        // At this point, worldName represents the world the player was in before any AuthMe teleportation
         if (mustForceSpawnAfterLogin(worldName)) {
             logger.debug("Teleporting `{0}` to spawn because of 'force-spawn after login'", player.getName());
             teleportToSpawn(player, true);
