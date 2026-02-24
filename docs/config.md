@@ -151,7 +151,7 @@ settings:
         - /totp
         # Max number of allowed registrations per IP
         # The value 0 means an unlimited number of registrations!
-        maxRegPerIp: 1
+        maxRegPerIp: 0
         # Minimum allowed username length
         minNicknameLength: 3
         # Maximum allowed username length
