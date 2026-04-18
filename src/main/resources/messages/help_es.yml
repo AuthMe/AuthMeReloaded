@@ -144,7 +144,7 @@ commands:
     detailedDescription:      Comando conversor de AuthMeReloaded.
     arg1:
       label:                  trabajo
-      description:            'Trabajo de conversión: xauth / crazylogin / rakamak / royalauth / vauth / sqliteToSql / mysqlToSqlite / loginsecurity'
+      description:            'Trabajo de conversión: crazylogin / rakamak / royalauth / vauth / sqliteToSql / mysqlToSqlite / loginsecurity'
   authme.messages:
     description:              Añade mensajes faltantes
     detailedDescription:      Añade los mensajes que faltan al archivo de mensajes actual.

@@ -142,7 +142,7 @@ commands:
     detailedDescription: Преубразовател за базата данни.
     arg1:
       label: тип
-      description: 'тип преобразуване: xauth / crazylogin / rakamak / royalauth /
+      description: 'тип преобразуване: crazylogin / rakamak / royalauth /
         vauth / sqliteToSql / mysqlToSqlite'
   authme.messages:
     description: Добавяне на липсващи съобщения в помощния файл.

@@ -30,7 +30,6 @@ TWO_FACTOR | Does not work | 16 |  | | None |  |
 WBB3 | Acceptable | 40 |  | | Text | 40 | Y
 WBB4 | Recommended | 60 |  | | Text | 22 | 
 WORDPRESS | Acceptable | 34 |  | | Text | 9 | 
-XAUTH | Recommended | 140 |  | | Text | 12 | 
 XFBCRYPT | Recommended | 60 |  | | Text | 22 | 
 CUSTOM |  |  |  |  |  |  |  |
 

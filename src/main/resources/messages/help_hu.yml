@@ -156,7 +156,7 @@ commands:
     detailedDescription:      AuthMeReloaded konvertáló parancs.
     arg1:
       label:                  munka
-      description:            'Konverziós munka: xauth / crazylogin / rakamak / royalauth / vauth / sqliteToSql / mysqlToSqlite / loginsecurity'
+      description:            'Konverziós munka: crazylogin / rakamak / royalauth / vauth / sqliteToSql / mysqlToSqlite / loginsecurity'
   authme.messages:
     description:              Add hiányzó üzeneteket
     detailedDescription:      Hozzáadja a hiányzó üzeneteket az aktuális üzenetfájlhoz.

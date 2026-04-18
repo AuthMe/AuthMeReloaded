@@ -17,8 +17,8 @@ Use it to secure your Offline mode server or to increase your Online mode server
 AuthMeReloaded disallows players who aren't authenticated to do actions like placing blocks, moving,<br>
 typing commands or using the inventory. It can also kick players with uncommonly long or short player names or kick players from banned countries.
 
-With the Session Login feature you don't have to execute the authentication command every time you connect to the server! 
-Each command and every feature can be enabled or disabled from our well structured configuration file.
+With the Session Login feature, you don't have to execute the authentication command every time you connect to the server!
+Each command and every feature can be enabled or disabled from our well-structured configuration file.
 
 You can also create your own translation file and, if you want, you can share it with us! :)
 
@@ -34,7 +34,7 @@ You can also create your own translation file and, if you want, you can share it
   <li>Session Login!</li>
   <li>Editable translations and messages!</li>
   <li><strong>MySQL and SQLite Backend support!</strong></li>
-  <li>Supported password encryption algorithms: SHA256, ARGON2, BCRYPT, PBKDF2, <a href="https://github.com/CypherX/xAuth/wiki/Password-Hashing">xAuth</a></li>
+  <li>Supported password encryption algorithms: SHA256, ARGON2, BCRYPT, PBKDF2</li>
   <li>Supported alternative registration methods:<br>
   <ul>
     <li>PHPBB, VBulletin: PHPBB - MD5VB</li>
@@ -59,8 +59,8 @@ You can also create your own translation file and, if you want, you can share it
   <li>Saves the quit location of the player</li>
   <li>Automatic database backup</li>
   <li>Available languages: <a href="https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/translations.md">translations</a></li>
-  <li>Built-in Deprecated FlatFile (auths.db) to SQL (authme.sql) converter!</li>
-  <li><strong>Import your old database from other plugins like Rakamak, xAuth, CrazyLogin, RoyalAuth and vAuth!</strong></li>
+  <li>Built-in deprecated FlatFile (auths.db) to SQL (authme.sql) converter!</li>
+  <li><strong>Import your old database from other plugins like Rakamak, CrazyLogin, RoyalAuth and vAuth!</strong></li>
 </ul>
 
 #### Configuration
@@ -74,7 +74,7 @@ You can also create your own translation file and, if you want, you can share it
 
 #### How To
 - [How to use the converter](https://github.com/AuthMe/AuthMeReloaded/wiki/Converters)
-- [How to import database from xAuth](https://dev.bukkit.org/projects/authme-reloaded/pages/how-to-import-database-from-xauth)
+
 - [Website integration](https://github.com/AuthMe/AuthMeReloaded/tree/master/samples/website_integration)
 - [How to convert from Rakamak](https://dev.bukkit.org/projects/authme-reloaded/pages/how-to-import-database-from-rakamak)
 - Convert between database types (e.g. SQLite to MySQL): /authme converter
