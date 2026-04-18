@@ -56,7 +56,7 @@ public class AccountsCommandTest {
         command.executeCommand(sender, arguments);
 
         // then
-        verify(service).send(eq(sender), eq(MessageKey.ACCOUNTS_OWNED_OTHER), eq("Tester"), eq("2"));
+        verify(service).send(eq(sender), eq(MessageKey.ACCOUNTS_OWNED_SELF), eq("2"));
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(sender).sendMessage(captor.capture());
         assertThat(captor.getValue(), containsString("Toaster, Pester"));

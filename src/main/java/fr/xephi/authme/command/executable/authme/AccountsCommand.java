@@ -67,7 +67,11 @@ public class AccountsCommand implements ExecutableCommand {
     }
 
     private void outputAccountsList(CommandSender sender, String playerName, List<String> accountList) {
-        commonService.send(sender, MessageKey.ACCOUNTS_OWNED_OTHER, playerName, Integer.toString(accountList.size()));
+        if (playerName.equalsIgnoreCase(sender.getName())) {
+            commonService.send(sender, MessageKey.ACCOUNTS_OWNED_SELF, Integer.toString(accountList.size()));
+        } else {
+            commonService.send(sender, MessageKey.ACCOUNTS_OWNED_OTHER, playerName, Integer.toString(accountList.size()));
+        }
         sender.sendMessage(String.join(", ", accountList));
     }
 }
