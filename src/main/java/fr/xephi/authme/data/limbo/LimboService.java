@@ -124,8 +124,12 @@ public class LimboService {
             settings.getProperty(RESTORE_WALK_SPEED).restoreWalkSpeed(player, limbo);
             limbo.clearTasks();
             logger.debug("Restored LimboPlayer stats for `{0}`", lowerName);
-            persistence.removeLimboPlayer(player);
         }
+        // Always remove the disk limbo regardless of whether an in-memory limbo was present.
+        // If the player quits while in limbo before createLimboPlayer has run (race condition between
+        // async join and async quit), the in-memory entry is null but the disk file may still exist.
+        // Leaving it would cause the stale location to be reused on the next join.
+        persistence.removeLimboPlayer(player);
         authGroupHandler.setGroup(player, limbo, AuthGroupType.LOGGED_IN);
     }
 

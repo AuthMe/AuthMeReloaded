@@ -180,6 +180,7 @@ public class LimboServiceTest {
         verify(player).setFlySpeed(LimboPlayer.DEFAULT_FLY_SPEED);
         verify(limbo).clearTasks();
         verify(authGroupHandler).setGroup(player, limbo, AuthGroupType.LOGGED_IN);
+        verify(limboPersistence).removeLimboPlayer(player);
         assertThat(limboService.hasLimboPlayer("John"), equalTo(false));
     }
 
@@ -193,6 +194,23 @@ public class LimboServiceTest {
 
         // then
         verify(player, only()).getName();
+        verify(authGroupHandler).setGroup(player, null, AuthGroupType.LOGGED_IN);
+        // Disk limbo must always be removed even when no in-memory entry exists (race condition: player
+        // disconnected before createLimboPlayer ran, leaving a stale disk entry from a previous session)
+        verify(limboPersistence).removeLimboPlayer(player);
+    }
+
+    @Test
+    public void shouldRemoveDiskLimboEvenWhenNoInMemoryLimboExists() {
+        // given - simulates race condition: player quit before createLimboPlayer ran
+        Player player = newPlayer("Speedy");
+        // no entry in memory map for this player
+
+        // when
+        limboService.restoreData(player);
+
+        // then
+        verify(limboPersistence).removeLimboPlayer(player);
         verify(authGroupHandler).setGroup(player, null, AuthGroupType.LOGGED_IN);
     }
 
