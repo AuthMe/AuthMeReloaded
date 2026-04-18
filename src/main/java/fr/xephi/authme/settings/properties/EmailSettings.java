@@ -15,11 +15,17 @@ public final class EmailSettings implements SettingsHolder {
     public static final Property<String> SMTP_HOST =
         newProperty("Email.mailSMTP", "smtp.gmail.com");
 
-    @Comment("Email SMTP server port")
+    @Comment({"Email SMTP server port. The port determines the encryption mode:",
+              "  25  -> plain SMTP; optional STARTTLS via 'useTls' (see below)",
+              "  465 -> implicit SSL/TLS (SMTPS); 'useTls' is ignored",
+              "  587 -> STARTTLS required (submission); 'useTls' is ignored",
+              "  other -> STARTTLS required; 'useTls' is ignored"})
     public static final Property<Integer> SMTP_PORT =
         newProperty("Email.mailPort", 465);
 
-    @Comment("Only affects port 25: enable TLS/STARTTLS?")
+    @Comment({"Only applies to port 25: enable STARTTLS on the plain SMTP connection?",
+              "Has no effect when using port 465 (SSL) or 587 (STARTTLS), which enforce",
+              "their own encryption and cannot be overridden by this setting."})
     public static final Property<Boolean> PORT25_USE_TLS =
         newProperty("Email.useTls", true);
 
@@ -74,6 +80,15 @@ public final class EmailSettings implements SettingsHolder {
     @Comment("The OAuth2 token")
     public static final Property<String> OAUTH2_TOKEN =
         newProperty("Email.emailOauth2Token", "");
+
+    @Comment({"Verify the SSL/TLS server certificate hostname?",
+              "Only applies when an SSL/TLS connection is active (port 465, port 587,",
+              "port 25 with useTls=true, or any other port).",
+              "Set to false only if your SMTP server uses a self-signed certificate.",
+              "Note: if you previously used port 465, this check was not enforced;",
+              "set to false to restore the old behavior with a self-signed certificate."})
+    public static final Property<Boolean> SSL_CHECK_SERVER_IDENTITY =
+        newProperty("Email.sslCheckServerIdentity", true);
 
     private EmailSettings() {
     }

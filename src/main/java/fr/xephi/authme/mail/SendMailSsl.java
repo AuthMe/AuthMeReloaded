@@ -124,6 +124,7 @@ public class SendMailSsl {
      * @param port the configured outgoing port
      */
     private void setPropertiesForPort(HtmlEmail email, int port) throws EmailException {
+        boolean checkServerIdentity = settings.getProperty(EmailSettings.SSL_CHECK_SERVER_IDENTITY);
         switch (port) {
             case 587:
                 String oAuth2Token = settings.getProperty(EmailSettings.OAUTH2_TOKEN);
@@ -132,7 +133,8 @@ public class SendMailSsl {
                         Security.addProvider(new OAuth2Provider());
                     }
                     Properties mailProperties = email.getMailSession().getProperties();
-                    mailProperties.setProperty("mail.smtp.ssl.enable", "true");
+                    mailProperties.setProperty("mail.smtp.starttls.enable", "true");
+                    mailProperties.setProperty("mail.smtp.starttls.required", "true");
                     mailProperties.setProperty("mail.smtp.auth.mechanisms", "XOAUTH2");
                     mailProperties.setProperty("mail.smtp.sasl.enable", "true");
                     mailProperties.setProperty("mail.smtp.sasl.mechanisms", "XOAUTH2");
@@ -143,22 +145,24 @@ public class SendMailSsl {
                 } else {
                     email.setStartTLSEnabled(true);
                     email.setStartTLSRequired(true);
+                    email.setSSLCheckServerIdentity(checkServerIdentity);
                 }
                 break;
             case 25:
                 if (settings.getProperty(EmailSettings.PORT25_USE_TLS)) {
                     email.setStartTLSEnabled(true);
-                    email.setSSLCheckServerIdentity(true);
+                    email.setSSLCheckServerIdentity(checkServerIdentity);
                 }
                 break;
             case 465:
                 email.setSslSmtpPort(Integer.toString(port));
                 email.setSSLOnConnect(true);
+                email.setSSLCheckServerIdentity(checkServerIdentity);
                 break;
             default:
                 email.setStartTLSEnabled(true);
-                email.setSSLOnConnect(true);
-                email.setSSLCheckServerIdentity(true);
+                email.setStartTLSRequired(true);
+                email.setSSLCheckServerIdentity(checkServerIdentity);
         }
     }
 }

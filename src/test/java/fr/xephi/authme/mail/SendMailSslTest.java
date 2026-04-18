@@ -52,6 +52,7 @@ public class SendMailSslTest {
         given(settings.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("mail@example.org");
         given(settings.getProperty(EmailSettings.MAIL_PASSWORD)).willReturn("pass1234");
         given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(LogLevel.INFO);
+        given(settings.getProperty(EmailSettings.SSL_CHECK_SERVER_IDENTITY)).willReturn(true);
     }
 
     @Test
@@ -133,6 +134,8 @@ public class SendMailSslTest {
         assertThat(email.getSmtpPort(), equalTo("587"));
 
         Properties mailProperties = email.getMailSession().getProperties();
+        assertThat(mailProperties.getProperty("mail.smtp.starttls.enable"), equalTo("true"));
+        assertThat(mailProperties.getProperty("mail.smtp.starttls.required"), equalTo("true"));
         assertThat(mailProperties.getProperty("mail.smtp.auth.mechanisms"), equalTo("XOAUTH2"));
         assertThat(mailProperties.getProperty("mail.smtp.auth.plain.disable"), equalTo("true"));
         assertThat(mailProperties.getProperty(OAuth2SaslClientFactory.OAUTH_TOKEN_PROP), equalTo("oAuth2 token"));
