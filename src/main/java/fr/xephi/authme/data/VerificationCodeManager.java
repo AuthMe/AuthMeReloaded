@@ -7,6 +7,7 @@ import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.RandomStringUtils;
@@ -25,6 +26,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
     private final EmailService emailService;
     private final DataSource dataSource;
     private final PermissionsManager permissionsManager;
+    private final BukkitService bukkitService;
 
     private final ExpiringMap<String, String> verificationCodes;
     private final Set<String> verifiedPlayers;
@@ -33,10 +35,11 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
 
     @Inject
     VerificationCodeManager(Settings settings, DataSource dataSource, EmailService emailService,
-                            PermissionsManager permissionsManager) {
+                            PermissionsManager permissionsManager, BukkitService bukkitService) {
         this.emailService = emailService;
         this.dataSource = dataSource;
         this.permissionsManager = permissionsManager;
+        this.bukkitService = bukkitService;
         verifiedPlayers = ConcurrentHashMap.newKeySet();
         long countTimeout = settings.getProperty(SecuritySettings.VERIFICATION_CODE_EXPIRATION_MINUTES);
         verificationCodes = new ExpiringMap<>(countTimeout, TimeUnit.MINUTES);
@@ -137,7 +140,8 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
             if (!Utils.isEmailEmpty(email)) {
                 String code = RandomStringUtils.generateNum(6); // 6 digits code
                 verificationCodes.put(name.toLowerCase(Locale.ROOT), code);
-                emailService.sendVerificationMail(name, email, code);
+                bukkitService.runTaskAsynchronously(() ->
+                    emailService.sendVerificationMail(name, email, code));
             }
         }
     }
