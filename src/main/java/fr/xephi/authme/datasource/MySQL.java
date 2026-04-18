@@ -144,13 +144,11 @@ public class MySQL extends AbstractSqlDataSource {
         // Driver
         ds.setDriverClassName(this.getDriverClassName());
 
-        // Request mysql over SSL
-        ds.addDataSourceProperty("useSSL", String.valueOf(useSsl));
+        // SSL mode: DISABLED / PREFERRED (SSL but no cert check) / VERIFY_CA
+        // Migrated from deprecated useSSL + verifyServerCertificate (removed in Connector/J 9.x)
+        String sslMode = !useSsl ? "DISABLED" : (!serverCertificateVerification ? "PREFERRED" : "VERIFY_CA");
+        ds.addDataSourceProperty("sslMode", sslMode);
 
-        // Disabling server certificate verification on need
-        if (!serverCertificateVerification) {
-            ds.addDataSourceProperty("verifyServerCertificate", String.valueOf(false));
-        }        // Disabling server certificate verification on need
         if (allowPublicKeyRetrieval) {
             ds.addDataSourceProperty("allowPublicKeyRetrieval", String.valueOf(true));
         }
