@@ -13,6 +13,7 @@ import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -21,7 +22,9 @@ import org.bukkit.entity.Player;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN;
 
@@ -48,6 +51,7 @@ public class TeleportationService implements Reloadable {
     private DataSource dataSource;
 
     private Set<String> spawnOnLoginWorlds;
+    private final ConcurrentHashMap<String, Boolean> preloadedAuthStatus = new ConcurrentHashMap<>();
 
     TeleportationService() {
     }
@@ -66,7 +70,8 @@ public class TeleportationService implements Reloadable {
      */
     public void teleportOnJoin(final Player player) {
         if (!settings.getProperty(RestrictionSettings.NO_TELEPORT)
-            && settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)) {
+            && settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)
+            && !isUnregisteredWithOptionalAuth(player)) {
             logger.debug("Teleport on join for player `{0}`", player.getName());
             teleportToSpawn(player, playerCache.isAuthenticated(player.getName()));
         }
@@ -81,7 +86,8 @@ public class TeleportationService implements Reloadable {
      */
     public Location prepareOnJoinSpawnLocation(final Player player) {
         if (!settings.getProperty(RestrictionSettings.NO_TELEPORT)
-            && settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)) {
+            && settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)
+            && !isUnregisteredWithOptionalAuth(player)) {
             final Location location = spawnLoader.getSpawnLocation(player);
 
             SpawnTeleportEvent event = new SpawnTeleportEvent(player, location,
@@ -149,6 +155,36 @@ public class TeleportationService implements Reloadable {
                 teleportBackFromSpawn(player, limbo.getLocation());
             }
         }
+    }
+
+    /**
+     * Caches the player's registration status from the async pre-login event to avoid a blocking
+     * DB call on the main thread later. Must be cleared with {@link #clearPreloadedAuthStatus}.
+     *
+     * @param name the player name (case-insensitive)
+     * @param isRegistered whether the player has an account
+     */
+    public void preloadAuthStatus(String name, boolean isRegistered) {
+        preloadedAuthStatus.put(name.toLowerCase(Locale.ROOT), isRegistered);
+    }
+
+    /**
+     * Clears the pre-loaded registration status for the given player after it has been consumed.
+     *
+     * @param name the player name
+     */
+    public void clearPreloadedAuthStatus(String name) {
+        preloadedAuthStatus.remove(name.toLowerCase(Locale.ROOT));
+    }
+
+    private boolean isUnregisteredWithOptionalAuth(Player player) {
+        if (settings.getProperty(RegistrationSettings.FORCE)) {
+            return false;
+        }
+        String key = player.getName().toLowerCase(Locale.ROOT);
+        Boolean cached = preloadedAuthStatus.get(key);
+        boolean isRegistered = cached != null ? cached : dataSource.isAuthAvailable(player.getName());
+        return !isRegistered;
     }
 
     private boolean mustForceSpawnAfterLogin(String worldName) {
