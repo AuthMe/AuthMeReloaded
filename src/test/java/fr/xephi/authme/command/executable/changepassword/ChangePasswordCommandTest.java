@@ -3,6 +3,7 @@ package fr.xephi.authme.command.executable.changepassword;
 import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
@@ -55,6 +56,9 @@ public class ChangePasswordCommandTest {
     @Mock
     private Management management;
 
+    @Mock
+    private Messages messages;
+
     @Test
     public void shouldRejectNonPlayerSender() {
         // given
@@ -64,7 +68,7 @@ public class ChangePasswordCommandTest {
         command.executeCommand(sender, Collections.emptyList());
 
         // then
-        verify(sender).sendMessage(argThat(containsString("use /authme password <playername> <password> instead")));
+        verify(messages).send(sender, MessageKey.PLAYER_COMMAND_ONLY_WITH_ALTERNATIVE, "/authme password <playername> <password>");
     }
 
     @Test

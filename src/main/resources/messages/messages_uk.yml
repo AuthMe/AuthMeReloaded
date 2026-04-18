@@ -155,3 +155,41 @@ two_factor:
     not_enabled_error: 'Двофакторна аутентифікація не включена для вашого акаунту. Використовуйте: /2fa add'
     removed_success: 'Двофакторну авторизацію успішно видалено з вашого акаунту'
     invalid_code: 'Невірний код!'
+
+# Повідомлення валідації команд
+command:
+    player_only: '&cЦя команда лише для гравців.'
+    player_only_alternative: '&cТільки для гравців! Будь ласка, використовуйте %alternative замість цього.'
+    failed_to_parse: '&4Не вдалося розібрати команду AuthMe!'
+    unknown: '&4Невідома команда!'
+    incorrect_arguments: '&4Неправильні аргументи команди!'
+    did_you_mean: '&eВи мали на увазі &6%cmd&e?'
+    see_help: '&eВикористовуйте команду &6/%cmd&e для перегляду довідки.'
+    detailed_help: '&6Детальна довідка: &f/%cmd'
+
+# Повідомлення адміністративних команд
+admin:
+    force_login:
+        player_offline: '&cГравець повинен бути в мережі!'
+        forbidden: '&cВи не можете примусово увійти за гравця %name!'
+        success: '&2Примусовий вхід для %name виконано!'
+    accounts:
+        ip_not_found: '&cЦей IP-адрес не існує в базі даних.'
+        single_account: '&2%name — гравець з одним акаунтом.'
+        no_last_ip: '&cОстанній IP-адрес гравця невідомий.'
+    email_show: '&2Пошта %name: %email'
+    antibot:
+        status: '&2Статус AntiBot: %status'
+        override_enabled: '&2Ручне управління AntiBot: увімкнено!'
+        override_disabled: '&2Ручне управління AntiBot: вимкнено!'
+        invalid_mode: '&cНеправильний режим AntiBot!'
+    reload:
+        db_type_change: '&eПримітка: не можна змінити тип бази даних під час /authme reload.'
+        error: '&cВиникла помилка під час перезавантаження AuthMe.'
+    spawn:
+        set_success: '&2Нову точку спавну успішно визначено.'
+        set_fail: '&cSetSpawn не вдався, спробуйте ще раз.'
+        first_set_success: '&2Нову першу точку спавну успішно визначено.'
+        first_set_fail: '&cSetFirstSpawn не вдався, спробуйте ще раз.'
+        not_defined: '&cСпавн не вдався, спробуйте визначити точку спавну.'
+        first_not_defined: '&cПерший спавн не вдався, спробуйте визначити першу точку спавну.'

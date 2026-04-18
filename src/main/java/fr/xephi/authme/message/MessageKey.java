@@ -330,7 +330,88 @@ public enum MessageKey {
     DAY("time.day"),
 
     /** days */
-    DAYS("time.days");
+    DAYS("time.days"),
+
+    /** This command is only for players. */
+    PLAYER_COMMAND_ONLY("command.player_only"),
+
+    /** Player only! Please use %alternative instead. */
+    PLAYER_COMMAND_ONLY_WITH_ALTERNATIVE("command.player_only_alternative", "%alternative"),
+
+    /** Failed to parse AuthMe command! */
+    COMMAND_FAILED_TO_PARSE("command.failed_to_parse"),
+
+    /** Unknown command! */
+    UNKNOWN_COMMAND("command.unknown"),
+
+    /** Incorrect command arguments! */
+    COMMAND_INCORRECT_ARGUMENTS("command.incorrect_arguments"),
+
+    /** Did you mean %cmd? */
+    COMMAND_DID_YOU_MEAN("command.did_you_mean", "%cmd"),
+
+    /** Use the command /%cmd to view help. */
+    COMMAND_SEE_HELP("command.see_help", "%cmd"),
+
+    /** Detailed help: /%cmd */
+    COMMAND_DETAILED_HELP("command.detailed_help", "%cmd"),
+
+    /** Player needs to be online! */
+    FORCE_LOGIN_PLAYER_OFFLINE("admin.force_login.player_offline"),
+
+    /** You cannot force login the player %name! */
+    FORCE_LOGIN_FORBIDDEN("admin.force_login.forbidden", "%name"),
+
+    /** Force login for %name performed! */
+    FORCE_LOGIN_SUCCESS("admin.force_login.success", "%name"),
+
+    /** This IP does not exist in the database. */
+    ACCOUNTS_IP_NOT_FOUND("admin.accounts.ip_not_found"),
+
+    /** %name is a single account player. */
+    ACCOUNTS_SINGLE("admin.accounts.single_account", "%name"),
+
+    /** No known last IP address for player. */
+    ACCOUNTS_NO_LAST_IP("admin.accounts.no_last_ip"),
+
+    /** %name's email: %email */
+    ADMIN_EMAIL_SHOW("admin.email_show", "%name", "%email"),
+
+    /** AntiBot status: %status */
+    ANTIBOT_STATUS("admin.antibot.status", "%status"),
+
+    /** AntiBot Manual Override: enabled! */
+    ANTIBOT_OVERRIDE_ENABLED("admin.antibot.override_enabled"),
+
+    /** AntiBot Manual Override: disabled! */
+    ANTIBOT_OVERRIDE_DISABLED("admin.antibot.override_disabled"),
+
+    /** Invalid AntiBot mode! */
+    ANTIBOT_INVALID_MODE("admin.antibot.invalid_mode"),
+
+    /** Note: cannot change database type during /authme reload. */
+    RELOAD_DB_TYPE_CHANGE("admin.reload.db_type_change"),
+
+    /** Error occurred during reload of AuthMe. */
+    RELOAD_ERROR("admin.reload.error"),
+
+    /** Correctly defined new spawn point. */
+    SPAWN_SET_SUCCESS("admin.spawn.set_success"),
+
+    /** SetSpawn has failed, please retry. */
+    SPAWN_SET_FAIL("admin.spawn.set_fail"),
+
+    /** Correctly defined new first spawn point. */
+    FIRST_SPAWN_SET_SUCCESS("admin.spawn.first_set_success"),
+
+    /** SetFirstSpawn has failed, please retry. */
+    FIRST_SPAWN_SET_FAIL("admin.spawn.first_set_fail"),
+
+    /** Spawn has failed, please try to define the spawn. */
+    SPAWN_NOT_DEFINED("admin.spawn.not_defined"),
+
+    /** First spawn has failed, please try to define the first spawn. */
+    FIRST_SPAWN_NOT_DEFINED("admin.spawn.first_not_defined");
 
 
     private String key;

@@ -1,5 +1,7 @@
 package fr.xephi.authme.command.executable.logout;
 
+import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.process.Management;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
@@ -31,6 +33,9 @@ public class LogoutCommandTest {
     @Mock
     private Management management;
 
+    @Mock
+    private Messages messages;
+
 
     @Test
     public void shouldStopIfSenderIsNotAPlayer() {
@@ -42,7 +47,7 @@ public class LogoutCommandTest {
 
         // then
         verifyNoInteractions(management);
-        verify(sender).sendMessage(argThat(containsString("only for players")));
+        verify(messages).send(sender, MessageKey.PLAYER_COMMAND_ONLY);
     }
 
     @Test

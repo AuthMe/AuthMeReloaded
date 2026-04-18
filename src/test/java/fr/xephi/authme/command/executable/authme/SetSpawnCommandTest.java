@@ -1,5 +1,7 @@
 package fr.xephi.authme.command.executable.authme;
 
+import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.settings.SpawnLoader;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -11,11 +13,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * Test for {@link SetSpawnCommand}.
@@ -29,6 +29,8 @@ public class SetSpawnCommandTest {
     @Mock
     private SpawnLoader spawnLoader;
 
+    @Mock
+    private Messages messages;
 
     @Test
     public void shouldSetSpawn() {
@@ -43,7 +45,7 @@ public class SetSpawnCommandTest {
 
         // then
         verify(spawnLoader).setSpawn(location);
-        verify(player).sendMessage(argThat(containsString("defined new spawn")));
+        verify(messages).send(player, MessageKey.SPAWN_SET_SUCCESS);
     }
 
     @Test
@@ -59,6 +61,6 @@ public class SetSpawnCommandTest {
 
         // then
         verify(spawnLoader).setSpawn(location);
-        verify(player).sendMessage(argThat(containsString("has failed")));
+        verify(messages).send(player, MessageKey.SPAWN_SET_FAIL);
     }
 }

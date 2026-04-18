@@ -4,6 +4,7 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.captcha.RegistrationCaptchaManager;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
@@ -56,6 +57,9 @@ public class RegisterCommandTest {
     private Management management;
 
     @Mock
+    private Messages messages;
+
+    @Mock
     private EmailService emailService;
 
     @Mock
@@ -85,7 +89,7 @@ public class RegisterCommandTest {
         command.executeCommand(sender, Collections.emptyList());
 
         // then
-        verify(sender).sendMessage(argThat(containsString("Player only!")));
+        verify(messages).send(sender, MessageKey.PLAYER_COMMAND_ONLY_WITH_ALTERNATIVE, "/authme register <playername> <password>");
         verifyNoInteractions(management, emailService);
     }
 

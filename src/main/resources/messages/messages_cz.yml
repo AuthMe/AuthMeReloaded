@@ -155,3 +155,41 @@ two_factor:
     not_enabled_error: 'Dvoufaktorové ověření není zapnuté na tvém účtu. Můžeš ho zapnout použitím příkazu /2fa add'
     removed_success: 'Dvoufaktorovka byla úspěšně odebrána z tvého účtu'
     invalid_code: 'Nesprávný kód!'
+
+# Zprávy pro ověření příkazů
+command:
+    player_only: '&cTento příkaz je pouze pro hráče.'
+    player_only_alternative: '&cPouze pro hráče! Prosím použij místo toho %alternative.'
+    failed_to_parse: '&4Nepodařilo se zpracovat příkaz AuthMe!'
+    unknown: '&4Neznámý příkaz!'
+    incorrect_arguments: '&4Nesprávné argumenty příkazu!'
+    did_you_mean: '&eMěl jsi na mysli &6%cmd&e?'
+    see_help: '&ePoužij příkaz &6/%cmd&e pro zobrazení nápovědy.'
+    detailed_help: '&6Podrobná nápověda: &f/%cmd'
+
+# Zprávy administrátorských příkazů
+admin:
+    force_login:
+        player_offline: '&cHráč musí být online!'
+        forbidden: '&cNemůžeš vynutit přihlášení hráče %name!'
+        success: '&2Vynucené přihlášení pro %name provedeno!'
+    accounts:
+        ip_not_found: '&cTato IP adresa neexistuje v databázi.'
+        single_account: '&2%name je hráč s jediným účtem.'
+        no_last_ip: '&cPro tohoto hráče není známa žádná poslední IP adresa.'
+    email_show: '&2E-mail hráče %name: %email'
+    antibot:
+        status: '&2Stav AntiBot: %status'
+        override_enabled: '&2Ruční přepis AntiBot: povoleno!'
+        override_disabled: '&2Ruční přepis AntiBot: zakázáno!'
+        invalid_mode: '&cNeplatný režim AntiBot!'
+    reload:
+        db_type_change: '&ePoznámka: během /authme reload nelze změnit typ databáze.'
+        error: '&cDošlo k chybě při načítání AuthMe.'
+    spawn:
+        set_success: '&2Nový bod spawnu byl správně definován.'
+        set_fail: '&cSetSpawn selhal, prosím zkus to znovu.'
+        first_set_success: '&2Nový první bod spawnu byl správně definován.'
+        first_set_fail: '&cSetFirstSpawn selhal, prosím zkus to znovu.'
+        not_defined: '&cSpawn selhal, prosím zkus definovat spawn.'
+        first_not_defined: '&cPrvní spawn selhal, prosím zkus definovat první spawn.'

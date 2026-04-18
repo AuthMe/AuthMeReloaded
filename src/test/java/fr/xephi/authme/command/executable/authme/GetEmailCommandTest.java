@@ -13,11 +13,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * Test for {@link GetEmailCommand}.
@@ -60,6 +59,6 @@ public class GetEmailCommandTest {
         command.executeCommand(sender, Collections.singletonList(user));
 
         // then
-        verify(sender).sendMessage(argThat(containsString(email)));
+        verify(service).send(eq(sender), eq(MessageKey.ADMIN_EMAIL_SHOW), eq(user), eq(email));
     }
 }

@@ -155,3 +155,41 @@ two_factor:
     not_enabled_error: 'Iki-faktorlu kimlik dogrulama kodu hesabiniz icin aktif edilmemis. /2fa add komutunu calistirin'
     removed_success: 'Iki-faktorlu dogrulama hesabinizdan basariyla kaldirilmistir'
     invalid_code: 'Gecersiz kod!'
+
+# Komut doğrulama mesajları
+command:
+    player_only: '&cBu komut yalnızca oyuncular içindir.'
+    player_only_alternative: '&cSadece oyuncular için! Lütfen bunun yerine %alternative kullanın.'
+    failed_to_parse: '&4AuthMe komutu işlenemedi!'
+    unknown: '&4Bilinmeyen komut!'
+    incorrect_arguments: '&4Yanlış komut argümanları!'
+    did_you_mean: '&e&6%cmd&e mi demek istediniz?'
+    see_help: '&eYardımı görüntülemek için &6/%cmd&e komutunu kullanın.'
+    detailed_help: '&6Ayrıntılı yardım: &f/%cmd'
+
+# Yönetici komut mesajları
+admin:
+    force_login:
+        player_offline: '&cOyuncunun çevrimiçi olması gerekiyor!'
+        forbidden: '&c%name oyuncusunu zorla giriş yaptıramazsınız!'
+        success: '&2%name için zorla giriş gerçekleştirildi!'
+    accounts:
+        ip_not_found: '&cBu IP veritabanında mevcut değil.'
+        single_account: '&2%name tek hesaplı bir oyuncudur.'
+        no_last_ip: '&cOyuncu için bilinen son IP adresi yok.'
+    email_show: '&2%name kullanıcısının e-postası: %email'
+    antibot:
+        status: '&2AntiBot durumu: %status'
+        override_enabled: '&2AntiBot Manuel Geçersiz Kılma: etkin!'
+        override_disabled: '&2AntiBot Manuel Geçersiz Kılma: devre dışı!'
+        invalid_mode: '&cGeçersiz AntiBot modu!'
+    reload:
+        db_type_change: '&eNot: /authme reload sırasında veritabanı türü değiştirilemez.'
+        error: '&cAuthMe yeniden yüklenirken hata oluştu.'
+    spawn:
+        set_success: '&2Yeni doğma noktası doğru şekilde tanımlandı.'
+        set_fail: '&cSetSpawn başarısız oldu, lütfen tekrar deneyin.'
+        first_set_success: '&2Yeni ilk doğma noktası doğru şekilde tanımlandı.'
+        first_set_fail: '&cSetFirstSpawn başarısız oldu, lütfen tekrar deneyin.'
+        not_defined: '&cDoğma başarısız oldu, lütfen doğma noktasını tanımlamayı deneyin.'
+        first_not_defined: '&cİlk doğma başarısız oldu, lütfen ilk doğma noktasını tanımlamayı deneyin.'

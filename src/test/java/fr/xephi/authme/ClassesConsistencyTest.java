@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import fr.xephi.authme.data.captcha.CaptchaCodeStorage;
+import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.datasource.AbstractSqlDataSource;
 import fr.xephi.authme.datasource.Columns;
 import fr.xephi.authme.datasource.columnshandler.DataSourceColumn;
@@ -64,7 +65,8 @@ public class ClassesConsistencyTest {
         Whirlpool.class, // not our implementation, so we don't touch it
         MySqlExtension.class, // has immutable protected fields used by all children
         AbstractSqlDataSource.class, // protected members for inheritance
-        Columns.class // uses non-static String constants, which is safe
+        Columns.class, // uses non-static String constants, which is safe
+        PlayerCommand.class // protected Messages field inherited by all PlayerCommand subclasses
     );
 
     /**

@@ -155,3 +155,41 @@ two_factor:
     not_enabled_error: 'Twee-factor authenticatie is uitgeschakeld voor jou account. Voer "/2fa add" uit'
     removed_success: 'Twee-factor authenticatie is met succes van jouw account verwijderd.'
     invalid_code: 'Ongeldige code!'
+
+# Commandovalidatieberichten
+command:
+    player_only: '&cDit commando is alleen voor spelers.'
+    player_only_alternative: '&cAlleen voor spelers! Gebruik %alternative in plaats hiervan.'
+    failed_to_parse: '&4Het AuthMe-commando kon niet worden verwerkt!'
+    unknown: '&4Onbekend commando!'
+    incorrect_arguments: '&4Onjuiste commandoargumenten!'
+    did_you_mean: '&eBedoelde je &6%cmd&e?'
+    see_help: '&eGebruik het commando &6/%cmd&e om de help te bekijken.'
+    detailed_help: '&6Gedetailleerde help: &f/%cmd'
+
+# Beheerderscommandoberichten
+admin:
+    force_login:
+        player_offline: '&cDe speler moet online zijn!'
+        forbidden: '&cJe kunt de speler %name niet geforceerd inloggen!'
+        success: '&2Geforceerde login voor %name uitgevoerd!'
+    accounts:
+        ip_not_found: '&cDit IP bestaat niet in de database.'
+        single_account: '&2%name heeft slechts één account.'
+        no_last_ip: '&cGeen bekend laatste IP-adres voor de speler.'
+    email_show: '&2E-mail van %name: %email'
+    antibot:
+        status: '&2AntiBot-status: %status'
+        override_enabled: '&2Handmatige AntiBot-override: ingeschakeld!'
+        override_disabled: '&2Handmatige AntiBot-override: uitgeschakeld!'
+        invalid_mode: '&cOngeldig AntiBot-modus!'
+    reload:
+        db_type_change: '&eLet op: het databasetype kan niet worden gewijzigd tijdens /authme reload.'
+        error: '&cEr is een fout opgetreden tijdens het herladen van AuthMe.'
+    spawn:
+        set_success: '&2Nieuw spawnpunt correct gedefinieerd.'
+        set_fail: '&cSetSpawn is mislukt, probeer het opnieuw.'
+        first_set_success: '&2Nieuw eerste spawnpunt correct gedefinieerd.'
+        first_set_fail: '&cSetFirstSpawn is mislukt, probeer het opnieuw.'
+        not_defined: '&cSpawn mislukt, probeer het spawnpunt te definiëren.'
+        first_not_defined: '&cEerste spawn mislukt, probeer het eerste spawnpunt te definiëren.'

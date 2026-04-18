@@ -1,5 +1,7 @@
 package fr.xephi.authme.command.executable.authme;
 
+import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.process.Management;
@@ -14,12 +16,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * Test for {@link ForceLoginCommand}.
@@ -35,9 +36,12 @@ public class ForceLoginCommandTest {
 
     @Mock
     private PermissionsManager permissionsManager;
-    
+
     @Mock
     private BukkitService bukkitService;
+
+    @Mock
+    private Messages messages;
 
     @Test
     public void shouldRejectOfflinePlayer() {
@@ -52,7 +56,7 @@ public class ForceLoginCommandTest {
 
         // then
         verify(bukkitService).getPlayerExact(playerName);
-        verify(sender).sendMessage("Player needs to be online!");
+        verify(messages).send(sender, MessageKey.FORCE_LOGIN_PLAYER_OFFLINE);
         verifyNoInteractions(management);
     }
 
@@ -68,7 +72,7 @@ public class ForceLoginCommandTest {
 
         // then
         verify(bukkitService).getPlayerExact(playerName);
-        verify(sender).sendMessage("Player needs to be online!");
+        verify(messages).send(sender, MessageKey.FORCE_LOGIN_PLAYER_OFFLINE);
         verifyNoInteractions(management);
     }
 
@@ -86,7 +90,7 @@ public class ForceLoginCommandTest {
 
         // then
         verify(bukkitService).getPlayerExact(playerName);
-        verify(sender).sendMessage(argThat(containsString("You cannot force login the player")));
+        verify(messages).send(eq(sender), eq(MessageKey.FORCE_LOGIN_FORBIDDEN), eq(playerName));
         verifyNoInteractions(management);
     }
 
@@ -105,6 +109,7 @@ public class ForceLoginCommandTest {
         // then
         verify(bukkitService).getPlayerExact(playerName);
         verify(management).forceLogin(player);
+        verify(messages).send(eq(sender), eq(MessageKey.FORCE_LOGIN_SUCCESS), eq(playerName));
     }
 
     @Test
@@ -123,6 +128,7 @@ public class ForceLoginCommandTest {
         // then
         verify(bukkitService).getPlayerExact(senderName);
         verify(management).forceLogin(player);
+        verify(messages).send(eq(sender), eq(MessageKey.FORCE_LOGIN_SUCCESS), eq(senderName));
     }
 
     private static Player mockPlayer(boolean isOnline) {

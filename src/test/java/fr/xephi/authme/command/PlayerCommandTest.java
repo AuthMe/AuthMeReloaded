@@ -1,36 +1,45 @@
 package fr.xephi.authme.command;
 
+import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * Test for {@link PlayerCommand}.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class PlayerCommandTest {
+
+    @Mock
+    private Messages messages;
 
     @Test
     public void shouldRejectNonPlayerSender() {
         // given
         CommandSender sender = mock(BlockCommandSender.class);
         PlayerCommandImpl command = new PlayerCommandImpl();
+        command.messages = messages;
 
         // when
         command.executeCommand(sender, Collections.emptyList());
 
         // then
-        verify(sender).sendMessage(argThat(containsString("only for players")));
+        verify(messages).send(sender, MessageKey.PLAYER_COMMAND_ONLY);
     }
 
     @Test
@@ -52,12 +61,14 @@ public class PlayerCommandTest {
         // given
         CommandSender sender = mock(CommandSender.class);
         PlayerCommandWithAlt command = new PlayerCommandWithAlt();
+        command.messages = messages;
 
         // when
         command.executeCommand(sender, Collections.emptyList());
 
         // then
-        verify(sender, times(1)).sendMessage(argThat(containsString("use /authme test <command> instead")));
+        verify(messages).send(eq(sender), eq(MessageKey.PLAYER_COMMAND_ONLY_WITH_ALTERNATIVE),
+            eq("/authme test <command>"));
     }
 
 

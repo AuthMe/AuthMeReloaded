@@ -158,3 +158,41 @@ time:
     hours: 'horas'
     day: 'dia'
     days: 'dias'
+
+# Mensagens de validação de comandos
+command:
+    player_only: '&cEste comando é apenas para jogadores.'
+    player_only_alternative: '&cApenas para jogadores! Por favor, use %alternative em vez disso.'
+    failed_to_parse: '&4Falha ao interpretar o comando do AuthMe!'
+    unknown: '&4Comando desconhecido!'
+    incorrect_arguments: '&4Argumentos de comando incorretos!'
+    did_you_mean: '&eVocê quis dizer &6%cmd&e?'
+    see_help: '&eUse o comando &6/%cmd&e para ver a ajuda.'
+    detailed_help: '&6Ajuda detalhada: &f/%cmd'
+
+# Mensagens de comandos de administrador
+admin:
+    force_login:
+        player_offline: '&cO jogador precisa estar online!'
+        forbidden: '&cVocê não pode forçar o login do jogador %name!'
+        success: '&2Login forçado para %name realizado!'
+    accounts:
+        ip_not_found: '&cEsse IP não existe no banco de dados.'
+        single_account: '&2%name é um jogador com conta única.'
+        no_last_ip: '&cNenhum último endereço IP conhecido para o jogador.'
+    email_show: '&2E-mail de %name: %email'
+    antibot:
+        status: '&2Status do AntiBot: %status'
+        override_enabled: '&2Substituição Manual do AntiBot: habilitada!'
+        override_disabled: '&2Substituição Manual do AntiBot: desabilitada!'
+        invalid_mode: '&cModo de AntiBot inválido!'
+    reload:
+        db_type_change: '&eNota: não é possível alterar o tipo de banco de dados durante /authme reload.'
+        error: '&cOcorreu um erro durante o recarregamento do AuthMe.'
+    spawn:
+        set_success: '&2Novo ponto de spawn definido corretamente.'
+        set_fail: '&cSetSpawn falhou, por favor tente novamente.'
+        first_set_success: '&2Novo primeiro ponto de spawn definido corretamente.'
+        first_set_fail: '&cSetFirstSpawn falhou, por favor tente novamente.'
+        not_defined: '&cSpawn falhou, por favor tente definir o spawn.'
+        first_not_defined: '&cPrimeiro spawn falhou, por favor tente definir o primeiro spawn.'

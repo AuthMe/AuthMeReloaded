@@ -155,3 +155,41 @@ two_factor:
     not_enabled_error: '&8[&6玩家系统&8] &c双重认证码未在您的账号上启用，请使用 &a/2fa add &c来启用'
     removed_success: '&8[&6玩家系统&8] &c双重认证码已从您的账号上删除'
     invalid_code: '&8[&6玩家系统&8] &c无效的验证码'
+
+# 命令验证消息
+command:
+    player_only: '&c此命令仅限玩家使用。'
+    player_only_alternative: '&c仅限玩家使用！请改用 %alternative。'
+    failed_to_parse: '&4无法解析 AuthMe 命令！'
+    unknown: '&4未知命令！'
+    incorrect_arguments: '&4命令参数不正确！'
+    did_you_mean: '&e您是否想输入 &6%cmd&e？'
+    see_help: '&e使用命令 &6/%cmd&e 查看帮助。'
+    detailed_help: '&6详细帮助：&f/%cmd'
+
+# 管理员命令消息
+admin:
+    force_login:
+        player_offline: '&c玩家需要在线！'
+        forbidden: '&c您不能强制登录玩家 %name！'
+        success: '&2已强制登录 %name！'
+    accounts:
+        ip_not_found: '&c该 IP 在数据库中不存在。'
+        single_account: '&2%name 是单账号玩家。'
+        no_last_ip: '&c该玩家没有已知的最后 IP 地址。'
+    email_show: '&2%name 的邮箱：%email'
+    antibot:
+        status: '&2AntiBot 状态：%status'
+        override_enabled: '&2AntiBot 手动覆盖：已启用！'
+        override_disabled: '&2AntiBot 手动覆盖：已禁用！'
+        invalid_mode: '&c无效的 AntiBot 模式！'
+    reload:
+        db_type_change: '&e注意：无法在 /authme reload 期间更改数据库类型。'
+        error: '&c重载 AuthMe 时发生错误。'
+    spawn:
+        set_success: '&2新出生点已成功设置。'
+        set_fail: '&cSetSpawn 失败，请重试。'
+        first_set_success: '&2新的第一出生点已成功设置。'
+        first_set_fail: '&cSetFirstSpawn 失败，请重试。'
+        not_defined: '&c出生失败，请尝试定义出生点。'
+        first_not_defined: '&c第一出生失败，请尝试定义第一出生点。'

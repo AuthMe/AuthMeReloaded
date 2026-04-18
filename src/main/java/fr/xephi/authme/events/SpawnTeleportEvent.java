@@ -25,6 +25,7 @@ public class SpawnTeleportEvent extends AbstractTeleportEvent {
         this.isAuthenticated = isAuthenticated;
     }
 
+
     /**
      * Return whether or not the player is authenticated.
      *

@@ -1,14 +1,20 @@
 package fr.xephi.authme.command;
 
+import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
  * Common base type for player-only commands, handling the verification that the command sender is indeed a player.
  */
 public abstract class PlayerCommand implements ExecutableCommand {
+
+    @Inject
+    protected Messages messages;
 
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments) {
@@ -17,9 +23,9 @@ public abstract class PlayerCommand implements ExecutableCommand {
         } else {
             String alternative = getAlternativeCommand();
             if (alternative != null) {
-                sender.sendMessage("Player only! Please use " + alternative + " instead.");
+                messages.send(sender, MessageKey.PLAYER_COMMAND_ONLY_WITH_ALTERNATIVE, alternative);
             } else {
-                sender.sendMessage("This command is only for players.");
+                messages.send(sender, MessageKey.PLAYER_COMMAND_ONLY);
             }
         }
     }

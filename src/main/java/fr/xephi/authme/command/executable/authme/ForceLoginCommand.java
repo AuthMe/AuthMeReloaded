@@ -1,6 +1,8 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.BukkitService;
@@ -26,19 +28,21 @@ public class ForceLoginCommand implements ExecutableCommand {
     @Inject
     private BukkitService bukkitService;
 
+    @Inject
+    private Messages messages;
+
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments) {
-        // Get the player query
         String playerName = arguments.isEmpty() ? sender.getName() : arguments.get(0);
 
         Player player = bukkitService.getPlayerExact(playerName);
         if (player == null || !player.isOnline()) {
-            sender.sendMessage("Player needs to be online!");
+            messages.send(sender, MessageKey.FORCE_LOGIN_PLAYER_OFFLINE);
         } else if (!permissionsManager.hasPermission(player, CAN_LOGIN_BE_FORCED)) {
-            sender.sendMessage("You cannot force login the player " + playerName + "!");
+            messages.send(sender, MessageKey.FORCE_LOGIN_FORBIDDEN, playerName);
         } else {
             management.forceLogin(player);
-            sender.sendMessage("Force login for " + playerName + " performed!");
+            messages.send(sender, MessageKey.FORCE_LOGIN_SUCCESS, playerName);
         }
     }
 }

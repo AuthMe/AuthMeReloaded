@@ -155,3 +155,41 @@ two_factor:
     not_enabled_error: 'Autentikasi dua langkah tidak diaktifkan untuk akunmu. Jalankan /2fa add'
     removed_success: 'Sukses menghapus autentikasi dua langkah dari akunmu'
     invalid_code: 'Kode tidak valid!'
+
+# Pesan validasi perintah
+command:
+    player_only: '&cPerintah ini hanya untuk pemain.'
+    player_only_alternative: '&cHanya untuk pemain! Gunakan %alternative sebagai gantinya.'
+    failed_to_parse: '&4Gagal mengurai perintah AuthMe!'
+    unknown: '&4Perintah tidak dikenal!'
+    incorrect_arguments: '&4Argumen perintah tidak benar!'
+    did_you_mean: '&eApakah maksud Anda &6%cmd&e?'
+    see_help: '&eGunakan perintah &6/%cmd&e untuk melihat bantuan.'
+    detailed_help: '&6Bantuan terperinci: &f/%cmd'
+
+# Pesan perintah admin
+admin:
+    force_login:
+        player_offline: '&cPemain harus online!'
+        forbidden: '&cAnda tidak dapat memaksa login pemain %name!'
+        success: '&2Paksa login untuk %name berhasil dilakukan!'
+    accounts:
+        ip_not_found: '&cIP ini tidak ada dalam database.'
+        single_account: '&2%name adalah pemain dengan satu akun.'
+        no_last_ip: '&cTidak ada alamat IP terakhir yang diketahui untuk pemain.'
+    email_show: '&2Email %name: %email'
+    antibot:
+        status: '&2Status AntiBot: %status'
+        override_enabled: '&2Override Manual AntiBot: diaktifkan!'
+        override_disabled: '&2Override Manual AntiBot: dinonaktifkan!'
+        invalid_mode: '&cMode AntiBot tidak valid!'
+    reload:
+        db_type_change: '&eCatatan: tidak dapat mengubah jenis database selama /authme reload.'
+        error: '&cTerjadi kesalahan saat memuat ulang AuthMe.'
+    spawn:
+        set_success: '&2Titik spawn baru berhasil ditentukan.'
+        set_fail: '&cSetSpawn gagal, coba lagi.'
+        first_set_success: '&2Titik spawn pertama baru berhasil ditentukan.'
+        first_set_fail: '&cSetFirstSpawn gagal, coba lagi.'
+        not_defined: '&cSpawn gagal, coba tentukan titik spawn.'
+        first_not_defined: '&cSpawn pertama gagal, coba tentukan titik spawn pertama.'

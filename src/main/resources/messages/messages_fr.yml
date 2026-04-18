@@ -158,3 +158,41 @@ two_factor:
     not_enabled_error: '&cL''authentification à double facteur n''est pas active sur votre compte. Faites "/2fa add" pour l''activer.'
     removed_success: '&cL''authentification à double facteur a été désactivé pour votre compte !'
     invalid_code: '&cCode secret invalide !'
+
+# Messages de validation des commandes
+command:
+    player_only: '&cCette commande est réservée aux joueurs.'
+    player_only_alternative: '&cJoueurs seulement ! Veuillez utiliser %alternative à la place.'
+    failed_to_parse: '&4Impossible d''analyser la commande AuthMe !'
+    unknown: '&4Commande inconnue !'
+    incorrect_arguments: '&4Arguments de commande incorrects !'
+    did_you_mean: '&eVouliez-vous dire &6%cmd&e ?'
+    see_help: '&eUtilisez la commande &6/%cmd&e pour afficher l''aide.'
+    detailed_help: '&6Aide détaillée : &f/%cmd'
+
+# Messages des commandes administrateur
+admin:
+    force_login:
+        player_offline: '&cLe joueur doit être connecté !'
+        forbidden: '&cVous ne pouvez pas forcer la connexion du joueur %name !'
+        success: '&2Connexion forcée pour %name effectuée !'
+    accounts:
+        ip_not_found: '&cCette adresse IP n''existe pas dans la base de données.'
+        single_account: '&2%name est un joueur avec un seul compte.'
+        no_last_ip: '&cAucune dernière adresse IP connue pour ce joueur.'
+    email_show: '&2Email de %name : %email'
+    antibot:
+        status: '&2Statut AntiBot : %status'
+        override_enabled: '&2Remplacement manuel AntiBot : activé !'
+        override_disabled: '&2Remplacement manuel AntiBot : désactivé !'
+        invalid_mode: '&cMode AntiBot invalide !'
+    reload:
+        db_type_change: '&eNote : impossible de changer le type de base de données lors d''un /authme reload.'
+        error: '&cUne erreur s''est produite lors du rechargement d''AuthMe.'
+    spawn:
+        set_success: '&2Nouveau point de spawn correctement défini.'
+        set_fail: '&cLa définition du spawn a échoué, veuillez réessayer.'
+        first_set_success: '&2Nouveau premier point de spawn correctement défini.'
+        first_set_fail: '&cLa définition du premier spawn a échoué, veuillez réessayer.'
+        not_defined: '&cLe spawn a échoué, veuillez essayer de définir le spawn.'
+        first_not_defined: '&cLe premier spawn a échoué, veuillez essayer de définir le premier spawn.'

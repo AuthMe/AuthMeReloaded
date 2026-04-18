@@ -3,6 +3,7 @@ package fr.xephi.authme.command.executable.unregister;
 import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.CommandSender;
@@ -44,6 +45,9 @@ public class UnregisterCommandTest {
 
     @Mock
     private VerificationCodeManager codeManager;
+
+    @Mock
+    private Messages messages;
 
     @Test
     public void shouldCatchUnauthenticatedUser() {
@@ -111,7 +115,7 @@ public class UnregisterCommandTest {
 
         // then
         verifyNoInteractions(playerCache, management);
-        verify(sender).sendMessage(argThat(containsString("/authme unregister <player>")));
+        verify(messages).send(sender, MessageKey.PLAYER_COMMAND_ONLY_WITH_ALTERNATIVE, "/authme unregister <player>");
     }
 
     @Test

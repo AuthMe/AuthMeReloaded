@@ -149,6 +149,8 @@ public class MessageUpdater {
             .put("verification", "Verification code")
             .put("time", "Time units")
             .put("two_factor", "Two-factor authentication")
+            .put("command", "Command validation messages")
+            .put("admin", "Admin command messages")
             .build();
 
         Set<String> addedKeys = new HashSet<>();

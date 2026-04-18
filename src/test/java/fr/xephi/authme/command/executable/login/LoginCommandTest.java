@@ -1,6 +1,7 @@
 package fr.xephi.authme.command.executable.login;
 
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.process.Management;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
@@ -33,6 +34,9 @@ public class LoginCommandTest {
     @Mock
     private Management management;
 
+    @Mock
+    private Messages messages;
+
 
     @Test
     public void shouldStopIfSenderIsNotAPlayer() {
@@ -44,7 +48,7 @@ public class LoginCommandTest {
 
         // then
         verifyNoInteractions(management);
-        verify(sender).sendMessage(argThat(containsString("/authme forcelogin <player>")));
+        verify(messages).send(sender, MessageKey.PLAYER_COMMAND_ONLY_WITH_ALTERNATIVE, "/authme forcelogin <player>");
     }
 
     @Test
