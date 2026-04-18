@@ -32,8 +32,8 @@ public class PasswordSecurity implements Reloadable {
     @Inject
     private Factory<EncryptionMethod> encryptionMethodFactory;
 
-    private EncryptionMethod encryptionMethod;
-    private Collection<HashAlgorithm> legacyAlgorithms;
+    private volatile EncryptionMethod encryptionMethod;
+    private volatile Collection<HashAlgorithm> legacyAlgorithms;
 
     /**
      * Load or reload the configuration.

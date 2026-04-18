@@ -80,6 +80,8 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         final String name = player.getName().toLowerCase(Locale.ROOT);
         final LimboPlayer limbo = limboService.getLimboPlayer(name);
 
+        player.setNoDamageTicks(0);
+
         // Limbo contains the State of the Player before /login
         if (limbo != null) {
             limboService.restoreData(player);

@@ -227,7 +227,7 @@ public final class ConsoleLogger {
     /**
      * Closes the file writer.
      */
-    public static void closeFileWriter() {
+    public static synchronized void closeFileWriter() {
         if (fileWriter != null) {
             try {
                 fileWriter.flush();
@@ -244,7 +244,7 @@ public final class ConsoleLogger {
      *
      * @param message The message to write to the log
      */
-    private static void writeLog(String message) {
+    private static synchronized void writeLog(String message) {
         if (fileWriter != null) {
             String dateTime = DATE_FORMAT.format(LocalDateTime.now());
             try {
@@ -272,7 +272,7 @@ public final class ConsoleLogger {
      * Populates the {@link #fileWriter} field if it is null, handling any exceptions that might
      * arise during its creation.
      */
-    private static void initializeFileWriter() {
+    private static synchronized void initializeFileWriter() {
         if (fileWriter == null) {
             FileOutputStream fos = null;
             try {

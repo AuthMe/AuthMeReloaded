@@ -12,6 +12,7 @@ import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.process.register.executors.RegistrationParameters;
 import fr.xephi.authme.process.unregister.AsynchronousUnregister;
 import fr.xephi.authme.service.BukkitService;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -62,7 +63,9 @@ public class Management {
     }
 
     public void performLogout(Player player) {
-        runTask(() -> asynchronousLogout.logout(player));
+        // Capture location on the main thread before handing off to the async task.
+        Location quitLocation = player.getLocation();
+        runTask(() -> asynchronousLogout.logout(player, quitLocation));
     }
 
     public <P extends RegistrationParameters> void performRegister(RegistrationMethod<P> variant, P parameters) {

@@ -15,9 +15,9 @@ import fr.xephi.authme.util.expiring.ExpiringMap;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class VerificationCodeManager implements SettingsDependent, HasCleanup {
@@ -37,7 +37,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
         this.emailService = emailService;
         this.dataSource = dataSource;
         this.permissionsManager = permissionsManager;
-        verifiedPlayers = new HashSet<>();
+        verifiedPlayers = ConcurrentHashMap.newKeySet();
         long countTimeout = settings.getProperty(SecuritySettings.VERIFICATION_CODE_EXPIRATION_MINUTES);
         verificationCodes = new ExpiringMap<>(countTimeout, TimeUnit.MINUTES);
         reload(settings);
