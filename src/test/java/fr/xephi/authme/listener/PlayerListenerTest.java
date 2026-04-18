@@ -75,6 +75,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doThrow;
@@ -760,11 +761,36 @@ public class PlayerListenerTest {
 
         // then
         verify(validationService).isUnrestricted(name);
+        verify(onJoinVerifier).checkNameRestrictions(eq(name), any(InetAddress.class));
         verify(onJoinVerifier).checkKickNonRegistered(true);
         verify(onJoinVerifier).checkAntibot(name, true);
         verify(onJoinVerifier).checkNameCasing(name, auth);
         verify(onJoinVerifier).checkPlayerCountry(name, ip, true);
         verifyNoModifyingCalls(preLoginEvent);
+    }
+
+    @Test
+    public void shouldAbortPreLoginHighestForFailedNameRestriction() throws FailedVerificationException {
+        // given
+        String name = "restrictedPlayer";
+        UUID uniqueId = UUID.fromString("c60b7305-3a78-4f71-8a60-70a3f17e1c90");
+        InetAddress address = createInetAddress("10.20.30.40");
+        AsyncPlayerPreLoginEvent event = spy(new AsyncPlayerPreLoginEvent(name, address, uniqueId));
+        given(validationService.isUnrestricted(name)).willReturn(false);
+        PlayerAuth auth = PlayerAuth.builder().name(name).build();
+        given(dataSource.getAuth(name)).willReturn(auth);
+        FailedVerificationException exception = new FailedVerificationException(MessageKey.NOT_OWNER_ERROR);
+        doThrow(exception).when(onJoinVerifier).checkNameRestrictions(eq(name), any(InetAddress.class));
+        String message = "Not your account!";
+        given(messages.retrieveSingle(name, exception.getReason(), exception.getArgs())).willReturn(message);
+
+        // when
+        listener.onAsyncPlayerPreLoginEventHighest(event);
+
+        // then
+        verify(onJoinVerifier).checkNameRestrictions(eq(name), any(InetAddress.class));
+        verify(event).setKickMessage(message);
+        verify(event).setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
     }
 
     @Test

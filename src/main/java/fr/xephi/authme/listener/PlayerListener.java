@@ -143,6 +143,7 @@ public class PlayerListener implements Listener {
             final PlayerAuth auth = dataSource.getAuth(name);
             final boolean isAuthAvailable = auth != null;
             teleportationService.preloadAuthStatus(name, isAuthAvailable);
+            onJoinVerifier.checkNameRestrictions(name, event.getAddress());
             onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
             onJoinVerifier.checkAntibot(name, isAuthAvailable);
             onJoinVerifier.checkNameCasing(name, auth);

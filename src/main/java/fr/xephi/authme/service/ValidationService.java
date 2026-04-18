@@ -16,7 +16,6 @@ import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.util.PlayerUtils;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.command.CommandSender;
@@ -24,6 +23,7 @@ import org.bukkit.entity.Player;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.List;
@@ -152,13 +152,35 @@ public class ValidationService implements Reloadable {
      * @return true if the player may join, false if the player does not satisfy the name restrictions
      */
     public boolean fulfillsNameRestrictions(Player player) {
+        InetSocketAddress socketAddress = player.getAddress();
         Collection<String> restrictions = restrictedNames.get(player.getName().toLowerCase(Locale.ROOT));
         if (Utils.isCollectionEmpty(restrictions)) {
             return true;
         }
+        String ip = socketAddress.getAddress().getHostAddress();
+        String domain = getHostName(socketAddress);
+        return matchesRestrictions(restrictions, ip, domain);
+    }
 
-        String ip = PlayerUtils.getPlayerIp(player);
-        String domain = getHostName(player.getAddress());
+    /**
+     * Checks that the given name and address meet any configured name restrictions (IP/domain-based).
+     * This overload can be used before a {@link Player} object is available (e.g. during pre-login).
+     *
+     * @param name    the player name to check (case-insensitive)
+     * @param address the player's IP address
+     * @return true if the player may join, false if the name restrictions are not satisfied
+     */
+    public boolean fulfillsNameRestrictions(String name, InetAddress address) {
+        Collection<String> restrictions = restrictedNames.get(name.toLowerCase(Locale.ROOT));
+        if (Utils.isCollectionEmpty(restrictions)) {
+            return true;
+        }
+        String ip = address.getHostAddress();
+        String domain = getHostName(new InetSocketAddress(address, 0));
+        return matchesRestrictions(restrictions, ip, domain);
+    }
+
+    private boolean matchesRestrictions(Collection<String> restrictions, String ip, String domain) {
         for (String restriction : restrictions) {
             if (restriction.startsWith("regex:")) {
                 restriction = restriction.replace("regex:", "");
