@@ -2,6 +2,7 @@ package fr.xephi.authme.listener;
 
 import fr.xephi.authme.data.QuickCommandsProtectionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
@@ -125,6 +126,8 @@ public class PlayerListenerTest {
     private QuickCommandsProtectionManager quickCommandsProtectionManager;
     @Mock
     private PermissionsManager permissionsManager;
+    @Mock
+    private LimboService limboService;
 
     /**
      * #831: If a player is kicked because of "logged in from another location", the kick
@@ -846,6 +849,7 @@ public class PlayerListenerTest {
         given(settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)).willReturn(true);
         given(antiBotService.wasPlayerKicked(anyString())).willReturn(false);
         Player player = mockPlayerWithName("Billy");
+        given(listenerService.shouldCancelEvent(player)).willReturn(true); // player not authenticated
         PlayerQuitEvent event = new PlayerQuitEvent(player, "Player has quit the server");
 
         // when
@@ -885,6 +889,7 @@ public class PlayerListenerTest {
         given(settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)).willReturn(false);
         given(settings.getProperty(RegistrationSettings.REMOVE_UNLOGGED_LEAVE_MESSAGE)).willReturn(false);
         given(antiBotService.wasPlayerKicked(name)).willReturn(false);
+        given(listenerService.shouldCancelEvent(player)).willReturn(true); // player not authenticated
         String quitMessage = "The player has left the server.";
         PlayerQuitEvent event = new PlayerQuitEvent(player, quitMessage);
 

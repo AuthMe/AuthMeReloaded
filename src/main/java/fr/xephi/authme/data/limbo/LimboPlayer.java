@@ -2,10 +2,14 @@ package fr.xephi.authme.data.limbo;
 
 import fr.xephi.authme.task.MessageTask;
 import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Represents a player which is not logged in and keeps track of certain states (like OP status, flying)
@@ -25,6 +29,9 @@ public class LimboPlayer {
     private BukkitTask timeoutTask = null;
     private MessageTask messageTask = null;
     private LimboPlayerState state = LimboPlayerState.PASSWORD_REQUIRED;
+    private Set<UUID> enderPearlUuids = new HashSet<>();
+    private UUID vehicleUuid;
+    private EntityType vehicleType;
 
     public LimboPlayer(Location loc, boolean operator, Collection<UserGroup> groups, boolean fly, float walkSpeed,
                        float flySpeed) {
@@ -133,5 +140,54 @@ public class LimboPlayer {
 
     public void setState(LimboPlayerState state) {
         this.state = state;
+    }
+
+    /**
+     * Returns the entity UUIDs of ender pearls in flight for this player,
+     * used to restore stasis chambers after a reconnect.
+     *
+     * @return mutable set of ender pearl entity UUIDs (never null)
+     */
+    public Set<UUID> getEnderPearlUuids() {
+        return enderPearlUuids;
+    }
+
+    /**
+     * Sets the ender pearl entity UUIDs to restore on reconnect.
+     *
+     * @param pearlUuids the set of pearl entity UUIDs to track
+     */
+    public void setEnderPearlUuids(Set<UUID> pearlUuids) {
+        this.enderPearlUuids = new HashSet<>(pearlUuids);
+    }
+
+    /**
+     * Returns the UUID of the vehicle entity the player was riding when they disconnected,
+     * used to remount them on reconnect.
+     *
+     * @return the vehicle entity UUID, or null if not riding anything
+     */
+    public UUID getVehicleUuid() {
+        return vehicleUuid;
+    }
+
+    /**
+     * Returns the type of the vehicle the player was riding when they disconnected.
+     *
+     * @return the vehicle EntityType, or null if not riding anything
+     */
+    public EntityType getVehicleType() {
+        return vehicleType;
+    }
+
+    /**
+     * Sets the vehicle to restore on reconnect. Pass null for both arguments to clear.
+     *
+     * @param vehicleUuid the entity UUID of the vehicle, or null
+     * @param vehicleType the entity type of the vehicle, or null
+     */
+    public void setVehicle(UUID vehicleUuid, EntityType vehicleType) {
+        this.vehicleUuid = vehicleUuid;
+        this.vehicleType = vehicleType;
     }
 }

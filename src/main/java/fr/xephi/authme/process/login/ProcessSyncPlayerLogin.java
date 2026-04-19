@@ -84,6 +84,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
         // Limbo contains the State of the Player before /login
         if (limbo != null) {
+            limboService.restoreEntities(player);
             limboService.restoreData(player);
         }
 
