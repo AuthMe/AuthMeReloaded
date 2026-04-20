@@ -57,10 +57,6 @@
     <modules>
         <module>authme-core</module>
         <module>authme-spigot-legacy</module>
-        <module>authme-spigot-1.21</module>
-        <module>authme-paper-common</module>
-        <module>authme-paper</module>
-        <module>authme-folia</module>
     </modules>
 
     <properties>
@@ -71,10 +67,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <revision>6.0.0-SNAPSHOT</revision>
-        <java.source>17</java.source>
-        <java.target>17</java.target>
-        <java.apiVersion>17</java.apiVersion>
-        <java.compiler.minimumVersion>17</java.compiler.minimumVersion>
+        <module.java.version>17</module.java.version>
         <maven.minimumVersion>3.8.8</maven.minimumVersion>
 
         <!-- Versioning properties -->
@@ -132,6 +125,18 @@
                 <project.buildNumber>${env.BUILD_NUMBER}</project.buildNumber>
             </properties>
         </profile>
+        <profile>
+            <id>java21-modules</id>
+            <activation>
+                <jdk>[21,)</jdk>
+            </activation>
+            <modules>
+                <module>authme-spigot-1.21</module>
+                <module>authme-paper-common</module>
+                <module>authme-paper</module>
+                <module>authme-folia</module>
+            </modules>
+        </profile>
         <!-- Skip long hash tests, reduce the test time of 20-30 seconds -->
         <profile>
             <id>skipLongHashTests</id>
@@ -183,7 +188,7 @@
                                         <version>${maven.minimumVersion}</version>
                                     </requireMavenVersion>
                                     <requireJavaVersion>
-                                        <version>[${java.compiler.minimumVersion},)</version>
+                                        <version>[${module.java.version},)</version>
                                     </requireJavaVersion>
                                 </rules>
                                 <fail>true</fail>
@@ -206,9 +211,9 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.13.0</version>
                     <configuration>
-                        <source>${java.source}</source>
-                        <target>${java.target}</target>
-                        <release>${java.apiVersion}</release>
+                        <source>${module.java.version}</source>
+                        <target>${module.java.version}</target>
+                        <release>${module.java.version}</release>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -305,6 +310,10 @@
         </pluginManagement>
 
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>

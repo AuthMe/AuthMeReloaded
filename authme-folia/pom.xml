@@ -16,6 +16,7 @@
     <description>AuthMe plugin for Folia 1.21</description>
 
     <properties>
+        <module.java.version>21</module.java.version>
         <plugin.api-version>1.21.11</plugin.api-version>
         <module.classifier>Folia</module.classifier>
     </properties>
@@ -116,7 +117,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <finalName>${project.build.finalName}</finalName>
-                    <source>${java.source}</source>
+                    <source>${module.java.version}</source>
                     <detectOfflineLinks>false</detectOfflineLinks>
                 </configuration>
                 <executions>

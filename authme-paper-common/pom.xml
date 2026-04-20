@@ -15,6 +15,10 @@
     <name>AuthMe Paper Common</name>
     <description>Shared Paper-derived implementation code for AuthMe Paper and Folia</description>
 
+    <properties>
+        <module.java.version>21</module.java.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>fr.xephi</groupId>

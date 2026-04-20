@@ -124,7 +124,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <finalName>${project.build.finalName}</finalName>
-                    <source>${java.source}</source>
+                    <source>${module.java.version}</source>
                 </configuration>
                 <executions>
                     <execution>
