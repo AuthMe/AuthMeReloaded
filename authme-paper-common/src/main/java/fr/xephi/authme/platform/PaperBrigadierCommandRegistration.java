@@ -1,12 +1,12 @@
 package fr.xephi.authme.platform;
 
-import io.papermc.paper.command.brigadier.CommandSourceStack;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 
 import java.util.Collection;
 
 /**
- * Immutable registration data for a single Paper Brigadier root command.
+ * Immutable registration data for a single Paper-derived Brigadier root command.
  */
 final class PaperBrigadierCommandRegistration {
 

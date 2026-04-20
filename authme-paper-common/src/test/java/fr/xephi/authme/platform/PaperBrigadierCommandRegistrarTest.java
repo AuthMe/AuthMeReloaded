@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,7 +51,7 @@ public class PaperBrigadierCommandRegistrarTest {
             return true;
         });
         dispatcher = new CommandDispatcher<>();
-        given(sourceStack.getSender()).willReturn(sender);
+        lenient().when(sourceStack.getSender()).thenReturn(sender);
 
         for (PaperBrigadierCommandRegistration registration
             : registrar.buildRegistrations(createCommands())) {
@@ -60,58 +61,47 @@ public class PaperBrigadierCommandRegistrarTest {
 
     @Test
     public void shouldExposeBaseCommandAliases() {
-        // when
         PaperBrigadierCommandRegistration registration = registrar.buildRegistrations(createCommands())
             .stream()
             .filter(command -> "login".equals(command.getNode().getLiteral()))
             .findFirst()
             .orElse(null);
 
-        // then
         assertThat(registration, notNullValue());
         assertThat(registration.getAliases(), contains("l", "log"));
     }
 
     @Test
     public void shouldDelegateBaseCommandExecutionToExistingHandler() throws Exception {
-        // when
         dispatcher.execute("authme", sourceStack);
 
-        // then
         assertThat(executingSender.get(), equalTo(sender));
         assertThat(executedCommands, contains(List.of("authme")));
     }
 
     @Test
     public void shouldDelegateUnknownSubcommandThroughFallback() throws Exception {
-        // when
         dispatcher.execute("authme typo", sourceStack);
 
-        // then
         assertThat(executedCommands, contains(List.of("authme", "typo")));
     }
 
     @Test
     public void shouldDelegateMissingArgumentsToExistingHandler() throws Exception {
-        // when
         dispatcher.execute("login", sourceStack);
 
-        // then
         assertThat(executedCommands, contains(List.of("login")));
     }
 
     @Test
     public void shouldDelegateExtraArgumentsToExistingHandler() throws Exception {
-        // when
         dispatcher.execute("login password extra", sourceStack);
 
-        // then
         assertThat(executedCommands, contains(List.of("login", "password", "extra")));
     }
 
     @Test
     public void shouldRegisterChildAliasesInBrigadierTree() {
-        // then
         assertThat(dispatcher.getCompletionSuggestions(dispatcher.parse("authme ", sourceStack)).join()
             .getList().stream().map(suggestion -> suggestion.getText()).toList(), hasItem("reg"));
     }
@@ -123,7 +113,7 @@ public class PaperBrigadierCommandRegistrarTest {
                 new CommandArgumentDescription("player", "Player name", false),
                 new CommandArgumentDescription("password", "Password", false)),
             List.of());
-        given(authmeBase.getChildren()).willReturn(List.of(authmeRegister));
+        lenient().when(authmeBase.getChildren()).thenReturn(List.of(authmeRegister));
 
         CommandDescription loginBase = command(List.of("login", "l", "log"),
             "Login", List.of(new CommandArgumentDescription("password", "Password", false)), List.of());
@@ -135,10 +125,10 @@ public class PaperBrigadierCommandRegistrarTest {
                                               List<CommandArgumentDescription> arguments,
                                               List<CommandDescription> children) {
         CommandDescription command = mock(CommandDescription.class);
-        given(command.getLabels()).willReturn(labels);
-        given(command.getDescription()).willReturn(description);
-        given(command.getArguments()).willReturn(arguments);
-        given(command.getChildren()).willReturn(children);
+        lenient().when(command.getLabels()).thenReturn(labels);
+        lenient().when(command.getDescription()).thenReturn(description);
+        lenient().when(command.getArguments()).thenReturn(arguments);
+        lenient().when(command.getChildren()).thenReturn(children);
         return command;
     }
 }

@@ -9,15 +9,19 @@ import org.bukkit.block.Sign;
 import org.bukkit.block.sign.Side;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.WARN)
@@ -41,13 +45,11 @@ public class PlayerOpenSignListenerTest {
         // when
         listener.onPlayerOpenSign(event);
 
-        // then
         verify(event).setCancelled(true);
     }
 
     @Test
     public void shouldNotCancelEventForAuthenticatedPlayer() {
-        // given
         Player player = mock(Player.class);
         PlayerOpenSignEvent event = spy(new PlayerOpenSignEvent(
             player, mock(Sign.class), Side.FRONT, PlayerOpenSignEvent.Cause.UNKNOWN));
@@ -56,9 +58,6 @@ public class PlayerOpenSignListenerTest {
         // when
         listener.onPlayerOpenSign(event);
 
-        // then
         verify(event, never()).setCancelled(anyBoolean());
     }
 }
-
-
