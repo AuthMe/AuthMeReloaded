@@ -1,11 +1,11 @@
 package fr.xephi.authme.security.crypts;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test for {@link PhpBB}.
@@ -57,3 +57,4 @@ public class PhpBBTest extends AbstractEncryptionMethodTest {
     }
 
 }
+

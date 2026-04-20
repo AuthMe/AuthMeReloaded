@@ -5,7 +5,7 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.expiring.TimedCounter;
 import org.bukkit.entity.Player;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Locale;
 
@@ -172,3 +172,4 @@ public class LoginCaptchaManagerTest {
         assertThat(playerCounts.get(player.toLowerCase(Locale.ROOT)), equalTo(count));
     }
 }
+

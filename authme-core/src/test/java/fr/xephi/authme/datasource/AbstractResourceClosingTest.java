@@ -5,10 +5,9 @@ import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -28,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -46,7 +46,6 @@ import static org.mockito.Mockito.verify;
  * keeping a list of mocks ({@link #closeables}) and then verifying that all have been
  * closed ({@link #verifyHaveMocksBeenClosed()}).
  */
-@RunWith(Parameterized.class)
 public abstract class AbstractResourceClosingTest {
 
     /** Collection of values to use to call methods with the parameters they expect. */
@@ -60,42 +59,34 @@ public abstract class AbstractResourceClosingTest {
 
     private boolean hasCreatedConnection = false;
 
-    /**
-     * Constructor for the test instance verifying the given method.
-     *
-     * @param method The DataSource method to test
-     * @param name The name of the method
-     */
-    public AbstractResourceClosingTest(Method method, String name) {
-        // Note ljacqu 20160227: The name parameter is necessary as we pass it from the @Parameters method;
-        // we use the method name in the annotation to name the test sensibly
-        this.method = method;
-    }
-
-    @BeforeClass
+    @BeforeAll
     public static void initializeLogger() {
         TestHelper.setupLogger();
     }
 
-    /**
-     * The actual test -- executes the method given through the constructor and then verifies that all
-     * AutoCloseable mocks it constructed have been closed.
-     */
-    @Test
-    public void shouldCloseResources() throws IllegalAccessException, InvocationTargetException {
+    @TestFactory
+    public List<DynamicTest> shouldCloseResources() {
+        return getMethodsToTest().stream()
+            .map(method -> DynamicTest.dynamicTest(method.getName(), () -> assertResourcesClosed(method)))
+            .collect(Collectors.toList());
+    }
+
+    protected final void assertResourcesClosed(Method method) throws IllegalAccessException, InvocationTargetException {
+        this.method = method;
+        this.closeables = new ArrayList<>();
+        this.hasCreatedConnection = false;
         method.invoke(getObjectUnderTest(), buildParamListForMethod(method));
         verifyHaveMocksBeenClosed();
     }
 
     protected abstract Object getObjectUnderTest();
 
+    protected abstract Collection<Method> getMethodsToTest();
+
     /**
      * Verify that all AutoCloseables that have been created during the method execution have been closed.
      */
     private void verifyHaveMocksBeenClosed() {
-        if (closeables.isEmpty()) {
-            System.out.println("Note: detected no AutoCloseables for method '" + method.getName() + "'");
-        }
         try {
             for (AutoCloseable autoCloseable : closeables) {
                 verify(autoCloseable).close();
@@ -253,3 +244,4 @@ public abstract class AbstractResourceClosingTest {
     }
 
 }
+

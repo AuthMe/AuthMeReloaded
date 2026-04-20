@@ -1,16 +1,19 @@
 package fr.xephi.authme.command.executable.authme;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.CommandSender;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.Date;
@@ -26,7 +29,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link LastLoginCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class LastLoginCommandTest {
 
     private static final long HOUR_IN_MSEC = 3600 * 1000;
@@ -40,6 +44,8 @@ public class LastLoginCommandTest {
 
     @Mock
     private CommonService service;
+    @Captor
+    private ArgumentCaptor<String> captor;
 
 
     @Test
@@ -74,7 +80,6 @@ public class LastLoginCommandTest {
 
         // then
         verify(dataSource).getAuth(player);
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(sender, times(3)).sendMessage(captor.capture());
         String lastLoginString = new Date(lastLogin).toString();
         assertThat(captor.getAllValues().get(0),
@@ -102,7 +107,6 @@ public class LastLoginCommandTest {
 
         // then
         verify(dataSource).getAuth(name);
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(sender, times(3)).sendMessage(captor.capture());
         String lastLoginString = new Date(lastLogin).toString();
         assertThat(captor.getAllValues().get(0),
@@ -127,9 +131,10 @@ public class LastLoginCommandTest {
 
         // then
         verify(dataSource).getAuth(name);
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(sender, times(2)).sendMessage(captor.capture());
         assertThat(captor.getAllValues().get(0), allOf(containsString(name), containsString("never")));
         assertThat(captor.getAllValues().get(1), containsString("123.45.67.89"));
     }
 }
+
+

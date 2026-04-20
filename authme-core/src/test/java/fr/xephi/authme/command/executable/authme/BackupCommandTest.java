@@ -1,12 +1,14 @@
 package fr.xephi.authme.command.executable.authme;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.service.BackupService;
 import org.bukkit.command.CommandSender;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
@@ -16,7 +18,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link BackupCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class BackupCommandTest {
 
     @InjectMocks
@@ -37,3 +40,5 @@ public class BackupCommandTest {
         verify(backupService).doBackup(BackupService.BackupCause.COMMAND, sender);
     }
 }
+
+

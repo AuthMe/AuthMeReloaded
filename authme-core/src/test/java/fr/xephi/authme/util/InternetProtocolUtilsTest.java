@@ -1,6 +1,6 @@
 package fr.xephi.authme.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -50,3 +50,4 @@ public class InternetProtocolUtilsTest {
         assertThat(InternetProtocolUtils.isLoopbackAddress("::1"), equalTo(true));
     }
 }
+

@@ -8,8 +8,8 @@ import fr.xephi.authme.TestHelper;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static fr.xephi.authme.TestHelper.getJarFile;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests that the permissions listed in plugin.yml correspond to the ones in the code.
@@ -45,7 +45,7 @@ public class PermissionConsistencyTest {
     /** All permissions listed in plugin.yml. */
     private static Map<String, PermissionDefinition> pluginYmlPermissions;
 
-    @BeforeClass
+    @BeforeAll
     public static void gatherPermissionNodes() {
         permissionClasses = new ClassCollector(TestHelper.SOURCES_FOLDER, TestHelper.PROJECT_ROOT + "permission")
             .collectClasses(PermissionNode.class).stream()
@@ -281,3 +281,4 @@ public class PermissionConsistencyTest {
     }
 
 }
+

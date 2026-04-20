@@ -1,5 +1,9 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.ClassCollector;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.permission.AdminPermission;
@@ -8,12 +12,11 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +36,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link HasPermissionChecker}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class HasPermissionCheckerTest {
 
     @InjectMocks
@@ -44,6 +48,8 @@ public class HasPermissionCheckerTest {
 
     @Mock
     private BukkitService bukkitService;
+    @Captor
+    private ArgumentCaptor<String> msgCaptor;
 
     @Test
     public void shouldListAllPermissionNodeClasses() {
@@ -67,7 +73,6 @@ public class HasPermissionCheckerTest {
         hasPermissionChecker.execute(sender, emptyList());
 
         // then
-        ArgumentCaptor<String> msgCaptor = ArgumentCaptor.forClass(String.class);
         verify(sender, atLeast(2)).sendMessage(msgCaptor.capture());
         assertThat(
             msgCaptor.getAllValues().stream().anyMatch(msg -> msg.contains("/authme debug perm bobby my.perm.node")),
@@ -94,3 +99,5 @@ public class HasPermissionCheckerTest {
             + "' has permission '" + permission.getNode() + "'")));
     }
 }
+
+

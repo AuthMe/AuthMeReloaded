@@ -6,8 +6,8 @@ import ch.jalu.configme.properties.Property;
 import com.google.common.collect.ImmutableSet;
 import fr.xephi.authme.settings.properties.AuthMeSettingsRetriever;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static fr.xephi.authme.ReflectionTestUtils.getFieldValue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests the consistency of the settings configuration.
@@ -38,7 +38,7 @@ public class SettingsConsistencyTest {
 
     private static ConfigurationData configurationData;
 
-    @BeforeClass
+    @BeforeAll
     public static void buildConfigurationData() {
         configurationData = AuthMeSettingsRetriever.buildConfigurationData();
     }
@@ -138,3 +138,4 @@ public class SettingsConsistencyTest {
         }
     }
 }
+

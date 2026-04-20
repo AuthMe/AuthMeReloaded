@@ -1,14 +1,17 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import org.bukkit.command.CommandSender;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
@@ -24,7 +27,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link PlayerAuthViewer}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class PlayerAuthViewerTest {
 
     @InjectMocks
@@ -32,6 +36,8 @@ public class PlayerAuthViewerTest {
 
     @Mock
     private DataSource dataSource;
+    @Captor
+    private ArgumentCaptor<String> textCaptor;
 
     @Test
     public void shouldMakeExample() {
@@ -73,7 +79,6 @@ public class PlayerAuthViewerTest {
         authViewer.execute(sender, Collections.singletonList("George"));
 
         // then
-        ArgumentCaptor<String> textCaptor = ArgumentCaptor.forClass(String.class);
         verify(sender, atLeastOnce()).sendMessage(textCaptor.capture());
         assertThat(textCaptor.getAllValues(), hasItem(containsString("Player george / George")));
         assertThat(textCaptor.getAllValues(), hasItem(containsString("Registration: 2005-03-18T")));
@@ -95,7 +100,6 @@ public class PlayerAuthViewerTest {
         authViewer.execute(sender, Collections.singletonList("Tar"));
 
         // then
-        ArgumentCaptor<String> textCaptor = ArgumentCaptor.forClass(String.class);
         verify(sender, atLeastOnce()).sendMessage(textCaptor.capture());
         assertThat(textCaptor.getAllValues(), hasItem(containsString("Player tar / Player")));
         assertThat(textCaptor.getAllValues(), hasItem(containsString("Registration: Not available (0)")));
@@ -104,3 +108,5 @@ public class PlayerAuthViewerTest {
         assertThat(textCaptor.getAllValues(), hasItem(containsString("TOTP code (partial): ''")));
     }
 }
+
+

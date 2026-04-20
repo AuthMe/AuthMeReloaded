@@ -6,10 +6,9 @@ import ch.jalu.configme.resource.YamlFileReader;
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.message.MessageKey;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import fr.xephi.authme.TempFolder;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,11 +28,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class MessageUpdaterTest {
 
     private MessageUpdater messageUpdater = new MessageUpdater();
+    public TempFolder temporaryFolder = new TempFolder();
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    @BeforeClass
+    @BeforeAll
     public static void setUpLogger() {
         TestHelper.setupLogger();
     }
@@ -147,3 +144,5 @@ public class MessageUpdaterTest {
         assertThat(comments.keySet(), equalTo(rootPaths));
     }
 }
+
+

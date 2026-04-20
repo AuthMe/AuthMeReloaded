@@ -1,5 +1,9 @@
 package fr.xephi.authme.service;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
@@ -8,11 +12,9 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.Sha256;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Locale;
@@ -31,7 +33,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link MigrationService}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class MigrationServiceTest {
 
     @Mock
@@ -43,7 +46,7 @@ public class MigrationServiceTest {
     @Mock
     private Sha256 sha256;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpLogger() {
         TestHelper.setupLogger();
     }
@@ -123,3 +126,5 @@ public class MigrationServiceTest {
         });
     }
 }
+
+

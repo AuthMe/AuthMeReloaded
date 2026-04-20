@@ -1,6 +1,6 @@
 package fr.xephi.authme.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
@@ -27,3 +27,4 @@ public class UuidUtilsTest {
         assertThat(UuidUtils.parseUuidSafely("8e0a9aaa-5eda-42ef-InvalidEnding"), nullValue());
     }
 }
+

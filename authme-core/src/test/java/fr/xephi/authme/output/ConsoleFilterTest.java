@@ -1,6 +1,6 @@
 package fr.xephi.authme.output;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.logging.LogRecord;
@@ -75,3 +75,4 @@ public class ConsoleFilterTest {
         return record;
     }
 }
+

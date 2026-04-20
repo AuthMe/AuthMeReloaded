@@ -1,5 +1,9 @@
 package fr.xephi.authme.process.unregister;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
@@ -20,13 +24,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.function.Function;
 
@@ -44,7 +47,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link AsynchronousUnregister}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class AsynchronousUnregisterTest {
 
     @InjectMocks
@@ -68,8 +72,10 @@ public class AsynchronousUnregisterTest {
     private CommandManager commandManager;
     @Mock
     private BungeeSender bungeeSender;
+    @Captor
+    private ArgumentCaptor<Function<Boolean, AbstractUnregisterEvent>> eventFunctionCaptor;
 
-    @BeforeClass
+    @BeforeAll
     public static void initLogger() {
         TestHelper.setupLogger();
     }
@@ -301,10 +307,10 @@ public class AsynchronousUnregisterTest {
 
     @SuppressWarnings("unchecked")
     private void verifyCalledUnregisterEventFor(Player player) {
-        ArgumentCaptor<Function<Boolean, AbstractUnregisterEvent>> eventFunctionCaptor =
-            ArgumentCaptor.forClass(Function.class);
         verify(bukkitService).createAndCallEvent(eventFunctionCaptor.capture());
         AbstractUnregisterEvent event = eventFunctionCaptor.getValue().apply(true);
         assertThat(event.getPlayer(), equalTo(player));
     }
 }
+
+

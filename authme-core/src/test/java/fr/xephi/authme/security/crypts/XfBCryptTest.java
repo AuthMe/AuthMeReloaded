@@ -1,6 +1,6 @@
 package fr.xephi.authme.security.crypts;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
@@ -32,3 +32,4 @@ public class XfBCryptTest extends AbstractEncryptionMethodTest {
         assertThat(result.getSalt(), nullValue());
     }
 }
+

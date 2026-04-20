@@ -1,8 +1,9 @@
 package fr.xephi.authme.data.limbo.persistence;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import fr.xephi.authme.DelayedInjectionExtension;
 import ch.jalu.injector.factory.Factory;
 import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
@@ -11,9 +12,8 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.LimboSettings;
 import org.bukkit.entity.Player;
 import org.hamcrest.Matcher;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.util.logging.Logger;
@@ -37,7 +37,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link LimboPersistence}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@ExtendWith(DelayedInjectionExtension.class)
 public class LimboPersistenceTest {
 
     @SuppressWarnings("unused")
@@ -50,7 +50,7 @@ public class LimboPersistenceTest {
     @Mock
     private Settings settings;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpLogger() {
         TestHelper.setupLogger();
     }
@@ -157,3 +157,5 @@ public class LimboPersistenceTest {
         return both(not(sameInstance(o))).and(not(nullValue()));
     }
 }
+
+

@@ -1,7 +1,8 @@
 package fr.xephi.authme.mail;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import fr.xephi.authme.DelayedInjectionExtension;
 import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.initialization.DataFolder;
@@ -11,12 +12,11 @@ import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import fr.xephi.authme.TempFolder;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 
 import java.io.File;
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link EmailService}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@ExtendWith(DelayedInjectionExtension.class)
 public class EmailServiceTest {
 
     @InjectDelayed
@@ -47,13 +47,13 @@ public class EmailServiceTest {
     private Settings settings;
     @Mock
     private SendMailSsl sendMailSsl;
+    @Captor
+    private ArgumentCaptor<String> messageCaptor;
     @DataFolder
     private File dataFolder;
+    public TempFolder temporaryFolder = new TempFolder();
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    @BeforeClass
+    @BeforeAll
     public static void initLogger() {
         TestHelper.setupLogger();
     }
@@ -89,7 +89,6 @@ public class EmailServiceTest {
         // then
         assertThat(result, equalTo(true));
         verify(sendMailSsl).initializeMail("user@example.com");
-        ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
         verify(sendMailSsl).sendEmail(messageCaptor.capture(), eq(email));
         assertThat(messageCaptor.getValue(),
             equalTo("Hi Player, your new password for serverName is new_password"));
@@ -124,7 +123,6 @@ public class EmailServiceTest {
         // then
         assertThat(result, equalTo(false));
         verify(sendMailSsl).initializeMail("user@example.com");
-        ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
         verify(sendMailSsl).sendEmail(messageCaptor.capture(), eq(email));
         assertThat(messageCaptor.getValue(), equalTo("Hi bobby, your new pass is myPassw0rd"));
     }
@@ -145,7 +143,6 @@ public class EmailServiceTest {
         // then
         assertThat(result, equalTo(true));
         verify(sendMailSsl).initializeMail("tim@example.com");
-        ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
         verify(sendMailSsl).sendEmail(messageCaptor.capture(), eq(email));
         assertThat(messageCaptor.getValue(), equalTo("Hi Timmy, your code on serverName is 12C56A (valid 7 hours)"));
     }
@@ -180,9 +177,10 @@ public class EmailServiceTest {
         // then
         assertThat(result, equalTo(false));
         verify(sendMailSsl).initializeMail("user@example.com");
-        ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
         verify(sendMailSsl).sendEmail(messageCaptor.capture(), eq(email));
         assertThat(messageCaptor.getValue(), equalTo("Hi John, your code is 1DEF77"));
     }
 
 }
+
+

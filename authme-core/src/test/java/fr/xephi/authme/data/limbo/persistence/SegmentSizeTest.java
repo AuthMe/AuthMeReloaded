@@ -1,7 +1,7 @@
 package fr.xephi.authme.data.limbo.persistence;
 
 import com.google.common.collect.ImmutableSet;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -9,7 +9,7 @@ import java.util.Set;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test for {@link SegmentSize}.
@@ -45,3 +45,4 @@ public class SegmentSizeTest {
         }
     }
 }
+

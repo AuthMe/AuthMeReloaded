@@ -7,9 +7,8 @@ import ch.jalu.configme.properties.StringProperty;
 import ch.jalu.configme.resource.PropertyReader;
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import fr.xephi.authme.TempFolder;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,9 +24,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class MigraterYamlFileResourceTest {
 
     private static final String CHINESE_MESSAGES_FILE = TestHelper.PROJECT_ROOT + "message/chinese_texts.yml";
-
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    public TempFolder temporaryFolder = new TempFolder();
 
     @Test
     public void shouldReadChineseFile() {
@@ -73,3 +70,5 @@ public class MigraterYamlFileResourceTest {
         return ConfigurationDataBuilder.createConfiguration(properties);
     }
 }
+
+

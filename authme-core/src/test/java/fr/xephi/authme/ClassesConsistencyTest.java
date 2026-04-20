@@ -17,7 +17,7 @@ import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.util.expiring.ExpiringMap;
 import fr.xephi.authme.util.expiring.ExpiringSet;
 import fr.xephi.authme.util.expiring.TimedCounter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Contains consistency tests across all AuthMe classes.
@@ -172,3 +172,4 @@ public class ClassesConsistencyTest {
         return Collections.unmodifiableList(new ArrayList<>()).getClass();
     }
 }
+

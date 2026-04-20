@@ -1,5 +1,9 @@
 package fr.xephi.authme.command;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import ch.jalu.injector.factory.Factory;
 import com.google.common.collect.Sets;
 import fr.xephi.authme.command.TestCommandsUtil.TestLoginCommand;
@@ -10,13 +14,12 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.command.CommandSender;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 import java.util.Collections;
@@ -47,7 +50,8 @@ import static org.mockito.Mockito.verify;
 // Justification: It's more readable to use asList() everywhere in the test when we often generated two lists where one
 // often consists of only one element, e.g. myMethod(asList("authme"), asList("my", "args"), ...)
 @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class CommandHandlerTest {
 
     private CommandHandler handler;
@@ -62,10 +66,12 @@ public class CommandHandlerTest {
     private Messages messages;
     @Mock
     private HelpProvider helpProvider;
+    @Captor
+    private ArgumentCaptor<String> cmdCaptor;
 
     private Map<Class<? extends ExecutableCommand>, ExecutableCommand> mockedCommands = new HashMap<>();
 
-    @Before
+    @BeforeEach
     @SuppressWarnings("unchecked")
     public void initializeCommandMapper() {
         given(commandMapper.getCommandClasses()).willReturn(Sets.newHashSet(
@@ -246,7 +252,6 @@ public class CommandHandlerTest {
         verify(commandMapper).mapPartsToCommand(sender, asList("unreg", "testPlayer"));
         verify(command, never()).getExecutableCommand();
         verify(messages).send(sender, MessageKey.UNKNOWN_COMMAND);
-        ArgumentCaptor<String> cmdCaptor = ArgumentCaptor.forClass(String.class);
         verify(messages).send(eq(sender), eq(MessageKey.COMMAND_DID_YOU_MEAN), cmdCaptor.capture());
         assertThat(cmdCaptor.getValue(), containsString("test_cmd"));
         verify(messages).send(eq(sender), eq(MessageKey.COMMAND_SEE_HELP), anyString());
@@ -297,3 +302,5 @@ public class CommandHandlerTest {
     }
 
 }
+
+

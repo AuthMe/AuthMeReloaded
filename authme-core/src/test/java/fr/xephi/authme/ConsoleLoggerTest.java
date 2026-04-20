@@ -1,18 +1,19 @@
 package fr.xephi.authme;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.output.LogLevel;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import fr.xephi.authme.TempFolder;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -32,6 +33,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -40,20 +42,19 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 /**
  * Test for {@link ConsoleLogger}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class ConsoleLoggerTest {
 
     private ConsoleLogger consoleLogger;
 
     @Mock
     private Logger logger;
-
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    public TempFolder temporaryFolder = new TempFolder();
 
     private File logFile;
 
-    @Before
+    @BeforeEach
     public void setMockLogger() throws IOException {
         File folder = temporaryFolder.newFolder();
         File logFile = new File(folder, "authme.log");
@@ -65,7 +66,7 @@ public class ConsoleLoggerTest {
         this.consoleLogger = new ConsoleLogger("test");
     }
 
-    @After
+    @AfterEach
     public void closeFileHandlers() {
         ConsoleLogger.closeFileWriter();
     }
@@ -75,7 +76,7 @@ public class ConsoleLoggerTest {
      * is that we no longer enable logging to a file as the log file we've supplied will no longer
      * be around after this test class has finished.
      */
-    @AfterClass
+    @AfterAll
     public static void resetConsoleToDefault() {
         ConsoleLogger.initializeSharedSettings(newSettings(false, LogLevel.INFO));
     }
@@ -207,8 +208,8 @@ public class ConsoleLoggerTest {
 
     private static Settings newSettings(boolean logToFile, LogLevel logLevel) {
         Settings settings = mock(Settings.class);
-        given(settings.getProperty(SecuritySettings.USE_LOGGING)).willReturn(logToFile);
-        given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(logLevel);
+        lenient().when(settings.getProperty(SecuritySettings.USE_LOGGING)).thenReturn(logToFile);
+        lenient().when(settings.getProperty(PluginSettings.LOG_LEVEL)).thenReturn(logLevel);
         return settings;
     }
 
@@ -225,3 +226,5 @@ public class ConsoleLoggerTest {
         }
     }
 }
+
+

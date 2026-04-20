@@ -1,5 +1,9 @@
 package fr.xephi.authme.process.changepassword;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
@@ -9,12 +13,10 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import org.bukkit.command.CommandSender;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -24,7 +26,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link AsyncChangePassword}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class AsyncChangePasswordTest {
 
     @InjectMocks
@@ -41,7 +44,7 @@ public class AsyncChangePasswordTest {
     @Mock
     private BungeeSender bungeeSender;
 
-    @Before
+    @BeforeEach
     public void setUpLogger() {
         TestHelper.setupLogger();
     }
@@ -128,3 +131,5 @@ public class AsyncChangePasswordTest {
     }
 
 }
+
+

@@ -1,5 +1,9 @@
 package fr.xephi.authme.settings;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.security.HashAlgorithm;
@@ -9,11 +13,9 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -22,12 +24,13 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
+import static org.mockito.Mockito.times;
 
 /**
  * Test for {@link SettingsWarner}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class SettingsWarnerTest {
 
     @InjectMocks
@@ -97,3 +100,5 @@ public class SettingsWarnerTest {
         verifyNoInteractions(logger);
     }
 }
+
+

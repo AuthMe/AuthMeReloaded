@@ -1,5 +1,9 @@
 package fr.xephi.authme.command.executable.captcha;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.captcha.LoginCaptchaManager;
 import fr.xephi.authme.data.captcha.RegistrationCaptchaManager;
@@ -8,11 +12,9 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.entity.Player;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
@@ -25,7 +27,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 /**
  * Test for {@link CaptchaCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class CaptchaCommandTest {
 
     @InjectMocks
@@ -188,3 +191,5 @@ public class CaptchaCommandTest {
         return player;
     }
 }
+
+

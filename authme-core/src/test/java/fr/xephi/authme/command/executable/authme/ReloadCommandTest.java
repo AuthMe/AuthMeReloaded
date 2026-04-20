@@ -1,5 +1,9 @@
 package fr.xephi.authme.command.executable.authme;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import ch.jalu.injector.factory.SingletonStore;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.TestHelper;
@@ -16,13 +20,11 @@ import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.CommandSender;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,7 +38,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link ReloadCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class ReloadCommandTest {
 
     @InjectMocks
@@ -63,12 +66,12 @@ public class ReloadCommandTest {
     @Mock
     private SingletonStore<SettingsDependent> settingsDependentStore;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
-    @Before
+    @BeforeEach
     public void setDefaultSettings() {
         // Mock properties retrieved by ConsoleLogger
         given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(LogLevel.INFO);
@@ -144,3 +147,5 @@ public class ReloadCommandTest {
         }
     }
 }
+
+

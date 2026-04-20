@@ -2,8 +2,8 @@ package fr.xephi.authme.command.executable.authme.debug;
 
 import fr.xephi.authme.ClassCollector;
 import fr.xephi.authme.TestHelper;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
@@ -14,7 +14,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Consistency tests for {@link DebugSection} implementors.
@@ -24,7 +24,7 @@ public class DebugSectionConsistencyTest {
     private static List<Class<?>> debugClasses;
     private static List<DebugSection> debugSections;
 
-    @BeforeClass
+    @BeforeAll
     public static void collectClasses() {
         // TODO ljacqu 20171021: Improve ClassCollector (pass pkg by class, improve #getInstancesOfType's instantiation)
         ClassCollector classCollector = new ClassCollector(
@@ -70,3 +70,4 @@ public class DebugSectionConsistencyTest {
         }
     }
 }
+

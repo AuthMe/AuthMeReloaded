@@ -1,11 +1,12 @@
 package fr.xephi.authme.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.regex.Pattern;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Test for {@link RandomStringUtils}.
@@ -76,11 +77,9 @@ public class RandomStringUtilsTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowForInvalidLength() {
-        // given/when
-        RandomStringUtils.generate(-3);
-
-        // then - throw exception
+        assertThrows(IllegalArgumentException.class, () -> RandomStringUtils.generate(-3));
     }
 }
+

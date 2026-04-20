@@ -1,5 +1,9 @@
 package fr.xephi.authme.command.executable.authme;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import ch.jalu.injector.factory.Factory;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.converter.Converter;
@@ -8,12 +12,10 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.command.CommandSender;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -37,7 +39,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link ConverterCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class ConverterCommandTest {
 
     @InjectMocks
@@ -52,7 +55,7 @@ public class ConverterCommandTest {
     @Mock
     private Factory<Converter> converterFactory;
 
-    @BeforeClass
+    @BeforeAll
     public static void initLogger() {
         TestHelper.setupLogger();
     }
@@ -147,3 +150,5 @@ public class ConverterCommandTest {
     }
 
 }
+
+

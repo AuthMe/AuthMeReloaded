@@ -1,16 +1,18 @@
 package fr.xephi.authme.command.executable.email;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
@@ -21,7 +23,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link ShowEmailCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class ShowEmailCommandTest {
 
     private static final String CURRENT_EMAIL = "my.email@example.com";
@@ -93,3 +96,5 @@ public class ShowEmailCommandTest {
             .build();
     }
 }
+
+

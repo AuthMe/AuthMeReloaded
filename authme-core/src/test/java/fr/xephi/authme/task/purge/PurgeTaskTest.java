@@ -1,5 +1,9 @@
 package fr.xephi.authme.task.purge;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.permission.PermissionNode;
@@ -13,14 +17,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
@@ -50,7 +52,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link PurgeTask}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class PurgeTaskTest {
 
     private static final PermissionNode BYPASS_NODE = PlayerStatePermission.BYPASS_PURGE;
@@ -69,7 +72,7 @@ public class PurgeTaskTest {
     @Captor
     private ArgumentCaptor<Collection<String>> namesCaptor;
 
-    @BeforeClass
+    @BeforeAll
     public static void initLogger() {
         TestHelper.setupLogger();
     }
@@ -114,6 +117,7 @@ public class PurgeTaskTest {
         // Third round: no more OfflinePlayer objects, but some names remain
         reset(purgeService, permissionsManager);
         given(permissionsManager.hasPermissionOffline("india", BYPASS_NODE)).willReturn(true);
+        given(permissionsManager.hasPermissionOffline("foxtrot", BYPASS_NODE)).willReturn(false);
 
         // when (3)
         task.run();
@@ -245,3 +249,5 @@ public class PurgeTaskTest {
     }
 
 }
+
+

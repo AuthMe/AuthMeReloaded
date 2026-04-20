@@ -1,5 +1,9 @@
 package fr.xephi.authme.settings.commandconfig;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import ch.jalu.configme.beanmapper.propertydescription.BeanDescriptionFactoryImpl;
 import ch.jalu.configme.beanmapper.propertydescription.BeanPropertyDescription;
 import ch.jalu.configme.configurationdata.ConfigurationData;
@@ -8,12 +12,10 @@ import ch.jalu.configme.resource.PropertyResource;
 import ch.jalu.configme.resource.YamlFileResource;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.SettingsMigrationService;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
 import java.util.List;
@@ -31,7 +33,8 @@ import static org.mockito.BDDMockito.given;
 /**
  * Test for {@link CommandMigrationService}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class CommandMigrationServiceTest {
 
     @InjectMocks
@@ -40,7 +43,7 @@ public class CommandMigrationServiceTest {
     @Mock
     private SettingsMigrationService settingsMigrationService;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpLogger() {
         TestHelper.setupLogger();
     }
@@ -144,3 +147,5 @@ public class CommandMigrationServiceTest {
         }
     }
 }
+
+

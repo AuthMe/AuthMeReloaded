@@ -1,5 +1,9 @@
 package fr.xephi.authme.listener;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.data.QuickCommandsProtectionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.limbo.LimboService;
@@ -51,11 +55,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.InventoryView;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -94,7 +96,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 /**
  * Test for {@link PlayerListener}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class PlayerListenerTest {
 
     @InjectMocks
@@ -295,6 +298,7 @@ public class PlayerListenerTest {
 
         // then
         verify(event).getMessage();
+        verify(event, atLeast(0)).getPlayer();
         verifyNoMoreInteractions(event);
         verify(listenerService).shouldCancelEvent(player);
         verifyNoInteractions(messages);
@@ -380,7 +384,9 @@ public class PlayerListenerTest {
 
         // then
         verify(listenerService).shouldCancelEvent(event.getPlayer());
-        verifyNoInteractions(event, messages);
+        verify(event, atLeast(0)).getPlayer();
+        verifyNoMoreInteractions(event);
+        verifyNoInteractions(messages);
     }
 
     @Test
@@ -1172,12 +1178,14 @@ public class PlayerListenerTest {
     }
 
     private static void verifyNoModifyingCalls(PlayerMoveEvent event) {
+        verify(event, atLeast(0)).getPlayer();
         verify(event, atLeast(0)).getFrom();
         verify(event, atLeast(0)).getTo();
         verifyNoMoreInteractions(event);
     }
 
     private static void verifyNoModifyingCalls(PlayerLoginEvent event) {
+        verify(event, atLeast(0)).getPlayer();
         verify(event, atLeast(0)).getResult();
         verify(event, atLeast(0)).getAddress();
         verifyNoMoreInteractions(event);
@@ -1198,3 +1206,5 @@ public class PlayerListenerTest {
         }
     }
 }
+
+

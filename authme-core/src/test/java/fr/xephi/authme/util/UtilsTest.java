@@ -5,8 +5,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  */
 public class UtilsTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void initLogger() {
         TestHelper.setupLogger();
     }
@@ -173,3 +173,4 @@ public class UtilsTest {
         assertThat(Utils.isEmailEmpty("hey"), equalTo(false));
     }
 }
+

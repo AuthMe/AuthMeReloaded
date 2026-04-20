@@ -1,6 +1,6 @@
 package fr.xephi.authme.security.crypts;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
 import static org.hamcrest.Matchers.equalTo;
@@ -41,3 +41,4 @@ public class SmfTest extends AbstractEncryptionMethodTest {
         }
     }
 }
+

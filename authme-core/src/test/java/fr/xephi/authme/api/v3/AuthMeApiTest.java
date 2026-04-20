@@ -1,5 +1,9 @@
 package fr.xephi.authme.api.v3;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.data.auth.PlayerAuth;
@@ -17,12 +21,11 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -51,7 +54,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link AuthMeApi}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class AuthMeApiTest {
 
     @InjectMocks
@@ -71,6 +75,8 @@ public class AuthMeApiTest {
     private AuthMe authMe;
     @Mock
     private GeoIpService geoIpService;
+    @Captor
+    private ArgumentCaptor<PlayerAuth> authCaptor;
 
     @Test
     public void shouldReturnInstanceOrNull() {
@@ -467,7 +473,6 @@ public class AuthMeApiTest {
         // then
         assertThat(result, equalTo(true));
         verify(passwordSecurity).computeHash(password, name.toLowerCase(Locale.ROOT));
-        ArgumentCaptor<PlayerAuth> authCaptor = ArgumentCaptor.forClass(PlayerAuth.class);
         verify(dataSource).saveAuth(authCaptor.capture());
         assertThat(authCaptor.getValue().getNickname(), equalTo(name.toLowerCase(Locale.ROOT)));
         assertThat(authCaptor.getValue().getRealName(), equalTo(name));
@@ -556,3 +561,5 @@ public class AuthMeApiTest {
         return player;
     }
 }
+
+

@@ -1,5 +1,9 @@
 package fr.xephi.authme;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import ch.jalu.configme.resource.PropertyReader;
 import ch.jalu.configme.resource.PropertyResource;
 import ch.jalu.injector.Injector;
@@ -30,13 +34,10 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import fr.xephi.authme.TempFolder;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,7 +58,8 @@ import static org.mockito.Mockito.verify;
  * Integration test verifying that all services can be initialized in {@link AuthMe}
  * with the {@link Injector}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class AuthMeInitializationTest {
 
     @Mock
@@ -68,11 +70,9 @@ public class AuthMeInitializationTest {
 
     private AuthMe authMe;
     private File dataFolder;
+    public TempFolder temporaryFolder = new TempFolder();
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    @Before
+    @BeforeEach
     public void initAuthMe() throws IOException {
         dataFolder = temporaryFolder.newFolder();
         File settingsFile = new File(dataFolder, "config.yml");
@@ -154,3 +154,5 @@ public class AuthMeInitializationTest {
         verify(scheduler).getActiveWorkers(); // via TaskCloser
     }
 }
+
+

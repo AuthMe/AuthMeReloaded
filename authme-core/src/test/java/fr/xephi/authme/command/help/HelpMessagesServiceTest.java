@@ -11,10 +11,9 @@ import fr.xephi.authme.message.MessagePathHelper;
 import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import fr.xephi.authme.TempFolder;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,12 +36,10 @@ public class HelpMessagesServiceTest {
     private static final Collection<CommandDescription> COMMANDS = TestCommandsUtil.generateCommands();
 
     private HelpMessagesService helpMessagesService;
-
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    public TempFolder temporaryFolder = new TempFolder();
     private File dataFolder;
 
-    @Before
+    @BeforeEach
     public void initializeHandler() throws IOException {
         dataFolder = temporaryFolder.newFolder();
         new File(dataFolder, "messages").mkdirs();
@@ -158,3 +155,5 @@ public class HelpMessagesServiceTest {
         return messagesFileHandler;
     }
 }
+
+

@@ -1,7 +1,8 @@
 package fr.xephi.authme.service;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import fr.xephi.authme.DelayedInjectionExtension;
 import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.DataSource;
@@ -11,8 +12,7 @@ import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Tests for {@link PasswordRecoveryService}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@ExtendWith(DelayedInjectionExtension.class)
 public class PasswordRecoveryServiceTest {
 
     @InjectDelayed
@@ -120,3 +120,5 @@ public class PasswordRecoveryServiceTest {
         assertThat(recoveryService.canChangePassword(other), equalTo(false));
     }
 }
+
+

@@ -4,7 +4,7 @@ import fr.xephi.authme.data.limbo.UserGroup;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -82,3 +82,4 @@ public class VaultHandlerTest {
         }
     }
 }
+

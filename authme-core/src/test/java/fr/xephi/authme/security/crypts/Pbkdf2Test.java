@@ -2,7 +2,7 @@ package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -42,3 +42,4 @@ public class Pbkdf2Test extends AbstractEncryptionMethodTest {
         return settings;
     }
 }
+

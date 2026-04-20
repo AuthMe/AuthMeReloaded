@@ -1,7 +1,8 @@
 package fr.xephi.authme.service;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import fr.xephi.authme.DelayedInjectionExtension;
 import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
@@ -11,9 +12,9 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 
 import java.util.Arrays;
@@ -35,7 +36,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link AntiBotService}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@ExtendWith(DelayedInjectionExtension.class)
 public class AntiBotServiceTest {
 
     @InjectDelayed
@@ -49,6 +50,8 @@ public class AntiBotServiceTest {
     private PermissionsManager permissionsManager;
     @Mock
     private BukkitService bukkitService;
+    @Captor
+    private ArgumentCaptor<Runnable> runnableCaptor;
 
     @BeforeInjecting
     public void initSettings() {
@@ -92,7 +95,6 @@ public class AntiBotServiceTest {
         // then
         assertThat(antiBotService.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.ACTIVE));
         // Check that a task is scheduled to disable again
-        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(bukkitService).runTaskLater(runnableCaptor.capture(), anyLong());
         runnableCaptor.getValue().run();
         assertThat(antiBotService.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.LISTENING));
@@ -186,3 +188,5 @@ public class AntiBotServiceTest {
     }
 
 }
+
+

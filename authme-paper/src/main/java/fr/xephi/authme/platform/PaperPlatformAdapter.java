@@ -32,7 +32,9 @@ public class PaperPlatformAdapter extends AbstractSpigotPlatformAdapter {
     static {
         boolean available = false;
         try {
-            Class.forName("io.papermc.paper.dialog.Dialog");
+            // Use initialize=false so we only check for class existence without triggering
+            // the Dialog static initializer (which requires a running Paper server).
+            Class.forName("io.papermc.paper.dialog.Dialog", false, PaperPlatformAdapter.class.getClassLoader());
             available = true;
         } catch (ClassNotFoundException ignored) {
             // Paper dialog API absent (Paper < 1.21.11)

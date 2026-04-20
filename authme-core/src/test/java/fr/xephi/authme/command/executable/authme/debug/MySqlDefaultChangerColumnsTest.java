@@ -1,13 +1,13 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Consistency test for {@link MySqlDefaultChanger.Columns} enum.
@@ -67,3 +67,4 @@ public class MySqlDefaultChangerColumnsTest {
         }
     }
 }
+

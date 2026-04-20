@@ -1,12 +1,14 @@
 package fr.xephi.authme.task;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import ch.jalu.injector.factory.SingletonStore;
 import fr.xephi.authme.initialization.HasCleanup;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.List;
 
@@ -18,7 +20,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link CleanupTask}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class CleanupTaskTest {
 
     @InjectMocks
@@ -42,3 +45,5 @@ public class CleanupTaskTest {
         verify(services.get(2)).performCleanup();
     }
 }
+
+

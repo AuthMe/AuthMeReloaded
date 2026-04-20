@@ -2,10 +2,9 @@ package fr.xephi.authme.util;
 
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import fr.xephi.authme.TempFolder;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,13 +23,11 @@ public class FileUtilsTest {
     /** Regex that matches timestamps such as 20180211_1048. */
     private static final String BACKUP_TIMESTAMP_PATTERN = "20\\d{6}_\\d{4}";
 
-    @BeforeClass
+    @BeforeAll
     public static void initLogger() {
         TestHelper.setupLogger();
     }
-
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    public TempFolder temporaryFolder = new TempFolder();
 
     @Test
     public void shouldNotCopyFile() throws IOException {
@@ -217,3 +214,5 @@ public class FileUtilsTest {
     }
 
 }
+
+

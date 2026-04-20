@@ -1,8 +1,9 @@
 package fr.xephi.authme.command.executable.email;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import fr.xephi.authme.DelayedInjectionExtension;
 import ch.jalu.datasourcecolumns.data.DataSourceValueImpl;
 import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerCache;
@@ -17,9 +18,8 @@ import fr.xephi.authme.service.PasswordRecoveryService;
 import fr.xephi.authme.service.RecoveryCodeService;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.util.Collections;
@@ -38,7 +38,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 /**
  * Test for {@link RecoverEmailCommand}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@ExtendWith(DelayedInjectionExtension.class)
 public class RecoverEmailCommandTest {
 
     private static final String DEFAULT_EMAIL = "your@email.com";
@@ -73,7 +73,7 @@ public class RecoverEmailCommandTest {
     @Mock
     private Messages messages;
 
-    @BeforeClass
+    @BeforeAll
     public static void initLogger() {
         TestHelper.setupLogger();
     }
@@ -229,3 +229,5 @@ public class RecoverEmailCommandTest {
         assertThat(command.getArgumentsMismatchMessage(), equalTo(MessageKey.USAGE_RECOVER_EMAIL));
     }
 }
+
+

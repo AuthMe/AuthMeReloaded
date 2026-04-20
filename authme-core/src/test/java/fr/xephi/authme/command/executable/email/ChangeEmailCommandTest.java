@@ -1,5 +1,9 @@
 package fr.xephi.authme.command.executable.email;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
@@ -8,11 +12,9 @@ import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,7 +30,8 @@ import static org.mockito.Mockito.when;
 /**
  * Test for {@link ChangeEmailCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class ChangeEmailCommandTest {
 
     @InjectMocks
@@ -101,3 +104,5 @@ public class ChangeEmailCommandTest {
         return player;
     }
 }
+
+

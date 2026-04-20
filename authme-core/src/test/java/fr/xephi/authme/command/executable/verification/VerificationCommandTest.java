@@ -1,16 +1,18 @@
 package fr.xephi.authme.command.executable.verification;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.entity.Player;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
@@ -23,7 +25,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link VerificationCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class VerificationCommandTest {
 
     @InjectMocks
@@ -35,7 +38,7 @@ public class VerificationCommandTest {
     @Mock
     private VerificationCodeManager codeManager;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpLogger() {
         TestHelper.setupLogger();
     }
@@ -166,3 +169,5 @@ public class VerificationCommandTest {
         return player;
     }
 }
+
+

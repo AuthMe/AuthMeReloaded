@@ -140,13 +140,18 @@
 
         <!-- Test Dependencies -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -224,7 +229,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>--add-opens=java.base/java.lang=ALL-UNNAMED -Dfile.encoding=${project.build.sourceEncoding} -Duser.language=en @{argLine}</argLine>
+                    <argLine>-Xshare:off -javaagent:${dependencies.mockito.javaagent} --add-opens=java.base/java.lang=ALL-UNNAMED -Dfile.encoding=${project.build.sourceEncoding} -Duser.language=en @{argLine}</argLine>
                     <systemPropertyVariables>
                         <project.skipExtendedHashTests>${project.skipExtendedHashTests}</project.skipExtendedHashTests>
                     </systemPropertyVariables>

@@ -1,5 +1,9 @@
 package fr.xephi.authme.service;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.events.FailedLoginEvent;
@@ -14,12 +18,10 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,7 +36,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link BukkitService}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class BukkitServiceTest {
 
     private BukkitService bukkitService;
@@ -50,7 +53,7 @@ public class BukkitServiceTest {
     @Mock
     private PluginManager pluginManager;
 
-    @Before
+    @BeforeEach
     public void constructBukkitService() {
         ReflectionTestUtils.setField(Bukkit.class, null, "server", server);
         given(server.getScheduler()).willReturn(scheduler);
@@ -317,3 +320,5 @@ public class BukkitServiceTest {
         assertThat(result, equalTo(ip));
     }
 }
+
+

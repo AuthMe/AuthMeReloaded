@@ -1,7 +1,8 @@
 package fr.xephi.authme.data.limbo.persistence;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import fr.xephi.authme.DelayedInjectionExtension;
 import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
@@ -15,11 +16,9 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.hamcrest.Matcher;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import fr.xephi.authme.TempFolder;
 import org.mockito.Mock;
 
 import java.io.File;
@@ -43,7 +42,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Test for {@link DistributedFilesPersistenceHandler}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@ExtendWith(DelayedInjectionExtension.class)
 public class DistributedFilesPersistenceHandlerTest {
 
     /** Player is in seg32-10110 and should be migrated into seg16-f. */
@@ -83,11 +82,9 @@ public class DistributedFilesPersistenceHandlerTest {
     @DataFolder
     private File dataFolder;
     private File playerDataFolder;
+    public TempFolder temporaryFolder = new TempFolder();
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    @BeforeClass
+    @BeforeAll
     public static void initLogger() {
         TestHelper.setupLogger();
     }
@@ -214,3 +211,5 @@ public class DistributedFilesPersistenceHandlerTest {
         return location;
     }
 }
+
+

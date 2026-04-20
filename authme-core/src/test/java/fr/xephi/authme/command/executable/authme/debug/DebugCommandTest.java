@@ -1,18 +1,21 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import ch.jalu.injector.factory.Factory;
 import fr.xephi.authme.permission.DebugSectionPermissions;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,7 +44,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link DebugCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class DebugCommandTest {
 
     /**
@@ -59,8 +63,10 @@ public class DebugCommandTest {
 
     @Mock
     private PermissionsManager permissionsManager;
+    @Captor
+    private ArgumentCaptor<String> strCaptor;
 
-    @Before
+    @BeforeEach
     @SuppressWarnings("unchecked")
     public void initFactory() {
         given(debugSectionFactory.newInstance(any(Class.class))).willAnswer(
@@ -86,7 +92,6 @@ public class DebugCommandTest {
         verify(debugSectionFactory, atLeast(MIN_DEBUG_SECTIONS)).newInstance(any(Class.class));
         verify(permissionsManager, atLeast(MIN_DEBUG_SECTIONS)).hasPermission(eq(sender), any(DebugSectionPermissions.class));
 
-        ArgumentCaptor<String> strCaptor = ArgumentCaptor.forClass(String.class);
         verify(sender, times(4)).sendMessage(strCaptor.capture());
         assertThat(strCaptor.getAllValues(), contains(
             equalTo(ChatColor.BLUE + "AuthMe debug utils"),
@@ -108,7 +113,6 @@ public class DebugCommandTest {
         verify(debugSectionFactory, atLeast(MIN_DEBUG_SECTIONS)).newInstance(any(Class.class));
         verify(permissionsManager, atLeast(MIN_DEBUG_SECTIONS)).hasPermission(eq(sender), any(DebugSectionPermissions.class));
 
-        ArgumentCaptor<String> strCaptor = ArgumentCaptor.forClass(String.class);
         verify(sender, times(3)).sendMessage(strCaptor.capture());
         assertThat(strCaptor.getAllValues(), contains(
             equalTo(ChatColor.BLUE + "AuthMe debug utils"),
@@ -156,3 +160,5 @@ public class DebugCommandTest {
         verify(sender).sendMessage(argThat(containsString("You don't have permission")));
     }
 }
+
+

@@ -4,18 +4,18 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.security.crypts.description.AsciiRestricted;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * Test for implementations of {@link EncryptionMethod}.
@@ -97,7 +97,7 @@ public abstract class AbstractEncryptionMethodTest {
             GIVEN_PASSWORDS[3], result3);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setupLogger() {
         TestHelper.setupLogger();
     }
@@ -119,8 +119,8 @@ public abstract class AbstractEncryptionMethodTest {
         // Test entries in GIVEN_PASSWORDS except the last one
         for (int i = start; i < GIVEN_PASSWORDS.length - 1; ++i) {
             String password = GIVEN_PASSWORDS[i];
-            assertTrue("Hash for password '" + password + "' should match",
-                doesGivenHashMatch(password, method));
+            assertTrue(doesGivenHashMatch(password, method),
+                "Hash for password '" + password + "' should match");
         }
 
         // Note #375: Windows console seems to use its own character encoding (Windows-1252?) and it seems impossible to
@@ -151,17 +151,17 @@ public abstract class AbstractEncryptionMethodTest {
                     hash, equalTo(method.computeHash(password, salt, USERNAME)));
             }
 
-            assertTrue("Generated hash for '" + password + "' should match password (hash = '" + hash + "')",
-                method.comparePassword(password, hashedPassword, USERNAME));
-            assumeThat(SKIP_LONG_TESTS, equalTo(false));
+            assertTrue(method.comparePassword(password, hashedPassword, USERNAME),
+                "Generated hash for '" + password + "' should match password (hash = '" + hash + "')");
+            assumeTrue(!SKIP_LONG_TESTS);
 
             if (!password.equals(password.toLowerCase(Locale.ROOT))) {
-                assertFalse("Lower-case of '" + password + "' should not match generated hash '" + hash + "'",
-                    method.comparePassword(password.toLowerCase(Locale.ROOT), hashedPassword, USERNAME));
+                assertFalse(method.comparePassword(password.toLowerCase(Locale.ROOT), hashedPassword, USERNAME),
+                    "Lower-case of '" + password + "' should not match generated hash '" + hash + "'");
             }
             if (!password.equals(password.toUpperCase(Locale.ROOT))) {
-                assertFalse("Upper-case of '" + password + "' should not match generated hash '" + hash + "'",
-                    method.comparePassword(password.toUpperCase(Locale.ROOT), hashedPassword, USERNAME));
+                assertFalse(method.comparePassword(password.toUpperCase(Locale.ROOT), hashedPassword, USERNAME),
+                    "Upper-case of '" + password + "' should not match generated hash '" + hash + "'");
             }
         }
     }
@@ -169,12 +169,12 @@ public abstract class AbstractEncryptionMethodTest {
     /** Tests various strings to ensure that encryption methods don't rely on the hash's format too much. */
     @Test
     public void testMalformedHashes() {
-        assumeThat(SKIP_LONG_TESTS, equalTo(false));
+        assumeTrue(!SKIP_LONG_TESTS);
         String salt = method.hasSeparateSalt() ? "testSalt" : null;
         for (String bogusHash : BOGUS_HASHES) {
             HashedPassword hashedPwd = new HashedPassword(bogusHash, salt);
-            assertFalse("Passing bogus hash '" + bogusHash + "' does not result in an error",
-                method.comparePassword("Password", hashedPwd, "player"));
+            assertFalse(method.comparePassword("Password", hashedPwd, "player"),
+                "Passing bogus hash '" + bogusHash + "' does not result in an error");
         }
     }
 
@@ -237,3 +237,4 @@ public abstract class AbstractEncryptionMethodTest {
     }
 
 }
+

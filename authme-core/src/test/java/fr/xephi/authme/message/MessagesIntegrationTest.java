@@ -12,14 +12,16 @@ import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.expiring.Duration;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import fr.xephi.authme.TempFolder;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,6 +45,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link Messages}.
  */
+@ExtendWith(MockitoExtension.class)
 public class MessagesIntegrationTest {
 
     private static final String TEST_MESSAGES_LOCAL_PATH = "message/messages_test.yml";
@@ -50,11 +53,12 @@ public class MessagesIntegrationTest {
     private Messages messages;
     private MessagesFileHandler messagesFileHandler;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @Captor
+    private ArgumentCaptor<String> captor;
+    public TempFolder temporaryFolder = new TempFolder();
     private File dataFolder;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         TestHelper.setupLogger();
     }
@@ -67,7 +71,7 @@ public class MessagesIntegrationTest {
      * Similarly, the {@code messages_default.yml} from the test resources represents a default
      * file that should contain all messages, but again, for testing, it just contains a few.
      */
-    @Before
+    @BeforeEach
     public void setUpMessages() throws IOException {
         dataFolder = temporaryFolder.newFolder();
         File testFile = new File(dataFolder, MessagePathHelper.createMessageFilePath("test"));
@@ -79,7 +83,7 @@ public class MessagesIntegrationTest {
         messages = new Messages(messagesFileHandler);
     }
 
-    @AfterClass
+    @AfterAll
     public static void removeLoggerReferences() {
         ConsoleLogger.initialize(null, null);
     }
@@ -170,7 +174,6 @@ public class MessagesIntegrationTest {
 
         // then
         String[] lines = new String[]{"We've got", "new lines", "and ' apostrophes"};
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(player, times(3)).sendMessage(captor.capture());
         assertThat(captor.getAllValues(), contains(lines));
     }
@@ -316,3 +319,5 @@ public class MessagesIntegrationTest {
         return messagesFileHandler;
     }
 }
+
+

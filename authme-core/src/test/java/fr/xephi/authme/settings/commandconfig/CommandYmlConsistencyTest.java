@@ -1,17 +1,18 @@
 package fr.xephi.authme.settings.commandconfig;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import ch.jalu.configme.configurationdata.ConfigurationDataBuilder;
 import ch.jalu.configme.resource.PropertyResource;
 import ch.jalu.configme.resource.YamlFileResource;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.SettingsMigrationService;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import fr.xephi.authme.TempFolder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
 
@@ -22,7 +23,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Tests that commands.yml is well-formed.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class CommandYmlConsistencyTest {
 
     @InjectMocks
@@ -30,9 +32,7 @@ public class CommandYmlConsistencyTest {
 
     @Mock
     private SettingsMigrationService settingsMigrationService;
-
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    public TempFolder temporaryFolder = new TempFolder();
 
     @Test
     public void shouldLoadWithNoMigrations() {
@@ -49,3 +49,5 @@ public class CommandYmlConsistencyTest {
         verify(settingsMigrationService).hasOldOtherAccountsCommand();
     }
 }
+
+

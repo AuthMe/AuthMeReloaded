@@ -1,7 +1,8 @@
 package fr.xephi.authme.settings;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import fr.xephi.authme.DelayedInjectionExtension;
 import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerCache;
@@ -14,10 +15,8 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import fr.xephi.authme.TempFolder;
 import org.mockito.Mock;
 
 import java.io.File;
@@ -37,7 +36,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link WelcomeMessageConfiguration}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@ExtendWith(DelayedInjectionExtension.class)
 public class WelcomeMessageConfigurationTest {
 
     @InjectDelayed
@@ -56,9 +55,7 @@ public class WelcomeMessageConfigurationTest {
     private File testPluginFolder;
 
     private File welcomeFile;
-
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    public TempFolder temporaryFolder = new TempFolder();
 
     @BeforeInjecting
     public void createPluginFolder() throws IOException {
@@ -142,3 +139,5 @@ public class WelcomeMessageConfigurationTest {
         welcomeMessageConfiguration.reload();
     }
 }
+
+

@@ -1,12 +1,12 @@
 package fr.xephi.authme.permission;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Set;
 
 import static com.google.common.collect.Sets.newHashSet;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test for {@link PlayerStatePermission}.
@@ -45,3 +45,4 @@ public class PlayerStatePermissionTest extends AbstractPermissionsEnumTest {
         return false;
     }
 }
+

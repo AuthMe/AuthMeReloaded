@@ -3,8 +3,7 @@ package fr.xephi.authme.datasource;
 import com.google.common.collect.ImmutableSet;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.Settings;
-import org.junit.BeforeClass;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.BeforeAll;
 
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -27,11 +26,7 @@ public abstract class AbstractSqlDataSourceResourceClosingTest extends AbstractR
 
     private static Settings settings;
 
-    AbstractSqlDataSourceResourceClosingTest(Method method, String name) {
-        super(method, name);
-    }
-
-    @BeforeClass
+    @BeforeAll
     public static void initializeSettings() {
         settings = mock(Settings.class);
         TestHelper.returnDefaultsForAllProperties(settings);
@@ -49,19 +44,9 @@ public abstract class AbstractSqlDataSourceResourceClosingTest extends AbstractR
     /* Create a DataSource instance with the given mock settings and mock connection. */
     protected abstract DataSource createDataSource(Settings settings, Connection connection) throws Exception;
 
-    /**
-     * Initialization method -- provides the parameters to run the test with by scanning all DataSource methods.
-     *
-     * @return Test parameters
-     */
-    @Parameterized.Parameters(name = "{1}")
-    public static Collection<Object[]> data() {
-        List<Method> methods = getDataSourceMethods();
-        List<Object[]> data = new ArrayList<>();
-        for (Method method : methods) {
-            data.add(new Object[]{method, method.getName()});
-        }
-        return data;
+    @Override
+    protected Collection<Method> getMethodsToTest() {
+        return getDataSourceMethods();
     }
 
     /* Get all methods of the DataSource interface, minus the ones in the ignored list. */
@@ -71,3 +56,4 @@ public abstract class AbstractSqlDataSourceResourceClosingTest extends AbstractR
             .collect(Collectors.toList());
     }
 }
+

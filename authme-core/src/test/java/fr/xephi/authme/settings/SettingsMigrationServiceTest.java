@@ -12,10 +12,9 @@ import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.properties.AuthMeSettingsRetriever;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import fr.xephi.authme.TempFolder;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,11 +46,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class SettingsMigrationServiceTest {
 
     private static final String OLD_CONFIG_FILE = TestHelper.PROJECT_ROOT + "settings/config-old.yml";
+    public TempFolder temporaryFolder = new TempFolder();
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    @BeforeClass
+    @BeforeAll
     public static void setUpLogger() {
         TestHelper.setupLogger();
     }
@@ -153,3 +150,5 @@ public class SettingsMigrationServiceTest {
         }
     }
 }
+
+

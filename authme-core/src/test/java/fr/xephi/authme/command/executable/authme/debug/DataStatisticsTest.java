@@ -1,5 +1,9 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import ch.jalu.injector.factory.SingletonStore;
 import com.google.common.cache.LoadingCache;
 import fr.xephi.authme.ReflectionTestUtils;
@@ -15,13 +19,12 @@ import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,7 +43,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link DataStatistics}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class DataStatisticsTest {
 
     @InjectMocks
@@ -54,8 +58,10 @@ public class DataStatisticsTest {
     private LimboService limboService;
     @Mock
     private SingletonStore<Object> singletonStore;
+    @Captor
+    private ArgumentCaptor<String> stringCaptor;
 
-    @Before
+    @BeforeEach
     public void setUpLimboCacheMap() {
         Map<String, LimboPlayer> limboMap = new HashMap<>();
         limboMap.put("test", mock(LimboPlayer.class));
@@ -83,7 +89,6 @@ public class DataStatisticsTest {
         dataStatistics.execute(sender, Collections.emptyList());
 
         // then
-        ArgumentCaptor<String> stringCaptor = ArgumentCaptor.forClass(String.class);
         verify(sender, atLeastOnce()).sendMessage(stringCaptor.capture());
         assertThat(stringCaptor.getAllValues(), containsInAnyOrder(
             ChatColor.BLUE + "AuthMe statistics",
@@ -109,7 +114,6 @@ public class DataStatisticsTest {
         dataStatistics.execute(sender, Collections.emptyList());
 
         // then
-        ArgumentCaptor<String> stringCaptor = ArgumentCaptor.forClass(String.class);
         verify(sender, atLeastOnce()).sendMessage(stringCaptor.capture());
         assertThat(stringCaptor.getAllValues(), hasItem("Cached PlayerAuth objects: 11"));
     }
@@ -119,3 +123,5 @@ public class DataStatisticsTest {
         return Collections.nCopies(size, mock);
     }
 }
+
+

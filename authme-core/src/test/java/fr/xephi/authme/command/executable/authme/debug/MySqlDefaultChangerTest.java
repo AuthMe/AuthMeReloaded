@@ -1,5 +1,9 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
@@ -9,11 +13,9 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.datasource.SqlDataSourceTestUtil;
 import fr.xephi.authme.settings.Settings;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -29,13 +31,14 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link MySqlDefaultChanger}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class MySqlDefaultChangerTest {
 
     @Mock
     private Settings settings;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpLogger() {
         TestHelper.setupLogger();
     }
@@ -96,3 +99,5 @@ public class MySqlDefaultChangerTest {
         return defaultChanger;
     }
 }
+
+

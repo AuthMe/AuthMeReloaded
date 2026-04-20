@@ -1,7 +1,7 @@
 package fr.xephi.authme.message;
 
 import fr.xephi.authme.util.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -9,7 +9,7 @@ import java.util.Set;
 
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test for {@link MessageKey}.
@@ -47,3 +47,4 @@ public class MessageKeyTest {
         }
     }
 }
+

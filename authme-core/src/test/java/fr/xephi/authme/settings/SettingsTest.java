@@ -6,11 +6,10 @@ import ch.jalu.configme.resource.PropertyReader;
 import ch.jalu.configme.resource.PropertyResource;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.properties.TestConfiguration;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import fr.xephi.authme.TempFolder;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,17 +30,15 @@ public class SettingsTest {
 
     private static final ConfigurationData CONFIG_DATA =
         ConfigurationDataBuilder.createConfiguration(TestConfiguration.class);
-
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    public TempFolder temporaryFolder = new TempFolder();
     private File testPluginFolder;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
-    @Before
+    @BeforeEach
     public void setUpTestPluginFolder() throws IOException {
         testPluginFolder = temporaryFolder.newFolder();
     }
@@ -118,3 +115,5 @@ public class SettingsTest {
     }
 
 }
+
+

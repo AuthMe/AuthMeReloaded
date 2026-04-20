@@ -2,7 +2,7 @@ package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -41,3 +41,4 @@ public class BCryptTest extends AbstractEncryptionMethodTest {
         return settings;
     }
 }
+

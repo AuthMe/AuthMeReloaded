@@ -1,5 +1,9 @@
 package fr.xephi.authme.process.login;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
@@ -15,13 +19,11 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.entity.Player;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 import java.util.Arrays;
@@ -37,12 +39,13 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.internal.verification.VerificationModeFactory.only;
+import static org.mockito.Mockito.only;
 
 /**
  * Test for {@link AsynchronousLogin}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class AsynchronousLoginTest {
 
     @InjectMocks
@@ -60,7 +63,7 @@ public class AsynchronousLoginTest {
     @Mock
     private BukkitService bukkitService;
 
-    @BeforeClass
+    @BeforeAll
     public static void initLogger() {
         TestHelper.setupLogger();
     }
@@ -176,7 +179,7 @@ public class AsynchronousLoginTest {
         Player player = mockPlayer("Carl");
         given(commonService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(2);
         given(commonService.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)).willReturn(false);
-        mockOnlinePlayersInBukkitService();
+        mockOnlinePlayersInBukkitService("1.1.1.1");
 
         // when
         boolean result = asynchronousLogin.hasReachedMaxLoggedInPlayersForIp(player, "1.1.1.1");
@@ -190,7 +193,7 @@ public class AsynchronousLoginTest {
     @Test
     public void shouldSkipIpCheckForZeroThreshold() {
         // given
-        Player player = mockPlayer("Fiona");
+        Player player = mock(Player.class);
         given(commonService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(0);
 
         // when
@@ -204,7 +207,7 @@ public class AsynchronousLoginTest {
     @Test
     public void shouldSkipIpCheckForPlayerWithMultipleAccountsPermission() {
         // given
-        Player player = mockPlayer("Frank");
+        Player player = mock(Player.class);
         given(commonService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(1);
         given(commonService.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)).willReturn(true);
 
@@ -223,7 +226,7 @@ public class AsynchronousLoginTest {
         Player player = mockPlayer("Ian");
         given(commonService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(2);
         given(commonService.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)).willReturn(false);
-        mockOnlinePlayersInBukkitService();
+        mockOnlinePlayersInBukkitService("2.2.2.2");
 
         // when
         boolean result = asynchronousLogin.hasReachedMaxLoggedInPlayersForIp(player, "2.2.2.2");
@@ -240,32 +243,43 @@ public class AsynchronousLoginTest {
         return player;
     }
 
-    private void mockOnlinePlayersInBukkitService() {
-        // 1.1.1.1: albania (online), brazil (offline)
-        Player playerA = mockPlayer("albania");
-        TestHelper.mockIpAddressToPlayer(playerA, "1.1.1.1");
-        given(dataSource.isLogged(playerA.getName())).willReturn(true);
-        Player playerB = mockPlayer("brazil");
-        TestHelper.mockIpAddressToPlayer(playerB, "1.1.1.1");
-        given(dataSource.isLogged(playerB.getName())).willReturn(false);
+    private void mockOnlinePlayersInBukkitService(String checkedIp) {
+        Player primaryOnline;
+        Player primaryOffline;
+        Player extraSameIpOnline = mock(Player.class);
 
-        // 2.2.2.2: congo (online), denmark (offline), ecuador (online)
-        Player playerC = mockPlayer("congo");
-        TestHelper.mockIpAddressToPlayer(playerC, "2.2.2.2");
-        given(dataSource.isLogged(playerC.getName())).willReturn(true);
-        Player playerD = mockPlayer("denmark");
-        TestHelper.mockIpAddressToPlayer(playerD, "2.2.2.2");
-        given(dataSource.isLogged(playerD.getName())).willReturn(false);
-        Player playerE = mockPlayer("ecuador");
-        TestHelper.mockIpAddressToPlayer(playerE, "2.2.2.2");
-        given(dataSource.isLogged(playerE.getName())).willReturn(true);
+        if ("1.1.1.1".equals(checkedIp)) {
+            primaryOnline = mockPlayer("albania");
+            TestHelper.mockIpAddressToPlayer(primaryOnline, "1.1.1.1");
+            given(dataSource.isLogged("albania")).willReturn(true);
 
-        // 3.3.3.3: france (offline)
-        Player playerF = mockPlayer("france");
-        TestHelper.mockIpAddressToPlayer(playerF, "3.3.3.3");
+            primaryOffline = mockPlayer("brazil");
+            TestHelper.mockIpAddressToPlayer(primaryOffline, "1.1.1.1");
+            given(dataSource.isLogged("brazil")).willReturn(false);
 
-        List<Player> onlinePlayers = Arrays.asList(playerA, playerB, playerC, playerD, playerE, playerF);
+            TestHelper.mockIpAddressToPlayer(extraSameIpOnline, "2.2.2.2");
+        } else {
+            primaryOnline = mockPlayer("congo");
+            TestHelper.mockIpAddressToPlayer(primaryOnline, "2.2.2.2");
+            given(dataSource.isLogged("congo")).willReturn(true);
+
+            primaryOffline = mockPlayer("denmark");
+            TestHelper.mockIpAddressToPlayer(primaryOffline, "2.2.2.2");
+            given(dataSource.isLogged("denmark")).willReturn(false);
+
+            Player playerE = mockPlayer("ecuador");
+            TestHelper.mockIpAddressToPlayer(playerE, "2.2.2.2");
+            given(dataSource.isLogged("ecuador")).willReturn(true);
+            extraSameIpOnline = playerE;
+        }
+
+        Player otherIpPlayer = mock(Player.class);
+        TestHelper.mockIpAddressToPlayer(otherIpPlayer, "3.3.3.3");
+
+        List<Player> onlinePlayers = Arrays.asList(primaryOnline, primaryOffline, extraSameIpOnline, otherIpPlayer);
         given(bukkitService.getOnlinePlayers()).willReturn(onlinePlayers);
     }
 
 }
+
+
