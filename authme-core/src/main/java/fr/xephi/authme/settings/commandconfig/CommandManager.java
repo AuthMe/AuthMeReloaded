@@ -129,7 +129,7 @@ public class CommandManager implements Reloadable {
             if (predicate.test(cmd)) {
                 long delay = cmd.getDelay();
                 if (delay > 0) {
-                    bukkitService.scheduleSyncDelayedTask(() -> dispatchCommand(player, cmd), delay);
+                    bukkitService.scheduleSyncDelayedTask(player, () -> dispatchCommand(player, cmd), delay);
                 } else {
                     dispatchCommand(player, cmd);
                 }

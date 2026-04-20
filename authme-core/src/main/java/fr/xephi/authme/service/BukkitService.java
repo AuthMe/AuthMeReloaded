@@ -2,15 +2,18 @@ package fr.xephi.authme.service;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.initialization.SettingsDependent;
+import fr.xephi.authme.platform.SchedulingAdapter;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.potion.PotionEffect;
@@ -39,11 +42,13 @@ public class BukkitService implements SettingsDependent {
     public static final int TICKS_PER_MINUTE = 60 * TICKS_PER_SECOND;
 
     private final AuthMe authMe;
+    private final SchedulingAdapter schedulingAdapter;
     private boolean useAsyncTasks;
 
     @Inject
-    BukkitService(AuthMe authMe, Settings settings) {
+    BukkitService(AuthMe authMe, Settings settings, SchedulingAdapter schedulingAdapter) {
         this.authMe = authMe;
+        this.schedulingAdapter = schedulingAdapter;
         reload(settings);
     }
 
@@ -73,6 +78,31 @@ public class BukkitService implements SettingsDependent {
     }
 
     /**
+     * Schedules a task on the owning thread of the given entity.
+     *
+     * @param entity the entity whose scheduler should own the task
+     * @param task the task to run
+     */
+    public void scheduleSyncTaskFromOptionallyAsyncTask(Entity entity, Runnable task) {
+        if (schedulingAdapter.isOwnedByCurrentThread(entity)) {
+            task.run();
+            return;
+        }
+        schedulingAdapter.runOnEntityThread(authMe, entity, task);
+    }
+
+    /**
+     * Schedules a delayed task on the owning thread of the given entity.
+     *
+     * @param entity the entity whose scheduler should own the task
+     * @param task the task to run
+     * @param delay the delay in ticks
+     */
+    public void scheduleSyncDelayedTask(Entity entity, Runnable task, long delay) {
+        runTaskLater(entity, task, delay);
+    }
+
+    /**
      * Schedules a synchronous task if we are currently on a async thread; if not, it runs the task immediately.
      * Use this when {@link #runTaskOptionallyAsync(Runnable) optionally asynchronous tasks} have to
      * run something synchronously.
@@ -80,10 +110,10 @@ public class BukkitService implements SettingsDependent {
      * @param task the task to be run
      */
     public void scheduleSyncTaskFromOptionallyAsyncTask(Runnable task) {
-        if (Bukkit.isPrimaryThread()) {
+        if (schedulingAdapter.isGlobalThread()) {
             task.run();
         } else {
-            scheduleSyncDelayedTask(task);
+            runOnGlobalRegion(task);
         }
     }
 
@@ -95,12 +125,12 @@ public class BukkitService implements SettingsDependent {
      * @return the supplier's result
      */
     public <T> T callSyncMethodFromOptionallyAsyncTask(Supplier<T> supplier) {
-        if (Bukkit.isPrimaryThread()) {
+        if (schedulingAdapter.isGlobalThread()) {
             return supplier.get();
         }
 
         CompletableFuture<T> future = new CompletableFuture<>();
-        int taskId = scheduleSyncDelayedTask(() -> {
+        runOnGlobalRegion(() -> {
             try {
                 future.complete(supplier.get());
             } catch (RuntimeException e) {
@@ -109,9 +139,6 @@ public class BukkitService implements SettingsDependent {
                 future.completeExceptionally(e);
             }
         });
-        if (taskId == -1) {
-            throw new IllegalStateException("Could not schedule sync task");
-        }
 
         try {
             return future.get();
@@ -154,6 +181,18 @@ public class BukkitService implements SettingsDependent {
      */
     public BukkitTask runTaskLater(Runnable task, long delay) {
         return Bukkit.getScheduler().runTaskLater(authMe, task, delay);
+    }
+
+    /**
+     * Schedules a delayed task on the owning thread of the given entity.
+     *
+     * @param entity the entity whose scheduler should own the task
+     * @param task the task to run
+     * @param delay the delay in ticks
+     * @return the scheduled task handle
+     */
+    public CancellableTask runTaskLater(Entity entity, Runnable task, long delay) {
+        return schedulingAdapter.runDelayedOnEntityThread(authMe, entity, task, delay);
     }
 
     /**
@@ -217,6 +256,43 @@ public class BukkitService implements SettingsDependent {
      */
     public BukkitTask runTaskTimer(BukkitRunnable task, long delay, long period) {
         return task.runTaskTimer(authMe, delay, period);
+    }
+
+    /**
+     * Schedules a repeating task on the owning thread of the given entity.
+     *
+     * @param entity the entity whose scheduler should own the task
+     * @param task the task to schedule
+     * @param delay the initial delay in ticks
+     * @param period the repeat period in ticks
+     * @return the scheduled task handle
+     */
+    public CancellableTask runTaskTimer(Entity entity, Runnable task, long delay, long period) {
+        return schedulingAdapter.runAtFixedRateOnEntityThread(authMe, entity, task, delay, period);
+    }
+
+    /**
+     * Schedules a task on the global region.
+     *
+     * @param task the task to run
+     */
+    public void runOnGlobalRegion(Runnable task) {
+        if (schedulingAdapter.isGlobalThread()) {
+            task.run();
+            return;
+        }
+        schedulingAdapter.runOnGlobalThread(authMe, task);
+    }
+
+    /**
+     * Schedules a delayed task on the global region.
+     *
+     * @param task the task to run
+     * @param delay the delay in ticks
+     * @return the scheduled task handle
+     */
+    public CancellableTask runTaskLaterOnGlobalRegion(Runnable task, long delay) {
+        return schedulingAdapter.runDelayedOnGlobalThread(authMe, task, delay);
     }
 
     /**

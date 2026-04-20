@@ -20,6 +20,7 @@ import fr.xephi.authme.listener.PlayerListener111;
 import fr.xephi.authme.listener.PlayerListener19;
 import fr.xephi.authme.listener.ServerListener;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
+import fr.xephi.authme.platform.SchedulingAdapter;
 import fr.xephi.authme.security.crypts.Sha256;
 import fr.xephi.authme.service.BackupService;
 import fr.xephi.authme.service.BukkitService;
@@ -222,6 +223,7 @@ public class AuthMe extends JavaPlugin {
         injector.register(TeleportAdapter.class, platformAdapter);
         injector.register(ChatAdapter.class, platformAdapter);
         injector.register(EventRegistrationAdapter.class, platformAdapter);
+        injector.register(SchedulingAdapter.class, platformAdapter);
         injector.register(DialogAdapter.class, platformAdapter);
         injector.register(CommandRegistrationAdapter.class, platformAdapter);
 

@@ -25,6 +25,7 @@ import java.util.Collections;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.times;
@@ -77,8 +78,8 @@ public class CommandManagerTest {
         verify(bukkitService).dispatchConsoleCommand("msg Bobby Welcome back");
         verify(bukkitService).dispatchCommand(any(Player.class), eq("motd"));
         verify(bukkitService).dispatchCommand(any(Player.class), eq("list"));
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(60L));
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(120L));
+        verify(bukkitService).scheduleSyncDelayedTask(eq(player), any(Runnable.class), eq(60L));
+        verify(bukkitService).scheduleSyncDelayedTask(eq(player), any(Runnable.class), eq(120L));
         verifyNoMoreInteractions(bukkitService);
         verifyNoInteractions(geoIpService);
     }
@@ -97,9 +98,9 @@ public class CommandManagerTest {
         verify(bukkitService).dispatchCommand(player, "motd");
         verify(bukkitService).dispatchCommand(player, "list");
         verify(bukkitService).dispatchConsoleCommand("helpop Player Bobby has more than 1 account");
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(60L));
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(120L));
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(180L));
+        verify(bukkitService).scheduleSyncDelayedTask(eq(player), any(Runnable.class), eq(60L));
+        verify(bukkitService).scheduleSyncDelayedTask(eq(player), any(Runnable.class), eq(120L));
+        verify(bukkitService).scheduleSyncDelayedTask(eq(player), any(Runnable.class), eq(180L));
         verifyNoMoreInteractions(bukkitService);
         verifyNoInteractions(geoIpService);
     }
@@ -119,10 +120,10 @@ public class CommandManagerTest {
         verify(bukkitService).dispatchCommand(player, "list");
         verify(bukkitService).dispatchConsoleCommand("helpop Player Bobby has more than 1 account");
         verify(bukkitService).dispatchConsoleCommand("log Bobby 127.0.0.3 many accounts");
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(60L));
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(120L));
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(180L));
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(240L));
+        verify(bukkitService).scheduleSyncDelayedTask(eq(player), any(Runnable.class), eq(60L));
+        verify(bukkitService).scheduleSyncDelayedTask(eq(player), any(Runnable.class), eq(120L));
+        verify(bukkitService).scheduleSyncDelayedTask(eq(player), any(Runnable.class), eq(180L));
+        verify(bukkitService).scheduleSyncDelayedTask(eq(player), any(Runnable.class), eq(240L));
         verifyNoMoreInteractions(bukkitService);
         verifyNoInteractions(geoIpService);
     }
@@ -141,9 +142,9 @@ public class CommandManagerTest {
         verify(bukkitService).dispatchCommand(player, "motd");
         verify(bukkitService).dispatchCommand(player, "list");
         verify(bukkitService).dispatchConsoleCommand("helpop Player Bobby has more than 1 account");
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(60L));
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(120L));
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(180L));
+        verify(bukkitService).scheduleSyncDelayedTask(eq(player), any(Runnable.class), eq(60L));
+        verify(bukkitService).scheduleSyncDelayedTask(eq(player), any(Runnable.class), eq(120L));
+        verify(bukkitService).scheduleSyncDelayedTask(eq(player), any(Runnable.class), eq(180L));
         verifyNoMoreInteractions(bukkitService);
         verifyNoInteractions(geoIpService);
     }
@@ -161,7 +162,7 @@ public class CommandManagerTest {
         // then
         verify(bukkitService).dispatchConsoleCommand("msg Bobby Welcome back, bob");
         verify(bukkitService).dispatchCommand(any(Player.class), eq("list"));
-        verify(bukkitService).scheduleSyncDelayedTask(any(Runnable.class), eq(100L));
+        verify(bukkitService).scheduleSyncDelayedTask(eq(player), any(Runnable.class), eq(100L));
         verifyNoMoreInteractions(bukkitService);
         verifyNoInteractions(geoIpService);
     }
@@ -249,7 +250,7 @@ public class CommandManagerTest {
         // then
         verify(bukkitService).dispatchCommand(any(Player.class), eq("me I just registered"));
         verify(bukkitService).dispatchConsoleCommand("log Bobby (127.0.0.3, Syldavia) registered");
-        verify(bukkitService, times(2)).scheduleSyncDelayedTask(any(Runnable.class), eq(100L));
+        verify(bukkitService, times(2)).scheduleSyncDelayedTask(eq(player), any(Runnable.class), eq(100L));
         verifyNoMoreInteractions(bukkitService);
     }
 
@@ -310,11 +311,11 @@ public class CommandManagerTest {
 
     private Player mockPlayer() {
         Player player = mock(Player.class);
-        given(player.getName()).willReturn("Bobby");
-        given(player.getDisplayName()).willReturn("bob");
+        lenient().when(player.getName()).thenReturn("Bobby");
+        lenient().when(player.getDisplayName()).thenReturn("bob");
         String ip = "127.0.0.3";
         TestHelper.mockIpAddressToPlayer(player, ip);
-        given(geoIpService.getCountryName(ip)).willReturn("Syldavia");
+        lenient().when(geoIpService.getCountryName(ip)).thenReturn("Syldavia");
         return player;
     }
 }

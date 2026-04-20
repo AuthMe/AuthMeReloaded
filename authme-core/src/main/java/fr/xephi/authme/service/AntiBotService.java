@@ -8,7 +8,7 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.util.AtomicIntervalCounter;
-import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import java.util.Locale;
@@ -32,7 +32,7 @@ public class AntiBotService implements SettingsDependent {
     // Service status
     private AntiBotStatus antiBotStatus;
     private boolean startup;
-    private BukkitTask disableTask;
+    private CancellableTask disableTask;
     private AtomicIntervalCounter flaggedCounter;
 
     @Inject
@@ -73,7 +73,7 @@ public class AntiBotService implements SettingsDependent {
         // Delay the schedule on first start
         if (startup) {
             int delay = settings.getProperty(ProtectionSettings.ANTIBOT_DELAY);
-            bukkitService.scheduleSyncDelayedTask(enableTask, delay * TICKS_PER_SECOND);
+            bukkitService.runTaskLaterOnGlobalRegion(enableTask, delay * TICKS_PER_SECOND);
             startup = false;
         } else {
             enableTask.run();
@@ -91,14 +91,9 @@ public class AntiBotService implements SettingsDependent {
             disableTask.cancel();
         }
         // Schedule auto-disable
-        disableTask = bukkitService.runTaskLater(this::stopProtection, duration * TICKS_PER_MINUTE);
+        disableTask = bukkitService.runTaskLaterOnGlobalRegion(this::stopProtection, duration * TICKS_PER_MINUTE);
         antiBotStatus = AntiBotStatus.ACTIVE;
-        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
-            // Inform admins
-            bukkitService.getOnlinePlayers().stream()
-                .filter(player -> permissionsManager.hasPermission(player, AdminPermission.ANTIBOT_MESSAGES))
-                .forEach(player -> messages.send(player, MessageKey.ANTIBOT_AUTO_ENABLED_MESSAGE));
-        });
+        notifyAdmins(MessageKey.ANTIBOT_AUTO_ENABLED_MESSAGE);
     }
 
     /**
@@ -119,10 +114,7 @@ public class AntiBotService implements SettingsDependent {
         disableTask = null;
 
         // Inform admins
-        String durationString = Integer.toString(duration);
-        bukkitService.getOnlinePlayers().stream()
-            .filter(player -> permissionsManager.hasPermission(player, AdminPermission.ANTIBOT_MESSAGES))
-            .forEach(player -> messages.send(player, MessageKey.ANTIBOT_AUTO_DISABLED_MESSAGE, durationString));
+        notifyAdmins(MessageKey.ANTIBOT_AUTO_DISABLED_MESSAGE, Integer.toString(duration));
     }
 
     /**
@@ -188,6 +180,21 @@ public class AntiBotService implements SettingsDependent {
      */
     public void addPlayerKick(String name) {
         antibotKicked.addIfAbsent(name.toLowerCase(Locale.ROOT));
+    }
+
+    private void notifyAdmins(MessageKey key, String... args) {
+        bukkitService.runOnGlobalRegion(() -> {
+            Object[] players = bukkitService.getOnlinePlayers().toArray();
+            for (Object onlinePlayer : players) {
+                if (onlinePlayer instanceof Player player) {
+                    bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player, () -> {
+                        if (permissionsManager.hasPermission(player, AdminPermission.ANTIBOT_MESSAGES)) {
+                            messages.send(player, key, args);
+                        }
+                    });
+                }
+            }
+        });
     }
 
     public enum AntiBotStatus {

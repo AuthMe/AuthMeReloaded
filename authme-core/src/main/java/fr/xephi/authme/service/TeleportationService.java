@@ -388,7 +388,7 @@ public class TeleportationService implements Reloadable {
      * @param event  the event to emit and according to which to teleport
      */
     private void performTeleportation(final Player player, final AbstractTeleportEvent event) {
-        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
+        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player, () -> {
             bukkitService.callEvent(event);
             if (player.isOnline() && isEventValid(event)) {
                 teleportAdapter.teleportPlayer(player, event.getTo());

@@ -23,6 +23,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunOnGlobalRegion;
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTask;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
@@ -158,7 +160,8 @@ public class TempbanManagerTest {
         given(messages.retrieveSingle(player, MessageKey.TEMPBAN_MAX_LOGINS)).willReturn(banReason);
         Settings settings = mockSettings(2, 100, "");
         TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
-        setBukkitServiceToScheduleSyncDelayedTask(bukkitService);
+        setBukkitServiceToRunOnGlobalRegion(bukkitService);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         manager.tempbanPlayer(player);
@@ -184,7 +187,7 @@ public class TempbanManagerTest {
         String banCommand = "banip %ip% 15d IP ban too many logins";
         Settings settings = mockSettings(2, 100, banCommand);
         TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
-        setBukkitServiceToScheduleSyncDelayedTask(bukkitService);
+        setBukkitServiceToRunOnGlobalRegion(bukkitService);
 
         // when
         manager.tempbanPlayer(player);
@@ -206,7 +209,8 @@ public class TempbanManagerTest {
         manager.increaseCount(ip, "user");
         manager.increaseCount(ip, "name2");
         manager.increaseCount(ip, "user");
-        setBukkitServiceToScheduleSyncDelayedTask(bukkitService);
+        setBukkitServiceToRunOnGlobalRegion(bukkitService);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         manager.tempbanPlayer(player);

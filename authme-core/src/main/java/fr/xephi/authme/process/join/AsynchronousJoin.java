@@ -110,7 +110,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
         if (service.getProperty(RestrictionSettings.FORCE_SURVIVAL_MODE)
             && player.getGameMode() != GameMode.SURVIVAL
             && !service.hasPermission(player, PlayerStatePermission.BYPASS_FORCE_SURVIVAL)) {
-            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> player.setGameMode(GameMode.SURVIVAL));
+            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player, () -> player.setGameMode(GameMode.SURVIVAL));
         }
 
         if (service.getProperty(HooksSettings.DISABLE_SOCIAL_SPY)) {
@@ -129,7 +129,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 ProtectInventoryEvent ev = bukkitService.createAndCallEvent(
                     isAsync -> new ProtectInventoryEvent(player, isAsync));
                 if (ev.isCancelled()) {
-                    player.updateInventory();
+                    bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player, player::updateInventory);
                     logger.fine("ProtectInventoryEvent has been cancelled for " + player.getName() + "...");
                 }
             }
@@ -138,14 +138,14 @@ public class AsynchronousJoin implements AsynchronousProcess {
             if (sessionService.canResumeSession(player)) {
                 service.send(player, MessageKey.SESSION_RECONNECTION);
                 // Run commands
-                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(
+                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player,
                     () -> commandManager.runCommandsOnSessionLogin(player));
                 bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
                 return;
             } else if (proxySessionManager.shouldResumeSession(name)) {
                 service.send(player, MessageKey.SESSION_RECONNECTION);
                 // Run commands
-                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(
+                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player,
                     () -> commandManager.runCommandsOnSessionLogin(player));
                 bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
                 logger.info("The user " + player.getName() + " has been automatically logged in, "
@@ -153,7 +153,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 return;
             }
         } else if (!service.getProperty(RegistrationSettings.FORCE)) {
-            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
+            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player, () -> {
                 welcomeMessageConfiguration.sendWelcomeMessage(player);
             });
 
@@ -162,7 +162,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             if (bungeeSender.isEnabled()) {
                 // As described at https://www.spigotmc.org/wiki/bukkit-bungee-plugin-messaging-channel/
                 // "Keep in mind that you can't send plugin messages directly after a player joins."
-                bukkitService.scheduleSyncDelayedTask(() ->
+                bukkitService.scheduleSyncDelayedTask(player, () ->
                     bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.LOGIN), 5L);
             }
             return;
@@ -172,12 +172,11 @@ public class AsynchronousJoin implements AsynchronousProcess {
     }
 
     private void handlePlayerWithUnmetNameRestriction(Player player, String ip) {
-        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
-            player.kickPlayer(service.retrieveSingleMessage(player, MessageKey.NOT_OWNER_ERROR));
-            if (service.getProperty(RestrictionSettings.BAN_UNKNOWN_IP)) {
-                server.banIP(ip);
-            }
-        });
+        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player,
+            () -> player.kickPlayer(service.retrieveSingleMessage(player, MessageKey.NOT_OWNER_ERROR)));
+        if (service.getProperty(RestrictionSettings.BAN_UNKNOWN_IP)) {
+            bukkitService.runOnGlobalRegion(() -> server.banIP(ip));
+        }
     }
 
     /**
@@ -190,7 +189,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private void processJoinSync(Player player, boolean isAuthAvailable) {
         int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
 
-        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
+        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player, () -> {
             limboService.createLimboPlayer(player, isAuthAvailable);
 
             player.setNoDamageTicks(registrationTimeout);
@@ -230,7 +229,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             && !InternetProtocolUtils.isLoopbackAddress(ip)
             && countOnlinePlayersByIp(ip) > service.getProperty(RestrictionSettings.MAX_JOIN_PER_IP)) {
 
-            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(
+            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player,
                 () -> player.kickPlayer(service.retrieveSingleMessage(player, MessageKey.SAME_IP_ONLINE)));
             return false;
         }

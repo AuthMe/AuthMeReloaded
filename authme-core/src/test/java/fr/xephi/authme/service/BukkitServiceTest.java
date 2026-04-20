@@ -7,12 +7,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.events.FailedLoginEvent;
+import fr.xephi.authme.platform.SchedulingAdapter;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -28,6 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
@@ -52,14 +55,16 @@ public class BukkitServiceTest {
     private BukkitScheduler scheduler;
     @Mock
     private PluginManager pluginManager;
+    @Mock
+    private SchedulingAdapter schedulingAdapter;
 
     @BeforeEach
     public void constructBukkitService() {
         ReflectionTestUtils.setField(Bukkit.class, null, "server", server);
-        given(server.getScheduler()).willReturn(scheduler);
-        given(server.getPluginManager()).willReturn(pluginManager);
-        given(settings.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(true);
-        bukkitService = new BukkitService(authMe, settings);
+        lenient().when(server.getScheduler()).thenReturn(scheduler);
+        lenient().when(server.getPluginManager()).thenReturn(pluginManager);
+        lenient().when(settings.getProperty(PluginSettings.USE_ASYNC_TASKS)).thenReturn(true);
+        bukkitService = new BukkitService(authMe, settings, schedulingAdapter);
     }
 
     @Test
@@ -121,32 +126,59 @@ public class BukkitServiceTest {
     @Test
     public void shouldScheduleSyncTask() {
         // given
-        BukkitService spy = Mockito.spy(bukkitService);
-        doReturn(1).when(spy).scheduleSyncDelayedTask(any(Runnable.class));
         Runnable task = mock(Runnable.class);
+        given(schedulingAdapter.isGlobalThread()).willReturn(false);
 
         // when
-        spy.scheduleSyncTaskFromOptionallyAsyncTask(task);
+        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(task);
 
         // then
-        verify(spy).scheduleSyncDelayedTask(task);
+        verify(schedulingAdapter).runOnGlobalThread(authMe, task);
         verifyNoInteractions(task);
     }
 
     @Test
     public void shouldRunTaskDirectly() {
         // given
-        given(server.isPrimaryThread()).willReturn(true);
+        given(schedulingAdapter.isGlobalThread()).willReturn(true);
         bukkitService.reload(settings);
-        BukkitService spy = Mockito.spy(bukkitService);
         Runnable task = mock(Runnable.class);
 
         // when
-        spy.scheduleSyncTaskFromOptionallyAsyncTask(task);
+        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(task);
 
         // then
         verify(task).run();
-        verify(spy, only()).scheduleSyncTaskFromOptionallyAsyncTask(task);
+        verify(schedulingAdapter).isGlobalThread();
+    }
+
+    @Test
+    public void shouldScheduleEntityTask() {
+        // given
+        Entity entity = mock(Player.class);
+        Runnable task = mock(Runnable.class);
+        given(schedulingAdapter.isOwnedByCurrentThread(entity)).willReturn(false);
+
+        // when
+        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(entity, task);
+
+        // then
+        verify(schedulingAdapter).runOnEntityThread(authMe, entity, task);
+        verifyNoInteractions(task);
+    }
+
+    @Test
+    public void shouldRunEntityTaskDirectly() {
+        // given
+        Entity entity = mock(Player.class);
+        Runnable task = mock(Runnable.class);
+        given(schedulingAdapter.isOwnedByCurrentThread(entity)).willReturn(true);
+
+        // when
+        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(entity, task);
+
+        // then
+        verify(task).run();
     }
 
     @Test

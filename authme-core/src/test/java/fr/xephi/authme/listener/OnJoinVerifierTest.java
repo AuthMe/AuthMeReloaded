@@ -525,7 +525,7 @@ public class OnJoinVerifierTest {
         }
 
         // then - IP ban is scheduled
-        verify(bukkitService).scheduleSyncTaskFromOptionallyAsyncTask(any(Runnable.class));
+        verify(bukkitService).runOnGlobalRegion(any(Runnable.class));
     }
 
     private static InetAddress createInetAddress(String ip) {

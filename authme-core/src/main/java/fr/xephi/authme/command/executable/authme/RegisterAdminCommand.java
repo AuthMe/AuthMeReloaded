@@ -77,8 +77,8 @@ public class RegisterAdminCommand implements ExecutableCommand {
             logger.info(sender.getName() + " registered " + playerName);
             final Player player = bukkitService.getPlayerExact(playerName);
             if (player != null) {
-                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() ->
-                    player.kickPlayer(commonService.retrieveSingleMessage(player, MessageKey.KICK_FOR_ADMIN_REGISTER)));
+                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player,
+                    () -> player.kickPlayer(commonService.retrieveSingleMessage(player, MessageKey.KICK_FOR_ADMIN_REGISTER)));
             }
         });
     }

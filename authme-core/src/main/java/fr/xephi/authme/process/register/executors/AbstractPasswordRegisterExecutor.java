@@ -91,7 +91,8 @@ abstract class AbstractPasswordRegisterExecutor<P extends AbstractPasswordRegist
             if (commonService.getProperty(PluginSettings.USE_ASYNC_TASKS)) {
                 bukkitService.runTaskAsynchronously(() -> asynchronousLogin.forceLogin(player));
             } else {
-                bukkitService.scheduleSyncDelayedTask(() -> asynchronousLogin.forceLogin(player), SYNC_LOGIN_DELAY);
+                bukkitService.scheduleSyncDelayedTask(player,
+                    () -> asynchronousLogin.forceLogin(player), SYNC_LOGIN_DELAY);
             }
         }
         syncProcessManager.processSyncPasswordRegister(player);

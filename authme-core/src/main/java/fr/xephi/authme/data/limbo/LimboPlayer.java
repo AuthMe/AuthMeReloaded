@@ -1,6 +1,7 @@
 package fr.xephi.authme.data.limbo;
 
 import fr.xephi.authme.task.MessageTask;
+import fr.xephi.authme.service.CancellableTask;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.scheduler.BukkitTask;
@@ -26,8 +27,9 @@ public class LimboPlayer {
     private final Location loc;
     private final float walkSpeed;
     private final float flySpeed;
-    private BukkitTask timeoutTask = null;
+    private CancellableTask timeoutTask = null;
     private MessageTask messageTask = null;
+    private CancellableTask messageTaskHandle = null;
     private LimboPlayerState state = LimboPlayerState.PASSWORD_REQUIRED;
     private Set<UUID> enderPearlUuids = new HashSet<>();
     private UUID vehicleUuid;
@@ -88,7 +90,7 @@ public class LimboPlayer {
      *
      * @return The timeout task associated to the player
      */
-    public BukkitTask getTimeoutTask() {
+    public CancellableTask getTimeoutTask() {
         return timeoutTask;
     }
 
@@ -98,11 +100,15 @@ public class LimboPlayer {
      *
      * @param timeoutTask The task to set
      */
-    public void setTimeoutTask(BukkitTask timeoutTask) {
+    public void setTimeoutTask(CancellableTask timeoutTask) {
         if (this.timeoutTask != null) {
             this.timeoutTask.cancel();
         }
         this.timeoutTask = timeoutTask;
+    }
+
+    public void setTimeoutTask(BukkitTask timeoutTask) {
+        setTimeoutTask(timeoutTask == null ? null : timeoutTask::cancel);
     }
 
     /**
@@ -119,19 +125,24 @@ public class LimboPlayer {
      *
      * @param messageTask The message task to set
      */
-    public void setMessageTask(MessageTask messageTask) {
-        if (this.messageTask != null) {
-            this.messageTask.cancel();
+    public void setMessageTask(MessageTask messageTask, CancellableTask messageTaskHandle) {
+        if (this.messageTaskHandle != null) {
+            this.messageTaskHandle.cancel();
         }
         this.messageTask = messageTask;
+        this.messageTaskHandle = messageTaskHandle;
+    }
+
+    public void setMessageTask(MessageTask messageTask) {
+        setMessageTask(messageTask, messageTask == null ? null : messageTask::cancel);
     }
 
     /**
      * Clears all tasks associated to the player.
      */
     public void clearTasks() {
-        setMessageTask(null);
-        setTimeoutTask(null);
+        setMessageTask(null, null);
+        setTimeoutTask((CancellableTask) null);
     }
 
     public LimboPlayerState getState() {

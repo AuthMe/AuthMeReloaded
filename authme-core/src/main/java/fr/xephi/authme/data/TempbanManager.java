@@ -103,17 +103,15 @@ public class TempbanManager implements SettingsDependent, HasCleanup {
             long newTime = expires.getTime() + (length * MILLIS_PER_MINUTE);
             expires.setTime(newTime);
 
-            bukkitService.scheduleSyncDelayedTask(() -> {
-                if (customCommand.isEmpty()) {
-                    bukkitService.banIp(ip, reason, expires, "AuthMe");
-                    player.kickPlayer(reason);
-                } else {
-                    String command = customCommand
-                        .replace("%player%", name)
-                        .replace("%ip%", ip);
-                    bukkitService.dispatchConsoleCommand(command);
-                }
-            });
+            if (customCommand.isEmpty()) {
+                bukkitService.runOnGlobalRegion(() -> bukkitService.banIp(ip, reason, expires, "AuthMe"));
+                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player, () -> player.kickPlayer(reason));
+            } else {
+                String command = customCommand
+                    .replace("%player%", name)
+                    .replace("%ip%", ip);
+                bukkitService.runOnGlobalRegion(() -> bukkitService.dispatchConsoleCommand(command));
+            }
 
             ipLoginFailureCounts.remove(ip);
         }
