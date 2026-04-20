@@ -12,3 +12,7 @@ updates:
   - dependency-name: "org.mockito:mockito-core"
     versions: ">= 5"
   - dependency-name: ch.jalu:configme
+- package-ecosystem: github-actions
+  directory: "/"
+  schedule:
+    interval: weekly

@@ -5,8 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>fr.xephi</groupId>
-    <artifactId>authme</artifactId>
-    <version>5.7.1-SNAPSHOT</version>
+    <artifactId>authme-parent</artifactId>
+    <version>${revision}</version>
+    <packaging>pom</packaging>
 
     <name>AuthMeReloaded</name>
     <description>The first authentication plugin for the Bukkit API!</description>
@@ -53,6 +54,13 @@
         </license>
     </licenses>
 
+    <modules>
+        <module>authme-core</module>
+        <module>authme-spigot-legacy</module>
+        <module>authme-spigot-1.21</module>
+        <module>authme-paper</module>
+    </modules>
+
     <properties>
         <!-- Build cycle properties -->
         <project.skipExtendedHashTests>false</project.skipExtendedHashTests>
@@ -60,6 +68,7 @@
         <!-- Environment properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <revision>6.0.0-SNAPSHOT</revision>
         <java.source>17</java.source>
         <java.target>17</java.target>
         <java.apiVersion>17</java.apiVersion>
@@ -75,7 +84,7 @@
         <!-- Plugin description file properties -->
         <pluginDescription.name>${project.outputName}</pluginDescription.name>
         <pluginDescription.version>${project.versionCode}</pluginDescription.version>
-        <pluginDescription.main>${project.groupId}.${project.artifactId}.${pluginDescription.name}</pluginDescription.main>
+        <pluginDescription.main>fr.xephi.authme.AuthMe</pluginDescription.main>
         <pluginDescription.authors>sgdc3, games647, Hex3l, krusic22</pluginDescription.authors>
 
         <!-- Java libraries -->
@@ -147,266 +156,172 @@
 
     <build>
         <defaultGoal>clean package</defaultGoal>
-        <!-- Little hack to make the shade plugin output a file with the right name
-        Disable, we aren't using shading atm
-        <finalName>${project.finalNameBase}-noshade</finalName>
-        -->
-
-        <resources>
-            <resource>
-                <directory>.</directory>
-                <filtering>false</filtering>
-                <includes>
-                    <include>LICENSE</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources/</directory>
-                <filtering>true</filtering>
-            </resource>
-            <resource>
-                <directory>src/main/resources/messages/</directory>
-                <targetPath>./messages/</targetPath>
-                <filtering>false</filtering>
-            </resource>
-        </resources>
 
         <pluginManagement>
             <plugins>
+                <!-- Enforce build environment -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>3.6.2</version>
+                    <executions>
+                        <execution>
+                            <id>enforce-environment</id>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <requireMavenVersion>
+                                        <version>${maven.minimumVersion}</version>
+                                    </requireMavenVersion>
+                                    <requireJavaVersion>
+                                        <version>[${java.compiler.minimumVersion},)</version>
+                                    </requireJavaVersion>
+                                </rules>
+                                <fail>true</fail>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.4.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.3.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.13.0</version>
+                    <configuration>
+                        <source>${java.source}</source>
+                        <target>${java.target}</target>
+                        <release>${java.apiVersion}</release>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.8.13</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.5.5</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.4.2</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>3.7.0</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.3.1</version>
+                </plugin>
+                <!-- Shade plugin: version modules use this to produce deliverable jars -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>3.6.0</version>
+                    <configuration>
+                        <createDependencyReducedPom>false</createDependencyReducedPom>
+                        <shadedArtifactAttached>false</shadedArtifactAttached>
+                        <filters>
+                            <filter>
+                                <artifact>*:*</artifact>
+                                <excludes>
+                                    <exclude>META-INF/*.SF</exclude>
+                                    <exclude>META-INF/*.DSA</exclude>
+                                    <exclude>META-INF/*.RSA</exclude>
+                                    <exclude>META-INF/*.MF</exclude>
+                                    <exclude>META-INF/DEPENDENCIES</exclude>
+                                    <exclude>META-INF/**/module-info.class</exclude>
+                                </excludes>
+                            </filter>
+                        </filters>
+                        <transformers>
+                            <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"/>
+                            <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
+                                <addHeader>false</addHeader>
+                            </transformer>
+                            <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                        </transformers>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>3.1.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.1.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.12.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.eluder.coveralls</groupId>
+                    <artifactId>coveralls-maven-plugin</artifactId>
+                    <version>4.3.0</version>
+                    <configuration>
+                        <failOnServiceError>false</failOnServiceError>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>javax.xml.bind</groupId>
+                            <artifactId>jaxb-api</artifactId>
+                            <version>2.3.1</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
             </plugins>
         </pluginManagement>
 
         <plugins>
-            <!-- Enforce build environment -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.6.2</version>
-                <executions>
-                    <execution>
-                        <id>enforce-environment</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireMavenVersion>
-                                    <version>${maven.minimumVersion}</version>
-                                </requireMavenVersion>
-                                <requireJavaVersion>
-                                    <version>[${java.compiler.minimumVersion},)</version>
-                                </requireJavaVersion>
-                            </rules>
-                            <fail>true</fail>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Clean the target folder content -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>3.4.0</version>
-            </plugin>
-            <!-- Include resource files -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
-            </plugin>
-            <!-- Compile and include classes -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.7.3</version>
                 <configuration>
-                    <source>${java.source}</source>
-                    <target>${java.target}</target>
-                    <release>${java.apiVersion}</release>
-                </configuration>
-            </plugin>
-            <!-- Generate test coverage reports -->
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.13</version>
-                <configuration>
-                    <includes>
-                        <include>fr/xephi/authme/*</include>
-                        <include>fr/xephi/authme/**/*</include>
-                    </includes>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>pre-unit-test</id>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
                         <goals>
-                            <goal>prepare-agent</goal>
+                            <goal>flatten</goal>
                         </goals>
                     </execution>
                     <execution>
-                        <id>post-unit-test</id>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
                         <goals>
-                            <goal>report</goal>
+                            <goal>clean</goal>
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <!-- Unit testing -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.5</version>
-                <configuration>
-                    <!-- Fix java.base opens for new JDK versions -->
-                    <!-- Force the right file encoding during unit testing -->
-                    <!-- Set language to English in order to get consistent results for localized time formatting -->
-                    <argLine>--add-opens=java.base/java.lang=ALL-UNNAMED -Dfile.encoding=${project.build.sourceEncoding} -Duser.language=en @{argLine}</argLine>
-                    <systemPropertyVariables>
-                        <project.skipExtendedHashTests>${project.skipExtendedHashTests}</project.skipExtendedHashTests>
-                    </systemPropertyVariables>
-                    <!-- Don't trim stack traces -->
-                    <trimStackTrace>false</trimStackTrace>
-                </configuration>
-            </plugin>
-            <!-- Generate a jar containing classes and resources -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.4.2</version>
-            </plugin>
-            <!-- Generate a jar containing the source javadoc -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <finalName>${project.finalNameBase}</finalName>
-                    <!-- In sync with the source/target properties of the maven-compiler-plugin -->
-                    <source>${java.source}</source>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-javadoc</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Generate a jar containing the java sources -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.3.1</version>
-                <configuration>
-                    <finalName>${project.finalNameBase}</finalName>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Generate a jar containing classes, resources and shaded libraries -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.6.0</version>
-                <executions>
-                    <!-- Disable, we aren't using shading atm
-                    <execution>
-                        <id>shaded-jar</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                    -->
-                </executions>
-                <configuration>
-                    <!-- Don't create the reduced pom file, as we don't deploy the shaded jar -->
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
-                    <!-- Deploy the non shaded jar as main artifact -->
-                    <shadedArtifactAttached>true</shadedArtifactAttached>
-                    <!-- Use the base jar name, to help server owners download the right jar -->
-                    <finalName>${project.finalNameBase}</finalName>
-
-                    <!-- Disable, no relocations atm
-                    <relocations>
-                        <relocation>
-                            <pattern></pattern>
-                            <shadedPattern>fr.xephi.authme.libs.</shadedPattern>
-                        </relocation>
-                    </relocations>
-                    -->
-
-                    <filters>
-                        <!-- Ignore manifest signatures for shading the project into an uber-jar to fix -->
-                        <!-- "Invalid signature file digest for Manifest main attributes" -->
-                        <filter>
-                            <artifact>*:*</artifact>
-                            <excludes>
-                                <exclude>META-INF/*.SF</exclude>
-                                <exclude>META-INF/*.DSA</exclude>
-                                <exclude>META-INF/*.RSA</exclude>
-                                <exclude>META-INF/*.RSA</exclude>
-                                <exclude>META-INF/*.MF</exclude>
-                                <exclude>META-INF/DEPENDENCIES</exclude>
-                                <exclude>META-INF/**/module-info.class</exclude>
-                            </excludes>
-                        </filter>
-                    </filters>
-
-                    <transformers>
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"/>
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
-                            <addHeader>false</addHeader>
-                        </transformer>
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                    </transformers>
-                </configuration>
-            </plugin>
-            <!-- Install the jars as artifacts into the local repository -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>3.1.2</version>
-            </plugin>
-            <!-- Deploy the jars as artifacts into the remote repository -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>3.1.2</version>
-            </plugin>
-            <!-- Handle documentation generation, required by other plugins -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.12.1</version>
-            </plugin>
-            <!-- Publish coveralls test coverage reports, not included in the build cycle by default -->
-            <plugin>
-                <groupId>org.eluder.coveralls</groupId>
-                <artifactId>coveralls-maven-plugin</artifactId>
-                <version>4.3.0</version>
-                <configuration>
-                    <!-- The secret token is provided with a command-line parameter -->
-                    <failOnServiceError>false</failOnServiceError>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>javax.xml.bind</groupId>
-                        <artifactId>jaxb-api</artifactId>
-                        <version>2.3.1</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>
@@ -503,8 +418,21 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+
+        <!-- PaperMC Repo -->
+        <repository>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
     </repositories>
 
+    <dependencyManagement>
     <dependencies>
         <!-- Java Libraries -->
 
@@ -662,23 +590,6 @@
             </exclusions>
         </dependency>
 
-        <!-- Spigot API, https://www.spigotmc.org/ -->
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>${dependencies.spigot.version}</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.joml</groupId>
-                    <artifactId>joml</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>net.md-5</groupId>
-                    <artifactId>bungeecord-chat</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
@@ -950,5 +861,32 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Spigot API, https://www.spigotmc.org/ -->
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>${dependencies.spigot.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.joml</groupId>
+                    <artifactId>joml</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.md-5</groupId>
+                    <artifactId>bungeecord-chat</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Paper API -->
+        <dependency>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.21-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
+    </dependencyManagement>
 </project>
