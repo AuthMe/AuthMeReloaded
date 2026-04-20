@@ -1,6 +1,7 @@
 package fr.xephi.authme.command.executable.login;
 
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.process.Management;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
@@ -14,12 +15,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * Test for {@link LoginCommand}.
@@ -33,6 +32,9 @@ class LoginCommandTest {
     @Mock
     private Management management;
 
+    @Mock
+    private Messages messages;
+
 
     @Test
     void shouldStopIfSenderIsNotAPlayer() {
@@ -44,7 +46,7 @@ class LoginCommandTest {
 
         // then
         verifyNoInteractions(management);
-        verify(sender).sendMessage(argThat(containsString("/authme forcelogin <player>")));
+        verify(messages).send(sender, MessageKey.PLAYER_COMMAND_ONLY_WITH_ALTERNATIVE, "/authme forcelogin <player>");
     }
 
     @Test

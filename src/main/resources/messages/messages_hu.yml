@@ -155,3 +155,41 @@ two_factor:
     not_enabled_error: 'Kétszámjegyű hitelesítés nincs engedélyezve a fiókodban. Futtasd a /2fa add'
     removed_success: 'Sikeresen eltávolítottad a fiók két számjegyű hitelesítőjét'
     invalid_code: 'Érvénytelen kód!'
+
+# Parancs-érvényesítési üzenetek
+command:
+    player_only: '&cEz a parancs csak játékosoknak szól.'
+    player_only_alternative: '&cCsak játékosoknak! Kérjük, használd a %alternative parancsot helyette.'
+    failed_to_parse: '&4Nem sikerült feldolgozni az AuthMe parancsot!'
+    unknown: '&4Ismeretlen parancs!'
+    incorrect_arguments: '&4Helytelen parancsargumentumok!'
+    did_you_mean: '&e&6%cmd&e-re gondoltál?'
+    see_help: '&eHasználd a &6/%cmd&e parancsot a súgó megtekintéséhez.'
+    detailed_help: '&6Részletes súgó: &f/%cmd'
+
+# Adminisztrátori parancs üzenetek
+admin:
+    force_login:
+        player_offline: '&cA játékosnak online kell lennie!'
+        forbidden: '&cNem kényszerítheted be a %name játékost!'
+        success: '&2%name kényszerbejentkeztetése végrehajtva!'
+    accounts:
+        ip_not_found: '&cEz az IP nem létezik az adatbázisban.'
+        single_account: '&2%name egyfiókos játékos.'
+        no_last_ip: '&cA játékos utolsó IP-címe ismeretlen.'
+    email_show: '&2%name e-mail-je: %email'
+    antibot:
+        status: '&2AntiBot állapota: %status'
+        override_enabled: '&2AntiBot manuális felülírás: engedélyezve!'
+        override_disabled: '&2AntiBot manuális felülírás: letiltva!'
+        invalid_mode: '&cÉrvénytelen AntiBot mód!'
+    reload:
+        db_type_change: '&eMegjegyzés: az adatbázis típusa nem módosítható a /authme reload közben.'
+        error: '&cHiba történt az AuthMe újratöltése közben.'
+    spawn:
+        set_success: '&2Új spawnpont sikeresen meghatározva.'
+        set_fail: '&cA SetSpawn sikertelen volt, kérjük próbáld újra.'
+        first_set_success: '&2Új első spawnpont sikeresen meghatározva.'
+        first_set_fail: '&cA SetFirstSpawn sikertelen volt, kérjük próbáld újra.'
+        not_defined: '&cA spawn sikertelen volt, kérjük próbáld meg meghatározni a spawnpontot.'
+        first_not_defined: '&cAz első spawn sikertelen volt, kérjük próbáld meg meghatározni az első spawnpontot.'

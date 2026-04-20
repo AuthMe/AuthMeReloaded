@@ -155,3 +155,41 @@ two_factor:
     # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
     # TODO removed_success: 'Successfully removed two-factor auth from your account'
     # TODO invalid_code: 'Invalid code!'
+
+# Komentovalidiointiviestit
+command:
+    player_only: '&cTämä komento on vain pelaajille.'
+    player_only_alternative: '&cVain pelaajille! Käytä sen sijaan komentoa %alternative.'
+    failed_to_parse: '&4AuthMe-komennon jäsentäminen epäonnistui!'
+    unknown: '&4Tuntematon komento!'
+    incorrect_arguments: '&4Virheelliset komentojargumentit!'
+    did_you_mean: '&eTarkoititko &6%cmd&e?'
+    see_help: '&eKäytä komentoa &6/%cmd&e nähdäksesi ohjeen.'
+    detailed_help: '&6Yksityiskohtainen ohje: &f/%cmd'
+
+# Ylläpitäjäkomentoviestit
+admin:
+    force_login:
+        player_offline: '&cPelaajan täytyy olla verkossa!'
+        forbidden: '&cEt voi pakottaa pelaajaa %name kirjautumaan!'
+        success: '&2Pelaajan %name pakotettu kirjautuminen suoritettu!'
+    accounts:
+        ip_not_found: '&cTätä IP-osoitetta ei ole tietokannassa.'
+        single_account: '&2%name on yhden tilin pelaaja.'
+        no_last_ip: '&cPelaajan viimeinen IP-osoite on tuntematon.'
+    email_show: '&2%name sähköposti: %email'
+    antibot:
+        status: '&2AntiBot-tila: %status'
+        override_enabled: '&2AntiBot manuaalinen ohitus: käytössä!'
+        override_disabled: '&2AntiBot manuaalinen ohitus: poistettu käytöstä!'
+        invalid_mode: '&cEpäkelpo AntiBot-tila!'
+    reload:
+        db_type_change: '&eHuom: tietokantatyyppiä ei voi muuttaa /authme reload -komennon aikana.'
+        error: '&cAuthMen uudelleenlatauksen aikana tapahtui virhe.'
+    spawn:
+        set_success: '&2Uusi spawnauspiste on määritetty oikein.'
+        set_fail: '&cSetSpawn epäonnistui, yritä uudelleen.'
+        first_set_success: '&2Uusi ensimmäinen spawnauspiste on määritetty oikein.'
+        first_set_fail: '&cSetFirstSpawn epäonnistui, yritä uudelleen.'
+        not_defined: '&cSpawn epäonnistui, yritä määrittää spawnauspiste.'
+        first_not_defined: '&cEnsimmäinen spawn epäonnistui, yritä määrittää ensimmäinen spawnauspiste.'

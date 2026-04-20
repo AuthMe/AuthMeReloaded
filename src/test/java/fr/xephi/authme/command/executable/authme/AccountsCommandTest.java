@@ -21,10 +21,10 @@ import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceTo
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -56,9 +56,10 @@ class AccountsCommandTest {
         command.executeCommand(sender, arguments);
 
         // then
-        String[] messages = getMessagesSentToSender(sender, 2);
-        assertThat(messages[0], containsString("2 accounts"));
-        assertThat(messages[1], containsString("Toaster, Pester"));
+        verify(service).send(eq(sender), eq(MessageKey.ACCOUNTS_OWNED_SELF), eq("2"));
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(sender).sendMessage(captor.capture());
+        assertThat(captor.getValue(), containsString("Toaster, Pester"));
     }
 
     @Test
@@ -107,8 +108,8 @@ class AccountsCommandTest {
         command.executeCommand(sender, arguments);
 
         // then
-        String[] messages = getMessagesSentToSender(sender, 1);
-        assertThat(messages[0], containsString("single account"));
+        verify(service).send(eq(sender), eq(MessageKey.ACCOUNTS_SINGLE), eq("SomeUser"));
+        verify(sender, never()).sendMessage(anyString());
     }
 
     // -----
@@ -126,8 +127,8 @@ class AccountsCommandTest {
         command.executeCommand(sender, arguments);
 
         // then
-        String[] messages = getMessagesSentToSender(sender, 1);
-        assertThat(messages[0], containsString("IP does not exist"));
+        verify(service).send(sender, MessageKey.ACCOUNTS_IP_NOT_FOUND);
+        verify(sender, never()).sendMessage(anyString());
     }
 
     @Test
@@ -142,8 +143,8 @@ class AccountsCommandTest {
         command.executeCommand(sender, arguments);
 
         // then
-        String[] messages = getMessagesSentToSender(sender, 1);
-        assertThat(messages[0], containsString("single account"));
+        verify(service).send(eq(sender), eq(MessageKey.ACCOUNTS_SINGLE), eq("24.24.48.48"));
+        verify(sender, never()).sendMessage(anyString());
     }
 
     @Test
@@ -158,15 +159,10 @@ class AccountsCommandTest {
         command.executeCommand(sender, arguments);
 
         // then
-        String[] messages = getMessagesSentToSender(sender, 2);
-        assertThat(messages[0], containsString("3 accounts"));
-        assertThat(messages[1], containsString("Tester, Lester, Taster"));
-    }
-
-    private static String[] getMessagesSentToSender(CommandSender sender, int expectedCount) {
+        verify(service).send(eq(sender), eq(MessageKey.ACCOUNTS_OWNED_OTHER), eq("98.76.41.122"), eq("3"));
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(sender, times(expectedCount)).sendMessage(captor.capture());
-        return captor.getAllValues().toArray(new String[expectedCount]);
+        verify(sender).sendMessage(captor.capture());
+        assertThat(captor.getValue(), containsString("Tester, Lester, Taster"));
     }
 
     private static PlayerAuth authWithIp(String ip) {

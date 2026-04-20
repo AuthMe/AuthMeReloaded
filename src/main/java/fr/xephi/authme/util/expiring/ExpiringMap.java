@@ -113,6 +113,15 @@ public class ExpiringMap<K, V> {
     }
 
     /**
+     * Returns the configured expiration duration in milliseconds.
+     *
+     * @return the expiration in milliseconds
+     */
+    protected long getExpirationMillis() {
+        return expirationMillis;
+    }
+
+    /**
      * Class holding a value paired with an expiration timestamp.
      *
      * @param <V> the value type

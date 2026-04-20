@@ -12,6 +12,7 @@ import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -50,8 +51,9 @@ public class AsynchronousLogout implements AsynchronousProcess {
      * Handles a player's request to log out.
      *
      * @param player the player wanting to log out
+     * @param quitLocation the player's location captured on the main thread before this async task was scheduled
      */
-    public void logout(Player player) {
+    public void logout(Player player, Location quitLocation) {
         String name = player.getName().toLowerCase(Locale.ROOT);
         if (!playerCache.isAuthenticated(name)) {
             service.send(player, MessageKey.NOT_LOGGED_IN);
@@ -62,7 +64,7 @@ public class AsynchronousLogout implements AsynchronousProcess {
         database.updateSession(auth);
         // TODO: send an update when a messaging service will be implemented (SESSION)
         if (service.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
-            auth.setQuitLocation(player.getLocation());
+            auth.setQuitLocation(quitLocation);
             database.updateQuitLoc(auth);
             // TODO: send an update when a messaging service will be implemented (QUITLOC)
         }

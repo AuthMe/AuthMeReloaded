@@ -24,6 +24,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -63,6 +64,26 @@ public class OnJoinVerifier implements Reloadable {
     public void reload() {
         String nickRegEx = settings.getProperty(RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS);
         nicknamePattern = Utils.safePatternCompile(nickRegEx);
+    }
+
+    /**
+     * Checks that the player meets any configured name restrictions (IP/domain-based).
+     * This check is performed during {@link org.bukkit.event.player.AsyncPlayerPreLoginEvent} so that
+     * players whose IP doesn't match the configured restriction are denied before entering the game.
+     * When the check fails and {@link RestrictionSettings#BAN_UNKNOWN_IP} is enabled, the IP is also banned.
+     *
+     * @param name    the player name to verify
+     * @param address the player's IP address
+     * @throws FailedVerificationException if the name restriction is not satisfied
+     */
+    public void checkNameRestrictions(String name, InetAddress address) throws FailedVerificationException {
+        if (!validationService.fulfillsNameRestrictions(name, address)) {
+            if (settings.getProperty(RestrictionSettings.BAN_UNKNOWN_IP)) {
+                String ip = address.getHostAddress();
+                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> server.banIP(ip));
+            }
+            throw new FailedVerificationException(MessageKey.NOT_OWNER_ERROR);
+        }
     }
 
     /**

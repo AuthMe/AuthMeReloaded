@@ -11,6 +11,8 @@ import org.bukkit.Location;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -31,23 +33,28 @@ class LimboPlayerSerializer implements JsonSerializer<LimboPlayer> {
     static final String CAN_FLY = "can-fly";
     static final String WALK_SPEED = "walk-speed";
     static final String FLY_SPEED = "fly-speed";
+    static final String ENDER_PEARLS = "ender-pearls";
+    static final String VEHICLE_UUID = "vehicle-uuid";
+    static final String VEHICLE_TYPE = "vehicle-type";
 
     private static final Gson GSON = new Gson();
 
 
     @Override
     public JsonElement serialize(LimboPlayer limboPlayer, Type type, JsonSerializationContext context) {
-        Location loc = limboPlayer.getLocation();
-        JsonObject locationObject = new JsonObject();
-        locationObject.addProperty(LOC_WORLD, loc.getWorld().getName());
-        locationObject.addProperty(LOC_X, loc.getX());
-        locationObject.addProperty(LOC_Y, loc.getY());
-        locationObject.addProperty(LOC_Z, loc.getZ());
-        locationObject.addProperty(LOC_YAW, loc.getYaw());
-        locationObject.addProperty(LOC_PITCH, loc.getPitch());
-
         JsonObject obj = new JsonObject();
-        obj.add(LOCATION, locationObject);
+
+        Location loc = limboPlayer.getLocation();
+        if (loc != null && loc.getWorld() != null) {
+            JsonObject locationObject = new JsonObject();
+            locationObject.addProperty(LOC_WORLD, loc.getWorld().getName());
+            locationObject.addProperty(LOC_X, loc.getX());
+            locationObject.addProperty(LOC_Y, loc.getY());
+            locationObject.addProperty(LOC_Z, loc.getZ());
+            locationObject.addProperty(LOC_YAW, loc.getYaw());
+            locationObject.addProperty(LOC_PITCH, loc.getPitch());
+            obj.add(LOCATION, locationObject);
+        }
 
         List<JsonObject> groups = limboPlayer.getGroups().stream().map(g -> {
             JsonObject jsonGroup = new JsonObject();
@@ -66,6 +73,21 @@ class LimboPlayerSerializer implements JsonSerializer<LimboPlayer> {
         obj.addProperty(CAN_FLY, limboPlayer.isCanFly());
         obj.addProperty(WALK_SPEED, limboPlayer.getWalkSpeed());
         obj.addProperty(FLY_SPEED, limboPlayer.getFlySpeed());
+
+        Set<UUID> pearlUuids = limboPlayer.getEnderPearlUuids();
+        if (!pearlUuids.isEmpty()) {
+            JsonArray pearlArray = new JsonArray();
+            for (UUID uuid : pearlUuids) {
+                pearlArray.add(uuid.toString());
+            }
+            obj.add(ENDER_PEARLS, pearlArray);
+        }
+
+        if (limboPlayer.getVehicleUuid() != null && limboPlayer.getVehicleType() != null) {
+            obj.addProperty(VEHICLE_UUID, limboPlayer.getVehicleUuid().toString());
+            obj.addProperty(VEHICLE_TYPE, limboPlayer.getVehicleType().name());
+        }
+
         return obj;
     }
 }

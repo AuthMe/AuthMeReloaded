@@ -3,10 +3,12 @@ package fr.xephi.authme.service;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboPlayer;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.FirstSpawnTeleportEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -25,7 +27,6 @@ import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceTo
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -55,6 +56,9 @@ class TeleportationServiceTest {
     @Mock
     private PlayerCache playerCache;
 
+    @Mock
+    private DataSource dataSource;
+
     @BeforeEach
     void setUpForcedWorlds() {
         given(settings.getProperty(RestrictionSettings.FORCE_SPAWN_ON_WORLDS))
@@ -62,6 +66,7 @@ class TeleportationServiceTest {
         teleportationService.reload();
 
         given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(false);
+        given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
     }
 
     // -----------
@@ -211,6 +216,39 @@ class TeleportationServiceTest {
         verify(player, never()).teleport(any(Location.class));
     }
 
+    @Test
+    public void shouldNotTeleportUnregisteredPlayerOnJoinIfRegistrationOptional() {
+        // given
+        given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
+        given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(false);
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn("Bobby");
+        given(dataSource.isAuthAvailable("Bobby")).willReturn(false);
+
+        // when
+        teleportationService.teleportOnJoin(player);
+
+        // then
+        verifyNoInteractions(bukkitService, spawnLoader);
+        verify(player, never()).teleport(any(Location.class));
+    }
+
+    @Test
+    public void shouldNotTeleportUnregisteredPlayerViaPrepareOnJoinIfRegistrationOptional() {
+        // given
+        given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
+        given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(false);
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn("Bobby");
+        given(dataSource.isAuthAvailable("Bobby")).willReturn(false);
+
+        // when
+        Location result = teleportationService.prepareOnJoinSpawnLocation(player);
+
+        // then
+        assertThat(result, equalTo(null));
+    }
+
     // ---------
     // LOGIN
     // ---------
@@ -326,30 +364,6 @@ class TeleportationServiceTest {
         ArgumentCaptor<Location> locationCaptor = ArgumentCaptor.forClass(Location.class);
         verify(player).teleport(locationCaptor.capture());
         assertCorrectLocation(locationCaptor.getValue(), auth, world);
-    }
-
-    @Test
-    void shouldTeleportWithLimboPlayerIfAuthYCoordIsNotSet() {
-        // given
-        given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
-        given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(true);
-
-        PlayerAuth auth = createAuthWithLocation();
-        auth.setQuitLocY(0.0);
-        auth.setWorld("authWorld");
-        Player player = mock(Player.class);
-        given(player.isOnline()).willReturn(true);
-        LimboPlayer limbo = mock(LimboPlayer.class);
-        Location location = mockLocation();
-        given(limbo.getLocation()).willReturn(location);
-        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
-
-        // when
-        teleportationService.teleportOnLogin(player, auth, limbo);
-
-        // then
-        verify(player).teleport(location);
-        verify(bukkitService, never()).getWorld(anyString());
     }
 
     @Test

@@ -6,12 +6,19 @@ import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.EnderPearl;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static fr.xephi.authme.settings.properties.LimboSettings.RESTORE_ALLOW_FLIGHT;
@@ -124,8 +131,12 @@ public class LimboService {
             settings.getProperty(RESTORE_WALK_SPEED).restoreWalkSpeed(player, limbo);
             limbo.clearTasks();
             logger.debug("Restored LimboPlayer stats for `{0}`", lowerName);
-            persistence.removeLimboPlayer(player);
         }
+        // Always remove the disk limbo regardless of whether an in-memory limbo was present.
+        // If the player quits while in limbo before createLimboPlayer has run (race condition between
+        // async join and async quit), the in-memory entry is null but the disk file may still exist.
+        // Leaving it would cause the stale location to be reused on the next join.
+        persistence.removeLimboPlayer(player);
         authGroupHandler.setGroup(player, limbo, AuthGroupType.LOGGED_IN);
     }
 
@@ -184,5 +195,103 @@ public class LimboService {
             logger.debug("No LimboPlayer found for `{0}`. Action: {1}", player.getName(), context);
         }
         return Optional.ofNullable(limbo);
+    }
+
+    /**
+     * Saves the entity UUIDs of in-flight ender pearls to disk so they can be restored
+     * to the player on reconnect (stasis chamber support). Called when an authenticated
+     * player quits with pearls in flight.
+     *
+     * @param player     the authenticated player who is quitting
+     * @param pearlUuids entity UUIDs of the player's in-flight ender pearls
+     */
+    public void saveEnderPearlsForPlayer(Player player, Set<UUID> pearlUuids) {
+        LimboPlayer limbo = persistence.getLimboPlayer(player);
+        if (limbo == null) {
+            limbo = new LimboPlayer(null, player.isOp(), Collections.emptyList(), player.getAllowFlight(),
+                player.getWalkSpeed(), player.getFlySpeed());
+        }
+        limbo.setEnderPearlUuids(pearlUuids);
+        persistence.saveLimboPlayer(player, limbo);
+        logger.debug("Saved {0} ender pearl(s) to disk for `{1}`",
+            pearlUuids.size(), player.getName().toLowerCase(Locale.ROOT));
+    }
+
+    /**
+     * Saves the vehicle the player was riding to disk so they can be remounted on reconnect.
+     * Called when an authenticated player quits while inside a vehicle.
+     *
+     * @param player      the authenticated player who is quitting
+     * @param vehicleUuid the entity UUID of the vehicle
+     * @param vehicleType the entity type of the vehicle
+     */
+    public void saveVehicleForPlayer(Player player, UUID vehicleUuid, EntityType vehicleType) {
+        LimboPlayer limbo = persistence.getLimboPlayer(player);
+        if (limbo == null) {
+            limbo = new LimboPlayer(null, player.isOp(), Collections.emptyList(), player.getAllowFlight(),
+                player.getWalkSpeed(), player.getFlySpeed());
+        }
+        limbo.setVehicle(vehicleUuid, vehicleType);
+        persistence.saveLimboPlayer(player, limbo);
+        logger.debug("Saved vehicle {0} ({1}) to disk for `{2}`",
+            vehicleUuid, vehicleType, player.getName().toLowerCase(Locale.ROOT));
+    }
+
+    /**
+     * Restores ender pearl shooters and remounts the player's vehicle in a single world pass.
+     * Must be called after {@link #createLimboPlayer} so the LimboPlayer is guaranteed to
+     * exist in memory.
+     *
+     * @param player the player whose entities should be restored
+     */
+    public void restoreEntities(Player player) {
+        String name = player.getName().toLowerCase(Locale.ROOT);
+        LimboPlayer limbo = entries.get(name);
+        if (limbo == null) {
+            return;
+        }
+        Set<UUID> pearlUuids = limbo.getEnderPearlUuids();
+        UUID vehicleUuid = limbo.getVehicleUuid();
+        EntityType vehicleType = limbo.getVehicleType();
+
+        if (pearlUuids.isEmpty() && vehicleUuid == null) {
+            return;
+        }
+
+        int pearlTotal = pearlUuids.size();
+        int pearlRestored = 0;
+        boolean vehicleRestored = false;
+
+        outer:
+        for (World world : player.getServer().getWorlds()) {
+            for (Entity entity : world.getEntities()) {
+                if (!pearlUuids.isEmpty() && entity instanceof EnderPearl
+                        && pearlUuids.contains(entity.getUniqueId())) {
+                    ((EnderPearl) entity).setShooter(player);
+                    pearlRestored++;
+                } else if (vehicleUuid != null && !vehicleRestored
+                        && vehicleUuid.equals(entity.getUniqueId())) {
+                    entity.addPassenger(player);
+                    vehicleRestored = true;
+                }
+                if (pearlUuids.isEmpty() && vehicleRestored) {
+                    break outer;
+                }
+            }
+        }
+
+        pearlUuids.clear();
+        limbo.setVehicle(null, null);
+
+        if (pearlTotal > 0) {
+            logger.debug("Restored {0}/{1} ender pearl(s) for `{2}`", pearlRestored, pearlTotal, name);
+        }
+        if (vehicleUuid != null) {
+            if (vehicleRestored) {
+                logger.debug("Restored vehicle ({0}) for `{1}`", vehicleType, name);
+            } else {
+                logger.debug("Vehicle ({0}) no longer exists for `{1}`, skipping", vehicleType, name);
+            }
+        }
     }
 }

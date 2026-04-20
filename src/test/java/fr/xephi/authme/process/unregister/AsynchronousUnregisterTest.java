@@ -19,7 +19,6 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -115,6 +114,7 @@ class AsynchronousUnregisterTest {
         given(service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)).willReturn(true);
         given(service.getProperty(RestrictionSettings.TIMEOUT)).willReturn(21);
         setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+        given(bukkitService.createBlindnessEffect(21 * 20)).willReturn(mock(PotionEffect.class));
 
         // when
         asynchronousUnregister.unregister(player, userPassword);
@@ -127,7 +127,6 @@ class AsynchronousUnregisterTest {
         verify(teleportationService).teleportOnJoin(player);
         verifyCalledUnregisterEventFor(player);
         verify(commandManager).runCommandsOnUnregister(player);
-        verify(player).addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 21 * 20, 2));
     }
 
     @Test

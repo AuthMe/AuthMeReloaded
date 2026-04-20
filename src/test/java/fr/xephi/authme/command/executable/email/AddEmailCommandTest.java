@@ -1,6 +1,7 @@
 package fr.xephi.authme.command.executable.email;
 
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.BlockCommandSender;
@@ -35,6 +36,9 @@ class AddEmailCommandTest {
 
     @Mock
     private Management management;
+
+    @Mock
+    private Messages messages;
 
     @Test
     void shouldRejectNonPlayerSender() {

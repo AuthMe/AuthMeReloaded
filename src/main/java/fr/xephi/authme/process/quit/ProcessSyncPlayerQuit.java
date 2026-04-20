@@ -27,7 +27,6 @@ public class ProcessSyncPlayerQuit implements SynchronousProcess {
             commandManager.runCommandsOnLogout(player);
         } else {
             limboService.restoreData(player);
-            player.saveData(); // #1238: Speed is sometimes not restored properly
         }
         player.leaveVehicle();
     }

@@ -17,12 +17,12 @@ public class PlayerListener19Spigot implements Listener {
     @Inject
     private TeleportationService teleportationService;
 
-
     public static boolean isPlayerSpawnLocationEventCalled() {
         return isPlayerSpawnLocationEventCalled;
     }
 
     // Note: the following event is called since MC1.9, in older versions we have to fallback on the PlayerJoinEvent
+    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerSpawn(PlayerSpawnLocationEvent event) {
         isPlayerSpawnLocationEventCalled = true;

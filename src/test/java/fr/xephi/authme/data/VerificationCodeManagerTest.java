@@ -5,6 +5,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
@@ -16,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
@@ -39,6 +41,9 @@ class VerificationCodeManagerTest {
 
     @Mock
     private PermissionsManager permissionsManager;
+
+    @Mock
+    private BukkitService bukkitService;
 
     @BeforeEach
     void setUpBasicBehavior() {
@@ -164,7 +169,7 @@ class VerificationCodeManagerTest {
     }
 
     private VerificationCodeManager createCodeManager() {
-        return new VerificationCodeManager(settings, dataSource, emailService, permissionsManager);
+        return new VerificationCodeManager(settings, dataSource, emailService, permissionsManager, bukkitService);
     }
 
     private static Player mockPlayerWithName(String name) {

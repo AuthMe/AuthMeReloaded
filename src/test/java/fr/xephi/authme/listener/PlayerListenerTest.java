@@ -2,6 +2,7 @@ package fr.xephi.authme.listener;
 
 import fr.xephi.authme.data.QuickCommandsProtectionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
@@ -55,6 +56,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -66,7 +68,6 @@ import static com.google.common.collect.Sets.newHashSet;
 import static fr.xephi.authme.listener.EventCancelVerifier.withServiceMock;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
@@ -75,6 +76,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doThrow;
@@ -124,6 +126,8 @@ class PlayerListenerTest {
     private QuickCommandsProtectionManager quickCommandsProtectionManager;
     @Mock
     private PermissionsManager permissionsManager;
+    @Mock
+    private LimboService limboService;
 
     /**
      * #831: If a player is kicked because of "logged in from another location", the kick
@@ -710,8 +714,9 @@ class PlayerListenerTest {
         // given
         String name = "someone";
         UUID uniqueId = UUID.fromString("753493c9-33ba-4a4a-bf61-1bce9d3c9a71");
+        String ip = "12.34.56.78";
 
-        AsyncPlayerPreLoginEvent preLoginEvent = spy(new AsyncPlayerPreLoginEvent(name, mock(InetAddress.class), uniqueId));
+        AsyncPlayerPreLoginEvent preLoginEvent = spy(new AsyncPlayerPreLoginEvent(name, createInetAddress(ip), uniqueId));
         given(validationService.isUnrestricted(name)).willReturn(false);
 
         // when
@@ -748,7 +753,7 @@ class PlayerListenerTest {
         UUID uniqueId = UUID.fromString("753493c9-33ba-4a4a-bf61-1bce9d3c9a71");
         String ip = "12.34.56.78";
 
-        AsyncPlayerPreLoginEvent preLoginEvent = spy(new AsyncPlayerPreLoginEvent(name, mockAddrWithIp(ip), uniqueId));
+        AsyncPlayerPreLoginEvent preLoginEvent = spy(new AsyncPlayerPreLoginEvent(name, createInetAddress(ip), uniqueId));
         given(validationService.isUnrestricted(name)).willReturn(false);
         PlayerAuth auth = PlayerAuth.builder().name(name).build();
         given(dataSource.getAuth(name)).willReturn(auth);
@@ -758,6 +763,7 @@ class PlayerListenerTest {
 
         // then
         verify(validationService).isUnrestricted(name);
+        verify(onJoinVerifier).checkNameRestrictions(eq(name), any(InetAddress.class));
         verify(onJoinVerifier).checkKickNonRegistered(true);
         verify(onJoinVerifier).checkAntibot(name, true);
         verify(onJoinVerifier).checkNameCasing(name, auth);
@@ -766,12 +772,36 @@ class PlayerListenerTest {
     }
 
     @Test
+    public void shouldAbortPreLoginHighestForFailedNameRestriction() throws FailedVerificationException {
+        // given
+        String name = "restrictedPlayer";
+        UUID uniqueId = UUID.fromString("c60b7305-3a78-4f71-8a60-70a3f17e1c90");
+        InetAddress address = createInetAddress("10.20.30.40");
+        AsyncPlayerPreLoginEvent event = spy(new AsyncPlayerPreLoginEvent(name, address, uniqueId));
+        given(validationService.isUnrestricted(name)).willReturn(false);
+        PlayerAuth auth = PlayerAuth.builder().name(name).build();
+        given(dataSource.getAuth(name)).willReturn(auth);
+        FailedVerificationException exception = new FailedVerificationException(MessageKey.NOT_OWNER_ERROR);
+        doThrow(exception).when(onJoinVerifier).checkNameRestrictions(eq(name), any(InetAddress.class));
+        String message = "Not your account!";
+        given(messages.retrieveSingle(name, exception.getReason(), exception.getArgs())).willReturn(message);
+
+        // when
+        listener.onAsyncPlayerPreLoginEventHighest(event);
+
+        // then
+        verify(onJoinVerifier).checkNameRestrictions(eq(name), any(InetAddress.class));
+        verify(event).setKickMessage(message);
+        verify(event).setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+    }
+
+    @Test
     void shouldPerformAllJoinVerificationsSuccessfullyLogin() {
         // given
         String name = "someone";
         Player player = mockPlayerWithName(name);
 
-        PlayerLoginEvent loginEvent = spy(new PlayerLoginEvent(player, "", mock(InetAddress.class)));
+        PlayerLoginEvent loginEvent = spy(new PlayerLoginEvent(player, "", createInetAddress(ip)));
         given(validationService.isUnrestricted(name)).willReturn(false);
         given(onJoinVerifier.refusePlayerForFullServer(loginEvent)).willReturn(false);
 
@@ -790,7 +820,7 @@ class PlayerListenerTest {
         // given
         String name = "inval!dName";
         UUID uniqueId = UUID.fromString("753493c9-33ba-4a4a-bf61-1bce9d3c9a71");
-        InetAddress ip = mock(InetAddress.class);
+        InetAddress ip = createInetAddress("33.32.33.33");
         AsyncPlayerPreLoginEvent event = spy(new AsyncPlayerPreLoginEvent(name, ip, uniqueId));
         given(validationService.isUnrestricted(name)).willReturn(false);
         FailedVerificationException exception = new FailedVerificationException(
@@ -817,6 +847,7 @@ class PlayerListenerTest {
         given(settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)).willReturn(true);
         given(antiBotService.wasPlayerKicked(anyString())).willReturn(false);
         Player player = mockPlayerWithName("Billy");
+        given(listenerService.shouldCancelEvent(player)).willReturn(true); // player not authenticated
         PlayerQuitEvent event = new PlayerQuitEvent(player, "Player has quit the server");
 
         // when
@@ -856,6 +887,7 @@ class PlayerListenerTest {
         given(settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)).willReturn(false);
         given(settings.getProperty(RegistrationSettings.REMOVE_UNLOGGED_LEAVE_MESSAGE)).willReturn(false);
         given(antiBotService.wasPlayerKicked(name)).willReturn(false);
+        given(listenerService.shouldCancelEvent(player)).willReturn(true); // player not authenticated
         String quitMessage = "The player has left the server.";
         PlayerQuitEvent event = new PlayerQuitEvent(player, quitMessage);
 
@@ -1104,9 +1136,11 @@ class PlayerListenerTest {
         verifyNoMoreInteractions(event);
     }
 
-    private static InetAddress mockAddrWithIp(String ip) {
-        InetAddress addr = mock(InetAddress.class);
-        given(addr.getHostAddress()).willReturn(ip);
-        return addr;
+    public static InetAddress createInetAddress(String ip) {
+        try {
+            return InetAddress.getByName(ip);
+        } catch (UnknownHostException e) {
+            throw new IllegalArgumentException("Invalid IP address: " + ip, e);
+        }
     }
 }

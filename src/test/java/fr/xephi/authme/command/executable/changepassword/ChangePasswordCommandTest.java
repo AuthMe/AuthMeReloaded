@@ -3,6 +3,7 @@ package fr.xephi.authme.command.executable.changepassword;
 import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
@@ -20,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.any;
@@ -29,7 +29,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * Test for {@link ChangePasswordCommand}.
@@ -55,6 +54,9 @@ class ChangePasswordCommandTest {
     @Mock
     private Management management;
 
+    @Mock
+    private Messages messages;
+
     @Test
     void shouldRejectNonPlayerSender() {
         // given
@@ -64,7 +66,7 @@ class ChangePasswordCommandTest {
         command.executeCommand(sender, Collections.emptyList());
 
         // then
-        verify(sender).sendMessage(argThat(containsString("use /authme password <playername> <password> instead")));
+        verify(messages).send(sender, MessageKey.PLAYER_COMMAND_ONLY_WITH_ALTERNATIVE, "/authme password <playername> <password>");
     }
 
     @Test

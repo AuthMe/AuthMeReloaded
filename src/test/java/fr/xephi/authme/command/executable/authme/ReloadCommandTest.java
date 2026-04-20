@@ -28,12 +28,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * Test for {@link ReloadCommand}.
@@ -114,7 +112,7 @@ class ReloadCommandTest {
         // then
         verify(settings).reload();
         verify(reloadableStore).retrieveAllOfType();
-        verify(sender).sendMessage(argThat(containsString("Error occurred")));
+        verify(commandService).send(sender, MessageKey.RELOAD_ERROR);
         verify(authMe).stopOrUnload();
     }
 
@@ -134,7 +132,7 @@ class ReloadCommandTest {
         verify(settings).reload();
         verify(reloadableStore).retrieveAllOfType();
         verify(settingsDependentStore).retrieveAllOfType();
-        verify(sender).sendMessage(argThat(containsString("cannot change database type")));
+        verify(commandService).send(sender, MessageKey.RELOAD_DB_TYPE_CHANGE);
     }
 
     private void verifyReloadingCalls(List<Reloadable> reloadables, List<SettingsDependent> dependents) {

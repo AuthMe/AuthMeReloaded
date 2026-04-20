@@ -7,6 +7,7 @@ import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.mail.SendMailSsl;
 import fr.xephi.authme.permission.DebugSectionPermissions;
 import fr.xephi.authme.permission.PermissionNode;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import org.apache.commons.mail.EmailException;
@@ -30,6 +31,9 @@ class TestEmailSender implements DebugSection {
 
     @Inject
     private SendMailSsl sendMailSsl;
+
+    @Inject
+    private BukkitService bukkitService;
 
     @Inject
     private Server server;
@@ -58,12 +62,15 @@ class TestEmailSender implements DebugSection {
 
         // getEmail() takes care of informing the sender of the error if email == null
         if (email != null) {
-            boolean sendMail = sendTestEmail(email);
-            if (sendMail) {
-                sender.sendMessage("Test email sent to " + email + " with success");
-            } else {
-                sender.sendMessage(ChatColor.RED + "Failed to send test mail to " + email + "; please check your logs");
-            }
+            sender.sendMessage("Sending test email to " + email + "...");
+            bukkitService.runTaskAsynchronously(() -> {
+                boolean sendMail = sendTestEmail(email);
+                if (sendMail) {
+                    sender.sendMessage("Test email sent to " + email + " with success");
+                } else {
+                    sender.sendMessage(ChatColor.RED + "Failed to send test mail to " + email + "; please check your logs");
+                }
+            });
         }
     }
 

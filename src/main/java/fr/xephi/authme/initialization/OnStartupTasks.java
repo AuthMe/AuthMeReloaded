@@ -32,7 +32,7 @@ import static fr.xephi.authme.settings.properties.EmailSettings.RECALL_PLAYERS;
  */
 public class OnStartupTasks {
 
-    private static ConsoleLogger consoleLogger = ConsoleLoggerFactory.get(OnStartupTasks.class);
+    private static final ConsoleLogger consoleLogger = ConsoleLoggerFactory.get(OnStartupTasks.class);
 
     @Inject
     private DataSource dataSource;
@@ -53,6 +53,8 @@ public class OnStartupTasks {
      * @param settings the settings
      */
     public static void sendMetrics(AuthMe plugin, Settings settings) {
+        // We do not relocate as the library is downloaded at runtime
+        System.setProperty("bstats.relocatecheck", "false");
         final Metrics metrics = new Metrics(plugin, 164);
 
         metrics.addCustomChart(new SimplePie("messages_language",
@@ -109,6 +111,6 @@ public class OnStartupTasks {
                     }
                 });
             }
-        }, 1, TICKS_PER_MINUTE * settings.getProperty(EmailSettings.DELAY_RECALL));
+        }, 1, (long) TICKS_PER_MINUTE * settings.getProperty(EmailSettings.DELAY_RECALL));
     }
 }

@@ -12,16 +12,21 @@ import fr.xephi.authme.data.limbo.UserGroup;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.EntityType;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.CAN_FLY;
+import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.ENDER_PEARLS;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.FLY_SPEED;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.GROUPS;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.IS_OP;
@@ -32,6 +37,8 @@ import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.LOC_X
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.LOC_Y;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.LOC_YAW;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.LOC_Z;
+import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.VEHICLE_TYPE;
+import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.VEHICLE_UUID;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.WALK_SPEED;
 import static java.util.Optional.ofNullable;
 
@@ -65,7 +72,32 @@ class LimboPlayerDeserializer implements JsonDeserializer<LimboPlayer> {
         float walkSpeed = getFloat(jsonObject, WALK_SPEED, LimboPlayer.DEFAULT_WALK_SPEED);
         float flySpeed = getFloat(jsonObject, FLY_SPEED, LimboPlayer.DEFAULT_FLY_SPEED);
 
-        return new LimboPlayer(loc, operator, groups, canFly, walkSpeed, flySpeed);
+        LimboPlayer limboPlayer = new LimboPlayer(loc, operator, groups, canFly, walkSpeed, flySpeed);
+
+        JsonElement pearlsElement = jsonObject.get(ENDER_PEARLS);
+        if (pearlsElement != null && pearlsElement.isJsonArray()) {
+            Set<UUID> pearlUuids = new HashSet<>();
+            for (JsonElement pearlElement : pearlsElement.getAsJsonArray()) {
+                try {
+                    pearlUuids.add(UUID.fromString(pearlElement.getAsString()));
+                } catch (IllegalArgumentException ignored) {
+                }
+            }
+            limboPlayer.setEnderPearlUuids(pearlUuids);
+        }
+
+        JsonElement vehicleUuidElement = jsonObject.get(VEHICLE_UUID);
+        JsonElement vehicleTypeElement = jsonObject.get(VEHICLE_TYPE);
+        if (vehicleUuidElement != null && vehicleTypeElement != null) {
+            try {
+                UUID vehicleUuid = UUID.fromString(vehicleUuidElement.getAsString());
+                EntityType vehicleType = EntityType.valueOf(vehicleTypeElement.getAsString());
+                limboPlayer.setVehicle(vehicleUuid, vehicleType);
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+
+        return limboPlayer;
     }
 
     private Location deserializeLocation(JsonObject jsonObject) {

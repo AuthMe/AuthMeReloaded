@@ -55,10 +55,10 @@ class BukkitServiceTest {
         given(settings.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(true);
         bukkitService = new BukkitService(authMe, settings);
     }
-    
+
     @Nested
     class SchedulerFunctionalityTests {
-        
+
         @BeforeEach
         void setUpScheduler() {
             given(server.getScheduler()).willReturn(scheduler);

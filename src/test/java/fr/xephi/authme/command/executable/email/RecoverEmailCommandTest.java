@@ -6,12 +6,12 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PasswordRecoveryService;
 import fr.xephi.authme.service.RecoveryCodeService;
 import org.bukkit.entity.Player;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -56,12 +56,15 @@ class RecoverEmailCommandTest {
 
     @Mock
     private PasswordRecoveryService recoveryService;
-    
+
     @Mock
     private RecoveryCodeService recoveryCodeService;
 
     @Mock
     private BukkitService bukkitService;
+
+    @Mock
+    private Messages messages;
 
     @BeforeAll
     static void initLogger() {

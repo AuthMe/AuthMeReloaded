@@ -157,3 +157,41 @@ two_factor:
     not_enabled_error: '&b【AuthMe】&6雙重驗證尚未開啟，使用 /2fa add 來開啟。'
     removed_success: '&b【AuthMe】&6雙重驗證已成功移除！'
     invalid_code: '&b【AuthMe】&c驗證碼錯誤。'
+
+# 指令驗證訊息
+command:
+    player_only: '&c此指令僅限玩家使用。'
+    player_only_alternative: '&c僅限玩家使用！請改用 %alternative。'
+    failed_to_parse: '&4無法解析 AuthMe 指令！'
+    unknown: '&4未知指令！'
+    incorrect_arguments: '&4指令參數不正確！'
+    did_you_mean: '&e您是否想輸入 &6%cmd&e？'
+    see_help: '&e使用指令 &6/%cmd&e 查看幫助。'
+    detailed_help: '&6詳細幫助：&f/%cmd'
+
+# 管理員指令訊息
+admin:
+    force_login:
+        player_offline: '&c玩家需要在線！'
+        forbidden: '&c您不能強制登入玩家 %name！'
+        success: '&2已強制登入 %name！'
+    accounts:
+        ip_not_found: '&c該 IP 在資料庫中不存在。'
+        single_account: '&2%name 是單帳號玩家。'
+        no_last_ip: '&c該玩家沒有已知的最後 IP 地址。'
+    email_show: '&2%name 的電子郵件：%email'
+    antibot:
+        status: '&2AntiBot 狀態：%status'
+        override_enabled: '&2AntiBot 手動覆蓋：已啟用！'
+        override_disabled: '&2AntiBot 手動覆蓋：已停用！'
+        invalid_mode: '&c無效的 AntiBot 模式！'
+    reload:
+        db_type_change: '&e注意：無法在 /authme reload 期間更改資料庫類型。'
+        error: '&c重載 AuthMe 時發生錯誤。'
+    spawn:
+        set_success: '&2新出生點已成功設置。'
+        set_fail: '&cSetSpawn 失敗，請重試。'
+        first_set_success: '&2新的第一出生點已成功設置。'
+        first_set_fail: '&cSetFirstSpawn 失敗，請重試。'
+        not_defined: '&c出生失敗，請嘗試定義出生點。'
+        first_not_defined: '&c第一出生失敗，請嘗試定義第一出生點。'

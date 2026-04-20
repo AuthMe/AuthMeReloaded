@@ -154,3 +154,41 @@ time:
   hours: '時間'
   day: '日'
   days: '日'
+
+# コマンド検証メッセージ
+command:
+  player_only: '&cこのコマンドはプレイヤー専用です。'
+  player_only_alternative: '&cプレイヤー専用です！代わりに %alternative を使用してください。'
+  failed_to_parse: '&4AuthMeコマンドを解析できませんでした！'
+  unknown: '&4不明なコマンドです！'
+  incorrect_arguments: '&4コマンドの引数が正しくありません！'
+  did_you_mean: '&e&6%cmd&e のことですか？'
+  see_help: '&eヘルプを表示するには &6/%cmd&e コマンドを使用してください。'
+  detailed_help: '&6詳細ヘルプ: &f/%cmd'
+
+# 管理者コマンドメッセージ
+admin:
+  force_login:
+    player_offline: '&cプレイヤーはオンラインである必要があります！'
+    forbidden: '&cプレイヤー %name を強制ログインさせることはできません！'
+    success: '&2%name の強制ログインを実行しました！'
+  accounts:
+    ip_not_found: '&cこのIPはデータベースに存在しません。'
+    single_account: '&2%name はシングルアカウントのプレイヤーです。'
+    no_last_ip: '&cプレイヤーの最後のIPアドレスは不明です。'
+  email_show: '&2%name のメール: %email'
+  antibot:
+    status: '&2AntiBot ステータス: %status'
+    override_enabled: '&2AntiBot 手動オーバーライド: 有効！'
+    override_disabled: '&2AntiBot 手動オーバーライド: 無効！'
+    invalid_mode: '&c無効な AntiBot モードです！'
+  reload:
+    db_type_change: '&e注意: /authme reload 中にデータベースの種類を変更することはできません。'
+    error: '&cAuthMe の再読み込み中にエラーが発生しました。'
+  spawn:
+    set_success: '&2新しいスポーンポイントが正しく設定されました。'
+    set_fail: '&cSetSpawn が失敗しました。再試行してください。'
+    first_set_success: '&2新しい最初のスポーンポイントが正しく設定されました。'
+    first_set_fail: '&cSetFirstSpawn が失敗しました。再試行してください。'
+    not_defined: '&cスポーンに失敗しました。スポーンを定義してください。'
+    first_not_defined: '&c最初のスポーンに失敗しました。最初のスポーンを定義してください。'

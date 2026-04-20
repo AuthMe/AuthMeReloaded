@@ -282,7 +282,6 @@ public class AsynchronousLogin implements AsynchronousProcess {
             String name = player.getName();
             loginCaptchaManager.resetLoginFailureCount(name);
             tempbanManager.resetCount(ip, name);
-            player.setNoDamageTicks(0);
 
             service.send(player, MessageKey.LOGIN_SUCCESS);
 

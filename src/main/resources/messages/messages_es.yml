@@ -156,3 +156,41 @@ two_factor:
     not_enabled_error: 'La autenticación de dos factores no está habilitada para tu cuenta. Por favor usa /2fa add'
     removed_success: 'Se ha eliminado correctamente la autenticación de dos factores de tu cuenta'
     invalid_code: '¡Código incorrecto!'
+
+# Mensajes de validación de comandos
+command:
+    player_only: '&cEste comando es solo para jugadores.'
+    player_only_alternative: '&c¡Solo para jugadores! Por favor usa %alternative en su lugar.'
+    failed_to_parse: '&4¡No se pudo analizar el comando de AuthMe!'
+    unknown: '&4¡Comando desconocido!'
+    incorrect_arguments: '&4¡Argumentos de comando incorrectos!'
+    did_you_mean: '&e¿Quisiste decir &6%cmd&e?'
+    see_help: '&eUsa el comando &6/%cmd&e para ver la ayuda.'
+    detailed_help: '&6Ayuda detallada: &f/%cmd'
+
+# Mensajes de comandos de administrador
+admin:
+    force_login:
+        player_offline: '&c¡El jugador debe estar en línea!'
+        forbidden: '&c¡No puedes forzar el inicio de sesión del jugador %name!'
+        success: '&2¡Inicio de sesión forzado para %name realizado!'
+    accounts:
+        ip_not_found: '&cEsta IP no existe en la base de datos.'
+        single_account: '&2%name es un jugador con una sola cuenta.'
+        no_last_ip: '&cNo se conoce la última dirección IP del jugador.'
+    email_show: '&2Correo de %name: %email'
+    antibot:
+        status: '&2Estado de AntiBot: %status'
+        override_enabled: '&2Anulación manual de AntiBot: ¡habilitada!'
+        override_disabled: '&2Anulación manual de AntiBot: ¡deshabilitada!'
+        invalid_mode: '&c¡Modo de AntiBot inválido!'
+    reload:
+        db_type_change: '&eNota: no se puede cambiar el tipo de base de datos durante /authme reload.'
+        error: '&cSe produjo un error durante la recarga de AuthMe.'
+    spawn:
+        set_success: '&2Nuevo punto de aparición definido correctamente.'
+        set_fail: '&cSetSpawn falló, por favor inténtalo de nuevo.'
+        first_set_success: '&2Nuevo primer punto de aparición definido correctamente.'
+        first_set_fail: '&cSetFirstSpawn falló, por favor inténtalo de nuevo.'
+        not_defined: '&cEl spawn falló, por favor intenta definir el spawn.'
+        first_not_defined: '&cEl primer spawn falló, por favor intenta definir el primer spawn.'

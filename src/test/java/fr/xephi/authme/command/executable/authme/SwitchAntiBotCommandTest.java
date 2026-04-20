@@ -3,6 +3,8 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.command.CommandMapper;
 import fr.xephi.authme.command.FoundCommandResult;
 import fr.xephi.authme.command.help.HelpProvider;
+import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.service.AntiBotService;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.Test;
@@ -14,13 +16,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collections;
 
 import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * Test for {@link SwitchAntiBotCommand}.
@@ -40,6 +41,9 @@ class SwitchAntiBotCommandTest {
     @Mock
     private HelpProvider helpProvider;
 
+    @Mock
+    private Messages messages;
+
     @Test
     void shouldReturnAntiBotState() {
         // given
@@ -50,7 +54,7 @@ class SwitchAntiBotCommandTest {
         command.executeCommand(sender, Collections.emptyList());
 
         // then
-        verify(sender).sendMessage(argThat(containsString("status: ACTIVE")));
+        verify(messages).send(eq(sender), eq(MessageKey.ANTIBOT_STATUS), eq("ACTIVE"));
     }
 
     @Test
@@ -63,7 +67,7 @@ class SwitchAntiBotCommandTest {
 
         // then
         verify(antiBot).overrideAntiBotStatus(true);
-        verify(sender).sendMessage(argThat(containsString("enabled")));
+        verify(messages).send(sender, MessageKey.ANTIBOT_OVERRIDE_ENABLED);
     }
 
     @Test
@@ -76,7 +80,7 @@ class SwitchAntiBotCommandTest {
 
         // then
         verify(antiBot).overrideAntiBotStatus(false);
-        verify(sender).sendMessage(argThat(containsString("disabled")));
+        verify(messages).send(sender, MessageKey.ANTIBOT_OVERRIDE_DISABLED);
     }
 
     @Test
@@ -91,7 +95,8 @@ class SwitchAntiBotCommandTest {
 
         // then
         verify(antiBot, never()).overrideAntiBotStatus(anyBoolean());
-        verify(sender).sendMessage(argThat(containsString("Invalid")));
+        verify(messages).send(sender, MessageKey.ANTIBOT_INVALID_MODE);
         verify(helpProvider).outputHelp(sender, foundCommandResult, HelpProvider.SHOW_ARGUMENTS);
+        verify(messages).send(eq(sender), eq(MessageKey.COMMAND_DETAILED_HELP), eq("authme help antibot"));
     }
 }

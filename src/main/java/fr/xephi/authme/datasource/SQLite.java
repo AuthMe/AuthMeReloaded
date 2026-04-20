@@ -1,10 +1,12 @@
 package fr.xephi.authme.datasource;
 
+import ch.jalu.datasourcecolumns.data.DataSourceValue;
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.columnshandler.AuthMeColumnsHandler;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
+import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 
@@ -216,7 +218,7 @@ public class SQLite extends AbstractSqlDataSource {
     }
 
     @Override
-    public void reload() {
+    public synchronized void reload() {
         close(con);
         try {
             this.connect();
@@ -228,7 +230,7 @@ public class SQLite extends AbstractSqlDataSource {
     }
 
     @Override
-    public PlayerAuth getAuth(String user) {
+    public synchronized PlayerAuth getAuth(String user) {
         String sql = "SELECT * FROM " + tableName + " WHERE LOWER(" + col.NAME + ")=LOWER(?);";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, user);
@@ -244,7 +246,7 @@ public class SQLite extends AbstractSqlDataSource {
     }
 
     @Override
-    public Set<String> getRecordsToPurge(long until) {
+    public synchronized Set<String> getRecordsToPurge(long until) {
         Set<String> list = new HashSet<>();
         String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE MAX("
             + " COALESCE(" + col.LAST_LOGIN + ", 0),"
@@ -265,7 +267,7 @@ public class SQLite extends AbstractSqlDataSource {
     }
 
     @Override
-    public void purgeRecords(Collection<String> toPurge) {
+    public synchronized void purgeRecords(Collection<String> toPurge) {
         String delete = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (PreparedStatement deletePst = con.prepareStatement(delete)) {
             for (String name : toPurge) {
@@ -278,7 +280,7 @@ public class SQLite extends AbstractSqlDataSource {
     }
 
     @Override
-    public boolean removeAuth(String user) {
+    public synchronized boolean removeAuth(String user) {
         String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, user.toLowerCase(Locale.ROOT));
@@ -291,7 +293,7 @@ public class SQLite extends AbstractSqlDataSource {
     }
 
     @Override
-    public void closeConnection() {
+    public synchronized void closeConnection() {
         try {
             if (con != null && !con.isClosed()) {
                 con.close();
@@ -307,7 +309,7 @@ public class SQLite extends AbstractSqlDataSource {
     }
 
     @Override
-    public List<PlayerAuth> getAllAuths() {
+    public synchronized List<PlayerAuth> getAllAuths() {
         List<PlayerAuth> auths = new ArrayList<>();
         String sql = "SELECT * FROM " + tableName + ";";
         try (PreparedStatement pst = con.prepareStatement(sql); ResultSet rs = pst.executeQuery()) {
@@ -322,7 +324,7 @@ public class SQLite extends AbstractSqlDataSource {
     }
 
     @Override
-    public List<String> getLoggedPlayersWithEmptyMail() {
+    public synchronized List<String> getLoggedPlayersWithEmptyMail() {
         List<String> players = new ArrayList<>();
         String sql = "SELECT " + col.REAL_NAME + " FROM " + tableName + " WHERE " + col.IS_LOGGED + " = 1"
             + " AND (" + col.EMAIL + " = 'your@email.com' OR " + col.EMAIL + " IS NULL);";
@@ -337,7 +339,7 @@ public class SQLite extends AbstractSqlDataSource {
     }
 
     @Override
-    public List<PlayerAuth> getRecentlyLoggedInPlayers() {
+    public synchronized List<PlayerAuth> getRecentlyLoggedInPlayers() {
         List<PlayerAuth> players = new ArrayList<>();
         String sql = "SELECT * FROM " + tableName + " ORDER BY " + col.LAST_LOGIN + " DESC LIMIT 10;";
         try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sql)) {
@@ -352,7 +354,7 @@ public class SQLite extends AbstractSqlDataSource {
 
 
     @Override
-    public boolean setTotpKey(String user, String totpKey) {
+    public synchronized boolean setTotpKey(String user, String totpKey) {
         String sql = "UPDATE " + tableName + " SET " + col.TOTP_KEY + " = ? WHERE " + col.NAME + " = ?";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, totpKey);
@@ -419,5 +421,110 @@ public class SQLite extends AbstractSqlDataSource {
                 logSqlException(ex);
             }
         }
+    }
+
+    // ---------------------------------------------------------------------------
+    // Synchronized wrappers for AbstractSqlDataSource methods
+    // All operations share a single Connection, so we must serialize access.
+    // ---------------------------------------------------------------------------
+
+    @Override
+    public synchronized boolean isAuthAvailable(String user) {
+        return super.isAuthAvailable(user);
+    }
+
+    @Override
+    public synchronized HashedPassword getPassword(String user) {
+        return super.getPassword(user);
+    }
+
+    @Override
+    public synchronized boolean saveAuth(PlayerAuth auth) {
+        return super.saveAuth(auth);
+    }
+
+    @Override
+    public synchronized boolean hasSession(String user) {
+        return super.hasSession(user);
+    }
+
+    @Override
+    public synchronized boolean updateSession(PlayerAuth auth) {
+        return super.updateSession(auth);
+    }
+
+    @Override
+    public synchronized boolean updatePassword(PlayerAuth auth) {
+        return super.updatePassword(auth);
+    }
+
+    @Override
+    public synchronized boolean updatePassword(String user, HashedPassword password) {
+        return super.updatePassword(user, password);
+    }
+
+    @Override
+    public synchronized boolean updateQuitLoc(PlayerAuth auth) {
+        return super.updateQuitLoc(auth);
+    }
+
+    @Override
+    public synchronized List<String> getAllAuthsByIp(String ip) {
+        return super.getAllAuthsByIp(ip);
+    }
+
+    @Override
+    public synchronized int countAuthsByEmail(String email) {
+        return super.countAuthsByEmail(email);
+    }
+
+    @Override
+    public synchronized boolean updateEmail(PlayerAuth auth) {
+        return super.updateEmail(auth);
+    }
+
+    @Override
+    public synchronized boolean isLogged(String user) {
+        return super.isLogged(user);
+    }
+
+    @Override
+    public synchronized void setLogged(String user) {
+        super.setLogged(user);
+    }
+
+    @Override
+    public synchronized void setUnlogged(String user) {
+        super.setUnlogged(user);
+    }
+
+    @Override
+    public synchronized void grantSession(String user) {
+        super.grantSession(user);
+    }
+
+    @Override
+    public synchronized void revokeSession(String user) {
+        super.revokeSession(user);
+    }
+
+    @Override
+    public synchronized void purgeLogged() {
+        super.purgeLogged();
+    }
+
+    @Override
+    public synchronized int getAccountsRegistered() {
+        return super.getAccountsRegistered();
+    }
+
+    @Override
+    public synchronized boolean updateRealName(String user, String realName) {
+        return super.updateRealName(user, realName);
+    }
+
+    @Override
+    public synchronized DataSourceValue<String> getEmail(String user) {
+        return super.getEmail(user);
     }
 }

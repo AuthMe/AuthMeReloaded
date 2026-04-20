@@ -1,6 +1,5 @@
 package fr.xephi.authme.util;
 
-import fr.xephi.authme.ReflectionTestUtils;
 import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;

@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import javax.mail.Session;
 import java.security.Security;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_ACCOUNT;
 import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_PASSWORD;
@@ -26,6 +27,8 @@ import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_PASSWORD;
  * Sends emails to players on behalf of the server.
  */
 public class SendMailSsl {
+
+    private static final AtomicBoolean MAILCAP_INITIALIZED = new AtomicBoolean(false);
 
     private ConsoleLogger logger = ConsoleLoggerFactory.get(SendMailSsl.class);
 
@@ -88,12 +91,15 @@ public class SendMailSsl {
         Thread.currentThread().setContextClassLoader(SendMailSsl.class.getClassLoader());
         // Issue #999: Prevent UnsupportedDataTypeException: no object DCH for MIME type multipart/alternative
         // cf. http://stackoverflow.com/questions/21856211/unsupporteddatatypeexception-no-object-dch-for-mime-type
-        MailcapCommandMap mc = (MailcapCommandMap) CommandMap.getDefaultCommandMap();
-        mc.addMailcap("text/html;; x-java-content-handler=com.sun.mail.handlers.text_html");
-        mc.addMailcap("text/xml;; x-java-content-handler=com.sun.mail.handlers.text_xml");
-        mc.addMailcap("text/plain;; x-java-content-handler=com.sun.mail.handlers.text_plain");
-        mc.addMailcap("multipart/*;; x-java-content-handler=com.sun.mail.handlers.multipart_mixed");
-        mc.addMailcap("message/rfc822;; x-java-content- handler=com.sun.mail.handlers.message_rfc822");
+        // Registered once per JVM to avoid concurrent mutations on the global singleton CommandMap.
+        if (MAILCAP_INITIALIZED.compareAndSet(false, true)) {
+            MailcapCommandMap mc = (MailcapCommandMap) CommandMap.getDefaultCommandMap();
+            mc.addMailcap("text/html;; x-java-content-handler=com.sun.mail.handlers.text_html");
+            mc.addMailcap("text/xml;; x-java-content-handler=com.sun.mail.handlers.text_xml");
+            mc.addMailcap("text/plain;; x-java-content-handler=com.sun.mail.handlers.text_plain");
+            mc.addMailcap("multipart/*;; x-java-content-handler=com.sun.mail.handlers.multipart_mixed");
+            mc.addMailcap("message/rfc822;; x-java-content- handler=com.sun.mail.handlers.message_rfc822");
+        }
 
         try {
             email.setHtmlMsg(content);
@@ -118,6 +124,7 @@ public class SendMailSsl {
      * @param port the configured outgoing port
      */
     private void setPropertiesForPort(HtmlEmail email, int port) throws EmailException {
+        boolean checkServerIdentity = settings.getProperty(EmailSettings.SSL_CHECK_SERVER_IDENTITY);
         switch (port) {
             case 587:
                 String oAuth2Token = settings.getProperty(EmailSettings.OAUTH2_TOKEN);
@@ -126,7 +133,8 @@ public class SendMailSsl {
                         Security.addProvider(new OAuth2Provider());
                     }
                     Properties mailProperties = email.getMailSession().getProperties();
-                    mailProperties.setProperty("mail.smtp.ssl.enable", "true");
+                    mailProperties.setProperty("mail.smtp.starttls.enable", "true");
+                    mailProperties.setProperty("mail.smtp.starttls.required", "true");
                     mailProperties.setProperty("mail.smtp.auth.mechanisms", "XOAUTH2");
                     mailProperties.setProperty("mail.smtp.sasl.enable", "true");
                     mailProperties.setProperty("mail.smtp.sasl.mechanisms", "XOAUTH2");
@@ -137,22 +145,24 @@ public class SendMailSsl {
                 } else {
                     email.setStartTLSEnabled(true);
                     email.setStartTLSRequired(true);
+                    email.setSSLCheckServerIdentity(checkServerIdentity);
                 }
                 break;
             case 25:
                 if (settings.getProperty(EmailSettings.PORT25_USE_TLS)) {
                     email.setStartTLSEnabled(true);
-                    email.setSSLCheckServerIdentity(true);
+                    email.setSSLCheckServerIdentity(checkServerIdentity);
                 }
                 break;
             case 465:
                 email.setSslSmtpPort(Integer.toString(port));
                 email.setSSLOnConnect(true);
+                email.setSSLCheckServerIdentity(checkServerIdentity);
                 break;
             default:
                 email.setStartTLSEnabled(true);
-                email.setSSLOnConnect(true);
-                email.setSSLCheckServerIdentity(true);
+                email.setStartTLSRequired(true);
+                email.setSSLCheckServerIdentity(checkServerIdentity);
         }
     }
 }

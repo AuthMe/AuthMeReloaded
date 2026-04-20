@@ -13,7 +13,6 @@ import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SettingsWarner;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
-import fr.xephi.authme.util.Utils;
 import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
@@ -56,12 +55,13 @@ public class ReloadCommand implements ExecutableCommand {
 
             // We do not change database type for consistency issues, but we'll output a note in the logs
             if (!settings.getProperty(DatabaseSettings.BACKEND).equals(dataSource.getType())) {
-                Utils.logAndSendMessage(sender, "Note: cannot change database type during /authme reload");
+                logger.info("Note: cannot change database type during /authme reload");
+                commonService.send(sender, MessageKey.RELOAD_DB_TYPE_CHANGE);
             }
             performReloadOnServices();
             commonService.send(sender, MessageKey.CONFIG_RELOAD_SUCCESS);
         } catch (Exception e) {
-            sender.sendMessage("Error occurred during reload of AuthMe: aborting");
+            commonService.send(sender, MessageKey.RELOAD_ERROR);
             logger.logException("Aborting! Encountered exception during reload of AuthMe:", e);
             plugin.stopOrUnload();
         }

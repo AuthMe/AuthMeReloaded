@@ -155,3 +155,41 @@ two_factor:
     not_enabled_error: 'Weryfikacja dwuetapowa nie jest włączona dla twojego konta. Wpisz komende /2fa add'
     removed_success: '&aPomyślnie usunięto weryfikacje dwuetapową z Twojego konta.'
     invalid_code: '&cWpisany kod jest nieprawidłowy, spróbuj jeszcze raz.'
+
+# Komunikaty walidacji poleceń
+command:
+    player_only: '&cTo polecenie jest tylko dla graczy.'
+    player_only_alternative: '&cTylko dla graczy! Użyj %alternative zamiast tego.'
+    failed_to_parse: '&4Nie udało się przetworzyć polecenia AuthMe!'
+    unknown: '&4Nieznane polecenie!'
+    incorrect_arguments: '&4Nieprawidłowe argumenty polecenia!'
+    did_you_mean: '&eCzy chodziło Ci o &6%cmd&e?'
+    see_help: '&eUżyj polecenia &6/%cmd&e, aby wyświetlić pomoc.'
+    detailed_help: '&6Szczegółowa pomoc: &f/%cmd'
+
+# Komunikaty poleceń administratora
+admin:
+    force_login:
+        player_offline: '&cGracz musi być online!'
+        forbidden: '&cNie możesz wymusić logowania gracza %name!'
+        success: '&2Wymuszone logowanie dla %name wykonane!'
+    accounts:
+        ip_not_found: '&cTen adres IP nie istnieje w bazie danych.'
+        single_account: '&2%name jest graczem z jednym kontem.'
+        no_last_ip: '&cBrak znanego ostatniego adresu IP gracza.'
+    email_show: '&2E-mail %name: %email'
+    antibot:
+        status: '&2Status AntiBot: %status'
+        override_enabled: '&2Ręczne nadpisanie AntiBot: włączone!'
+        override_disabled: '&2Ręczne nadpisanie AntiBot: wyłączone!'
+        invalid_mode: '&cNieprawidłowy tryb AntiBot!'
+    reload:
+        db_type_change: '&eUwaga: nie można zmienić typu bazy danych podczas /authme reload.'
+        error: '&cWystąpił błąd podczas przeładowania AuthMe.'
+    spawn:
+        set_success: '&2Nowy punkt spawnu poprawnie zdefiniowany.'
+        set_fail: '&cSetSpawn nie powiódł się, spróbuj ponownie.'
+        first_set_success: '&2Nowy pierwszy punkt spawnu poprawnie zdefiniowany.'
+        first_set_fail: '&cSetFirstSpawn nie powiódł się, spróbuj ponownie.'
+        not_defined: '&cSpawn nie powiódł się, spróbuj zdefiniować spawn.'
+        first_not_defined: '&cPierwszy spawn nie powiódł się, spróbuj zdefiniować pierwszy spawn.'

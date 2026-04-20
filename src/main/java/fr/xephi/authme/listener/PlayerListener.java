@@ -2,6 +2,7 @@ package fr.xephi.authme.listener;
 
 import fr.xephi.authme.data.QuickCommandsProtectionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
@@ -20,6 +21,8 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.entity.EnderPearl;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -54,6 +57,8 @@ import org.bukkit.inventory.InventoryView;
 import javax.inject.Inject;
 import java.util.Locale;
 import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOWED_MOVEMENT_RADIUS;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT;
@@ -91,6 +96,8 @@ public class PlayerListener implements Listener {
     private PermissionsManager permissionsManager;
     @Inject
     private QuickCommandsProtectionManager quickCommandsProtectionManager;
+    @Inject
+    private LimboService limboService;
 
     // Lowest priority to apply fast protection checks
     @EventHandler(priority = EventPriority.LOWEST)
@@ -142,6 +149,8 @@ public class PlayerListener implements Listener {
         try {
             final PlayerAuth auth = dataSource.getAuth(name);
             final boolean isAuthAvailable = auth != null;
+            teleportationService.preloadAuthStatus(name, isAuthAvailable);
+            onJoinVerifier.checkNameRestrictions(name, event.getAddress());
             onJoinVerifier.checkKickNonRegistered(isAuthAvailable);
             onJoinVerifier.checkAntibot(name, isAuthAvailable);
             onJoinVerifier.checkNameCasing(name, auth);
@@ -183,6 +192,8 @@ public class PlayerListener implements Listener {
         if (!PlayerListener19Spigot.isPlayerSpawnLocationEventCalled()) {
             teleportationService.teleportOnJoin(player);
         }
+
+        teleportationService.clearPreloadedAuthStatus(player.getName());
 
         quickCommandsProtectionManager.processJoin(player);
 
@@ -242,7 +253,31 @@ public class PlayerListener implements Listener {
             return;
         }
 
+        // Save in-flight ender pearls and vehicle state to disk so they can be restored on reconnect.
+        // Only authenticated players can throw pearls or ride vehicles, so we skip unauthenticated ones.
+        if (!listenerService.shouldCancelEvent(player)) {
+            saveStateBeforeQuit(player);
+        }
+
         management.performQuit(player);
+    }
+
+    private void saveStateBeforeQuit(Player player) {
+        Set<UUID> pearlUuids = player.getServer().getWorlds().stream()
+            .flatMap(world -> world.getEntitiesByClass(EnderPearl.class).stream())
+            .filter(pearl -> player.equals(pearl.getShooter()))
+            .map(Entity::getUniqueId)
+            .collect(Collectors.toSet());
+        if (!pearlUuids.isEmpty()) {
+            limboService.saveEnderPearlsForPlayer(player, pearlUuids);
+        }
+
+        if (player.isInsideVehicle()) {
+            org.bukkit.entity.Entity vehicle = player.getVehicle();
+            if (vehicle != null) {
+                limboService.saveVehicleForPlayer(player, vehicle.getUniqueId(), vehicle.getType());
+            }
+        }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)

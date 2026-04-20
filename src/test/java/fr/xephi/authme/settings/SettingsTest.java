@@ -26,7 +26,7 @@ import static org.mockito.Mockito.mock;
  * Unit tests for {@link Settings}.
  */
 class SettingsTest {
-    
+
     private static final ConfigurationData CONFIG_DATA =
         ConfigurationDataBuilder.createConfiguration(TestConfiguration.class);
 

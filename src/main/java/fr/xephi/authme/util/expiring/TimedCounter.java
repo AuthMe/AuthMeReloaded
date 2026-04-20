@@ -29,30 +29,32 @@ public class TimedCounter<K> extends ExpiringMap<K, Integer> {
     }
 
     /**
-     * Increments the value stored for the provided key.
+     * Increments the value stored for the provided key atomically.
      *
      * @param key the key to increment the counter for
      */
     public void increment(K key) {
-        put(key, get(key) + 1);
+        long currentTime = System.currentTimeMillis();
+        long newExpiration = currentTime + getExpirationMillis();
+        getEntries().compute(key, (k, existing) -> {
+            int current = (existing == null || currentTime > existing.getExpiration()) ? 0 : existing.getValue();
+            return new ExpiringEntry<>(current + 1, newExpiration);
+        });
     }
 
     /**
-     * Decrements the value stored for the provided key.
+     * Decrements the value stored for the provided key atomically.
      * This method will NOT update the expiration.
      *
-     * @param key the key to increment the counter for
+     * @param key the key to decrement the counter for
      */
     public void decrement(K key) {
-        ExpiringEntry<Integer> e = getEntries().get(key);
-
-        if (e != null) {
-            if (e.getValue() <= 0) {
-                remove(key);
-            } else {
-                getEntries().put(key, new ExpiringEntry<>(e.getValue() - 1, e.getExpiration()));
+        getEntries().compute(key, (k, existing) -> {
+            if (existing == null || existing.getValue() <= 0) {
+                return null;
             }
-        }
+            return new ExpiringEntry<>(existing.getValue() - 1, existing.getExpiration());
+        });
     }
 
     /**

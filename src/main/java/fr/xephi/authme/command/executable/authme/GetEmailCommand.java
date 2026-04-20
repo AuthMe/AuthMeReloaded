@@ -27,7 +27,7 @@ public class GetEmailCommand implements ExecutableCommand {
 
         DataSourceValue<String> email = dataSource.getEmail(playerName);
         if (email.rowExists()) {
-            sender.sendMessage("[AuthMe] " + playerName + "'s email: " + email.getValue());
+            commonService.send(sender, MessageKey.ADMIN_EMAIL_SHOW, playerName, email.getValue());
         } else {
             commonService.send(sender, MessageKey.UNKNOWN_USER);
         }

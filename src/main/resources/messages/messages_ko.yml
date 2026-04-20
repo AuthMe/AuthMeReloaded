@@ -157,3 +157,41 @@ two_factor:
     not_enabled_error: '2단계 인증 기능을 활성화하시지 않았습니다. /2fa add 명령어를 통해 활성화해주세요.'
     removed_success: '2단계 인증 기능을 성공적으로 비활성화하였습니다.'
     invalid_code: '올바르지 않은 인증 코드입니다!'
+
+# 명령어 검증 메시지
+command:
+    player_only: '&c이 명령어는 플레이어 전용입니다.'
+    player_only_alternative: '&c플레이어 전용입니다! 대신 %alternative를 사용해 주세요.'
+    failed_to_parse: '&4AuthMe 명령어를 파싱하지 못했습니다!'
+    unknown: '&4알 수 없는 명령어입니다!'
+    incorrect_arguments: '&4잘못된 명령어 인수입니다!'
+    did_you_mean: '&e&6%cmd&e을(를) 말씀하신 건가요?'
+    see_help: '&e도움말을 보려면 &6/%cmd&e 명령어를 사용하세요.'
+    detailed_help: '&6자세한 도움말: &f/%cmd'
+
+# 관리자 명령어 메시지
+admin:
+    force_login:
+        player_offline: '&c플레이어가 온라인 상태여야 합니다!'
+        forbidden: '&c플레이어 %name을(를) 강제 로그인할 수 없습니다!'
+        success: '&2%name에 대한 강제 로그인이 수행되었습니다!'
+    accounts:
+        ip_not_found: '&c이 IP는 데이터베이스에 존재하지 않습니다.'
+        single_account: '&2%name은(는) 단일 계정 플레이어입니다.'
+        no_last_ip: '&c플레이어의 마지막 IP 주소를 알 수 없습니다.'
+    email_show: '&2%name의 이메일: %email'
+    antibot:
+        status: '&2AntiBot 상태: %status'
+        override_enabled: '&2AntiBot 수동 오버라이드: 활성화!'
+        override_disabled: '&2AntiBot 수동 오버라이드: 비활성화!'
+        invalid_mode: '&c잘못된 AntiBot 모드입니다!'
+    reload:
+        db_type_change: '&e참고: /authme reload 중에는 데이터베이스 유형을 변경할 수 없습니다.'
+        error: '&cAuthMe 리로드 중 오류가 발생했습니다.'
+    spawn:
+        set_success: '&2새로운 스폰 포인트가 올바르게 설정되었습니다.'
+        set_fail: '&cSetSpawn에 실패했습니다. 다시 시도해 주세요.'
+        first_set_success: '&2새로운 첫 번째 스폰 포인트가 올바르게 설정되었습니다.'
+        first_set_fail: '&cSetFirstSpawn에 실패했습니다. 다시 시도해 주세요.'
+        not_defined: '&c스폰에 실패했습니다. 스폰 포인트를 정의해 보세요.'
+        first_not_defined: '&c첫 번째 스폰에 실패했습니다. 첫 번째 스폰 포인트를 정의해 보세요.'

@@ -256,7 +256,7 @@ class PasswordSecurityTest {
         String username = "someone12";
         HashedPassword hashedPassword = new HashedPassword("~T!est#Hash");
         given(method.hasSeparateSalt()).willReturn(true);
-        given(settings.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.XAUTH);
+        given(settings.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.SHA256);
         passwordSecurity.reload();
 
         // when

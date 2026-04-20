@@ -1,5 +1,7 @@
 package fr.xephi.authme.command.executable.authme;
 
+import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.settings.SpawnLoader;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -11,14 +13,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * Test for {@link SpawnCommand}.
@@ -32,6 +32,8 @@ class SpawnCommandTest {
     @Mock
     private SpawnLoader spawnLoader;
 
+    @Mock
+    private Messages messages;
 
     @Test
     void shouldTeleportToSpawn() {
@@ -58,7 +60,7 @@ class SpawnCommandTest {
         command.executeCommand(player, Collections.emptyList());
 
         // then
-        verify(player).sendMessage(argThat(containsString("Spawn has failed")));
+        verify(messages).send(player, MessageKey.SPAWN_NOT_DEFINED);
         verify(player, never()).teleport(any(Location.class));
     }
 }

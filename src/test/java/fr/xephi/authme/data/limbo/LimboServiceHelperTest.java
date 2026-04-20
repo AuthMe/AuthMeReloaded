@@ -49,8 +49,9 @@ class LimboServiceHelperTest {
         assertThat(result.isOperator(), equalTo(true));
         assertThat(result.getGroups(), contains(new UserGroup("grp-old")));
         assertThat(result.isCanFly(), equalTo(true));
-        assertThat(result.getWalkSpeed(), equalTo(0.1f));
-        assertThat(result.getFlySpeed(), equalTo(0.8f));
+        // speeds come from newLimbo (the more recent reading of the player's actual speed)
+        assertThat(result.getWalkSpeed(), equalTo(0.0f));
+        assertThat(result.getFlySpeed(), equalTo(0.0f));
     }
 
     @Test
@@ -69,7 +70,8 @@ class LimboServiceHelperTest {
         assertThat(result.getGroups(), contains(new UserGroup("grp-new")));
         assertThat(result.isCanFly(), equalTo(true));
         assertThat(result.getWalkSpeed(), equalTo(0.3f));
-        assertThat(result.getFlySpeed(), equalTo(0.1f));
+        // flySpeed comes from newLimbo (most recent reading)
+        assertThat(result.getFlySpeed(), equalTo(0.0f));
     }
 
     @Test

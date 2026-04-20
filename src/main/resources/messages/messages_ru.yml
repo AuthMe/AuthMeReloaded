@@ -150,3 +150,41 @@ two_factor:
     not_enabled_error: 'Двухфакторная аутентификация не включена для вашего аккаунта. Введите /2fa add'
     removed_success: 'Двухфакторная аутентификация успешно удалена с вашего аккаунта!'
     invalid_code: 'Неверный код!'
+
+# Сообщения валидации команд
+command:
+    player_only: '&cЭта команда только для игроков.'
+    player_only_alternative: '&cТолько для игроков! Используйте %alternative вместо этого.'
+    failed_to_parse: '&4Не удалось разобрать команду AuthMe!'
+    unknown: '&4Неизвестная команда!'
+    incorrect_arguments: '&4Неверные аргументы команды!'
+    did_you_mean: '&eВы имели в виду &6%cmd&e?'
+    see_help: '&eИспользуйте команду &6/%cmd&e для просмотра справки.'
+    detailed_help: '&6Подробная справка: &f/%cmd'
+
+# Сообщения административных команд
+admin:
+    force_login:
+        player_offline: '&cИгрок должен быть в сети!'
+        forbidden: '&cВы не можете принудительно войти за игрока %name!'
+        success: '&2Принудительный вход для %name выполнен!'
+    accounts:
+        ip_not_found: '&cЭтот IP-адрес не существует в базе данных.'
+        single_account: '&2%name — игрок с одним аккаунтом.'
+        no_last_ip: '&cПоследний IP-адрес игрока неизвестен.'
+    email_show: '&2Почта %name: %email'
+    antibot:
+        status: '&2Статус AntiBot: %status'
+        override_enabled: '&2Ручное управление AntiBot: включено!'
+        override_disabled: '&2Ручное управление AntiBot: отключено!'
+        invalid_mode: '&cНеверный режим AntiBot!'
+    reload:
+        db_type_change: '&eПримечание: нельзя изменить тип базы данных во время /authme reload.'
+        error: '&cПроизошла ошибка при перезагрузке AuthMe.'
+    spawn:
+        set_success: '&2Новая точка спавна успешно определена.'
+        set_fail: '&cSetSpawn не удался, попробуйте ещё раз.'
+        first_set_success: '&2Новая первая точка спавна успешно определена.'
+        first_set_fail: '&cSetFirstSpawn не удался, попробуйте ещё раз.'
+        not_defined: '&cСпавн не удался, попробуйте определить точку спавна.'
+        first_not_defined: '&cПервый спавн не удался, попробуйте определить первую точку спавна.'

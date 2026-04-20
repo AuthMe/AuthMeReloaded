@@ -155,3 +155,41 @@ two_factor:
     not_enabled_error: 'Die Zwei-Faktor-Authentifizierung ist für dein Konto nicht aktiviert. Benutze /2fa add'
     removed_success: 'Die Zwei-Faktor-Authentifizierung wurde erfolgreich von deinem Konto entfernt'
     invalid_code: 'Ungültiger Code!'
+
+# Command validation messages
+command:
+    player_only: '&cDieser Befehl ist nur für Spieler.'
+    player_only_alternative: '&cNur für Spieler! Bitte benutze stattdessen %alternative.'
+    failed_to_parse: '&4AuthMe-Befehl konnte nicht verarbeitet werden!'
+    unknown: '&4Unbekannter Befehl!'
+    incorrect_arguments: '&4Falsche Befehlsargumente!'
+    did_you_mean: '&eMeintest du &6%cmd&e?'
+    see_help: '&eVerwende den Befehl &6/%cmd&e, um die Hilfe anzuzeigen.'
+    detailed_help: '&6Detaillierte Hilfe: &f/%cmd'
+
+# Admin command messages
+admin:
+    force_login:
+        player_offline: '&cDer Spieler muss online sein!'
+        forbidden: '&cDu kannst den Spieler %name nicht zwangsweise einloggen!'
+        success: '&2Zwangs-Login für %name durchgeführt!'
+    accounts:
+        ip_not_found: '&cDiese IP-Adresse existiert nicht in der Datenbank.'
+        single_account: '&2%name hat nur einen Account.'
+        no_last_ip: '&cKeine bekannte letzte IP-Adresse für diesen Spieler.'
+    email_show: '&2E-Mail von %name: %email'
+    antibot:
+        status: '&2AntiBot-Status: %status'
+        override_enabled: '&2AntiBot Manueller Override: aktiviert!'
+        override_disabled: '&2AntiBot Manueller Override: deaktiviert!'
+        invalid_mode: '&cUngültiger AntiBot-Modus!'
+    reload:
+        db_type_change: '&eHinweis: Der Datenbanktyp kann während /authme reload nicht geändert werden.'
+        error: '&cFehler beim Neuladen von AuthMe.'
+    spawn:
+        set_success: '&2Neuer Spawnpunkt erfolgreich gesetzt.'
+        set_fail: '&cSetSpawn ist fehlgeschlagen, bitte erneut versuchen.'
+        first_set_success: '&2Neuer erster Spawnpunkt erfolgreich gesetzt.'
+        first_set_fail: '&cSetFirstSpawn ist fehlgeschlagen, bitte erneut versuchen.'
+        not_defined: '&cSpawn fehlgeschlagen, bitte versuche den Spawn zu definieren.'
+        first_not_defined: '&cErster Spawn fehlgeschlagen, bitte versuche den ersten Spawn zu definieren.'

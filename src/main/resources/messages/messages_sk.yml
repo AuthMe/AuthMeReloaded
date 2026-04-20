@@ -161,3 +161,41 @@ two_factor:
     # TODO not_enabled_error: 'Two-factor authentication is not enabled for your account. Run /2fa add'
     # TODO removed_success: 'Successfully removed two-factor auth from your account'
     # TODO invalid_code: 'Invalid code!'
+
+# Správy overovania príkazov
+command:
+    player_only: '&cTento príkaz je len pre hráčov.'
+    player_only_alternative: '&cLen pre hráčov! Prosím, použi namiesto toho %alternative.'
+    failed_to_parse: '&4Nepodarilo sa spracovať príkaz AuthMe!'
+    unknown: '&4Neznámy príkaz!'
+    incorrect_arguments: '&4Nesprávne argumenty príkazu!'
+    did_you_mean: '&eMal si na mysli &6%cmd&e?'
+    see_help: '&ePoužite príkaz &6/%cmd&e na zobrazenie nápovedy.'
+    detailed_help: '&6Podrobná nápoveda: &f/%cmd'
+
+# Správy administrátorských príkazov
+admin:
+    force_login:
+        player_offline: '&cHráč musí byť online!'
+        forbidden: '&cNemôžeš vynútiť prihlásenie hráča %name!'
+        success: '&2Vynútené prihlásenie pre %name vykonané!'
+    accounts:
+        ip_not_found: '&cTáto IP adresa neexistuje v databáze.'
+        single_account: '&2%name je hráč s jediným účtom.'
+        no_last_ip: '&cPre tohto hráča nie je známa žiadna posledná IP adresa.'
+    email_show: '&2E-mail hráča %name: %email'
+    antibot:
+        status: '&2Stav AntiBot: %status'
+        override_enabled: '&2Ručné prepísanie AntiBot: povolené!'
+        override_disabled: '&2Ručné prepísanie AntiBot: zakázané!'
+        invalid_mode: '&cNeplatný režim AntiBot!'
+    reload:
+        db_type_change: '&ePoznámka: počas /authme reload nemožno zmeniť typ databázy.'
+        error: '&cPri načítavaní AuthMe došlo k chybe.'
+    spawn:
+        set_success: '&2Nový bod spawnu bol správne definovaný.'
+        set_fail: '&cSetSpawn zlyhal, prosím skús to znova.'
+        first_set_success: '&2Nový prvý bod spawnu bol správne definovaný.'
+        first_set_fail: '&cSetFirstSpawn zlyhal, prosím skús to znova.'
+        not_defined: '&cSpawn zlyhal, prosím skús definovať spawn.'
+        first_not_defined: '&cPrvý spawn zlyhal, prosím skús definovať prvý spawn.'

@@ -2,6 +2,7 @@ package fr.xephi.authme.command.executable.email;
 
 import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.BlockCommandSender;
@@ -41,6 +42,9 @@ class ChangeEmailCommandTest {
 
     @Mock
     private VerificationCodeManager codeManager;
+
+    @Mock
+    private Messages messages;
 
 
     @Test

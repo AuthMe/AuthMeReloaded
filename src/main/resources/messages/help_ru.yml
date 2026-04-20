@@ -141,7 +141,7 @@ commands:
         detailedDescription: 'Преобразовывает базу данных.'
         arg1:
             label: 'тип'
-            description: 'тип преобразовывания: xauth / crazylogin / rakamak / royalauth / vauth / sqliteToSql / mysqlToSqlite'
+            description: 'тип преобразовывания: crazylogin / rakamak / royalauth / vauth / sqliteToSql / mysqlToSqlite'
     authme.help:
         description: 'Просмотр помощи'
         detailedDescription: 'Показывает помощь по командам /authme.'

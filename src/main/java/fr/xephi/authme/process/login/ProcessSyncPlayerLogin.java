@@ -80,8 +80,11 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         final String name = player.getName().toLowerCase(Locale.ROOT);
         final LimboPlayer limbo = limboService.getLimboPlayer(name);
 
+        player.setNoDamageTicks(0);
+
         // Limbo contains the State of the Player before /login
         if (limbo != null) {
+            limboService.restoreEntities(player);
             limboService.restoreData(player);
         }
 
@@ -90,6 +93,11 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         }
 
         final PlayerAuth auth = playerCache.getAuth(name);
+
+        if (isFirstLogin) { // Save quit location before login teleport
+            auth.setQuitLocation(player.getLocation());
+        }
+
         teleportationService.teleportOnLogin(player, auth, limbo);
 
         // We can now display the join message (if delayed)

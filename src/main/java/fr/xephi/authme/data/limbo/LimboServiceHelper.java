@@ -7,12 +7,16 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.LimboSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import static fr.xephi.authme.util.Utils.isCollectionEmpty;
 import static java.util.stream.Collectors.toList;
@@ -78,7 +82,7 @@ class LimboServiceHelper {
      * Merges two existing LimboPlayer instances of a player. Merging is done the following way:
      * <ul>
      *  <li><code>isOperator, allowFlight</code>: true if either limbo has true</li>
-     *  <li><code>flySpeed, walkSpeed</code>: maximum value of either limbo player</li>
+     *  <li><code>flySpeed, walkSpeed</code>: value from new limbo (most recent reading of the player's actual speed)</li>
      *  <li><code>groups, location</code>: from old limbo if not empty/null, otherwise from new limbo</li>
      * </ul>
      *
@@ -95,12 +99,21 @@ class LimboServiceHelper {
 
         boolean isOperator = newLimbo.isOperator() || oldLimbo.isOperator();
         boolean canFly = newLimbo.isCanFly() || oldLimbo.isCanFly();
-        float flySpeed = Math.max(newLimbo.getFlySpeed(), oldLimbo.getFlySpeed());
-        float walkSpeed = Math.max(newLimbo.getWalkSpeed(), oldLimbo.getWalkSpeed());
+        float flySpeed = newLimbo.getFlySpeed();
+        float walkSpeed = newLimbo.getWalkSpeed();
         Collection<UserGroup> groups = getLimboGroups(oldLimbo.getGroups(), newLimbo.getGroups());
         Location location = firstNotNull(oldLimbo.getLocation(), newLimbo.getLocation());
 
-        return new LimboPlayer(location, isOperator, groups, canFly, walkSpeed, flySpeed);
+        LimboPlayer merged = new LimboPlayer(location, isOperator, groups, canFly, walkSpeed, flySpeed);
+        Set<UUID> mergedPearls = new HashSet<>(newLimbo.getEnderPearlUuids());
+        mergedPearls.addAll(oldLimbo.getEnderPearlUuids());
+        merged.setEnderPearlUuids(mergedPearls);
+
+        UUID vehicleUuid = oldLimbo.getVehicleUuid() != null ? oldLimbo.getVehicleUuid() : newLimbo.getVehicleUuid();
+        EntityType vehicleType = oldLimbo.getVehicleType() != null ? oldLimbo.getVehicleType() : newLimbo.getVehicleType();
+        merged.setVehicle(vehicleUuid, vehicleType);
+
+        return merged;
     }
 
     private static Location firstNotNull(Location first, Location second) {

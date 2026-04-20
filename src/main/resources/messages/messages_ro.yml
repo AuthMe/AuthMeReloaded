@@ -154,3 +154,41 @@ time:
   hours: 'ore'
   day: 'zi'
   days: 'zile'
+
+# Mesaje de validare a comenzilor
+command:
+  player_only: '&cAceastă comandă este doar pentru jucători.'
+  player_only_alternative: '&cDoar pentru jucători! Te rugăm să folosești %alternative în loc.'
+  failed_to_parse: '&4Nu s-a putut procesa comanda AuthMe!'
+  unknown: '&4Comandă necunoscută!'
+  incorrect_arguments: '&4Argumente incorecte ale comenzii!'
+  did_you_mean: '&eAi vrut să spui &6%cmd&e?'
+  see_help: '&eUtilizează comanda &6/%cmd&e pentru a vedea ajutorul.'
+  detailed_help: '&6Ajutor detaliat: &f/%cmd'
+
+# Mesaje comenzi administrator
+admin:
+  force_login:
+    player_offline: '&cJucătorul trebuie să fie online!'
+    forbidden: '&cNu poți forța autentificarea jucătorului %name!'
+    success: '&2Autentificare forțată pentru %name efectuată!'
+  accounts:
+    ip_not_found: '&cAcest IP nu există în baza de date.'
+    single_account: '&2%name este un jucător cu un singur cont.'
+    no_last_ip: '&cNu există o ultimă adresă IP cunoscută pentru jucător.'
+  email_show: '&2Email-ul lui %name: %email'
+  antibot:
+    status: '&2Status AntiBot: %status'
+    override_enabled: '&2Suprascriere manuală AntiBot: activată!'
+    override_disabled: '&2Suprascriere manuală AntiBot: dezactivată!'
+    invalid_mode: '&cMod AntiBot invalid!'
+  reload:
+    db_type_change: '&eNotă: nu se poate schimba tipul bazei de date în timpul /authme reload.'
+    error: '&cA apărut o eroare în timpul reîncărcării AuthMe.'
+  spawn:
+    set_success: '&2Noul punct de spawn definit corect.'
+    set_fail: '&cSetSpawn a eșuat, te rugăm să reîncerci.'
+    first_set_success: '&2Noul prim punct de spawn definit corect.'
+    first_set_fail: '&cSetFirstSpawn a eșuat, te rugăm să reîncerci.'
+    not_defined: '&cSpawn-ul a eșuat, te rugăm să încearcă să definești spawn-ul.'
+    first_not_defined: '&cPrimul spawn a eșuat, te rugăm să încearcă să definești primul spawn.'

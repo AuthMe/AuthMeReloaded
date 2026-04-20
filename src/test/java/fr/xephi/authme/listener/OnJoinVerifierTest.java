@@ -28,6 +28,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -482,6 +484,64 @@ class OnJoinVerifierTest {
         // when / then
         expectValidationExceptionWith(() -> onJoinVerifier.checkPlayerCountry(name, ip, false),
             MessageKey.COUNTRY_BANNED_ERROR);
+    }
+
+    @Test
+    public void shouldAllowPlayerWithMatchingNameRestriction() throws FailedVerificationException {
+        // given
+        String name = "Bobby";
+        InetAddress address = createInetAddress("127.0.0.4");
+        given(validationService.fulfillsNameRestrictions(name, address)).willReturn(true);
+
+        // when
+        onJoinVerifier.checkNameRestrictions(name, address);
+
+        // then
+        verify(validationService).fulfillsNameRestrictions(name, address);
+        verifyNoInteractions(settings, server);
+    }
+
+    @Test
+    public void shouldKickPlayerWithUnmatchedNameRestriction() throws FailedVerificationException {
+        // given
+        String name = "Bobby";
+        InetAddress address = createInetAddress("99.99.99.99");
+        given(validationService.fulfillsNameRestrictions(name, address)).willReturn(false);
+        given(settings.getProperty(RestrictionSettings.BAN_UNKNOWN_IP)).willReturn(false);
+
+        // expect
+        expectValidationExceptionWith(MessageKey.NOT_OWNER_ERROR);
+
+        // when
+        onJoinVerifier.checkNameRestrictions(name, address);
+    }
+
+    @Test
+    public void shouldBanIpWhenNameRestrictionFailsAndBanIsEnabled() {
+        // given
+        String name = "Bobby";
+        InetAddress address = createInetAddress("99.99.99.99");
+        given(validationService.fulfillsNameRestrictions(name, address)).willReturn(false);
+        given(settings.getProperty(RestrictionSettings.BAN_UNKNOWN_IP)).willReturn(true);
+
+        // when
+        try {
+            onJoinVerifier.checkNameRestrictions(name, address);
+            fail("Expected FailedVerificationException to be thrown");
+        } catch (FailedVerificationException e) {
+            assertThat(e.getReason(), equalTo(MessageKey.NOT_OWNER_ERROR));
+        }
+
+        // then - IP ban is scheduled
+        verify(bukkitService).scheduleSyncTaskFromOptionallyAsyncTask(any(Runnable.class));
+    }
+
+    private static InetAddress createInetAddress(String ip) {
+        try {
+            return InetAddress.getByName(ip);
+        } catch (UnknownHostException e) {
+            throw new IllegalArgumentException("Invalid IP address: " + ip, e);
+        }
     }
 
     private void expectValidationExceptionWith(Executable executable, MessageKey messageKey, String... args) {

@@ -1,6 +1,5 @@
 package fr.xephi.authme.command;
 
-import ch.jalu.injector.Injector;
 import ch.jalu.injector.factory.Factory;
 import com.google.common.collect.Sets;
 import fr.xephi.authme.command.TestCommandsUtil.TestLoginCommand;
@@ -37,13 +36,10 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 /**
  * Test for {@link CommandHandler}.
@@ -80,7 +76,7 @@ class CommandHandlerTest {
     }
 
     /**
-     * Makes the injector return a mock when {@link Injector#newInstance(Class)} is invoked
+     * Makes the injector return a mock when {@link ch.jalu.injector.Injector#newInstance(Class)} is invoked
      * with (a child of) ExecutableCommand.class. The mocks the injector creates are stored in {@link #mockedCommands}.
      * <p>
      * The {@link CommandMapper} is mocked in {@link #initializeCommandMapper()} to return certain test classes.
@@ -163,7 +159,10 @@ class CommandHandlerTest {
 
         // then
         verify(commandMapper).mapPartsToCommand(sender, asList("unreg", "testPlayer"));
-        verify(sender, atLeastOnce()).sendMessage(argThat(containsString("Incorrect command arguments")));
+        verify(messages).send(sender, MessageKey.COMMAND_INCORRECT_ARGUMENTS);
+        verify(helpProvider).outputHelp(eq(sender), any(FoundCommandResult.class), eq(HelpProvider.SHOW_ARGUMENTS));
+        verify(messages).send(eq(sender), eq(MessageKey.COMMAND_DETAILED_HELP), anyString());
+        verify(sender, never()).sendMessage(anyString());
     }
 
     @Test
@@ -225,7 +224,8 @@ class CommandHandlerTest {
         // then
         verify(commandMapper).mapPartsToCommand(sender, asList("unreg", "testPlayer"));
         verify(command, never()).getExecutableCommand();
-        verify(sender).sendMessage(argThat(containsString("Failed to parse")));
+        verify(messages).send(sender, MessageKey.COMMAND_FAILED_TO_PARSE);
+        verify(sender, never()).sendMessage(anyString());
     }
 
     @Test
@@ -245,13 +245,12 @@ class CommandHandlerTest {
         // then
         verify(commandMapper).mapPartsToCommand(sender, asList("unreg", "testPlayer"));
         verify(command, never()).getExecutableCommand();
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(sender, times(3)).sendMessage(captor.capture());
-        assertThat(captor.getAllValues().get(0), containsString("Unknown command"));
-        assertThat(captor.getAllValues().get(1), containsString("Did you mean"));
-        assertThat(captor.getAllValues().get(1), containsString("/test_cmd"));
-        assertThat(captor.getAllValues().get(2), containsString("Use the command"));
-        assertThat(captor.getAllValues().get(2), containsString("to view help"));
+        verify(messages).send(sender, MessageKey.UNKNOWN_COMMAND);
+        ArgumentCaptor<String> cmdCaptor = ArgumentCaptor.forClass(String.class);
+        verify(messages).send(eq(sender), eq(MessageKey.COMMAND_DID_YOU_MEAN), cmdCaptor.capture());
+        assertThat(cmdCaptor.getValue(), containsString("test_cmd"));
+        verify(messages).send(eq(sender), eq(MessageKey.COMMAND_SEE_HELP), anyString());
+        verify(sender, never()).sendMessage(anyString());
     }
 
     @Test
@@ -270,11 +269,9 @@ class CommandHandlerTest {
         // then
         verify(commandMapper).mapPartsToCommand(sender, asList("unreg", "testPlayer"));
         verify(command, never()).getExecutableCommand();
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(sender, times(2)).sendMessage(captor.capture());
-        assertThat(captor.getAllValues().get(0), containsString("Unknown command"));
-        assertThat(captor.getAllValues().get(1), containsString("Use the command"));
-        assertThat(captor.getAllValues().get(1), containsString("to view help"));
+        verify(messages).send(sender, MessageKey.UNKNOWN_COMMAND);
+        verify(messages).send(eq(sender), eq(MessageKey.COMMAND_SEE_HELP), anyString());
+        verify(sender, never()).sendMessage(anyString());
     }
 
     @Test
