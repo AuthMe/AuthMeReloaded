@@ -115,13 +115,16 @@ You can also create your own translation file and, if you want, you can share it
 ## Requirements
 
 ##### Compiling requirements:
->- JDK 17+
+>- JDK 17+ for `authme-core` and `authme-spigot-legacy`
+>- JDK 21+ for the full multi-module build (`authme-spigot-1.21`, `authme-paper-common`, `authme-paper`, `authme-folia`)
 >- Maven (3.8.8+)
 >- Git/GitHub (Optional)
 
 ##### How to compile the project:
 >- Clone the project with Git/GitHub
->- Execute command "mvn clean package"
+>- Execute command `mvn clean package`
+>- With JDK 17, Maven builds only the Java 17-compatible modules
+>- With JDK 21+, Maven builds the full reactor
 
 ##### Running requirements:
 >- Java 17+
