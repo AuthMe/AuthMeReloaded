@@ -16,8 +16,8 @@
     <description>AuthMe plugin for Spigot 1.20.x and 1.21.x</description>
 
     <properties>
-        <spigot.api.version>1.21.5-R0.1-SNAPSHOT</spigot.api.version>
-        <plugin.api-version>1.21</plugin.api-version>
+        <spigot.api.version>1.21.11-R0.2-SNAPSHOT</spigot.api.version>
+        <plugin.api-version>1.21.11</plugin.api-version>
         <module.classifier>Spigot-1.21</module.classifier>
     </properties>
 
@@ -69,6 +69,12 @@
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-dialog</artifactId>
+            <version>1.21-R0.3</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

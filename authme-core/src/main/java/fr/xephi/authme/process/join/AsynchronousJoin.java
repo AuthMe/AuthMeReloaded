@@ -8,8 +8,11 @@ import fr.xephi.authme.events.ProtectInventoryEvent;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.permission.PlayerStatePermission;
+import fr.xephi.authme.platform.DialogAdapter;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.login.AsynchronousLogin;
+import fr.xephi.authme.process.register.RegisterSecondaryArgument;
+import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PluginHookService;
@@ -79,6 +82,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     @Inject
     private ProxySessionManager proxySessionManager;
+
+    @Inject
+    private DialogAdapter dialogAdapter;
 
     AsynchronousJoin() {
     }
@@ -197,6 +203,15 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 player.addPotionEffect(bukkitService.createBlindnessEffect(blindTimeOut));
             }
             commandManager.runCommandsOnJoin(player);
+            if (service.getProperty(RegistrationSettings.USE_DIALOG_UI) && dialogAdapter.isDialogSupported()) {
+                if (isAuthAvailable) {
+                    dialogAdapter.showLoginDialog(player);
+                } else {
+                    dialogAdapter.showRegisterDialog(player,
+                        service.getProperty(RegistrationSettings.REGISTRATION_TYPE),
+                        service.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT));
+                }
+            }
         });
     }
 
