@@ -58,6 +58,7 @@
         <module>authme-core</module>
         <module>authme-spigot-legacy</module>
         <module>authme-spigot-1.21</module>
+        <module>authme-paper-common</module>
         <module>authme-paper</module>
     </modules>
 

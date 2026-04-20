@@ -15,11 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Encapsulates the Paper dialog API calls for Paper 1.21.11+.
- *
- * <p>This class is intentionally isolated so that it is only loaded by the JVM when dialog
- * functionality is actually invoked. On servers that do not ship the Paper dialog API
- * (Paper &lt; 1.21.11), this class is never loaded, preventing {@link NoClassDefFoundError}.</p>
+ * Encapsulates the Paper-derived dialog API calls used by Paper and Folia.
  */
 final class PaperDialogHelper {
 

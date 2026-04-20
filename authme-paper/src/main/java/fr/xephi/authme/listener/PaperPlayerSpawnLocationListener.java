@@ -1,34 +1,28 @@
 package fr.xephi.authme.listener;
 
 import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.TeleportationService;
 import io.papermc.paper.event.player.AsyncPlayerSpawnLocationEvent;
 import org.bukkit.Location;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 
 import javax.inject.Inject;
 
-public class PaperPlayerSpawnLocationListener implements Listener {
+/**
+ * Paper listener that resolves custom join spawn locations for async spawn events.
+ */
+public class PaperPlayerSpawnLocationListener extends AbstractPaperAsyncPlayerSpawnLocationListener {
 
     @Inject
     private BukkitService bukkitService;
 
-    @Inject
-    private TeleportationService teleportationService;
+    /**
+     * Constructor.
+     */
+    public PaperPlayerSpawnLocationListener() {
+    }
 
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onPlayerSpawn(AsyncPlayerSpawnLocationEvent event) {
-        SpawnLocationTracker.markEventCalled();
-
-        final String playerName = event.getConnection().getProfile().getName();
-        final Location originalSpawnLocation = event.getSpawnLocation();
-
-        Location customSpawnLocation = bukkitService.callSyncMethodFromOptionallyAsyncTask(
+    @Override
+    protected Location determineCustomSpawnLocation(String playerName, Location originalSpawnLocation) {
+        return bukkitService.callSyncMethodFromOptionallyAsyncTask(
             () -> teleportationService.prepareOnJoinSpawnLocation(playerName, originalSpawnLocation));
-        if (customSpawnLocation != null) {
-            event.setSpawnLocation(customSpawnLocation);
-        }
     }
 }

@@ -23,6 +23,12 @@
     <dependencies>
         <dependency>
             <groupId>fr.xephi</groupId>
+            <artifactId>authme-paper-common</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>fr.xephi</groupId>
             <artifactId>authme-core</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
@@ -111,6 +117,7 @@
                 <configuration>
                     <finalName>${project.build.finalName}</finalName>
                     <source>${java.source}</source>
+                    <detectOfflineLinks>false</detectOfflineLinks>
                 </configuration>
                 <executions>
                     <execution>

@@ -1,10 +1,10 @@
 package fr.xephi.authme.platform;
 
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
@@ -20,7 +20,8 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 /**
- * Registers AuthMe commands in Paper's Brigadier tree while delegating all execution to the existing command handler.
+ * Registers AuthMe commands in the Paper-derived Brigadier tree while delegating
+ * all execution to the existing command handler.
  */
 final class PaperBrigadierCommandRegistrar {
 
