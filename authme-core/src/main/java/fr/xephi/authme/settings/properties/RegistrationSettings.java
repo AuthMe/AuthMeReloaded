@@ -107,6 +107,13 @@ public final class RegistrationSettings implements SettingsHolder {
     public static final Property<Boolean> PREVENT_OTHER_CASE =
         newProperty("settings.preventOtherCase", true);
 
+    @Comment({
+        "Show a graphical dialog UI for login/register instead of chat messages.",
+        "Requires Minecraft 1.21.6+ on Spigot, or 1.21.11+ on Paper.",
+        "On older server versions, this option is automatically ignored."})
+    public static final Property<Boolean> USE_DIALOG_UI =
+        newProperty("settings.registration.useDialogUi", true);
+
 
     private RegistrationSettings() {
     }

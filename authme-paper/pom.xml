@@ -16,7 +16,7 @@
     <description>AuthMe plugin for PaperMC 1.21</description>
 
     <properties>
-        <plugin.api-version>1.21</plugin.api-version>
+        <plugin.api-version>1.21.11</plugin.api-version>
         <module.classifier>Paper</module.classifier>
     </properties>
 
