@@ -11,7 +11,8 @@ public final class ToolsConstants {
 
     public static final String TOOLS_SOURCE_ROOT = "src/test/java/tools/";
 
-    public static final String DOCS_FOLDER = "docs/";
+    // Docs are published at the repository root, while the tools run from the authme-core module.
+    public static final String DOCS_FOLDER = "../docs/";
 
     public static final String DOCS_FOLDER_URL = "https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/";
 
