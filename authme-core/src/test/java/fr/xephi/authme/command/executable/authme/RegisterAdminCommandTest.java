@@ -1,5 +1,9 @@
 package fr.xephi.authme.command.executable.authme;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
@@ -12,13 +16,12 @@ import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.ValidationService.ValidationResult;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Locale;
@@ -36,7 +39,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link RegisterAdminCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class RegisterAdminCommandTest {
 
     @InjectMocks
@@ -56,8 +60,10 @@ public class RegisterAdminCommandTest {
 
     @Mock
     private ValidationService validationService;
+    @Captor
+    private ArgumentCaptor<PlayerAuth> captor;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpLogger() {
         TestHelper.setupLogger();
     }
@@ -118,7 +124,6 @@ public class RegisterAdminCommandTest {
         // then
         verify(validationService).validatePassword(password, user);
         verify(commandService).send(sender, MessageKey.ERROR);
-        ArgumentCaptor<PlayerAuth> captor = ArgumentCaptor.forClass(PlayerAuth.class);
         verify(dataSource).saveAuth(captor.capture());
         assertAuthHasInfo(captor.getValue(), user, hashedPassword);
     }
@@ -143,7 +148,6 @@ public class RegisterAdminCommandTest {
         // then
         verify(validationService).validatePassword(password, user);
         verify(commandService).send(sender, MessageKey.REGISTER_SUCCESS);
-        ArgumentCaptor<PlayerAuth> captor = ArgumentCaptor.forClass(PlayerAuth.class);
         verify(dataSource).saveAuth(captor.capture());
         assertAuthHasInfo(captor.getValue(), user, hashedPassword);
     }
@@ -172,7 +176,6 @@ public class RegisterAdminCommandTest {
         // then
         verify(validationService).validatePassword(password, user);
         verify(commandService).send(sender, MessageKey.REGISTER_SUCCESS);
-        ArgumentCaptor<PlayerAuth> captor = ArgumentCaptor.forClass(PlayerAuth.class);
         verify(dataSource).saveAuth(captor.capture());
         assertAuthHasInfo(captor.getValue(), user, hashedPassword);
         verify(player).kickPlayer(kickForAdminRegister);
@@ -184,3 +187,5 @@ public class RegisterAdminCommandTest {
         assertThat(auth.getPassword(), equalTo(hashedPassword));
     }
 }
+
+

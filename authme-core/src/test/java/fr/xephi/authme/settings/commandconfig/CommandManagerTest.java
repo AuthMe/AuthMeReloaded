@@ -1,5 +1,9 @@
 package fr.xephi.authme.settings.commandconfig;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.service.BukkitService;
@@ -7,14 +11,11 @@ import fr.xephi.authme.service.BukkitServiceTestHelper;
 import fr.xephi.authme.service.GeoIpService;
 import fr.xephi.authme.settings.SettingsMigrationService;
 import org.bukkit.entity.Player;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import fr.xephi.authme.TempFolder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +35,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 /**
  * Test for {@link CommandManager}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class CommandManagerTest {
 
     private static final String TEST_FILES_FOLDER = "/fr/xephi/authme/settings/commandconfig/";
@@ -51,13 +53,11 @@ public class CommandManagerTest {
     private GeoIpService geoIpService;
     @Mock
     private SettingsMigrationService settingsMigrationService;
-
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    public TempFolder temporaryFolder = new TempFolder();
 
     private File testFolder;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         testFolder = temporaryFolder.newFolder();
         player = mockPlayer();
@@ -318,3 +318,5 @@ public class CommandManagerTest {
         return player;
     }
 }
+
+

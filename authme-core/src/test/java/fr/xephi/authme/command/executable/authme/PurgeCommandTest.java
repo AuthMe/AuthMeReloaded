@@ -1,13 +1,16 @@
 package fr.xephi.authme.command.executable.authme;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.task.purge.PurgeService;
 import org.bukkit.command.CommandSender;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -25,7 +28,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link PurgeCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class PurgeCommandTest {
 
     @InjectMocks
@@ -33,6 +37,8 @@ public class PurgeCommandTest {
 
     @Mock
     private PurgeService purgeService;
+    @Captor
+    private ArgumentCaptor<Long> captor;
 
     @Test
     public void shouldHandleInvalidNumber() {
@@ -72,7 +78,6 @@ public class PurgeCommandTest {
         command.executeCommand(sender, Collections.singletonList(interval));
 
         // then
-        ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
         verify(purgeService).runPurge(eq(sender), captor.capture());
 
         // Check the timestamp with a certain tolerance
@@ -87,3 +92,5 @@ public class PurgeCommandTest {
     }
 
 }
+
+

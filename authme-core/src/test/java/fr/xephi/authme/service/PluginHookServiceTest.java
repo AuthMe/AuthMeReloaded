@@ -5,16 +5,15 @@ import com.earth2me.essentials.User;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVWorldManager;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
-import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
@@ -40,7 +39,7 @@ public class PluginHookServiceTest {
     /** The plugin name of Multiverse-Core. */
     private static final String MULTIVERSE = "Multiverse-Core";
 
-    @BeforeClass
+    @BeforeAll
     public static void setLogger() {
         TestHelper.setupLogger();
     }
@@ -104,8 +103,8 @@ public class PluginHookServiceTest {
         // given
         Essentials ess = mock(Essentials.class);
         File essDataFolder = new File("test/data-folder");
-        // Need to set the data folder with reflections because getDataFolder() is declared final
-        ReflectionTestUtils.setField(JavaPlugin.class, ess, "dataFolder", essDataFolder);
+        // Need to stub getDataFolder() because getDataFolder() is declared final
+        given(ess.getDataFolder()).willReturn(essDataFolder);
 
         PluginManager pluginManager = mock(PluginManager.class);
         setPluginAvailable(pluginManager, ESSENTIALS, ess);
@@ -269,3 +268,4 @@ public class PluginHookServiceTest {
     }
 
 }
+

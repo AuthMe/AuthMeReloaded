@@ -1,7 +1,8 @@
 package fr.xephi.authme.data.limbo.persistence;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import fr.xephi.authme.DelayedInjectionExtension;
 import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.limbo.LimboPlayer;
@@ -12,10 +13,8 @@ import fr.xephi.authme.util.FileUtils;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import fr.xephi.authme.TempFolder;
 import org.mockito.Mock;
 
 import java.io.File;
@@ -35,7 +34,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Test for {@link IndividualFilesPersistenceHandler}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@ExtendWith(DelayedInjectionExtension.class)
 public class IndividualFilesPersistenceHandlerTest {
 
     private static final UUID SAMPLE_UUID = UUID.nameUUIDFromBytes("PersistenceTest".getBytes());
@@ -49,9 +48,7 @@ public class IndividualFilesPersistenceHandlerTest {
 
     @DataFolder
     private File dataFolder;
-
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    public TempFolder temporaryFolder = new TempFolder();
 
     @BeforeInjecting
     public void copyTestFiles() throws IOException {
@@ -127,3 +124,5 @@ public class IndividualFilesPersistenceHandlerTest {
     }
 
 }
+
+

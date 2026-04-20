@@ -6,8 +6,8 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.help.HelpSection;
 import fr.xephi.authme.util.ExceptionUtils;
 import fr.xephi.authme.util.StringUtils;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import static fr.xephi.authme.message.MessagePathHelper.MESSAGES_FOLDER;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static tools.utils.FileIoUtils.listFilesOrThrow;
 
 /**
@@ -26,7 +26,7 @@ public class YamlTextFileCheckerTest {
     /** Contains all files of the MESSAGES_FOLDER. */
     private static File[] messageFiles;
 
-    @BeforeClass
+    @BeforeAll
     public static void loadMessagesFiles() {
         File folder = TestHelper.getJarFile("/" + MESSAGES_FOLDER);
         messageFiles = listFilesOrThrow(folder);
@@ -89,3 +89,4 @@ public class YamlTextFileCheckerTest {
         }
     }
 }
+

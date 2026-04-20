@@ -1,5 +1,9 @@
 package fr.xephi.authme.listener;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -12,11 +16,9 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.projectiles.ProjectileSource;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import static fr.xephi.authme.listener.EventCancelVerifier.withServiceMock;
 import static org.hamcrest.Matchers.equalTo;
@@ -32,7 +34,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link EntityListener}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class EntityListenerTest {
 
     @InjectMocks
@@ -245,3 +248,5 @@ public class EntityListenerTest {
         verify(event, only()).getTarget();
     }
 }
+
+

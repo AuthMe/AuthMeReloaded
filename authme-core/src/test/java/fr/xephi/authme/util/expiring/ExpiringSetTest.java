@@ -1,6 +1,6 @@
 package fr.xephi.authme.util.expiring;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
 
@@ -141,3 +141,4 @@ public class ExpiringSetTest {
         assertThat(duration.getDuration(), equalTo(expectedDuration));
     }
 }
+

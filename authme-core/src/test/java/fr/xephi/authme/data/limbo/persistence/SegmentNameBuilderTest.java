@@ -1,6 +1,6 @@
 package fr.xephi.authme.data.limbo.persistence;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -139,3 +139,4 @@ public class SegmentNameBuilderTest {
         assertThat(nameBuilder.createSegmentName("7122f"), equalTo("seg256-71"));
     }
 }
+

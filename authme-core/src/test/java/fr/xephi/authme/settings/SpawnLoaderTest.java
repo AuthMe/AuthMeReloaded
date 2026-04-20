@@ -1,7 +1,8 @@
 package fr.xephi.authme.settings;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import fr.xephi.authme.DelayedInjectionExtension;
 import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
@@ -11,10 +12,8 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import fr.xephi.authme.TempFolder;
 import org.mockito.Mock;
 
 import java.io.File;
@@ -28,7 +27,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Test for {@link SpawnLoader}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@ExtendWith(DelayedInjectionExtension.class)
 public class SpawnLoaderTest {
 
     @InjectDelayed
@@ -39,9 +38,7 @@ public class SpawnLoaderTest {
 
     @Mock
     private PluginHookService pluginHookService;
-
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    public TempFolder temporaryFolder = new TempFolder();
 
     @DataFolder
     private File testFolder;
@@ -79,3 +76,5 @@ public class SpawnLoaderTest {
     }
 
 }
+
+

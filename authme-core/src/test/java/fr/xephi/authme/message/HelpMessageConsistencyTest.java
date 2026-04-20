@@ -7,8 +7,8 @@ import fr.xephi.authme.command.help.HelpMessage;
 import fr.xephi.authme.command.help.HelpSection;
 import fr.xephi.authme.permission.DefaultPermission;
 import org.hamcrest.Matcher;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.Arrays;
@@ -30,7 +30,7 @@ public class HelpMessageConsistencyTest {
 
     private List<File> helpFiles;
 
-    @Before
+    @BeforeEach
     public void findHelpMessagesFiles() {
         File folder = TestHelper.getJarFile("/" + MESSAGES_FOLDER);
         File[] files = folder.listFiles();
@@ -88,3 +88,4 @@ public class HelpMessageConsistencyTest {
         return both(not(emptyString())).and(not(nullValue()));
     }
 }
+

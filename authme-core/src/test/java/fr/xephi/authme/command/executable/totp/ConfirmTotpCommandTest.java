@@ -1,5 +1,9 @@
 package fr.xephi.authme.command.executable.totp;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
@@ -9,12 +13,10 @@ import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.security.totp.GenerateTotpService;
 import fr.xephi.authme.security.totp.TotpAuthenticator.TotpGenerationResult;
 import org.bukkit.entity.Player;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
@@ -32,7 +34,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link ConfirmTotpCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class ConfirmTotpCommandTest {
 
     @InjectMocks
@@ -47,7 +50,7 @@ public class ConfirmTotpCommandTest {
     @Mock
     private Messages messages;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpLogger() {
         TestHelper.setupLogger();
     }
@@ -156,3 +159,5 @@ public class ConfirmTotpCommandTest {
         verify(messages).send(player, MessageKey.NOT_LOGGED_IN);
     }
 }
+
+

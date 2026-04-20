@@ -1,17 +1,20 @@
 package fr.xephi.authme.command.executable.authme;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.CommandSender;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,7 +33,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link AccountsCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class AccountsCommandTest {
 
     @InjectMocks
@@ -41,6 +45,8 @@ public class AccountsCommandTest {
     private DataSource dataSource;
     @Mock
     private BukkitService bukkitService;
+    @Captor
+    private ArgumentCaptor<String> captor;
 
     @Test
     public void shouldGetAccountsOfCurrentUser() {
@@ -57,7 +63,6 @@ public class AccountsCommandTest {
 
         // then
         verify(service).send(eq(sender), eq(MessageKey.ACCOUNTS_OWNED_SELF), eq("2"));
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(sender).sendMessage(captor.capture());
         assertThat(captor.getValue(), containsString("Toaster, Pester"));
     }
@@ -160,7 +165,6 @@ public class AccountsCommandTest {
 
         // then
         verify(service).send(eq(sender), eq(MessageKey.ACCOUNTS_OWNED_OTHER), eq("98.76.41.122"), eq("3"));
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(sender).sendMessage(captor.capture());
         assertThat(captor.getValue(), containsString("Tester, Lester, Taster"));
     }
@@ -172,3 +176,5 @@ public class AccountsCommandTest {
             .build();
     }
 }
+
+

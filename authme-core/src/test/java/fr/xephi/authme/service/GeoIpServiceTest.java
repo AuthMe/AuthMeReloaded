@@ -1,5 +1,9 @@
 package fr.xephi.authme.service;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -14,13 +18,10 @@ import com.maxmind.geoip2.record.Continent;
 import com.maxmind.geoip2.record.Country;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import fr.xephi.authme.TempFolder;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,7 +36,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link GeoIpService}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class GeoIpServiceTest {
 
     private GeoIpService geoIpService;
@@ -48,11 +50,9 @@ public class GeoIpServiceTest {
 
     @Mock
     private Settings settings;
+    public TempFolder temporaryFolder = new TempFolder();
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    @Before
+    @BeforeEach
     public void initializeGeoLiteApi() throws IOException {
         File dataFolder = temporaryFolder.newFolder();
         geoIpService = new GeoIpService(dataFolder, bukkitService, settings, lookupService);
@@ -141,3 +141,5 @@ public class GeoIpServiceTest {
         return new CountryResponse(continent, country, null, country, null, null);
     }
 }
+
+

@@ -1,6 +1,7 @@
 package fr.xephi.authme.data.limbo;
 
-import ch.jalu.injector.testing.DelayedInjectionRunner;
+import org.junit.jupiter.api.extension.ExtendWith;
+import fr.xephi.authme.DelayedInjectionExtension;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
@@ -12,10 +13,9 @@ import fr.xephi.authme.settings.properties.LimboSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link LimboService}, and {@link LimboServiceHelper}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@ExtendWith(DelayedInjectionExtension.class)
 public class LimboServiceTest {
 
     @InjectDelayed
@@ -66,12 +66,12 @@ public class LimboServiceTest {
     @Mock
     private AuthGroupHandler authGroupHandler;
 
-    @BeforeClass
+    @BeforeAll
     public static void initLogger() {
         TestHelper.setupLogger();
     }
 
-    @Before
+    @BeforeEach
     public void mockSettings() {
         given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
     }
@@ -268,3 +268,5 @@ public class LimboServiceTest {
         return ReflectionTestUtils.getFieldValue(LimboService.class, limboService, "entries");
     }
 }
+
+

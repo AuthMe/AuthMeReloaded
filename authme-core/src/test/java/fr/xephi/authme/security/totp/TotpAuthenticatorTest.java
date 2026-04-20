@@ -1,5 +1,9 @@
 package fr.xephi.authme.security.totp;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import com.google.common.collect.Table;
 import com.warrenstrange.googleauth.IGoogleAuthenticator;
 import fr.xephi.authme.ReflectionTestUtils;
@@ -9,11 +13,9 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
 import static org.hamcrest.Matchers.containsString;
@@ -29,7 +31,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link TotpAuthenticator}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class TotpAuthenticatorTest {
 
     private TotpAuthenticator totpAuthenticator;
@@ -40,7 +43,7 @@ public class TotpAuthenticatorTest {
     @Mock
     private IGoogleAuthenticator googleAuthenticator;
 
-    @Before
+    @BeforeEach
     public void initializeTotpAuthenticator() {
         totpAuthenticator = new TotpAuthenticatorTestImpl(settings);
     }
@@ -143,3 +146,5 @@ public class TotpAuthenticatorTest {
         }
     }
 }
+
+

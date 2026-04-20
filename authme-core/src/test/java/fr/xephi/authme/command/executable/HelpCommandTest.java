@@ -1,17 +1,20 @@
 package fr.xephi.authme.command.executable;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandMapper;
 import fr.xephi.authme.command.FoundCommandResult;
 import fr.xephi.authme.command.help.HelpProvider;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,7 +42,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link HelpCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class HelpCommandTest {
 
     @InjectMocks
@@ -50,6 +54,8 @@ public class HelpCommandTest {
 
     @Mock
     private HelpProvider helpProvider;
+    @Captor
+    private ArgumentCaptor<String> captor;
 
     @Test
     public void shouldHandleMissingBaseCommand() {
@@ -81,7 +87,6 @@ public class HelpCommandTest {
         command.executeCommand(sender, arguments);
 
         // then
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(sender).sendMessage(captor.capture());
         assertThat(removeColors(captor.getValue()), containsString("Assuming /authme register"));
         verify(helpProvider).outputHelp(sender, foundCommandResult, HelpProvider.ALL_OPTIONS);
@@ -99,7 +104,6 @@ public class HelpCommandTest {
         command.executeCommand(sender, arguments);
 
         // then
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(sender).sendMessage(captor.capture());
         assertThat(removeColors(captor.getValue()), containsString("Unknown command"));
         verifyNoInteractions(helpProvider);
@@ -161,3 +165,5 @@ public class HelpCommandTest {
         return str;
     }
 }
+
+

@@ -1,12 +1,14 @@
 package fr.xephi.authme.data.limbo;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.TestHelper;
 import org.bukkit.Location;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
@@ -22,13 +24,14 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * <p>
  * Note: some methods are tested directly where they are used via {@link LimboServiceTest}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class LimboServiceHelperTest {
 
     @InjectMocks
     private LimboServiceHelper limboServiceHelper;
 
-    @BeforeClass
+    @BeforeAll
     public static void initLogger() {
         TestHelper.setupLogger();
     }
@@ -91,3 +94,5 @@ public class LimboServiceHelperTest {
         assertThat(result3, nullValue());
     }
 }
+
+

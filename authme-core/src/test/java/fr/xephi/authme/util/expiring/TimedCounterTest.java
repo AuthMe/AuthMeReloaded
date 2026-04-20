@@ -1,6 +1,6 @@
 package fr.xephi.authme.util.expiring;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
 
@@ -68,3 +68,4 @@ public class TimedCounterTest {
         assertThat(totals, equalTo(14));
     }
 }
+

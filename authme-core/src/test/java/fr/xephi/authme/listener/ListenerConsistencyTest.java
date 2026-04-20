@@ -6,8 +6,8 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -18,7 +18,7 @@ import java.util.Set;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test for verifying that AuthMe listener methods are well-formed.
@@ -27,7 +27,7 @@ public final class ListenerConsistencyTest {
 
     private static List<Class<? extends Listener>> classes;
 
-    @BeforeClass
+    @BeforeAll
     public static void collectListenerClasses() {
         ClassCollector collector = new ClassCollector(TestHelper.SOURCES_FOLDER, TestHelper.PROJECT_ROOT + "listener");
         classes = collector.collectClasses(Listener.class);
@@ -120,3 +120,4 @@ public final class ListenerConsistencyTest {
     }
 
 }
+

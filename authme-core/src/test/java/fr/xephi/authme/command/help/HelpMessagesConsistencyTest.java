@@ -9,7 +9,7 @@ import fr.xephi.authme.message.MessagePathHelper;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.Collection;
@@ -95,3 +95,4 @@ public class HelpMessagesConsistencyTest {
             .findFirst().get();
     }
 }
+

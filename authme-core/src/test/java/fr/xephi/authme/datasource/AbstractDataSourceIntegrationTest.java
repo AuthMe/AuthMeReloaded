@@ -5,7 +5,7 @@ import ch.jalu.datasourcecolumns.data.DataSourceValueImpl;
 import com.google.common.collect.Lists;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -26,7 +26,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assume.assumeThat;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * Abstract class for data source integration tests.
@@ -256,7 +256,7 @@ public abstract class AbstractDataSourceIntegrationTest {
         // given
         DataSource dataSource = getDataSource();
         Set<String> playersToDelete = new HashSet<>(Arrays.asList("bobby", "doesNotExist"));
-        assumeThat(dataSource.getAccountsRegistered(), equalTo(2));
+        assumeTrue(dataSource.getAccountsRegistered() == 2);
 
         // when
         dataSource.purgeRecords(playersToDelete);
@@ -533,3 +533,4 @@ public abstract class AbstractDataSourceIntegrationTest {
         assertThat(dataSource.getAuth("user").getTotpKey(), nullValue());
     }
 }
+

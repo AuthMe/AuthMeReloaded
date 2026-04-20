@@ -1,6 +1,6 @@
 package fr.xephi.authme.util.lazytags;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -40,3 +40,4 @@ public class TagBuilderTest {
         assertThat(tag.getValue(24d), equalTo("26.4"));
     }
 }
+

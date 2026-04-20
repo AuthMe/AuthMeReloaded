@@ -1,14 +1,16 @@
 package fr.xephi.authme.security.totp;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.security.totp.TotpAuthenticator.TotpGenerationResult;
 import fr.xephi.authme.util.expiring.ExpiringMap;
 import org.bukkit.entity.Player;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.concurrent.TimeUnit;
 
@@ -22,7 +24,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link GenerateTotpService}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class GenerateTotpServiceTest {
 
     @InjectMocks
@@ -70,6 +73,7 @@ public class GenerateTotpServiceTest {
         given(totpAuthenticator.generateTotpKey(player)).willReturn(givenGenerationResult);
         generateTotpService.generateTotpKey(player);
         String validCode = "928374";
+        given(totpAuthenticator.checkCode("Aria", generatedKey, "000000")).willReturn(false);
         given(totpAuthenticator.checkCode("Aria", generatedKey, validCode)).willReturn(true);
 
         // when
@@ -111,3 +115,5 @@ public class GenerateTotpServiceTest {
         return player;
     }
 }
+
+

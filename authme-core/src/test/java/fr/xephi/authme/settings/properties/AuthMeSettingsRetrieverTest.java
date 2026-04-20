@@ -1,7 +1,7 @@
 package fr.xephi.authme.settings.properties;
 
 import ch.jalu.configme.configurationdata.ConfigurationData;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -24,3 +24,4 @@ public class AuthMeSettingsRetrieverTest {
             closeTo(182, 10));
     }
 }
+

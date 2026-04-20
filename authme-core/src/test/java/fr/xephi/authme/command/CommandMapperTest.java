@@ -1,7 +1,8 @@
 package fr.xephi.authme.command;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import fr.xephi.authme.DelayedInjectionExtension;
 import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.command.TestCommandsUtil.TestLoginCommand;
 import fr.xephi.authme.command.TestCommandsUtil.TestRegisterCommand;
@@ -10,9 +11,8 @@ import fr.xephi.authme.command.executable.HelpCommand;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.command.CommandSender;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.util.List;
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Test for {@link CommandMapper}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@ExtendWith(DelayedInjectionExtension.class)
 public class CommandMapperTest {
 
     private static List<CommandDescription> commands;
@@ -51,7 +51,7 @@ public class CommandMapperTest {
     @Mock
     private CommandInitializer commandInitializer;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpCommandHandler() {
         commands = TestCommandsUtil.generateCommands();
     }
@@ -317,3 +317,5 @@ public class CommandMapperTest {
     }
 
 }
+
+

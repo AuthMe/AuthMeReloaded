@@ -1,20 +1,21 @@
 package fr.xephi.authme.initialization;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.datasource.DataSource;
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginLogger;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitWorker;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +36,8 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link TaskCloser}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class TaskCloserTest {
 
     private static final int[] ACTIVE_WORKERS_ID = {2, 5};
@@ -49,12 +51,14 @@ public class TaskCloserTest {
     private BukkitScheduler bukkitScheduler;
     @Mock
     private DataSource dataSource;
+    @Captor
+    private ArgumentCaptor<Integer> taskIds;
 
-    @Before
+    @BeforeEach
     public void initAuthMe() {
         Server server = mock(Server.class);
         given(server.getScheduler()).willReturn(bukkitScheduler);
-        ReflectionTestUtils.setField(JavaPlugin.class, authMe, "server", server);
+        given(authMe.getServer()).willReturn(server);
         given(authMe.getLogger()).willReturn(logger);
         taskCloser = spy(new TaskCloser(authMe, dataSource));
     }
@@ -74,7 +78,6 @@ public class TaskCloserTest {
 
         // then
         verify(bukkitScheduler, times(3)).isQueued(anyInt());
-        ArgumentCaptor<Integer> taskIds = ArgumentCaptor.forClass(Integer.class);
         verify(bukkitScheduler, times(3)).isCurrentlyRunning(taskIds.capture());
         assertThat(taskIds.getAllValues(), contains(ACTIVE_WORKERS_ID[0], ACTIVE_WORKERS_ID[1], ACTIVE_WORKERS_ID[1]));
         verify(taskCloser, times(2)).sleep();
@@ -148,8 +151,12 @@ public class TaskCloserTest {
     private BukkitWorker mockBukkitWorker(Plugin owner, int taskId, boolean isQueued) {
         BukkitWorker worker = mock(BukkitWorker.class);
         given(worker.getOwner()).willReturn(owner);
-        given(worker.getTaskId()).willReturn(taskId);
-        given(bukkitScheduler.isQueued(taskId)).willReturn(isQueued);
+        if (owner == authMe) {
+            given(worker.getTaskId()).willReturn(taskId);
+            given(bukkitScheduler.isQueued(taskId)).willReturn(isQueued);
+        }
         return worker;
     }
 }
+
+

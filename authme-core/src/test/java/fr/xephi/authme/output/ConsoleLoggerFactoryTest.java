@@ -7,9 +7,9 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
@@ -26,13 +26,13 @@ import static org.mockito.Mockito.mock;
  */
 public class ConsoleLoggerFactoryTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void initLogger() {
         removeSettingsAndClearMap();
         TestHelper.setupLogger();
     }
 
-    @After
+    @AfterEach
     public void resetConsoleLoggerFactoryToDefaults() {
         removeSettingsAndClearMap();
     }
@@ -91,3 +91,4 @@ public class ConsoleLoggerFactoryTest {
         return ReflectionTestUtils.getFieldValue(ConsoleLoggerFactory.class, null, "consoleLoggers");
     }
 }
+

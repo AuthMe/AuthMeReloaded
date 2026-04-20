@@ -1,5 +1,9 @@
 package fr.xephi.authme.data;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.message.MessageKey;
@@ -9,11 +13,10 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.expiring.TimedCounter;
 import org.bukkit.entity.Player;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -34,7 +37,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link TempbanManager}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class TempbanManagerTest {
 
     private static final long DATE_TOLERANCE_MILLISECONDS = 200L;
@@ -45,6 +49,8 @@ public class TempbanManagerTest {
 
     @Mock
     private Messages messages;
+    @Captor
+    private ArgumentCaptor<Date> captor;
 
     @Test
     public void shouldAddCounts() {
@@ -159,7 +165,6 @@ public class TempbanManagerTest {
 
         // then
         verify(player).kickPlayer(banReason);
-        ArgumentCaptor<Date> captor = ArgumentCaptor.forClass(Date.class);
         verify(bukkitService).banIp(eq(ip), eq(banReason), captor.capture(), eq("AuthMe"));
 
         // Compute the expected expiration date and check that the actual date is within the difference tolerance
@@ -263,3 +268,5 @@ public class TempbanManagerTest {
         return mock(TimedCounter.class);
     }
 }
+
+

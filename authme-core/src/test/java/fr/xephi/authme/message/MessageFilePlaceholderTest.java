@@ -5,9 +5,9 @@ import ch.jalu.configme.resource.YamlFileReader;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import fr.xephi.authme.TestHelper;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -15,16 +15,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static fr.xephi.authme.message.MessagePathHelper.MESSAGES_FOLDER;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static tools.utils.FileIoUtils.listFilesOrThrow;
 
 /**
  * Checks that the entries in messages_xx.yml files have the {@link MessageKey#getTags() placeholders}
  * that are defined for the given message.
  */
-@RunWith(Parameterized.class)
 public class MessageFilePlaceholderTest {
 
     /** Defines exclusions: a (key, tag) pair in this map will not be checked in the test. */
@@ -33,17 +33,9 @@ public class MessageFilePlaceholderTest {
         .putAll(MessageKey.MAX_REGISTER_EXCEEDED, "%max_acc", "%reg_count", "%reg_names")
         .build();
 
-    private File messagesFile;
-    private String messagesFilename;
-
-    // Note ljacqu 20170506: We pass the file name separately so we can reference it for the name in @Parameters
-    public MessageFilePlaceholderTest(File messagesFile, String name) {
-        this.messagesFile = messagesFile;
-        this.messagesFilename = name;
-    }
-
-    @Test
-    public void shouldHaveAllPlaceholders() {
+    @ParameterizedTest(name = "{1}")
+    @MethodSource("buildParams")
+    public void shouldHaveAllPlaceholders(File messagesFile, String messagesFilename) {
         // given
         PropertyReader reader = new YamlFileReader(messagesFile);
         List<String> errors = new ArrayList<>(0);
@@ -72,19 +64,17 @@ public class MessageFilePlaceholderTest {
         return Collections.emptyList();
     }
 
-    @Parameterized.Parameters(name = "{1}")
-    public static List<Object[]> buildParams() {
+    public static Stream<Arguments> buildParams() {
         File folder = TestHelper.getJarFile("/" + MESSAGES_FOLDER);
 
-        List<Object[]> messageFiles = Arrays.stream(listFilesOrThrow(folder))
+        List<Arguments> messageFiles = Arrays.stream(listFilesOrThrow(folder))
             .filter(file -> MessagePathHelper.isMessagesFile(file.getName()))
-            .map(file -> new Object[]{file, file.getName()})
+            .map(file -> Arguments.of(file, file.getName()))
             .collect(Collectors.toList());
         if (messageFiles.isEmpty()) {
             throw new IllegalStateException("Found zero messages files (is the folder correct?)");
         }
-        return messageFiles;
+        return messageFiles.stream();
     }
-
-
 }
+

@@ -2,7 +2,7 @@ package fr.xephi.authme.service.yaml;
 
 import ch.jalu.configme.resource.YamlFileResource;
 import fr.xephi.authme.TestHelper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.parser.ParserException;
 
 import java.io.File;
@@ -10,7 +10,7 @@ import java.io.File;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test for {@link YamlFileResourceProvider}.
@@ -46,3 +46,4 @@ public class YamlFileResourceProviderTest {
         }
     }
 }
+

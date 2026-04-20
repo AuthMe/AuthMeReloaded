@@ -1,7 +1,8 @@
 package fr.xephi.authme.command.help;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import fr.xephi.authme.DelayedInjectionExtension;
 import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.FoundCommandResult;
@@ -12,12 +13,12 @@ import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.internal.stubbing.answers.ReturnsArgumentAt;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,7 +52,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link HelpProvider}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@ExtendWith(DelayedInjectionExtension.class)
 public class HelpProviderTest {
 
     private static Collection<CommandDescription> commands;
@@ -64,8 +65,10 @@ public class HelpProviderTest {
     private HelpMessagesService helpMessagesService;
     @Mock
     private CommandSender sender;
+    @Captor
+    private ArgumentCaptor<String> captor;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpCommands() {
         commands = TestCommandsUtil.generateCommands();
     }
@@ -437,15 +440,14 @@ public class HelpProviderTest {
         return str;
     }
     
-    private static List<String> getLines(CommandSender sender) {
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+    private List<String> getLines(CommandSender sender) {
         verify(sender, atLeastOnce()).sendMessage(captor.capture());
         return captor.getAllValues().stream().map(s -> removeColors(s)).collect(Collectors.toList());
     }
 
     private static void setDefaultHelpMessages(HelpMessagesService helpMessagesService) {
         given(helpMessagesService.buildLocalizedDescription(any(CommandDescription.class)))
-            .willAnswer(new ReturnsArgumentAt(0));
+            .willAnswer(returnsFirstArg());
         for (HelpMessage key : HelpMessage.values()) {
             String text = key.name().replace("_", " ").toLowerCase(Locale.ROOT);
             given(helpMessagesService.getMessage(key))
@@ -464,3 +466,5 @@ public class HelpProviderTest {
     }
 
 }
+
+

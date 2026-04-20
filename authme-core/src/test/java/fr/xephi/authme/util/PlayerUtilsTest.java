@@ -2,8 +2,8 @@ package fr.xephi.authme.util;
 
 import fr.xephi.authme.TestHelper;
 import org.bukkit.entity.Player;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -15,7 +15,7 @@ import static org.mockito.Mockito.mock;
  */
 public class PlayerUtilsTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void setAuthmeInstance() {
         TestHelper.setupLogger();
     }
@@ -51,3 +51,4 @@ public class PlayerUtilsTest {
         assertThat(result2, equalTo(true));
     }
 }
+

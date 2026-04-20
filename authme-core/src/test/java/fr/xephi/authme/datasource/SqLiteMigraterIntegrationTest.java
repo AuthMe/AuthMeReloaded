@@ -5,10 +5,9 @@ import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.settings.Settings;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import fr.xephi.authme.TempFolder;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,11 +33,9 @@ public class SqLiteMigraterIntegrationTest {
 
     private File dataFolder;
     private SQLite sqLite;
+    public TempFolder temporaryFolder = new TempFolder();
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    @Before
+    @BeforeEach
     public void setup() throws SQLException, IOException, NoSuchMethodException {
         TestHelper.setupLogger();
 
@@ -103,3 +100,5 @@ public class SqLiteMigraterIntegrationTest {
             .findFirst().orElseThrow(() -> new IllegalStateException("No PlayerAuth with name '" + name + "'"));
     }
 }
+
+

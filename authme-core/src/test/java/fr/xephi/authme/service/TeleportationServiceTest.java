@@ -1,5 +1,9 @@
 package fr.xephi.authme.service;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboPlayer;
@@ -14,13 +18,12 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 
@@ -40,7 +43,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link TeleportationService}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class TeleportationServiceTest {
 
     @InjectMocks
@@ -63,8 +67,10 @@ public class TeleportationServiceTest {
 
     @Mock
     private PlatformAdapter platformAdapter;
+    @Captor
+    private ArgumentCaptor<Location> locationCaptor;
 
-    @Before
+    @BeforeEach
     public void setUpForcedWorlds() {
         given(settings.getProperty(RestrictionSettings.FORCE_SPAWN_ON_WORLDS))
             .willReturn(Arrays.asList("forced1", "OtherForced"));
@@ -338,7 +344,6 @@ public class TeleportationServiceTest {
         teleportationService.teleportOnLogin(player, auth, limbo);
 
         // then
-        ArgumentCaptor<Location> locationCaptor = ArgumentCaptor.forClass(Location.class);
         verify(platformAdapter).teleportPlayer(eq(player), locationCaptor.capture());
         assertCorrectLocation(locationCaptor.getValue(), auth, world);
     }
@@ -366,7 +371,6 @@ public class TeleportationServiceTest {
         teleportationService.teleportOnLogin(player, auth, limbo);
 
         // then
-        ArgumentCaptor<Location> locationCaptor = ArgumentCaptor.forClass(Location.class);
         verify(platformAdapter).teleportPlayer(eq(player), locationCaptor.capture());
         assertCorrectLocation(locationCaptor.getValue(), auth, world);
     }
@@ -432,3 +436,5 @@ public class TeleportationServiceTest {
     }
 
 }
+
+

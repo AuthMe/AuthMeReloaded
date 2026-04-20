@@ -1,5 +1,9 @@
 package fr.xephi.authme.command.executable.register;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.captcha.RegistrationCaptchaManager;
 import fr.xephi.authme.mail.EmailService;
@@ -20,13 +24,11 @@ import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,6 +38,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -44,7 +47,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link RegisterCommand}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class RegisterCommandTest {
 
     @InjectMocks
@@ -68,16 +72,17 @@ public class RegisterCommandTest {
     @Mock
     private RegistrationCaptchaManager registrationCaptchaManager;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         TestHelper.setupLogger();
     }
 
-    @Before
+    @BeforeEach
     public void linkMocksAndProvideSettingDefaults() {
-        given(commonService.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.BCRYPT);
-        given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.PASSWORD);
-        given(commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)).willReturn(RegisterSecondaryArgument.NONE);
+        lenient().when(commonService.getProperty(SecuritySettings.PASSWORD_HASH)).thenReturn(HashAlgorithm.BCRYPT);
+        lenient().when(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).thenReturn(RegistrationType.PASSWORD);
+        lenient().when(commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT))
+            .thenReturn(RegisterSecondaryArgument.NONE);
     }
 
     @Test
@@ -334,3 +339,5 @@ public class RegisterCommandTest {
         return player;
     }
 }
+
+

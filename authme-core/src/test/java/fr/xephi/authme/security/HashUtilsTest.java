@@ -1,6 +1,6 @@
 package fr.xephi.authme.security;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -134,3 +134,4 @@ public class HashUtilsTest {
         assertThat(HashUtils.isEqual("test", "tëst"), equalTo(false));
     }
 }
+

@@ -1,7 +1,8 @@
 package fr.xephi.authme.datasource.converter;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import fr.xephi.authme.DelayedInjectionExtension;
 import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -12,9 +13,9 @@ import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ConverterSettings;
 import org.bukkit.command.CommandSender;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 
 import java.io.File;
@@ -39,7 +40,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link LoginSecurityConverter}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@ExtendWith(DelayedInjectionExtension.class)
 public class LoginSecurityConverterTest {
 
     @InjectDelayed
@@ -49,6 +50,8 @@ public class LoginSecurityConverterTest {
     private DataSource dataSource;
     @Mock
     private Settings settings;
+    @Captor
+    private ArgumentCaptor<PlayerAuth> captor;
     @DataFolder
     private File dataFolder = new File("."); // not used but required for injection
 
@@ -69,7 +72,6 @@ public class LoginSecurityConverterTest {
         converter.performConversion(sender, connection);
 
         // then
-        ArgumentCaptor<PlayerAuth> captor = ArgumentCaptor.forClass(PlayerAuth.class);
         verify(dataSource, times(3)).saveAuth(captor.capture());
         assertThat(captor.getAllValues().get(0).getNickname(), equalTo("player1"));
         assertThat(captor.getAllValues().get(0).getRealName(), equalTo("Player1"));
@@ -103,7 +105,6 @@ public class LoginSecurityConverterTest {
         converter.performConversion(sender, connection);
 
         // then
-        ArgumentCaptor<PlayerAuth> captor = ArgumentCaptor.forClass(PlayerAuth.class);
         verify(dataSource, times(3)).saveAuth(captor.capture());
         assertThat(captor.getAllValues().get(0).getNickname(), equalTo("player1"));
         assertThat(captor.getAllValues().get(0).getRealName(), equalTo("Player1"));
@@ -145,3 +146,5 @@ public class LoginSecurityConverterTest {
         assertThat(Math.abs(value1 - value2), not(greaterThan(tolerance)));
     }
 }
+
+

@@ -1,7 +1,8 @@
 package fr.xephi.authme.service;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import fr.xephi.authme.DelayedInjectionExtension;
 import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.DelayedInjectionRunner;
 import ch.jalu.injector.testing.InjectDelayed;
 import com.google.common.base.Strings;
 import fr.xephi.authme.TestHelper;
@@ -17,9 +18,9 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
@@ -42,7 +43,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link ValidationService}.
  */
-@RunWith(DelayedInjectionRunner.class)
+@ExtendWith(DelayedInjectionExtension.class)
 public class ValidationServiceTest {
 
     @InjectDelayed
@@ -55,6 +56,8 @@ public class ValidationServiceTest {
     private PermissionsManager permissionsManager;
     @Mock
     private GeoIpService geoIpService;
+    @Captor
+    private ArgumentCaptor<String> stringCaptor;
 
     @BeforeInjecting
     public void createService() {
@@ -403,7 +406,6 @@ public class ValidationServiceTest {
         validationService.reload();
 
         // then
-        ArgumentCaptor<String> stringCaptor = ArgumentCaptor.forClass(String.class);
         verify(logger).warning(stringCaptor.capture());
         assertThat(stringCaptor.getValue(), containsString("Tamara;"));
     }
@@ -421,3 +423,5 @@ public class ValidationServiceTest {
         assertThat(validationResult.getArgs(), equalTo(args));
     }
 }
+
+

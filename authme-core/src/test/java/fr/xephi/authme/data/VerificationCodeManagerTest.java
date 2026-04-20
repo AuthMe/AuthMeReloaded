@@ -1,5 +1,9 @@
 package fr.xephi.authme.data;
 
+import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import ch.jalu.datasourcecolumns.data.DataSourceValueImpl;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.mail.EmailService;
@@ -9,11 +13,9 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -26,7 +28,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link VerificationCodeManager}.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class VerificationCodeManagerTest {
 
     @Mock
@@ -44,7 +47,7 @@ public class VerificationCodeManagerTest {
     @Mock
     private BukkitService bukkitService;
 
-    @Before
+    @BeforeEach
     public void setUpBasicBehavior() {
         given(emailService.hasAllInformation()).willReturn(true);
         given(settings.getProperty(SecuritySettings.VERIFICATION_CODE_EXPIRATION_MINUTES)).willReturn(1);
@@ -173,3 +176,5 @@ public class VerificationCodeManagerTest {
         return player;
     }
 }
+
+

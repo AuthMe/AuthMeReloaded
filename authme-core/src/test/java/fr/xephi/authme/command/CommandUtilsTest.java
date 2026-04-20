@@ -1,8 +1,8 @@
 package fr.xephi.authme.command;
 
 import org.bukkit.ChatColor;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,7 +19,7 @@ public class CommandUtilsTest {
 
     private static Collection<CommandDescription> commands;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpTestCommands() {
         commands = Collections.unmodifiableCollection(TestCommandsUtil.generateCommands());
     }
@@ -136,3 +136,4 @@ public class CommandUtilsTest {
             .executableCommand(ExecutableCommand.class);
     }
 }
+
