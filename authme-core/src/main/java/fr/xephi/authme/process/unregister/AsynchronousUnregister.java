@@ -116,7 +116,8 @@ public class AsynchronousUnregister implements AsynchronousProcess {
      */
     private void performPostUnregisterActions(String name, Player player) {
         if (player != null && playerCache.isAuthenticated(name)) {
-            bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.LOGOUT);
+            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player,
+                () -> bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.LOGOUT));
         }
         playerCache.removePlayer(name);
 
@@ -125,13 +126,13 @@ public class AsynchronousUnregister implements AsynchronousProcess {
         if (player == null || !player.isOnline()) {
             return;
         }
-        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() ->
-            commandManager.runCommandsOnUnregister(player));
+        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player,
+            () -> commandManager.runCommandsOnUnregister(player));
 
         if (service.getProperty(RegistrationSettings.FORCE)) {
             teleportationService.teleportOnJoin(player);
 
-            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
+            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player, () -> {
                 limboService.createLimboPlayer(player, false);
                 applyBlindEffect(player);
             });

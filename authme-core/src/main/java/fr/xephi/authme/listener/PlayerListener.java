@@ -542,7 +542,7 @@ public class PlayerListener implements Listener {
              * @note little hack cause InventoryOpenEvent cannot be cancelled for
              * real, cause no packet is sent to server by client for the main inv
              */
-            bukkitService.scheduleSyncDelayedTask(player::closeInventory, 1);
+            bukkitService.scheduleSyncDelayedTask((Player) player, player::closeInventory, 1);
         }
     }
 

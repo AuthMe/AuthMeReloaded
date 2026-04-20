@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.mail.EmailService;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.util.expiring.Duration;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -41,14 +42,20 @@ public class Messages {
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(EmailService.class);
 
-    private MessagesFileHandler messagesFileHandler;
+    private final BukkitService bukkitService;
+    private final MessagesFileHandler messagesFileHandler;
 
     /*
      * Constructor.
      */
     @Inject
-    Messages(MessagesFileHandler messagesFileHandler) {
+    Messages(MessagesFileHandler messagesFileHandler, BukkitService bukkitService) {
         this.messagesFileHandler = messagesFileHandler;
+        this.bukkitService = bukkitService;
+    }
+
+    Messages(MessagesFileHandler messagesFileHandler) {
+        this(messagesFileHandler, null);
     }
 
     /**
@@ -58,10 +65,12 @@ public class Messages {
      * @param key The key of the message to send
      */
     public void send(CommandSender sender, MessageKey key) {
-        String[] lines = retrieve(key, sender);
-        for (String line : lines) {
-            sender.sendMessage(line);
-        }
+        runOnSenderThread(sender, () -> {
+            String[] lines = retrieve(key, sender);
+            for (String line : lines) {
+                sender.sendMessage(line);
+            }
+        });
     }
 
     /**
@@ -74,10 +83,12 @@ public class Messages {
      * @param replacements The replacements to apply for the tags
      */
     public void send(CommandSender sender, MessageKey key, String... replacements) {
-        String message = retrieveSingle(sender, key, replacements);
-        for (String line : message.split("\n")) {
-            sender.sendMessage(line);
-        }
+        runOnSenderThread(sender, () -> {
+            String message = retrieveSingle(sender, key, replacements);
+            for (String line : message.split("\n")) {
+                sender.sendMessage(line);
+            }
+        });
     }
 
     /**
@@ -192,5 +203,13 @@ public class Messages {
             logger.warning("Invalid number of replacements for message key '" + key + "'");
         }
         return message;
+    }
+
+    private void runOnSenderThread(CommandSender sender, Runnable action) {
+        if (sender instanceof Player player && bukkitService != null) {
+            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player, action);
+        } else {
+            action.run();
+        }
     }
 }

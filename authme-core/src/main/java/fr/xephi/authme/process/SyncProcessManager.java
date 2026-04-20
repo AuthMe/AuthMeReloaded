@@ -37,26 +37,26 @@ public class SyncProcessManager {
 
 
     public void processSyncEmailRegister(Player player) {
-        runTask(() -> processSyncEmailRegister.processEmailRegister(player));
+        runTask(player, () -> processSyncEmailRegister.processEmailRegister(player));
     }
 
     public void processSyncPasswordRegister(Player player) {
-        runTask(() -> processSyncPasswordRegister.processPasswordRegister(player));
+        runTask(player, () -> processSyncPasswordRegister.processPasswordRegister(player));
     }
 
     public void processSyncPlayerLogout(Player player) {
-        runTask(() -> processSyncPlayerLogout.processSyncLogout(player));
+        runTask(player, () -> processSyncPlayerLogout.processSyncLogout(player));
     }
 
     public void processSyncPlayerLogin(Player player, boolean isFirstLogin, List<String> authsWithSameIp) {
-        runTask(() -> processSyncPlayerLogin.processPlayerLogin(player, isFirstLogin, authsWithSameIp));
+        runTask(player, () -> processSyncPlayerLogin.processPlayerLogin(player, isFirstLogin, authsWithSameIp));
     }
 
     public void processSyncPlayerQuit(Player player, boolean wasLoggedIn) {
-        runTask(() -> processSyncPlayerQuit.processSyncQuit(player, wasLoggedIn));
+        runTask(player, () -> processSyncPlayerQuit.processSyncQuit(player, wasLoggedIn));
     }
 
-    private void runTask(Runnable runnable) {
-        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(runnable);
+    private void runTask(Player player, Runnable runnable) {
+        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player, runnable);
     }
 }

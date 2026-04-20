@@ -18,6 +18,7 @@ import fr.xephi.authme.platform.ChatAdapter;
 import fr.xephi.authme.platform.DialogAdapter;
 import fr.xephi.authme.platform.EventRegistrationAdapter;
 import fr.xephi.authme.platform.PlatformAdapter;
+import fr.xephi.authme.platform.SchedulingAdapter;
 import fr.xephi.authme.platform.TeleportAdapter;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
@@ -82,7 +83,6 @@ public class AuthMeInitializationTest {
 
         // Mock / wire various Bukkit components
         ReflectionTestUtils.setField(Bukkit.class, null, "server", server);
-        given(server.getPluginManager()).willReturn(pluginManager);
 
         // PluginDescriptionFile is final: need to create a sample one
         PluginDescriptionFile descriptionFile = new PluginDescriptionFile(
@@ -105,6 +105,7 @@ public class AuthMeInitializationTest {
         Injector injector = new InjectorBuilder()
             .addDefaultHandlers("fr.xephi.authme")
             .create();
+        given(server.getPluginManager()).willReturn(pluginManager);
         injector.provide(DataFolder.class, dataFolder);
         injector.register(Server.class, server);
         injector.register(PluginManager.class, pluginManager);
@@ -119,6 +120,7 @@ public class AuthMeInitializationTest {
         injector.register(TeleportAdapter.class, platformAdapter);
         injector.register(ChatAdapter.class, platformAdapter);
         injector.register(EventRegistrationAdapter.class, platformAdapter);
+        injector.register(SchedulingAdapter.class, platformAdapter);
         injector.register(DialogAdapter.class, platformAdapter);
 
         // when

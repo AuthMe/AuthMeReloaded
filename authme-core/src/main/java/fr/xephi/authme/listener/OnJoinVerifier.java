@@ -80,7 +80,7 @@ public class OnJoinVerifier implements Reloadable {
         if (!validationService.fulfillsNameRestrictions(name, address)) {
             if (settings.getProperty(RestrictionSettings.BAN_UNKNOWN_IP)) {
                 String ip = address.getHostAddress();
-                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> server.banIP(ip));
+                bukkitService.runOnGlobalRegion(() -> server.banIP(ip));
             }
             throw new FailedVerificationException(MessageKey.NOT_OWNER_ERROR);
         }

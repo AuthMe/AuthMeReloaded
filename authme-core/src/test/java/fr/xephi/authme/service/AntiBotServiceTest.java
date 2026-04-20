@@ -11,7 +11,6 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -20,8 +19,9 @@ import org.mockito.Mock;
 import java.util.Arrays;
 import java.util.List;
 
-import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask;
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunOnGlobalRegion;
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskLaterOnGlobalRegion;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -60,7 +60,8 @@ public class AntiBotServiceTest {
         given(settings.getProperty(ProtectionSettings.ANTIBOT_SENSIBILITY)).willReturn(5);
         given(settings.getProperty(ProtectionSettings.ENABLE_ANTIBOT)).willReturn(true);
         given(settings.getProperty(ProtectionSettings.ANTIBOT_DELAY)).willReturn(8);
-        setBukkitServiceToScheduleSyncDelayedTaskWithDelay(bukkitService);
+        setBukkitServiceToRunTaskLaterOnGlobalRegion(bukkitService);
+        setBukkitServiceToRunOnGlobalRegion(bukkitService);
     }
 
     @Test
@@ -86,8 +87,8 @@ public class AntiBotServiceTest {
     @Test
     public void shouldActivateAntibot() {
         // given - listening antibot
-        BukkitTask task = mock(BukkitTask.class);
-        given(bukkitService.runTaskLater(any(Runnable.class), anyLong())).willReturn(task);
+        CancellableTask task = mock(CancellableTask.class);
+        given(bukkitService.runTaskLaterOnGlobalRegion(any(Runnable.class), anyLong())).willReturn(task);
 
         // when
         antiBotService.overrideAntiBotStatus(true);
@@ -95,8 +96,8 @@ public class AntiBotServiceTest {
         // then
         assertThat(antiBotService.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.ACTIVE));
         // Check that a task is scheduled to disable again
-        verify(bukkitService).runTaskLater(runnableCaptor.capture(), anyLong());
-        runnableCaptor.getValue().run();
+        verify(bukkitService, org.mockito.Mockito.times(2)).runTaskLaterOnGlobalRegion(runnableCaptor.capture(), anyLong());
+        runnableCaptor.getAllValues().get(1).run();
         assertThat(antiBotService.getAntiBotStatus(), equalTo(AntiBotService.AntiBotStatus.LISTENING));
     }
 
@@ -164,6 +165,7 @@ public class AntiBotServiceTest {
         given(permissionsManager.hasPermission(players.get(0), AdminPermission.ANTIBOT_MESSAGES)).willReturn(false);
         given(permissionsManager.hasPermission(players.get(1), AdminPermission.ANTIBOT_MESSAGES)).willReturn(true);
         setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+        setBukkitServiceToRunOnGlobalRegion(bukkitService);
 
         // when
         antiBotService.overrideAntiBotStatus(true);
@@ -171,13 +173,14 @@ public class AntiBotServiceTest {
         // then
         verify(permissionsManager).hasPermission(players.get(0), AdminPermission.ANTIBOT_MESSAGES);
         verify(permissionsManager).hasPermission(players.get(1), AdminPermission.ANTIBOT_MESSAGES);
-        verify(messages, only()).send(players.get(1), MessageKey.ANTIBOT_AUTO_ENABLED_MESSAGE);
+        verify(bukkitService).scheduleSyncTaskFromOptionallyAsyncTask(org.mockito.ArgumentMatchers.eq(players.get(0)), any(Runnable.class));
+        verify(bukkitService).scheduleSyncTaskFromOptionallyAsyncTask(org.mockito.ArgumentMatchers.eq(players.get(1)), any(Runnable.class));
     }
 
     @Test
     public void shouldImmediatelyStartAfterFirstStartup() {
         // given - listening antibot
-        given(bukkitService.runTaskLater(any(Runnable.class), anyLong())).willReturn(mock(BukkitTask.class));
+        given(bukkitService.runTaskLaterOnGlobalRegion(any(Runnable.class), anyLong())).willReturn(mock(CancellableTask.class));
         antiBotService.overrideAntiBotStatus(true);
 
         // when

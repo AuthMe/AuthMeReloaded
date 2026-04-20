@@ -1,8 +1,14 @@
 package fr.xephi.authme.platform;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.service.CancellableTask;
 import fr.xephi.authme.util.Utils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 /**
  * Base implementation of {@link PlatformAdapter} for all Spigot versions.
@@ -20,6 +26,48 @@ public abstract class AbstractSpigotPlatformAdapter implements PlatformAdapter {
         return player.getBedSpawnLocation();
     }
 
+    @Override
+    public boolean isOwnedByCurrentThread(Entity entity) {
+        return Bukkit.isPrimaryThread();
+    }
+
+    @Override
+    public boolean isGlobalThread() {
+        return Bukkit.isPrimaryThread();
+    }
+
+    @Override
+    public void runOnEntityThread(AuthMe plugin, Entity entity, Runnable task) {
+        Bukkit.getScheduler().runTask(plugin, task);
+    }
+
+    @Override
+    public CancellableTask runDelayedOnEntityThread(AuthMe plugin, Entity entity, Runnable task, long delay) {
+        return wrapTask(Bukkit.getScheduler().runTaskLater(plugin, task, delay));
+    }
+
+    @Override
+    public CancellableTask runAtFixedRateOnEntityThread(AuthMe plugin, Entity entity, Runnable task,
+                                                        long delay, long period) {
+        BukkitRunnable bukkitRunnable = new BukkitRunnable() {
+            @Override
+            public void run() {
+                task.run();
+            }
+        };
+        return wrapTask(bukkitRunnable.runTaskTimer(plugin, delay, period));
+    }
+
+    @Override
+    public void runOnGlobalThread(AuthMe plugin, Runnable task) {
+        Bukkit.getScheduler().runTask(plugin, task);
+    }
+
+    @Override
+    public CancellableTask runDelayedOnGlobalThread(AuthMe plugin, Runnable task, long delay) {
+        return wrapTask(Bukkit.getScheduler().runTaskLater(plugin, task, delay));
+    }
+
     protected final String getCompatibilityError(String errorMessage, String... requiredClasses) {
         for (String className : requiredClasses) {
             if (!Utils.isClassLoaded(className)) {
@@ -27,5 +75,9 @@ public abstract class AbstractSpigotPlatformAdapter implements PlatformAdapter {
             }
         }
         return null;
+    }
+
+    private static CancellableTask wrapTask(BukkitTask task) {
+        return task::cancel;
     }
 }

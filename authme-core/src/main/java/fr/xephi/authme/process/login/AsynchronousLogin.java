@@ -243,7 +243,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         if (tempbanManager.shouldTempban(ip)) {
             tempbanManager.tempbanPlayer(player);
         } else if (service.getProperty(RestrictionSettings.KICK_ON_WRONG_PASSWORD)) {
-            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(
+            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player,
                 () -> player.kickPlayer(service.retrieveSingleMessage(player, MessageKey.WRONG_PASSWORD)));
         } else {
             service.send(player, MessageKey.WRONG_PASSWORD);
@@ -304,7 +304,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             if (bungeeSender.isEnabled()) {
                 // As described at https://www.spigotmc.org/wiki/bukkit-bungee-plugin-messaging-channel/
                 // "Keep in mind that you can't send plugin messages directly after a player joins."
-                bukkitService.scheduleSyncDelayedTask(() ->
+                bukkitService.scheduleSyncDelayedTask(player, () ->
                     bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.LOGIN), 5L);
             }
 

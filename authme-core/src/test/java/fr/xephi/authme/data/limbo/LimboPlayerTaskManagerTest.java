@@ -10,13 +10,13 @@ import fr.xephi.authme.data.captcha.RegistrationCaptchaManager;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.CancellableTask;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -77,14 +77,16 @@ public class LimboPlayerTaskManagerTest {
         given(messages.retrieveSingle(player, key)).willReturn("Please register!");
         int interval = 12;
         given(settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)).willReturn(interval);
+        given(bukkitService.runTaskTimer(eq(player), any(MessageTask.class), anyLong(), anyLong()))
+            .willReturn(mock(CancellableTask.class));
 
         // when
         limboPlayerTaskManager.registerMessageTask(player, limboPlayer, LimboMessageType.REGISTER);
 
         // then
-        verify(limboPlayer).setMessageTask(any(MessageTask.class));
+        verify(limboPlayer).setMessageTask(any(MessageTask.class), any(CancellableTask.class));
         verify(messages).retrieveSingle(player, key);
-        verify(bukkitService).runTaskTimer(
+        verify(bukkitService).runTaskTimer(eq(player),
             any(MessageTask.class), eq(2L * TICKS_PER_SECOND), eq((long) interval * TICKS_PER_SECOND));
     }
 
@@ -153,15 +155,15 @@ public class LimboPlayerTaskManagerTest {
         Player player = mock(Player.class);
         LimboPlayer limboPlayer = mock(LimboPlayer.class);
         given(settings.getProperty(RestrictionSettings.TIMEOUT)).willReturn(30);
-        BukkitTask bukkitTask = mock(BukkitTask.class);
-        given(bukkitService.runTaskLater(any(TimeoutTask.class), anyLong())).willReturn(bukkitTask);
+        CancellableTask bukkitTask = mock(CancellableTask.class);
+        given(bukkitService.runTaskLater(eq(player), any(TimeoutTask.class), anyLong())).willReturn(bukkitTask);
 
         // when
         limboPlayerTaskManager.registerTimeoutTask(player, limboPlayer);
 
         // then
         verify(limboPlayer).setTimeoutTask(bukkitTask);
-        verify(bukkitService).runTaskLater(any(TimeoutTask.class), eq(600L)); // 30 * TICKS_PER_SECOND
+        verify(bukkitService).runTaskLater(eq(player), any(TimeoutTask.class), eq(600L)); // 30 * TICKS_PER_SECOND
         verify(messages).retrieveSingle(player, MessageKey.LOGIN_TIMEOUT_ERROR);
     }
 
@@ -184,11 +186,11 @@ public class LimboPlayerTaskManagerTest {
         // given
         Player player = mock(Player.class);
         LimboPlayer limboPlayer = new LimboPlayer(null, false, Collections.emptyList(), true, 0.3f, 0.1f);
-        BukkitTask existingTask = mock(BukkitTask.class);
+        CancellableTask existingTask = mock(CancellableTask.class);
         limboPlayer.setTimeoutTask(existingTask);
         given(settings.getProperty(RestrictionSettings.TIMEOUT)).willReturn(18);
-        BukkitTask bukkitTask = mock(BukkitTask.class);
-        given(bukkitService.runTaskLater(any(TimeoutTask.class), anyLong())).willReturn(bukkitTask);
+        CancellableTask bukkitTask = mock(CancellableTask.class);
+        given(bukkitService.runTaskLater(eq(player), any(TimeoutTask.class), anyLong())).willReturn(bukkitTask);
 
         // when
         limboPlayerTaskManager.registerTimeoutTask(player, limboPlayer);
@@ -196,7 +198,7 @@ public class LimboPlayerTaskManagerTest {
         // then
         verify(existingTask).cancel();
         assertThat(limboPlayer.getTimeoutTask(), equalTo(bukkitTask));
-        verify(bukkitService).runTaskLater(any(TimeoutTask.class), eq(360L)); // 18 * TICKS_PER_SECOND
+        verify(bukkitService).runTaskLater(eq(player), any(TimeoutTask.class), eq(360L)); // 18 * TICKS_PER_SECOND
         verify(messages).retrieveSingle(player, MessageKey.LOGIN_TIMEOUT_ERROR);
     }
 
