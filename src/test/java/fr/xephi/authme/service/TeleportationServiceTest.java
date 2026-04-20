@@ -66,7 +66,6 @@ class TeleportationServiceTest {
         teleportationService.reload();
 
         given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(false);
-        given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
     }
 
     // -----------
@@ -110,6 +109,7 @@ class TeleportationServiceTest {
     void shouldTeleportPlayerToSpawn() {
         // given
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
+        given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
         Player player = mock(Player.class);
         given(player.isOnline()).willReturn(true);
         Location spawn = mockLocation();
@@ -177,6 +177,7 @@ class TeleportationServiceTest {
         Location spawn = mock(Location.class);
         given(spawnLoader.getSpawnLocation(player)).willReturn(spawn);
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
+        given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
         doAnswer(invocation -> {
             SpawnTeleportEvent event = (SpawnTeleportEvent) invocation.getArguments()[0];
             assertThat(event.getPlayer(), equalTo(player));
@@ -200,6 +201,7 @@ class TeleportationServiceTest {
         Location spawn = mock(Location.class);
         given(spawnLoader.getSpawnLocation(player)).willReturn(spawn);
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
+        given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
         doAnswer(invocation -> {
             SpawnTeleportEvent event = (SpawnTeleportEvent) invocation.getArguments()[0];
             assertThat(event.getPlayer(), equalTo(player));

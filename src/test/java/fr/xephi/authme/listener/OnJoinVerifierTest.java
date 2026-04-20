@@ -38,6 +38,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -487,7 +488,7 @@ class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldAllowPlayerWithMatchingNameRestriction() throws FailedVerificationException {
+    void shouldAllowPlayerWithMatchingNameRestriction() throws FailedVerificationException {
         // given
         String name = "Bobby";
         InetAddress address = createInetAddress("127.0.0.4");
@@ -502,22 +503,20 @@ class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldKickPlayerWithUnmatchedNameRestriction() throws FailedVerificationException {
+    void shouldKickPlayerWithUnmatchedNameRestriction() {
         // given
         String name = "Bobby";
         InetAddress address = createInetAddress("99.99.99.99");
         given(validationService.fulfillsNameRestrictions(name, address)).willReturn(false);
         given(settings.getProperty(RestrictionSettings.BAN_UNKNOWN_IP)).willReturn(false);
 
-        // expect
-        expectValidationExceptionWith(MessageKey.NOT_OWNER_ERROR);
-
-        // when
-        onJoinVerifier.checkNameRestrictions(name, address);
+        // when / then
+        expectValidationExceptionWith(() -> onJoinVerifier.checkNameRestrictions(name, address),
+            MessageKey.NOT_OWNER_ERROR);
     }
 
     @Test
-    public void shouldBanIpWhenNameRestrictionFailsAndBanIsEnabled() {
+    void shouldBanIpWhenNameRestrictionFailsAndBanIsEnabled() {
         // given
         String name = "Bobby";
         InetAddress address = createInetAddress("99.99.99.99");

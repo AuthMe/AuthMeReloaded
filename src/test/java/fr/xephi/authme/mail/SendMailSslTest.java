@@ -21,7 +21,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
@@ -46,8 +45,6 @@ class SendMailSslTest {
         // given
         given(settings.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("mail@example.org");
         given(settings.getProperty(EmailSettings.MAIL_PASSWORD)).willReturn("pass1234");
-        given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(LogLevel.INFO);
-        given(settings.getProperty(EmailSettings.SSL_CHECK_SERVER_IDENTITY)).willReturn(true);
 
         // when / then
         assertThat(sendMailSsl.hasAllInformation(), equalTo(true));
@@ -66,6 +63,7 @@ class SendMailSslTest {
         String senderName = "Server administration";
         given(settings.getProperty(EmailSettings.MAIL_SENDER_NAME)).willReturn(senderName);
         given(settings.getProperty(EmailSettings.RECOVERY_MAIL_SUBJECT)).willReturn("Recover password");
+        given(settings.getProperty(EmailSettings.SSL_CHECK_SERVER_IDENTITY)).willReturn(true);
         given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(LogLevel.DEBUG);
 
         // when
@@ -95,6 +93,7 @@ class SendMailSslTest {
         String senderName = "Server administration";
         given(settings.getProperty(EmailSettings.MAIL_SENDER_NAME)).willReturn(senderName);
         given(settings.getProperty(EmailSettings.RECOVERY_MAIL_SUBJECT)).willReturn("Recover password");
+        given(settings.getProperty(EmailSettings.SSL_CHECK_SERVER_IDENTITY)).willReturn(true);
         given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(LogLevel.INFO);
 
         // when
@@ -123,6 +122,7 @@ class SendMailSslTest {
         given(settings.getProperty(EmailSettings.MAIL_PASSWORD)).willReturn("pass1234");
         given(settings.getProperty(EmailSettings.MAIL_SENDER_NAME)).willReturn("Admin");
         given(settings.getProperty(EmailSettings.RECOVERY_MAIL_SUBJECT)).willReturn("Ricóber chur pasword ése");
+        given(settings.getProperty(EmailSettings.SSL_CHECK_SERVER_IDENTITY)).willReturn(true);
         given(settings.getProperty(PluginSettings.LOG_LEVEL)).willReturn(LogLevel.INFO);
 
         // when

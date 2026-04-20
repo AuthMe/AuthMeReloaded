@@ -32,7 +32,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static fr.xephi.authme.IsEqualByReflectionMatcher.hasEqualValuesOnAllFields;
-import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;

@@ -772,7 +772,7 @@ class PlayerListenerTest {
     }
 
     @Test
-    public void shouldAbortPreLoginHighestForFailedNameRestriction() throws FailedVerificationException {
+    void shouldAbortPreLoginHighestForFailedNameRestriction() throws FailedVerificationException {
         // given
         String name = "restrictedPlayer";
         UUID uniqueId = UUID.fromString("c60b7305-3a78-4f71-8a60-70a3f17e1c90");
@@ -800,6 +800,7 @@ class PlayerListenerTest {
         // given
         String name = "someone";
         Player player = mockPlayerWithName(name);
+        String ip = "12.34.56.78";
 
         PlayerLoginEvent loginEvent = spy(new PlayerLoginEvent(player, "", createInetAddress(ip)));
         given(validationService.isUnrestricted(name)).willReturn(false);

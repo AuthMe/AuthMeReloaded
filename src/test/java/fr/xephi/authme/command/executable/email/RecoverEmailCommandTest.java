@@ -12,6 +12,7 @@ import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PasswordRecoveryService;
 import fr.xephi.authme.service.RecoveryCodeService;
 import org.bukkit.entity.Player;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -152,11 +152,11 @@ public class ValidationService implements Reloadable {
      * @return true if the player may join, false if the player does not satisfy the name restrictions
      */
     public boolean fulfillsNameRestrictions(Player player) {
-        InetSocketAddress socketAddress = player.getAddress();
         Collection<String> restrictions = restrictedNames.get(player.getName().toLowerCase(Locale.ROOT));
         if (Utils.isCollectionEmpty(restrictions)) {
             return true;
         }
+        InetSocketAddress socketAddress = player.getAddress();
         String ip = socketAddress.getAddress().getHostAddress();
         String domain = getHostName(socketAddress);
         return matchesRestrictions(restrictions, ip, domain);
