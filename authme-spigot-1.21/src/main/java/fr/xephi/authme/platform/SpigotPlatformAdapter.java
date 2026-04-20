@@ -1,6 +1,7 @@
 package fr.xephi.authme.platform;
 
 import fr.xephi.authme.listener.PlayerSignOpenListener;
+import fr.xephi.authme.listener.PlayerListener19Spigot;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
 import org.bukkit.entity.Player;
@@ -40,8 +41,15 @@ public class SpigotPlatformAdapter extends AbstractSpigotPlatformAdapter {
     }
 
     @Override
+    public String getCompatibilityError() {
+        return getCompatibilityError("This AuthMe Spigot 1.21 build requires the Spigot 1.20+ API.",
+            "org.spigotmc.event.player.PlayerSpawnLocationEvent",
+            "org.bukkit.event.player.PlayerSignOpenEvent");
+    }
+
+    @Override
     public List<Class<? extends Listener>> getAdditionalListeners() {
-        return Arrays.asList(PlayerSignOpenListener.class);
+        return Arrays.asList(PlayerListener19Spigot.class, PlayerSignOpenListener.class);
     }
 
     @Override

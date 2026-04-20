@@ -171,11 +171,25 @@ public class SpawnLoader implements Reloadable {
      * @see RestrictionSettings#SPAWN_PRIORITY
      */
     public Location getSpawnLocation(Player player) {
-        if (player == null || player.getWorld() == null) {
+        if (player == null) {
+            return null;
+        }
+        return getSpawnLocation(player.getWorld());
+    }
+
+    /**
+     * Return the spawn location for the given world. The source of the spawn location varies
+     * depending on the spawn priority setting.
+     *
+     * @param world The world to retrieve the spawn point for
+     *
+     * @return The spawn location, or the default spawn location upon failure
+     */
+    public Location getSpawnLocation(World world) {
+        if (world == null) {
             return null;
         }
 
-        World world = player.getWorld();
         Location spawnLoc = null;
         for (String priority : spawnPriority) {
             switch (priority.toLowerCase(Locale.ROOT).trim()) {

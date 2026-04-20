@@ -2,6 +2,7 @@ package fr.xephi.authme.platform;
 
 import fr.xephi.authme.listener.PaperChatListener;
 import fr.xephi.authme.listener.PlayerOpenSignListener;
+import fr.xephi.authme.listener.PaperPlayerSpawnLocationListener;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -53,8 +54,16 @@ public class PaperPlatformAdapter extends AbstractSpigotPlatformAdapter {
     }
 
     @Override
+    public String getCompatibilityError() {
+        return getCompatibilityError("This AuthMe Paper build requires the Paper 1.21.11+ API.",
+            "io.papermc.paper.event.player.AsyncChatEvent",
+            "io.papermc.paper.event.player.AsyncPlayerSpawnLocationEvent",
+            "io.papermc.paper.event.player.PlayerOpenSignEvent");
+    }
+
+    @Override
     public List<Class<? extends Listener>> getAdditionalListeners() {
-        return Arrays.asList(PaperChatListener.class, PlayerOpenSignListener.class);
+        return Arrays.asList(PaperChatListener.class, PaperPlayerSpawnLocationListener.class, PlayerOpenSignListener.class);
     }
 
     @Override

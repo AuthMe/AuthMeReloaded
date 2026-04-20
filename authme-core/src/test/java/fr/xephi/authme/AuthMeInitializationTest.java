@@ -114,6 +114,7 @@ public class AuthMeInitializationTest {
         injector.register(DataSource.class, mock(DataSource.class));
         injector.register(BukkitService.class, mock(BukkitService.class));
         PlatformAdapter platformAdapter = mock(PlatformAdapter.class);
+        given(platformAdapter.getAdditionalListeners()).willReturn(Collections.emptyList());
         injector.register(PlatformAdapter.class, platformAdapter);
         injector.register(TeleportAdapter.class, platformAdapter);
         injector.register(ChatAdapter.class, platformAdapter);
