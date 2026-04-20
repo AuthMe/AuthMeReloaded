@@ -1,9 +1,11 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Apr 04 21:31:42 CEST 2021. See docs/commands/commands.tpl.md -->
+<!-- File auto-generated on Mon Apr 20 11:07:34 CEST 2026. See authme-core/src/test/java/tools/docs/commands/commands.tpl.md -->
 
 ## AuthMe Commands
 You can use the following commands to use the features of AuthMe. Mandatory arguments are marked with `< >`
 brackets; optional arguments are enclosed in square brackets (`[ ]`).
+
+The command tree is shared across the current Spigot Legacy, Spigot 1.21, and Paper 1.21 builds.
 
 - **/authme**: The main AuthMeReloaded command. The root for all admin commands.
 - **/authme register** &lt;player> &lt;password>: Register the specified player with the specified password.
@@ -108,4 +110,4 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Apr 04 21:31:42 CEST 2021
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Mon Apr 20 11:07:34 CEST 2026

@@ -1,8 +1,11 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Apr 04 21:31:44 CEST 2021. See docs/permissions/permission_nodes.tpl.md -->
+<!-- File auto-generated on Mon Apr 20 11:07:36 CEST 2026. See authme-core/src/test/java/tools/docs/permissions/permission_nodes.tpl.md -->
 
 ## AuthMe Permission Nodes
 The following are the permission nodes that are currently supported by the latest dev builds.
+
+Unless noted otherwise, these nodes are available across the current Spigot Legacy, Spigot 1.21,
+and Paper 1.21 builds.
 
 - **authme.admin.*** – Give access to all admin commands.
 - **authme.admin.accounts** – Administrator command to see all accounts associated with a user.
@@ -73,4 +76,4 @@ The following are the permission nodes that are currently supported by the lates
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Apr 04 21:31:44 CEST 2021
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Mon Apr 20 11:07:36 CEST 2026
