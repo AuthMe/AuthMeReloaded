@@ -4,7 +4,9 @@ import com.google.common.collect.Lists;
 import org.bukkit.ChatColor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Utility functions for {@link CommandDescription} objects.
@@ -105,5 +107,27 @@ public final class CommandUtils {
             return "[" + argument.getName() + "]";
         }
         return "<" + argument.getName() + ">";
+    }
+
+    /**
+     * Splits raw command input into non-empty parts.
+     *
+     * @param input the raw command input, with or without a leading slash
+     * @return command parts without empty entries
+     */
+    public static List<String> splitInput(String input) {
+        if (input == null) {
+            return new ArrayList<>();
+        }
+        String trimmedInput = input.trim();
+        if (trimmedInput.startsWith("/")) {
+            trimmedInput = trimmedInput.substring(1);
+        }
+        if (trimmedInput.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return Arrays.stream(trimmedInput.split("\\s+"))
+            .filter(part -> !part.isEmpty())
+            .collect(Collectors.toList());
     }
 }

@@ -122,10 +122,76 @@ public class CommandUtilsTest {
         assertThat(result, equalTo(ChatColor.WHITE + "/email" + ChatColor.YELLOW + " [player]"));
     }
 
+    @Test
+    public void shouldReturnEmptyListForNullInput() {
+        assertSplitInput(null);
+    }
+
+    @Test
+    public void shouldReturnEmptyListForBlankInput() {
+        assertSplitInput("   \t  \n ");
+    }
+
+    @Test
+    public void shouldReturnEmptyListForSlashOnlyInput() {
+        assertSplitInput("/");
+    }
+
+    @Test
+    public void shouldReturnEmptyListForSlashWithOnlyWhitespace() {
+        assertSplitInput("/   \t   ");
+    }
+
+    @Test
+    public void shouldSplitSingleCommandWithoutLeadingSlash() {
+        assertSplitInput("authme", "authme");
+    }
+
+    @Test
+    public void shouldSplitSingleCommandWithLeadingSlash() {
+        assertSplitInput("/authme", "authme");
+    }
+
+    @Test
+    public void shouldTrimInputBeforeRemovingLeadingSlash() {
+        assertSplitInput("   /authme register   ", "authme", "register");
+    }
+
+    @Test
+    public void shouldIgnoreRepeatedWhitespaceBetweenParts() {
+        assertSplitInput("/authme    register     player    password",
+            "authme", "register", "player", "password");
+    }
+
+    @Test
+    public void shouldSplitTabsAndNewlinesAsWhitespace() {
+        assertSplitInput("/authme\tregister\nplayer\r\npassword",
+            "authme", "register", "player", "password");
+    }
+
+    @Test
+    public void shouldSupportSlashSeparatedByWhitespaceFromCommand() {
+        assertSplitInput("/   authme   register", "authme", "register");
+    }
+
+    @Test
+    public void shouldPreserveAdditionalLeadingSlashInFirstPart() {
+        assertSplitInput("//authme register", "/authme", "register");
+    }
+
+    @Test
+    public void shouldPreserveNonEmptySpecialCharactersInsideParts() {
+        assertSplitInput("/login p@ss-word_123", "login", "p@ss-word_123");
+    }
+
 
     private static void checkArgumentCount(CommandDescription command, int expectedMin, int expectedMax) {
         assertThat(CommandUtils.getMinNumberOfArguments(command), equalTo(expectedMin));
         assertThat(CommandUtils.getMaxNumberOfArguments(command), equalTo(expectedMax));
+    }
+
+    private static void assertSplitInput(String input, String... expectedParts) {
+        assertThat(CommandUtils.splitInput(input), equalTo(Arrays.asList(expectedParts)));
     }
 
     private static CommandDescription.CommandBuilder getBuilderForArgsTest() {

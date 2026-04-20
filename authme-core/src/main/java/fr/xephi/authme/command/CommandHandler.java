@@ -62,6 +62,17 @@ public class CommandHandler {
         List<String> parts = skipEmptyArguments(bukkitArgs);
         parts.add(0, bukkitCommandLabel);
 
+        return processCommand(sender, parts);
+    }
+
+    /**
+     * Processes a command represented as pre-split parts.
+     *
+     * @param sender the command sender
+     * @param parts the command input split into label and arguments
+     * @return true if the command was executed, false otherwise
+     */
+    public boolean processCommand(CommandSender sender, List<String> parts) {
         FoundCommandResult result = commandMapper.mapPartsToCommand(sender, parts);
         handleCommandResult(sender, result);
         return !FoundResultStatus.MISSING_BASE_COMMAND.equals(result.getResultStatus());

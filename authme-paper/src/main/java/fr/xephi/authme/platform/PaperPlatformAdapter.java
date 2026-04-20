@@ -1,5 +1,8 @@
 package fr.xephi.authme.platform;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.command.CommandDescription;
+import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.listener.PaperChatListener;
 import fr.xephi.authme.listener.PlayerOpenSignListener;
 import fr.xephi.authme.listener.PaperPlayerSpawnLocationListener;
@@ -12,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerKickEvent;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -84,5 +88,10 @@ public class PaperPlatformAdapter extends AbstractSpigotPlatformAdapter {
     @Override
     public void showRegisterDialog(Player player, RegistrationType type, RegisterSecondaryArgument secondArg) {
         PaperDialogHelper.showRegisterDialog(player, type, secondArg);
+    }
+
+    @Override
+    public void registerCommands(AuthMe plugin, CommandHandler commandHandler, Collection<CommandDescription> commands) {
+        new PaperBrigadierCommandRegistrar(commandHandler::processCommand).registerCommands(plugin, commands);
     }
 }

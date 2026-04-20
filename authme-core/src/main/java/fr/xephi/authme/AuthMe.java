@@ -5,6 +5,7 @@ import ch.jalu.injector.InjectorBuilder;
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.api.v3.AuthMeApi;
 import fr.xephi.authme.command.CommandHandler;
+import fr.xephi.authme.command.CommandInitializer;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.DataSourceProvider;
@@ -41,6 +42,7 @@ import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import fr.xephi.authme.platform.ChatAdapter;
+import fr.xephi.authme.platform.CommandRegistrationAdapter;
 import fr.xephi.authme.platform.DialogAdapter;
 import fr.xephi.authme.platform.EventRegistrationAdapter;
 import fr.xephi.authme.platform.PlatformAdapter;
@@ -221,6 +223,7 @@ public class AuthMe extends JavaPlugin {
         injector.register(ChatAdapter.class, platformAdapter);
         injector.register(EventRegistrationAdapter.class, platformAdapter);
         injector.register(DialogAdapter.class, platformAdapter);
+        injector.register(CommandRegistrationAdapter.class, platformAdapter);
 
         // Get settings and set up logger
         settings = injector.getSingleton(Settings.class);
@@ -229,6 +232,8 @@ public class AuthMe extends JavaPlugin {
 
         // Set all service fields on the AuthMe class
         instantiateServices(injector);
+
+        registerPlatformCommands(platformAdapter, injector);
 
         // Convert deprecated PLAINTEXT hash entries
         MigrationService.changePlainTextToSha256(settings, database, new Sha256());
@@ -269,6 +274,11 @@ public class AuthMe extends JavaPlugin {
 
         // Trigger construction of API classes; they will keep track of the singleton
         injector.getSingleton(AuthMeApi.class);
+    }
+
+    private void registerPlatformCommands(PlatformAdapter platformAdapter, Injector injector) {
+        CommandInitializer commandInitializer = injector.getSingleton(CommandInitializer.class);
+        platformAdapter.registerCommands(this, commandHandler, commandInitializer.getCommands());
     }
 
     /**

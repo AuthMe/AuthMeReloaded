@@ -130,6 +130,25 @@ public class CommandHandlerTest {
     }
 
     @Test
+    public void shouldCallMappedCommandWithPreSplitParts() {
+        // given
+        CommandSender sender = mock(CommandSender.class);
+        CommandDescription command = mock(CommandDescription.class);
+        doReturn(TestLoginCommand.class).when(command).getExecutableCommand();
+        given(commandMapper.mapPartsToCommand(any(CommandSender.class), anyList()))
+            .willReturn(new FoundCommandResult(command, asList("Authme", "Login"), asList("myPass"), 0.0, SUCCESS));
+
+        // when
+        handler.processCommand(sender, asList("Authme", "Login", "myPass"));
+
+        // then
+        ExecutableCommand executableCommand = mockedCommands.get(TestLoginCommand.class);
+        verify(commandMapper).mapPartsToCommand(sender, asList("Authme", "Login", "myPass"));
+        verify(executableCommand).executeCommand(sender, asList("myPass"));
+        verify(sender, never()).sendMessage(anyString());
+    }
+
+    @Test
     public void shouldNotCallExecutableCommandIfNoPermission() {
         // given
         String bukkitLabel = "unreg";
