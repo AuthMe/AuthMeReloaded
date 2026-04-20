@@ -56,6 +56,7 @@ public class TeleportationService implements Reloadable {
 
     private Set<String> spawnOnLoginWorlds;
     private final ConcurrentHashMap<String, Boolean> preloadedAuthStatus = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Location> originalJoinLocations = new ConcurrentHashMap<>();
 
     TeleportationService() {
     }
@@ -89,6 +90,18 @@ public class TeleportationService implements Reloadable {
      * @return the custom spawn location, null if the player should spawn at the original location
      */
     public Location prepareOnJoinSpawnLocation(final Player player) {
+        return prepareOnJoinSpawnLocation(player, null);
+    }
+
+    /**
+     * Returns the player's custom on join location and stores the original spawn location for later restoration.
+     *
+     * @param player the player to process
+     * @param originalLocation the server-selected spawn location before AuthMe modifies it
+     * @return the custom spawn location, null if the player should spawn at the original location
+     */
+    public Location prepareOnJoinSpawnLocation(final Player player, final Location originalLocation) {
+        rememberOriginalJoinLocation(player.getName(), originalLocation);
         if (shouldApplyOnJoinSpawnLocation(player.getName())) {
             final Location location = spawnLoader.getSpawnLocation(player);
 
@@ -114,6 +127,24 @@ public class TeleportationService implements Reloadable {
      * @return the custom spawn location, null if the player should spawn at the original location
      */
     public Location prepareOnJoinSpawnLocation(String playerName, World world) {
+        return prepareOnJoinSpawnLocationInternal(playerName, world);
+    }
+
+    /**
+     * Returns the player's custom on join location without requiring a {@link Player} instance and stores the
+     * original spawn location for later restoration.
+     *
+     * @param playerName the player's name
+     * @param originalLocation the server-selected spawn location before AuthMe modifies it
+     * @return the custom spawn location, null if the player should spawn at the original location
+     */
+    public Location prepareOnJoinSpawnLocation(String playerName, Location originalLocation) {
+        rememberOriginalJoinLocation(playerName, originalLocation);
+        return prepareOnJoinSpawnLocationInternal(playerName,
+            originalLocation == null ? null : originalLocation.getWorld());
+    }
+
+    private Location prepareOnJoinSpawnLocationInternal(String playerName, World world) {
         if (!shouldApplyOnJoinSpawnLocation(playerName) || world == null) {
             return null;
         }
@@ -156,8 +187,11 @@ public class TeleportationService implements Reloadable {
         }
 
         // #856: If LimboPlayer comes from a persisted file, the Location might be null
-        String worldName = (limbo != null && limbo.getLocation() != null)
-            ? limbo.getLocation().getWorld().getName()
+        Location joinLocation = limbo != null && limbo.getLocation() != null
+            ? limbo.getLocation()
+            : peekOriginalJoinLocation(player.getName());
+        String worldName = (joinLocation != null && joinLocation.getWorld() != null)
+            ? joinLocation.getWorld().getName()
             : null;
 
         // The world in LimboPlayer is from where the player comes, before any teleportation by AuthMe
@@ -167,11 +201,22 @@ public class TeleportationService implements Reloadable {
         } else if (settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)) {
             if (settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
                 Location location = buildLocationFromAuth(player, auth);
-                logger.debug("Teleporting `{0}` after login, based on the player auth", player.getName());
+                if (shouldUseJoinLocationAsFallback(auth, joinLocation)) {
+                    logger.debug("Teleporting `{0}` after login, based on the remembered join location",
+                        player.getName());
+                    location = joinLocation;
+                } else {
+                    logger.debug("Teleporting `{0}` after login, based on the player auth", player.getName());
+                }
+                if (hasSamePositionAndWorld(location, player.getLocation())) {
+                    logger.debug("Skipping teleport of `{0}` after login because the player is already there",
+                        player.getName());
+                    return;
+                }
                 teleportBackFromSpawn(player, location);
-            } else if (limbo != null && limbo.getLocation() != null) {
-                logger.debug("Teleporting `{0}` after login, based on the limbo player", player.getName());
-                teleportBackFromSpawn(player, limbo.getLocation());
+            } else if (joinLocation != null) {
+                logger.debug("Teleporting `{0}` after login, based on the remembered join location", player.getName());
+                teleportBackFromSpawn(player, joinLocation);
             }
         }
     }
@@ -184,7 +229,10 @@ public class TeleportationService implements Reloadable {
      * @param isRegistered whether the player has an account
      */
     public void preloadAuthStatus(String name, boolean isRegistered) {
-        preloadedAuthStatus.put(name.toLowerCase(Locale.ROOT), isRegistered);
+        String normalizedName = normalizePlayerName(name);
+        if (normalizedName != null) {
+            preloadedAuthStatus.put(normalizedName, isRegistered);
+        }
     }
 
     /**
@@ -193,7 +241,67 @@ public class TeleportationService implements Reloadable {
      * @param name the player name
      */
     public void clearPreloadedAuthStatus(String name) {
-        preloadedAuthStatus.remove(name.toLowerCase(Locale.ROOT));
+        String normalizedName = normalizePlayerName(name);
+        if (normalizedName != null) {
+            preloadedAuthStatus.remove(normalizedName);
+        }
+    }
+
+    /**
+     * Stores the server-selected join location before AuthMe redirects the player to its configured spawn.
+     *
+     * @param name the player name
+     * @param location the original join location
+     */
+    public void rememberOriginalJoinLocation(String name, Location location) {
+        String normalizedName = normalizePlayerName(name);
+        if (normalizedName == null) {
+            return;
+        }
+        if (location == null || location.getWorld() == null) {
+            clearOriginalJoinLocation(normalizedName);
+            return;
+        }
+        originalJoinLocations.put(normalizedName, location.clone());
+    }
+
+    /**
+     * Returns the remembered original join location without consuming it.
+     *
+     * @param name the player name
+     * @return the remembered location, or null if none exists
+     */
+    public Location peekOriginalJoinLocation(String name) {
+        String normalizedName = normalizePlayerName(name);
+        return normalizedName == null ? null : originalJoinLocations.get(normalizedName);
+    }
+
+    /**
+     * Returns and clears the remembered original join location for the player.
+     *
+     * @param name the player name
+     * @param fallback the location to return if no join location was remembered
+     * @return the remembered location, or the fallback if absent
+     */
+    public Location consumeOriginalJoinLocation(String name, Location fallback) {
+        String normalizedName = normalizePlayerName(name);
+        if (normalizedName == null) {
+            return fallback;
+        }
+        Location location = originalJoinLocations.remove(normalizedName);
+        return location != null ? location : fallback;
+    }
+
+    /**
+     * Clears the remembered original join location for the given player.
+     *
+     * @param name the player name
+     */
+    public void clearOriginalJoinLocation(String name) {
+        String normalizedName = normalizePlayerName(name);
+        if (normalizedName != null) {
+            originalJoinLocations.remove(normalizedName);
+        }
     }
 
     private boolean shouldApplyOnJoinSpawnLocation(String playerName) {
@@ -206,7 +314,10 @@ public class TeleportationService implements Reloadable {
         if (settings.getProperty(RegistrationSettings.FORCE)) {
             return false;
         }
-        String key = playerName.toLowerCase(Locale.ROOT);
+        String key = normalizePlayerName(playerName);
+        if (key == null) {
+            return false;
+        }
         Boolean cached = preloadedAuthStatus.get(key);
         boolean isRegistered = cached != null ? cached : dataSource.isAuthAvailable(playerName);
         return !isRegistered;
@@ -217,6 +328,12 @@ public class TeleportationService implements Reloadable {
             && spawnOnLoginWorlds.contains(worldName);
     }
 
+    private static boolean shouldUseJoinLocationAsFallback(PlayerAuth auth, Location joinLocation) {
+        return joinLocation != null
+            && hasDefaultStoredQuitLocation(auth)
+            && !matchesStoredQuitLocation(auth, joinLocation);
+    }
+
     private Location buildLocationFromAuth(Player player, PlayerAuth auth) {
         World world = bukkitService.getWorld(auth.getWorld());
         if (world == null) {
@@ -224,6 +341,34 @@ public class TeleportationService implements Reloadable {
         }
         return new Location(world, auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(),
             auth.getYaw(), auth.getPitch());
+    }
+
+    private static boolean hasDefaultStoredQuitLocation(PlayerAuth auth) {
+        return auth != null
+            && Double.compare(auth.getQuitLocX(), 0.0) == 0
+            && Double.compare(auth.getQuitLocY(), 0.0) == 0
+            && Double.compare(auth.getQuitLocZ(), 0.0) == 0
+            && "world".equals(auth.getWorld());
+    }
+
+    private static boolean matchesStoredQuitLocation(PlayerAuth auth, Location location) {
+        return location != null && location.getWorld() != null
+            && Double.compare(auth.getQuitLocX(), location.getX()) == 0
+            && Double.compare(auth.getQuitLocY(), location.getY()) == 0
+            && Double.compare(auth.getQuitLocZ(), location.getZ()) == 0
+            && auth.getWorld().equals(location.getWorld().getName());
+    }
+
+    private static String normalizePlayerName(String name) {
+        return name == null ? null : name.toLowerCase(Locale.ROOT);
+    }
+
+    private static boolean hasSamePositionAndWorld(Location first, Location second) {
+        return first != null && second != null
+            && Double.compare(first.getX(), second.getX()) == 0
+            && Double.compare(first.getY(), second.getY()) == 0
+            && Double.compare(first.getZ(), second.getZ()) == 0
+            && first.getWorld() == second.getWorld();
     }
 
     private void teleportBackFromSpawn(final Player player, final Location location) {

@@ -99,6 +99,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         }
 
         teleportationService.teleportOnLogin(player, auth, limbo);
+        teleportationService.clearOriginalJoinLocation(name);
 
         // We can now display the join message (if delayed)
         joinMessageService.sendMessage(name);

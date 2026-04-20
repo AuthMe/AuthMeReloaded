@@ -33,6 +33,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -72,12 +73,12 @@ public class TeleportationServiceTest {
 
     @BeforeEach
     public void setUpForcedWorlds() {
-        given(settings.getProperty(RestrictionSettings.FORCE_SPAWN_ON_WORLDS))
-            .willReturn(Arrays.asList("forced1", "OtherForced"));
+        lenient().when(settings.getProperty(RestrictionSettings.FORCE_SPAWN_ON_WORLDS))
+            .thenReturn(Arrays.asList("forced1", "OtherForced"));
         teleportationService.reload();
 
-        given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(false);
-        given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
+        lenient().when(settings.getProperty(RestrictionSettings.NO_TELEPORT)).thenReturn(false);
+        lenient().when(settings.getProperty(RegistrationSettings.FORCE)).thenReturn(true);
     }
 
     // -----------
@@ -278,6 +279,23 @@ public class TeleportationServiceTest {
     }
 
     @Test
+    public void shouldRememberOriginalJoinLocationForAsyncJoinEvent() {
+        // given
+        given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
+        World world = mock(World.class);
+        Location originalSpawn = new Location(world, 1.0, 64.0, 1.0);
+        Location spawn = mockLocation();
+        given(spawnLoader.getSpawnLocation(world)).willReturn(spawn);
+
+        // when
+        Location result = teleportationService.prepareOnJoinSpawnLocation("Bobby", originalSpawn);
+
+        // then
+        assertThat(result, equalTo(spawn));
+        assertThat(teleportationService.consumeOriginalJoinLocation("Bobby", null), equalTo(originalSpawn));
+    }
+
+    @Test
     public void shouldUseModifiedSpawnLocationFromJoinEvent() {
         // given
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
@@ -415,6 +433,80 @@ public class TeleportationServiceTest {
     }
 
     @Test
+    public void shouldNotTeleportIfPlayerIsAlreadyAtQuitLocation() {
+        // given
+        given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
+        given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(true);
+
+        PlayerAuth auth = createAuthWithLocation();
+        auth.setWorld("myWorld");
+        World world = mock(World.class);
+        given(bukkitService.getWorld("myWorld")).willReturn(world);
+
+        Player player = mock(Player.class);
+        given(player.getLocation()).willReturn(new Location(world, auth.getQuitLocX(), auth.getQuitLocY(),
+            auth.getQuitLocZ(), 90.0f, 45.0f));
+
+        // when
+        teleportationService.teleportOnLogin(player, auth, null);
+
+        // then
+        verify(bukkitService).getWorld("myWorld");
+        verify(player).getLocation();
+        verifyNoInteractions(platformAdapter, spawnLoader);
+    }
+
+    @Test
+    public void shouldUseRememberedJoinLocationIfQuitLocationIsStillAtSchemaDefaults() {
+        // given
+        given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
+        given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(true);
+
+        PlayerAuth auth = PlayerAuth.builder()
+            .name("bobby")
+            .build();
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn("Bobby");
+        given(player.isOnline()).willReturn(true);
+        World world = mock(World.class);
+        Location rememberedJoinLocation = new Location(world, 12.0, 70.0, -8.0);
+        teleportationService.rememberOriginalJoinLocation("Bobby", rememberedJoinLocation);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+
+        // when
+        teleportationService.teleportOnLogin(player, auth, null);
+
+        // then
+        verify(platformAdapter).teleportPlayer(eq(player), locationCaptor.capture());
+        assertThat(locationCaptor.getValue(), equalTo(rememberedJoinLocation));
+        verifyNoInteractions(spawnLoader);
+    }
+
+    @Test
+    public void shouldUseLimboLocationIfQuitLocationIsStillAtSchemaDefaults() {
+        // given
+        given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
+        given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(true);
+
+        PlayerAuth auth = PlayerAuth.builder()
+            .name("bobby")
+            .build();
+        Player player = mock(Player.class);
+        given(player.isOnline()).willReturn(true);
+        LimboPlayer limbo = mock(LimboPlayer.class);
+        Location limboLocation = mockLocation();
+        given(limbo.getLocation()).willReturn(limboLocation);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+
+        // when
+        teleportationService.teleportOnLogin(player, auth, limbo);
+
+        // then
+        verify(platformAdapter).teleportPlayer(player, limboLocation);
+        verifyNoInteractions(spawnLoader);
+    }
+
+    @Test
     public void shouldTeleportWithLimboPlayerIfSaveQuitLocIsDisabled() {
         // given
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
@@ -449,8 +541,8 @@ public class TeleportationServiceTest {
         teleportationService.teleportOnLogin(player, auth, limbo);
 
         // then
-        verifyNoInteractions(player);
-        verify(limbo, times(2)).getLocation();
+        verify(player).getName();
+        verify(limbo).getLocation();
     }
 
     private static void assertCorrectLocation(Location location, PlayerAuth auth, World world) {
@@ -462,9 +554,7 @@ public class TeleportationServiceTest {
 
     // We check that the World in Location is set, this method creates a mock World in Location for us
     private static Location mockLocation() {
-        Location location = mock(Location.class);
-        given(location.getWorld()).willReturn(mock(World.class));
-        return location;
+        return new Location(mock(World.class), 0.0, 0.0, 0.0);
     }
 
     private static PlayerAuth createAuthWithLocation() {

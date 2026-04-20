@@ -15,6 +15,11 @@ public abstract class AbstractSpigotPlatformAdapter implements PlatformAdapter {
         player.teleport(location);
     }
 
+    @Override
+    public Location getPlayerRespawnLocation(Player player) {
+        return player.getBedSpawnLocation();
+    }
+
     protected final String getCompatibilityError(String errorMessage, String... requiredClasses) {
         for (String className : requiredClasses) {
             if (!Utils.isClassLoaded(className)) {

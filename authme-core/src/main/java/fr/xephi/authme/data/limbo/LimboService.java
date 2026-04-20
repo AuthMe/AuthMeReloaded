@@ -3,6 +3,7 @@ package fr.xephi.authme.data.limbo;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.limbo.persistence.LimboPersistence;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
+import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import org.bukkit.Location;
@@ -53,6 +54,9 @@ public class LimboService {
     @Inject
     private SpawnLoader spawnLoader;
 
+    @Inject
+    private TeleportationService teleportationService;
+
     LimboService() {
     }
 
@@ -76,7 +80,7 @@ public class LimboService {
             logger.debug("LimboPlayer for `{0}` already present in memory", name);
         }
 
-        Location location = spawnLoader.getPlayerLocationOrSpawn(player);
+        Location location = teleportationService.consumeOriginalJoinLocation(name, spawnLoader.getPlayerLocationOrSpawn(player));
         LimboPlayer limboPlayer = helper.merge(existingLimbo, limboFromDisk);
         limboPlayer = helper.merge(helper.createLimboPlayer(player, isRegistered, location), limboPlayer);
 
