@@ -53,7 +53,7 @@ public class PaperPlayerSpawnLocationListenerTest {
         given(profile.getName()).willReturn("Bobby");
         PlayerConfigurationConnection connection = mock(PlayerConfigurationConnection.class);
         given(connection.getProfile()).willReturn(profile);
-        given(teleportationService.prepareOnJoinSpawnLocation("Bobby", world)).willReturn(customSpawn);
+        given(teleportationService.prepareOnJoinSpawnLocation("Bobby", originalSpawn)).willReturn(customSpawn);
 
         AsyncPlayerSpawnLocationEvent event = new AsyncPlayerSpawnLocationEvent(connection, originalSpawn, false);
 
@@ -61,7 +61,7 @@ public class PaperPlayerSpawnLocationListenerTest {
         listener.onPlayerSpawn(event);
 
         // then
-        verify(teleportationService).prepareOnJoinSpawnLocation("Bobby", world);
+        verify(teleportationService).prepareOnJoinSpawnLocation("Bobby", originalSpawn);
         assertThat(event.getSpawnLocation(), is(customSpawn));
     }
 }

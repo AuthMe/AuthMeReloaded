@@ -70,6 +70,15 @@ public class PaperPlatformAdapter extends AbstractSpigotPlatformAdapter {
         return Arrays.asList(PaperChatListener.class, PaperPlayerSpawnLocationListener.class, PlayerOpenSignListener.class);
     }
 
+    /**
+     * Paper 1.20.6+ exposes {@link Player#getRespawnLocation()}, which preserves anchor- and world-based respawn rules
+     * in addition to ordinary bed spawns.
+     */
+    @Override
+    public Location getPlayerRespawnLocation(Player player) {
+        return player.getRespawnLocation();
+    }
+
     @Override
     public String getKickReason(PlayerKickEvent event) {
         return PlainTextComponentSerializer.plainText().serialize(event.reason());

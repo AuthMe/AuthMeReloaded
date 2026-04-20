@@ -21,7 +21,7 @@ public class PlayerListener19Spigot implements Listener {
         SpawnLocationTracker.markEventCalled();
         final Player player = event.getPlayer();
 
-        Location customSpawnLocation = teleportationService.prepareOnJoinSpawnLocation(player);
+        Location customSpawnLocation = teleportationService.prepareOnJoinSpawnLocation(player, event.getSpawnLocation());
         if (customSpawnLocation != null) {
             event.setSpawnLocation(customSpawnLocation);
         }

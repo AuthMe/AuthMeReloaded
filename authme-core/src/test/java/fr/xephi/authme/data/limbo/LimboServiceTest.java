@@ -7,6 +7,7 @@ import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.limbo.persistence.LimboPersistence;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.LimboSettings;
@@ -29,6 +30,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -66,6 +68,9 @@ public class LimboServiceTest {
     @Mock
     private AuthGroupHandler authGroupHandler;
 
+    @Mock
+    private TeleportationService teleportationService;
+
     @BeforeAll
     public static void initLogger() {
         TestHelper.setupLogger();
@@ -74,6 +79,8 @@ public class LimboServiceTest {
     @BeforeEach
     public void mockSettings() {
         given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
+        given(teleportationService.consumeOriginalJoinLocation(anyString(), any()))
+            .willAnswer(invocation -> invocation.getArgument(1));
     }
 
     @Test
@@ -156,6 +163,25 @@ public class LimboServiceTest {
         verify(authGroupHandler).setGroup(player, newLimbo, AuthGroupType.UNREGISTERED);
         assertThat(newLimbo, not(nullValue()));
         assertThat(newLimbo, not(sameInstance(existingLimbo)));
+    }
+
+    @Test
+    public void shouldUseRememberedJoinLocationWhenCreatingLimboPlayer() {
+        // given
+        Player player = newPlayer("Bobby", true, 0.3f, false, 0.2f);
+        Location fallbackLocation = mock(Location.class);
+        Location rememberedJoinLocation = mock(Location.class);
+        given(spawnLoader.getPlayerLocationOrSpawn(player)).willReturn(fallbackLocation);
+        given(teleportationService.consumeOriginalJoinLocation("bobby", fallbackLocation))
+            .willReturn(rememberedJoinLocation);
+        given(permissionsManager.hasGroupSupport()).willReturn(false);
+        given(settings.getProperty(LimboSettings.RESTORE_ALLOW_FLIGHT)).willReturn(AllowFlightRestoreType.ENABLE);
+
+        // when
+        limboService.createLimboPlayer(player, true);
+
+        // then
+        assertThat(limboService.getLimboPlayer("Bobby").getLocation(), equalTo(rememberedJoinLocation));
     }
 
     @Test

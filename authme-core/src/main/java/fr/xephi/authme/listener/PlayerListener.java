@@ -413,7 +413,7 @@ public class PlayerListener implements Listener {
         if (!listenerService.shouldCancelEvent(event)) {
             return;
         }
-        Location spawn = spawnLoader.getSpawnLocation(event.getPlayer());
+        Location spawn = spawnLoader.getPlayerRespawnLocationOrSpawn(event.getPlayer());
         if (spawn != null && spawn.getWorld() != null) {
             event.setRespawnLocation(spawn);
         }

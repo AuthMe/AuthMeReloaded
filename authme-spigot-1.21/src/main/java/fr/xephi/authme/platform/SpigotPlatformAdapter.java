@@ -4,6 +4,7 @@ import fr.xephi.authme.listener.PlayerSignOpenListener;
 import fr.xephi.authme.listener.PlayerListener19Spigot;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
@@ -50,6 +51,15 @@ public class SpigotPlatformAdapter extends AbstractSpigotPlatformAdapter {
     @Override
     public List<Class<? extends Listener>> getAdditionalListeners() {
         return Arrays.asList(PlayerListener19Spigot.class, PlayerSignOpenListener.class);
+    }
+
+    /**
+     * Spigot 1.20.6+ exposes {@link Player#getRespawnLocation()}, which preserves the server's actual respawn target
+     * instead of limiting us to the legacy bed-only API.
+     */
+    @Override
+    public Location getPlayerRespawnLocation(Player player) {
+        return player.getRespawnLocation();
     }
 
     @Override

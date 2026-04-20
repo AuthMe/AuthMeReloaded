@@ -645,13 +645,13 @@ public class PlayerListenerTest {
         PlayerRespawnEvent event = spy(new PlayerRespawnEvent(player, originalLocation, false));
         given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(false);
         given(listenerService.shouldCancelEvent(event)).willReturn(true);
-        given(spawnLoader.getSpawnLocation(player)).willReturn(newLocation);
+        given(spawnLoader.getPlayerRespawnLocationOrSpawn(player)).willReturn(newLocation);
 
         // when
         listener.onPlayerRespawn(event);
 
         // then
-        verify(spawnLoader).getSpawnLocation(player);
+        verify(spawnLoader).getPlayerRespawnLocationOrSpawn(player);
         verify(event).setRespawnLocation(newLocation);
     }
 
@@ -665,13 +665,13 @@ public class PlayerListenerTest {
         PlayerRespawnEvent event = spy(new PlayerRespawnEvent(player, originalLocation, false));
         given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(false);
         given(listenerService.shouldCancelEvent(event)).willReturn(true);
-        given(spawnLoader.getSpawnLocation(player)).willReturn(newLocation);
+        given(spawnLoader.getPlayerRespawnLocationOrSpawn(player)).willReturn(newLocation);
 
         // when
         listener.onPlayerRespawn(event);
 
         // then
-        verify(spawnLoader).getSpawnLocation(player);
+        verify(spawnLoader).getPlayerRespawnLocationOrSpawn(player);
         verify(event, never()).setRespawnLocation(any());
     }
 
@@ -683,13 +683,13 @@ public class PlayerListenerTest {
         PlayerRespawnEvent event = spy(new PlayerRespawnEvent(player, originalLocation, false));
         given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(false);
         given(listenerService.shouldCancelEvent(event)).willReturn(true);
-        given(spawnLoader.getSpawnLocation(player)).willReturn(null);
+        given(spawnLoader.getPlayerRespawnLocationOrSpawn(player)).willReturn(null);
 
         // when
         listener.onPlayerRespawn(event);
 
         // then
-        verify(spawnLoader).getSpawnLocation(player);
+        verify(spawnLoader).getPlayerRespawnLocationOrSpawn(player);
         verify(event, never()).setRespawnLocation(any());
     }
 

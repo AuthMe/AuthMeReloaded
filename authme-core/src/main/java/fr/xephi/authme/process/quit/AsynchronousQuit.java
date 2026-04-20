@@ -9,6 +9,7 @@ import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.SessionService;
+import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.PluginSettings;
@@ -52,6 +53,9 @@ public class AsynchronousQuit implements AsynchronousProcess {
     @Inject
     private SessionService sessionService;
 
+    @Inject
+    private TeleportationService teleportationService;
+
     AsynchronousQuit() {
     }
 
@@ -65,6 +69,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
             return;
         }
         String name = player.getName().toLowerCase(Locale.ROOT);
+        teleportationService.clearOriginalJoinLocation(name);
         boolean wasLoggedIn = playerCache.isAuthenticated(name);
 
         if (wasLoggedIn) {

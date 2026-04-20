@@ -4,6 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
+import fr.xephi.authme.platform.TeleportAdapter;
 import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -36,6 +37,7 @@ public class SpawnLoader implements Reloadable {
     private final File authMeConfigurationFile;
     private final Settings settings;
     private final PluginHookService pluginHookService;
+    private final TeleportAdapter teleportAdapter;
     private FileConfiguration authMeConfiguration;
     private String[] spawnPriority;
     private Location essentialsSpawn;
@@ -47,14 +49,17 @@ public class SpawnLoader implements Reloadable {
      * @param pluginFolder The AuthMe data folder
      * @param settings     The setting instance
      * @param pluginHookService  The plugin hooks instance
+     * @param teleportAdapter The platform-specific teleport adapter
      */
     @Inject
-    SpawnLoader(@DataFolder File pluginFolder, Settings settings, PluginHookService pluginHookService) {
+    SpawnLoader(@DataFolder File pluginFolder, Settings settings, PluginHookService pluginHookService,
+                TeleportAdapter teleportAdapter) {
         File spawnFile = new File(pluginFolder, "spawn.yml");
         FileUtils.copyFileFromResource(spawnFile, "spawn.yml");
         this.authMeConfigurationFile = spawnFile;
         this.settings = settings;
         this.pluginHookService = pluginHookService;
+        this.teleportAdapter = teleportAdapter;
         reload();
     }
 
@@ -236,13 +241,16 @@ public class SpawnLoader implements Reloadable {
     }
 
     /**
-     * Checks if a given location is a valid spawn point [!= (0,0,0)].
+     * Checks if a given location is a valid spawn point [!= null && != (0,0,0)].
      *
      * @param location The location to check
      *
      * @return True upon success, false otherwise
      */
     private boolean isValidSpawnPoint(Location location) {
+        if (location == null) {
+            return false;
+        }
         if (location.getX() == 0 && location.getY() == 0 && location.getZ() == 0) {
             return false;
         }
@@ -289,9 +297,28 @@ public class SpawnLoader implements Reloadable {
      */
     public Location getPlayerLocationOrSpawn(Player player) {
         if (player.getHealth() <= 0.0) {
-            return getSpawnLocation(player);
+            return getPlayerRespawnLocationOrSpawn(player);
         }
         return player.getLocation();
+    }
+
+    /**
+     * Return the player's effective respawn location if available, or the configured spawn location as fallback.
+     * <p>
+     * We need this extra check for players who die and disconnect before actually respawning: in that case we want
+     * to preserve the server's real respawn target instead of collapsing everything back to AuthMe's configured spawn.
+     * The version-specific API call lives in {@link TeleportAdapter}: legacy builds use bed spawn, newer builds can
+     * use {@code Player#getRespawnLocation()} directly.
+     *
+     * @param player player to retrieve
+     * @return the player's respawn location if available, otherwise the configured spawn
+     */
+    public Location getPlayerRespawnLocationOrSpawn(Player player) {
+        Location respawnLocation = teleportAdapter.getPlayerRespawnLocation(player);
+        if (respawnLocation != null && respawnLocation.getWorld() != null) {
+            return respawnLocation;
+        }
+        return getSpawnLocation(player);
     }
 
     /**
