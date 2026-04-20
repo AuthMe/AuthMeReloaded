@@ -1,9 +1,5 @@
 package fr.xephi.authme.data;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import ch.jalu.datasourcecolumns.data.DataSourceValueImpl;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.mail.EmailService;
@@ -15,13 +11,25 @@ import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
-import static org.hamcrest.Matchers.equalTo;
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskAsynchronously;
+
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -46,6 +54,9 @@ public class VerificationCodeManagerTest {
 
     @Mock
     private BukkitService bukkitService;
+
+    @Captor
+    private ArgumentCaptor<Runnable> runnableCaptor;
 
     @BeforeEach
     public void setUpBasicBehavior() {
@@ -114,6 +125,7 @@ public class VerificationCodeManagerTest {
         String player = "ILoveTests";
         String email = "ilovetests@test.com";
         given(dataSource.getEmail(player)).willReturn(DataSourceValueImpl.of(email));
+        setBukkitServiceToRunTaskAsynchronously(bukkitService);
         VerificationCodeManager codeManager1 = createCodeManager();
         VerificationCodeManager codeManager2 = createCodeManager();
         codeManager2.codeExistOrGenerateNew(player);
@@ -133,6 +145,7 @@ public class VerificationCodeManagerTest {
         String player = "ILoveTests";
         String email = "ilovetests@test.com";
         given(dataSource.getEmail(player)).willReturn(DataSourceValueImpl.of(email));
+        setBukkitServiceToRunTaskAsynchronously(bukkitService);
         VerificationCodeManager codeManager1 = createCodeManager();
         VerificationCodeManager codeManager2 = createCodeManager();
         codeManager2.codeExistOrGenerateNew(player);
@@ -153,6 +166,7 @@ public class VerificationCodeManagerTest {
         String code = "193458";
         String email = "ilovetests@test.com";
         given(dataSource.getEmail(player)).willReturn(DataSourceValueImpl.of(email));
+        setBukkitServiceToRunTaskAsynchronously(bukkitService);
         VerificationCodeManager codeManager1 = createCodeManager();
         VerificationCodeManager codeManager2 = createCodeManager();
         codeManager1.codeExistOrGenerateNew(player);
@@ -164,6 +178,45 @@ public class VerificationCodeManagerTest {
         // then
         assertThat(test1, equalTo(false));
         assertThat(test2, equalTo(false));
+    }
+
+    @Test
+    public void shouldLookupEmailOnlyInAsyncTask() {
+        // given
+        String player = "ILoveTests";
+        String email = "ilovetests@test.com";
+        VerificationCodeManager codeManager = createCodeManager();
+
+        // when
+        codeManager.codeExistOrGenerateNew(player);
+
+        // then
+        verify(bukkitService).runTaskAsynchronously(runnableCaptor.capture());
+        verifyNoInteractions(dataSource);
+        verify(emailService, only()).hasAllInformation();
+
+        given(dataSource.getEmail(player)).willReturn(DataSourceValueImpl.of(email));
+        runnableCaptor.getValue().run();
+
+        assertThat(codeManager.hasCode(player), equalTo(true));
+        verify(dataSource).getEmail(player);
+        verify(emailService).sendVerificationMail(eq(player), eq(email), anyString());
+    }
+
+    @Test
+    public void shouldNotScheduleDuplicateCodeGenerationWhilePending() {
+        // given
+        String player = "ILoveTests";
+        VerificationCodeManager codeManager = createCodeManager();
+
+        // when
+        codeManager.codeExistOrGenerateNew(player);
+        codeManager.codeExistOrGenerateNew(player);
+
+        // then
+        verify(bukkitService, times(1)).runTaskAsynchronously(any(Runnable.class));
+        verifyNoInteractions(dataSource);
+        verify(emailService, only()).hasAllInformation();
     }
 
     private VerificationCodeManager createCodeManager() {

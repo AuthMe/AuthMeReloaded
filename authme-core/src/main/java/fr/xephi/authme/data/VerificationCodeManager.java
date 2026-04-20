@@ -29,6 +29,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
     private final BukkitService bukkitService;
 
     private final ExpiringMap<String, String> verificationCodes;
+    private final Set<String> pendingCodeGenerations;
     private final Set<String> verifiedPlayers;
 
     private boolean canSendMail;
@@ -40,6 +41,7 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
         this.dataSource = dataSource;
         this.permissionsManager = permissionsManager;
         this.bukkitService = bukkitService;
+        pendingCodeGenerations = ConcurrentHashMap.newKeySet();
         verifiedPlayers = ConcurrentHashMap.newKeySet();
         long countTimeout = settings.getProperty(SecuritySettings.VERIFICATION_CODE_EXPIRATION_MINUTES);
         verificationCodes = new ExpiringMap<>(countTimeout, TimeUnit.MINUTES);
@@ -123,8 +125,17 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      * @param name the player's name
      */
     public void codeExistOrGenerateNew(String name) {
-        if (!hasCode(name)) {
-            generateCode(name);
+        String lowerName = name.toLowerCase(Locale.ROOT);
+        if (verificationCodes.get(lowerName) == null && pendingCodeGenerations.add(lowerName)) {
+            boolean scheduled = false;
+            try {
+                bukkitService.runTaskAsynchronously(() -> generateCode(name, lowerName));
+                scheduled = true;
+            } finally {
+                if (!scheduled) {
+                    pendingCodeGenerations.remove(lowerName);
+                }
+            }
         }
     }
 
@@ -132,17 +143,21 @@ public class VerificationCodeManager implements SettingsDependent, HasCleanup {
      * Generates a code for the player and returns it.
      *
      * @param name the name of the player to generate a code for
+     * @param lowerName the lower-case player name
      */
-    private void generateCode(String name) {
-        DataSourceValue<String> emailResult = dataSource.getEmail(name);
-        if (emailResult.rowExists()) {
-            final String email = emailResult.getValue();
-            if (!Utils.isEmailEmpty(email)) {
-                String code = RandomStringUtils.generateNum(6); // 6 digits code
-                verificationCodes.put(name.toLowerCase(Locale.ROOT), code);
-                bukkitService.runTaskAsynchronously(() ->
-                    emailService.sendVerificationMail(name, email, code));
+    private void generateCode(String name, String lowerName) {
+        try {
+            DataSourceValue<String> emailResult = dataSource.getEmail(name);
+            if (emailResult.rowExists()) {
+                final String email = emailResult.getValue();
+                if (!Utils.isEmailEmpty(email)) {
+                    String code = RandomStringUtils.generateNum(6); // 6 digits code
+                    verificationCodes.put(lowerName, code);
+                    emailService.sendVerificationMail(name, email, code);
+                }
             }
+        } finally {
+            pendingCodeGenerations.remove(lowerName);
         }
     }
 
