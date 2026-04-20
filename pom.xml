@@ -60,6 +60,7 @@
         <module>authme-spigot-1.21</module>
         <module>authme-paper-common</module>
         <module>authme-paper</module>
+        <module>authme-folia</module>
     </modules>
 
     <properties>
@@ -106,6 +107,10 @@
         <dependencies.googleauth.version>1.5.0</dependencies.googleauth.version>
         <dependencies.configme.version>1.3.1</dependencies.configme.version>
         <dependencies.junit-jupiter.version>5.12.2</dependencies.junit-jupiter.version>
+        <dependencies.mockito.version>5.23.0</dependencies.mockito.version>
+        <dependencies.mockito.javaagent>
+            ${settings.localRepository}/org/mockito/mockito-core/${dependencies.mockito.version}/mockito-core-${dependencies.mockito.version}.jar
+        </dependencies.mockito.javaagent>
         <!-- Spigot -->
         <dependencies.spigot.version>1.16.5-R0.1-SNAPSHOT</dependencies.spigot.version>
         <dependencies.log4j-core.version>2.8.1</dependencies.log4j-core.version> <!-- version bundled 1.16.5 -->
@@ -324,6 +329,13 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>-Xshare:off -javaagent:${dependencies.mockito.javaagent} -Dfile.encoding=${project.build.sourceEncoding} -Duser.language=en</argLine>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -824,13 +836,13 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
-            <version>5.23.0</version>
+            <version>${dependencies.mockito.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
             <scope>test</scope>
-            <version>5.23.0</version>
+            <version>${dependencies.mockito.version}</version>
         </dependency>
 
         <!-- Required to mock the LuckPerms API-->
@@ -883,6 +895,14 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
+            <version>1.21.11-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Folia API -->
+        <dependency>
+            <groupId>dev.folia</groupId>
+            <artifactId>folia-api</artifactId>
             <version>1.21.11-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
