@@ -75,7 +75,7 @@ public class TeleportationService implements Reloadable {
     public void teleportOnJoin(final Player player) {
         if (!settings.getProperty(RestrictionSettings.NO_TELEPORT)
             && settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)
-            && !isUnregisteredWithOptionalAuth(player)) {
+            && !isUnregisteredWithOptionalAuth(player.getName())) {
             logger.debug("Teleport on join for player `{0}`", player.getName());
             teleportToSpawn(player, playerCache.isAuthenticated(player.getName()));
         }
@@ -89,9 +89,7 @@ public class TeleportationService implements Reloadable {
      * @return the custom spawn location, null if the player should spawn at the original location
      */
     public Location prepareOnJoinSpawnLocation(final Player player) {
-        if (!settings.getProperty(RestrictionSettings.NO_TELEPORT)
-            && settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)
-            && !isUnregisteredWithOptionalAuth(player)) {
+        if (shouldApplyOnJoinSpawnLocation(player.getName())) {
             final Location location = spawnLoader.getSpawnLocation(player);
 
             SpawnTeleportEvent event = new SpawnTeleportEvent(player, location,
@@ -102,9 +100,26 @@ public class TeleportationService implements Reloadable {
             }
 
             logger.debug("Returning custom location for >1.9 join event for player `{0}`", player.getName());
-            return location;
+            return event.getTo();
         }
         return null;
+    }
+
+    /**
+     * Returns the player's custom on join location without requiring a {@link Player} instance.
+     * Intended for platform hooks that run before the player object is available.
+     *
+     * @param playerName the player's name
+     * @param world the world the player is about to join in
+     * @return the custom spawn location, null if the player should spawn at the original location
+     */
+    public Location prepareOnJoinSpawnLocation(String playerName, World world) {
+        if (!shouldApplyOnJoinSpawnLocation(playerName) || world == null) {
+            return null;
+        }
+
+        logger.debug("Returning custom location for async join event for player `{0}`", playerName);
+        return spawnLoader.getSpawnLocation(world);
     }
 
     /**
@@ -181,13 +196,19 @@ public class TeleportationService implements Reloadable {
         preloadedAuthStatus.remove(name.toLowerCase(Locale.ROOT));
     }
 
-    private boolean isUnregisteredWithOptionalAuth(Player player) {
+    private boolean shouldApplyOnJoinSpawnLocation(String playerName) {
+        return !settings.getProperty(RestrictionSettings.NO_TELEPORT)
+            && settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)
+            && !isUnregisteredWithOptionalAuth(playerName);
+    }
+
+    private boolean isUnregisteredWithOptionalAuth(String playerName) {
         if (settings.getProperty(RegistrationSettings.FORCE)) {
             return false;
         }
-        String key = player.getName().toLowerCase(Locale.ROOT);
+        String key = playerName.toLowerCase(Locale.ROOT);
         Boolean cached = preloadedAuthStatus.get(key);
-        boolean isRegistered = cached != null ? cached : dataSource.isAuthAvailable(player.getName());
+        boolean isRegistered = cached != null ? cached : dataSource.isAuthAvailable(playerName);
         return !isRegistered;
     }
 

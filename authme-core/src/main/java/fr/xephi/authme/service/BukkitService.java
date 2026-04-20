@@ -20,10 +20,13 @@ import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
 import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Service for operations requiring the Bukkit API, such as for scheduling.
@@ -81,6 +84,49 @@ public class BukkitService implements SettingsDependent {
             task.run();
         } else {
             scheduleSyncDelayedTask(task);
+        }
+    }
+
+    /**
+     * Runs the given supplier on the main thread if necessary and returns its result.
+     *
+     * @param supplier the supplier to run
+     * @param <T> the return type
+     * @return the supplier's result
+     */
+    public <T> T callSyncMethodFromOptionallyAsyncTask(Supplier<T> supplier) {
+        if (Bukkit.isPrimaryThread()) {
+            return supplier.get();
+        }
+
+        CompletableFuture<T> future = new CompletableFuture<>();
+        int taskId = scheduleSyncDelayedTask(() -> {
+            try {
+                future.complete(supplier.get());
+            } catch (RuntimeException e) {
+                future.completeExceptionally(e);
+            } catch (Error e) {
+                future.completeExceptionally(e);
+            }
+        });
+        if (taskId == -1) {
+            throw new IllegalStateException("Could not schedule sync task");
+        }
+
+        try {
+            return future.get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Interrupted while waiting for sync task", e);
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof RuntimeException) {
+                throw (RuntimeException) cause;
+            }
+            if (cause instanceof Error) {
+                throw (Error) cause;
+            }
+            throw new IllegalStateException("Unexpected exception while waiting for sync task", cause);
         }
     }
 

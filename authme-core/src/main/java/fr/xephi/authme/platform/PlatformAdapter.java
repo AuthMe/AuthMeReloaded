@@ -11,4 +11,14 @@ public interface PlatformAdapter extends TeleportAdapter, ChatAdapter, EventRegi
      * Returns a short identifier for logging, e.g. "spigot-legacy", "spigot-1.20", "paper-1.21".
      */
     String getPlatformName();
+
+    /**
+     * Returns an error message if this platform adapter does not support the current server,
+     * or null if the server is compatible.
+     *
+     * @return the compatibility error message, or null if compatible
+     */
+    default String getCompatibilityError() {
+        return null;
+    }
 }

@@ -260,6 +260,45 @@ public class TeleportationServiceTest {
         assertThat(result, equalTo(null));
     }
 
+    @Test
+    public void shouldPrepareCustomSpawnLocationWithoutPlayerInstance() {
+        // given
+        given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
+        World world = mock(World.class);
+        Location spawn = mockLocation();
+        given(spawnLoader.getSpawnLocation(world)).willReturn(spawn);
+
+        // when
+        Location result = teleportationService.prepareOnJoinSpawnLocation("Bobby", world);
+
+        // then
+        assertThat(result, equalTo(spawn));
+        verify(spawnLoader).getSpawnLocation(world);
+        verifyNoInteractions(bukkitService);
+    }
+
+    @Test
+    public void shouldUseModifiedSpawnLocationFromJoinEvent() {
+        // given
+        given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn("Bobby");
+        Location originalSpawn = mockLocation();
+        Location modifiedSpawn = mockLocation();
+        given(spawnLoader.getSpawnLocation(player)).willReturn(originalSpawn);
+        doAnswer(invocation -> {
+            SpawnTeleportEvent event = invocation.getArgument(0);
+            event.setTo(modifiedSpawn);
+            return null;
+        }).when(bukkitService).callEvent(any(SpawnTeleportEvent.class));
+
+        // when
+        Location result = teleportationService.prepareOnJoinSpawnLocation(player);
+
+        // then
+        assertThat(result, equalTo(modifiedSpawn));
+    }
+
     // ---------
     // LOGIN
     // ---------

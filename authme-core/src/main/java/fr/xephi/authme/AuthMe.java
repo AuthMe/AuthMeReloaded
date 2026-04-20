@@ -17,7 +17,6 @@ import fr.xephi.authme.listener.EntityListener;
 import fr.xephi.authme.listener.PlayerListener;
 import fr.xephi.authme.listener.PlayerListener111;
 import fr.xephi.authme.listener.PlayerListener19;
-import fr.xephi.authme.listener.PlayerListener19Spigot;
 import fr.xephi.authme.listener.ServerListener;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.security.crypts.Sha256;
@@ -52,8 +51,6 @@ import java.util.ServiceLoader;
 import java.util.function.Consumer;
 
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_MINUTE;
-import static fr.xephi.authme.util.Utils.isClassLoaded;
-
 /**
  * The AuthMe main class.
  */
@@ -130,10 +127,11 @@ public class AuthMe extends JavaPlugin {
         ConsoleLogger.initialize(getLogger(), new File(getDataFolder(), LOG_FILENAME));
         logger = ConsoleLoggerFactory.get(AuthMe.class);
 
-        // Check server version
-        if (!isClassLoaded("org.spigotmc.event.player.PlayerSpawnLocationEvent")) {
+        PlatformAdapter platformAdapter = loadPlatformAdapter();
+        String compatibilityError = platformAdapter.getCompatibilityError();
+        if (compatibilityError != null) {
             logger.warning("You are running an unsupported server version (" + getServerNameVersionSafe() + "). "
-                + "AuthMe requires Spigot 1.16 or later!");
+                + compatibilityError);
             stopOrUnload();
             return;
         }
@@ -148,7 +146,7 @@ public class AuthMe extends JavaPlugin {
 
         // Initialize the plugin
         try {
-            initialize();
+            initialize(platformAdapter);
         } catch (Throwable th) {
             YamlParseException yamlParseException = ExceptionUtils.findThrowableInCause(YamlParseException.class, th);
             if (yamlParseException == null) {
@@ -202,7 +200,7 @@ public class AuthMe extends JavaPlugin {
     /**
      * Initialize the plugin and all the services.
      */
-    private void initialize() {
+    private void initialize(PlatformAdapter platformAdapter) {
         // Create plugin folder
         getDataFolder().mkdir();
 
@@ -218,11 +216,6 @@ public class AuthMe extends JavaPlugin {
         injector.registerProvider(Settings.class, SettingsProvider.class);
         injector.registerProvider(DataSource.class, DataSourceProvider.class);
 
-        // Load the platform adapter from the version module via ServiceLoader
-        PlatformAdapter platformAdapter = ServiceLoader.load(PlatformAdapter.class, getClass().getClassLoader())
-            .findFirst()
-            .orElseThrow(() -> new IllegalStateException(
-                "No PlatformAdapter found. Ensure you are using a version-specific AuthMe jar."));
         injector.register(PlatformAdapter.class, platformAdapter);
         injector.register(TeleportAdapter.class, platformAdapter);
         injector.register(ChatAdapter.class, platformAdapter);
@@ -251,6 +244,13 @@ public class AuthMe extends JavaPlugin {
         // Start Email recall task if needed
         OnStartupTasks onStartupTasks = injector.newInstance(OnStartupTasks.class);
         onStartupTasks.scheduleRecallEmailTask();
+    }
+
+    private PlatformAdapter loadPlatformAdapter() {
+        return ServiceLoader.load(PlatformAdapter.class, getClass().getClassLoader())
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException(
+                "No PlatformAdapter found. Ensure you are using a version-specific AuthMe jar."));
     }
 
     /**
@@ -289,8 +289,6 @@ public class AuthMe extends JavaPlugin {
         // All supported versions are >= 1.16, so these listeners are always safe to register
         pluginManager.registerEvents(injector.getSingleton(PlayerListener19.class), this);
         pluginManager.registerEvents(injector.getSingleton(PlayerListener111.class), this);
-        pluginManager.registerEvents(injector.getSingleton(PlayerListener19Spigot.class), this);
-
         // Register platform-specific listeners provided by the version module
         EventRegistrationAdapter eventRegistration = injector.getSingleton(EventRegistrationAdapter.class);
         for (Class<? extends org.bukkit.event.Listener> listenerClass : eventRegistration.getAdditionalListeners()) {

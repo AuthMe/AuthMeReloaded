@@ -1,5 +1,6 @@
 package fr.xephi.authme.platform;
 
+import fr.xephi.authme.listener.PlayerListener19Spigot;
 import fr.xephi.authme.listener.PlayerSignOpenListener;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
@@ -27,6 +28,11 @@ public class SpigotPlatformAdapterTest {
     }
 
     @Test
+    public void getCompatibilityErrorReturnsNullForCompatibleClasspath() {
+        assertThat(adapter.getCompatibilityError(), is((String) null));
+    }
+
+    @Test
     public void isDialogSupportedReturnsTrueWhenApiIsOnClasspath() {
         // The BungeeCord dialog API is a test dependency, so DIALOG_AVAILABLE is true
         assertThat(adapter.isDialogSupported(), is(true));
@@ -36,7 +42,7 @@ public class SpigotPlatformAdapterTest {
     public void getAdditionalListenersContainsPlayerSignOpenListener() {
         List<Class<? extends Listener>> listeners = adapter.getAdditionalListeners();
 
-        assertThat(listeners, contains(PlayerSignOpenListener.class));
+        assertThat(listeners, contains(PlayerListener19Spigot.class, PlayerSignOpenListener.class));
     }
 
     @Test

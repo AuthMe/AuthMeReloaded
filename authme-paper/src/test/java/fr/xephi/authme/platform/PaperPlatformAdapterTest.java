@@ -1,7 +1,8 @@
 package fr.xephi.authme.platform;
 
 import fr.xephi.authme.listener.PaperChatListener;
-import fr.xephi.authme.listener.PlayerSignOpenListener;
+import fr.xephi.authme.listener.PaperPlayerSpawnLocationListener;
+import fr.xephi.authme.listener.PlayerOpenSignListener;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
 import net.kyori.adventure.text.Component;
@@ -34,6 +35,11 @@ public class PaperPlatformAdapterTest {
     }
 
     @Test
+    public void getCompatibilityErrorReturnsNullForCompatibleClasspath() {
+        assertThat(adapter.getCompatibilityError(), is((String) null));
+    }
+
+    @Test
     public void isDialogSupportedReturnsTrueWhenApiIsOnClasspath() {
         // The Paper dialog API is a test dependency, so DIALOG_AVAILABLE is true
         assertThat(adapter.isDialogSupported(), is(true));
@@ -43,7 +49,8 @@ public class PaperPlatformAdapterTest {
     public void getAdditionalListenersContainsBothPaperListeners() {
         List<Class<? extends Listener>> listeners = adapter.getAdditionalListeners();
 
-        assertThat(listeners, containsInAnyOrder(PaperChatListener.class, PlayerSignOpenListener.class));
+        assertThat(listeners, containsInAnyOrder(
+            PaperChatListener.class, PaperPlayerSpawnLocationListener.class, PlayerOpenSignListener.class));
     }
 
     @Test
