@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Mon Apr 20 11:07:34 CEST 2026. See authme-core/src/test/java/tools/docs/commands/commands.tpl.md -->
+<!-- File auto-generated on Tue Apr 21 23:21:33 CEST 2026. See authme-core/src/test/java/tools/docs/commands/commands.tpl.md -->
 
 ## AuthMe Commands
 You can use the following commands to use the features of AuthMe. Mandatory arguments are marked with `< >`
@@ -110,4 +110,4 @@ The command tree is shared across the current Spigot Legacy, Spigot 1.21, and Pa
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Mon Apr 20 11:07:34 CEST 2026
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue Apr 21 23:21:33 CEST 2026
