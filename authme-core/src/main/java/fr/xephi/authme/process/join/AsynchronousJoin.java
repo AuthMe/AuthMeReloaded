@@ -187,7 +187,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
      * @param isAuthAvailable true if the player is registered, false otherwise
      */
     private void processJoinSync(Player player, boolean isAuthAvailable) {
-        int registrationTimeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
+        int registrationTimeout = service.getProperty(
+            isAuthAvailable ? RestrictionSettings.LOGIN_TIMEOUT : RestrictionSettings.REGISTER_TIMEOUT
+        ) * TICKS_PER_SECOND;
 
         bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player, () -> {
             limboService.createLimboPlayer(player, isAuthAvailable);

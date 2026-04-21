@@ -1,5 +1,6 @@
 package fr.xephi.authme.data.limbo;
 
+import ch.jalu.configme.properties.Property;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.captcha.RegistrationCaptchaManager;
 import fr.xephi.authme.message.MessageKey;
@@ -64,9 +65,13 @@ class LimboPlayerTaskManager {
      *
      * @param player the player to register a timeout task for
      * @param limbo the associated limbo player
+     * @param messageType the limbo message type, used to select login vs. register timeout
      */
-    void registerTimeoutTask(Player player, LimboPlayer limbo) {
-        final int timeout = settings.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
+    void registerTimeoutTask(Player player, LimboPlayer limbo, LimboMessageType messageType) {
+        Property<Integer> timeoutProperty = messageType == LimboMessageType.REGISTER
+            ? RestrictionSettings.REGISTER_TIMEOUT
+            : RestrictionSettings.LOGIN_TIMEOUT;
+        final int timeout = settings.getProperty(timeoutProperty) * TICKS_PER_SECOND;
         if (timeout > 0) {
             String message = messages.retrieveSingle(player, MessageKey.LOGIN_TIMEOUT_ERROR);
             CancellableTask task = bukkitService.runTaskLater(player, new TimeoutTask(player, message, playerCache), timeout);

@@ -111,10 +111,16 @@ public final class RestrictionSettings implements SettingsHolder {
         newProperty("settings.restrictions.allowMovement", false);
 
     @Comment({
-        "After how many seconds should players who fail to login or register",
-        "be kicked? Set to 0 to disable."})
-    public static final Property<Integer> TIMEOUT =
-        newProperty("settings.restrictions.timeout", 30);
+        "After how many seconds should players who fail to login be kicked?",
+        "Set to 0 to disable."})
+    public static final Property<Integer> LOGIN_TIMEOUT =
+        newProperty("settings.restrictions.loginTimeout", 30);
+
+    @Comment({
+        "After how many seconds should players who fail to register be kicked?",
+        "Set to 0 to disable."})
+    public static final Property<Integer> REGISTER_TIMEOUT =
+        newProperty("settings.restrictions.registerTimeout", 30);
 
     @Comment("Regex pattern of allowed characters in the player name.")
     public static final Property<String> ALLOWED_NICKNAME_CHARACTERS =

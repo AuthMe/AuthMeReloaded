@@ -84,9 +84,9 @@ public class LimboService {
         LimboPlayer limboPlayer = helper.merge(existingLimbo, limboFromDisk);
         limboPlayer = helper.merge(helper.createLimboPlayer(player, isRegistered, location), limboPlayer);
 
-        taskManager.registerMessageTask(player, limboPlayer,
-            isRegistered ? LimboMessageType.LOG_IN : LimboMessageType.REGISTER);
-        taskManager.registerTimeoutTask(player, limboPlayer);
+        LimboMessageType messageType = isRegistered ? LimboMessageType.LOG_IN : LimboMessageType.REGISTER;
+        taskManager.registerMessageTask(player, limboPlayer, messageType);
+        taskManager.registerTimeoutTask(player, limboPlayer, messageType);
         helper.revokeLimboStates(player);
         authGroupHandler.setGroup(player, limboPlayer,
             isRegistered ? AuthGroupType.REGISTERED_UNAUTHENTICATED : AuthGroupType.UNREGISTERED);
@@ -153,7 +153,7 @@ public class LimboService {
     public void replaceTasksAfterRegistration(Player player) {
         Optional<LimboPlayer> limboPlayer = getLimboOrLogError(player, "reset tasks");
         limboPlayer.ifPresent(limbo -> {
-            taskManager.registerTimeoutTask(player, limbo);
+            taskManager.registerTimeoutTask(player, limbo, LimboMessageType.LOG_IN);
             taskManager.registerMessageTask(player, limbo, LimboMessageType.LOG_IN);
         });
         authGroupHandler.setGroup(player, limboPlayer.orElse(null), AuthGroupType.REGISTERED_UNAUTHENTICATED);

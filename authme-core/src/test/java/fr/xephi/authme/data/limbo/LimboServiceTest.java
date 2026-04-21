@@ -98,7 +98,7 @@ public class LimboServiceTest {
 
         // then
         verify(taskManager).registerMessageTask(eq(player), any(LimboPlayer.class), eq(LimboMessageType.LOG_IN));
-        verify(taskManager).registerTimeoutTask(eq(player), any(LimboPlayer.class));
+        verify(taskManager).registerTimeoutTask(eq(player), any(LimboPlayer.class), eq(LimboMessageType.LOG_IN));
         verify(player).setAllowFlight(false);
         verify(player).setFlySpeed(0.0f);
         verify(player).setWalkSpeed(0.0f);
@@ -129,7 +129,7 @@ public class LimboServiceTest {
 
         // then
         verify(taskManager).registerMessageTask(eq(player), any(LimboPlayer.class), eq(LimboMessageType.REGISTER));
-        verify(taskManager).registerTimeoutTask(eq(player), any(LimboPlayer.class));
+        verify(taskManager).registerTimeoutTask(eq(player), any(LimboPlayer.class), eq(LimboMessageType.REGISTER));
         verify(permissionsManager, only()).hasGroupSupport();
         verify(player).setAllowFlight(false);
         verify(player).setFlySpeed(0.0f);
@@ -252,7 +252,7 @@ public class LimboServiceTest {
         limboService.replaceTasksAfterRegistration(player);
 
         // then
-        verify(taskManager).registerTimeoutTask(player, limbo);
+        verify(taskManager).registerTimeoutTask(player, limbo, LimboMessageType.LOG_IN);
         verify(taskManager).registerMessageTask(player, limbo, LimboMessageType.LOG_IN);
         verify(authGroupHandler).setGroup(player, limbo, AuthGroupType.REGISTERED_UNAUTHENTICATED);
     }

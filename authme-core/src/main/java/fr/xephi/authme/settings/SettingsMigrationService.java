@@ -36,6 +36,8 @@ import static fr.xephi.authme.settings.properties.RegistrationSettings.REMOVE_LE
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.FORCE_SPAWN_LOCATION_AFTER_LOGIN;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.FORCE_SPAWN_ON_WORLDS;
+import static fr.xephi.authme.settings.properties.RestrictionSettings.LOGIN_TIMEOUT;
+import static fr.xephi.authme.settings.properties.RestrictionSettings.REGISTER_TIMEOUT;
 
 /**
  * Service for verifying that the configuration is up-to-date.
@@ -89,7 +91,37 @@ public class SettingsMigrationService extends PlainMigrationService {
             | mergeAndMovePermissionGroupSettings(reader, configurationData)
             | moveDeprecatedHashAlgorithmIntoLegacySection(reader, configurationData)
             | moveSaltColumnConfigWithOtherColumnConfigs(reader, configurationData)
+            | migrateTimeoutToLoginAndRegisterTimeout(reader, configurationData)
             || hasDeprecatedProperties(reader);
+    }
+
+    /**
+     * Migrates the old combined {@code settings.restrictions.timeout} to the separate
+     * {@code loginTimeout} and {@code registerTimeout} settings, preserving the user's value.
+     *
+     * @param reader The property reader
+     * @param configData Configuration data
+     * @return True if a migration has been performed, false otherwise
+     */
+    private static boolean migrateTimeoutToLoginAndRegisterTimeout(PropertyReader reader,
+                                                                   ConfigurationData configData) {
+        Property<Integer> oldTimeout = newProperty("settings.restrictions.timeout", 30);
+        PropertyValue<Integer> oldValue = oldTimeout.determineValue(reader);
+        if (!oldValue.isValidInResource()) {
+            return false;
+        }
+        boolean changed = false;
+        if (!reader.contains(LOGIN_TIMEOUT.getPath())) {
+            logger.info("Migrating 'settings.restrictions.timeout' to '" + LOGIN_TIMEOUT.getPath() + "'");
+            configData.setValue(LOGIN_TIMEOUT, oldValue.getValue());
+            changed = true;
+        }
+        if (!reader.contains(REGISTER_TIMEOUT.getPath())) {
+            logger.info("Migrating 'settings.restrictions.timeout' to '" + REGISTER_TIMEOUT.getPath() + "'");
+            configData.setValue(REGISTER_TIMEOUT, oldValue.getValue());
+            changed = true;
+        }
+        return changed;
     }
 
     private static boolean hasDeprecatedProperties(PropertyReader reader) {
@@ -101,7 +133,8 @@ public class SettingsMigrationService extends PlainMigrationService {
             "settings.restrictions.keepCollisionsDisabled", "settings.forceCommands", "settings.forceCommandsAsConsole",
             "settings.forceRegisterCommands", "settings.forceRegisterCommandsAsConsole",
             "settings.sessions.sessionExpireOnIpChange", "settings.restrictions.otherAccountsCmd",
-            "settings.restrictions.otherAccountsCmdThreshold, DataSource.mySQLDriverClassName"};
+            "settings.restrictions.otherAccountsCmdThreshold, DataSource.mySQLDriverClassName",
+            "settings.restrictions.timeout"};
         for (String deprecatedPath : deprecatedProperties) {
             if (reader.contains(deprecatedPath)) {
                 return true;
