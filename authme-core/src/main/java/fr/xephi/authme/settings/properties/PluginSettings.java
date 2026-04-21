@@ -76,8 +76,14 @@ public final class PluginSettings implements SettingsHolder {
         newProperty(LogLevel.class, "settings.logLevel", LogLevel.FINE);
 
     @Comment({
-        "By default we schedule async tasks when talking to the database. If you want",
-        "typical communication with the database to happen synchronously, set this to false"
+        "Whether to run authentication work (password hashing, database queries) on async threads.",
+        "When true (strongly recommended), all CPU-intensive and I/O-bound operations — including",
+        "password hashing and database access — are offloaded from the main server thread, keeping",
+        "the server responsive during login and registration.",
+        "Setting this to false forces all of that work onto the main thread, which will cause",
+        "noticeable lag spikes on every login or registration attempt, especially with slow",
+        "algorithms (Argon2, BCrypt) or a remote database. Only set this to false if you have",
+        "a specific technical reason — it is not recommended under any normal circumstances."
     })
     public static final Property<Boolean> USE_ASYNC_TASKS =
         newProperty("settings.useAsyncTasks", true);
