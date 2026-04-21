@@ -11,6 +11,7 @@ import fr.xephi.authme.datasource.Columns;
 import fr.xephi.authme.datasource.columnshandler.DataSourceColumn;
 import fr.xephi.authme.datasource.columnshandler.PlayerAuthColumn;
 import fr.xephi.authme.datasource.mysqlextensions.MySqlExtension;
+import fr.xephi.authme.security.crypts.AbstractPbkdf2;
 import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
 
@@ -62,6 +63,7 @@ public class ClassesConsistencyTest {
 
     /** Classes excluded from the field visibility test. */
     private static final Set<Class<?>> CLASSES_EXCLUDED_FROM_VISIBILITY_TEST = ImmutableSet.of(
+        AbstractPbkdf2.class, // has immutable protected fields used by all children
         MySqlExtension.class, // has immutable protected fields used by all children
         AbstractSqlDataSource.class, // protected members for inheritance
         Columns.class, // uses non-static String constants, which is safe
