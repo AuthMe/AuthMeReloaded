@@ -23,4 +23,14 @@ public interface PlatformAdapter extends TeleportAdapter, ChatAdapter, EventRegi
     default String getCompatibilityError() {
         return null;
     }
+
+    /**
+     * Returns whether the core {@link org.bukkit.event.player.PlayerLoginEvent} listener should be active.
+     * Paper-derived platforms disable it in favor of newer, split login validation events.
+     *
+     * @return true if the legacy PlayerLoginEvent listener should run
+     */
+    default boolean shouldHandlePlayerLoginEvent() {
+        return true;
+    }
 }

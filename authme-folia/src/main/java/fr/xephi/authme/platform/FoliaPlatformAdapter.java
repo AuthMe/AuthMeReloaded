@@ -2,6 +2,7 @@ package fr.xephi.authme.platform;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.listener.FoliaChatListener;
+import fr.xephi.authme.listener.PaperLoginValidationListener;
 import fr.xephi.authme.listener.FoliaPlayerSpawnLocationListener;
 import fr.xephi.authme.listener.PlayerOpenSignListener;
 import fr.xephi.authme.service.CancellableTask;
@@ -88,6 +89,10 @@ public class FoliaPlatformAdapter extends AbstractPaperPlatformAdapter {
 
     @Override
     public List<Class<? extends Listener>> getAdditionalListeners() {
-        return Arrays.asList(FoliaChatListener.class, FoliaPlayerSpawnLocationListener.class, PlayerOpenSignListener.class);
+        return Arrays.asList(
+            FoliaChatListener.class,
+            FoliaPlayerSpawnLocationListener.class,
+            PaperLoginValidationListener.class,
+            PlayerOpenSignListener.class);
     }
 }

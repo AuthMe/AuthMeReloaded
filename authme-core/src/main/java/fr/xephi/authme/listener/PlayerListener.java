@@ -16,6 +16,7 @@ import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.platform.ChatAdapter;
+import fr.xephi.authme.platform.PlatformAdapter;
 import fr.xephi.authme.platform.TeleportAdapter;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -104,6 +105,8 @@ public class PlayerListener implements Listener {
     private ChatAdapter chatAdapter;
     @Inject
     private TeleportAdapter teleportAdapter;
+    @Inject
+    private PlatformAdapter platformAdapter;
 
     // Lowest priority to apply fast protection checks
     @EventHandler(priority = EventPriority.LOWEST)
@@ -173,6 +176,10 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerLogin(PlayerLoginEvent event) {
+        if (!platformAdapter.shouldHandlePlayerLoginEvent()) {
+            return;
+        }
+
         final Player player = event.getPlayer();
         final String name = player.getName();
 

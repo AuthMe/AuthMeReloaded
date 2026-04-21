@@ -54,6 +54,11 @@ public abstract class AbstractPaperPlatformAdapter extends AbstractSpigotPlatfor
         new PaperBrigadierCommandRegistrar(commandHandler::processCommand).registerCommands(plugin, commands);
     }
 
+    @Override
+    public boolean shouldHandlePlayerLoginEvent() {
+        return false;
+    }
+
     private static boolean hasDialogApi() {
         try {
             Class.forName("io.papermc.paper.dialog.Dialog", false, AbstractPaperPlatformAdapter.class.getClassLoader());

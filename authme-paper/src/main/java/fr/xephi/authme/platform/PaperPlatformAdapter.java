@@ -4,6 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.listener.PaperChatListener;
+import fr.xephi.authme.listener.PaperLoginValidationListener;
 import fr.xephi.authme.listener.PlayerOpenSignListener;
 import fr.xephi.authme.listener.PaperPlayerSpawnLocationListener;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
@@ -46,6 +47,10 @@ public class PaperPlatformAdapter extends AbstractPaperPlatformAdapter {
 
     @Override
     public List<Class<? extends Listener>> getAdditionalListeners() {
-        return Arrays.asList(PaperChatListener.class, PaperPlayerSpawnLocationListener.class, PlayerOpenSignListener.class);
+        return Arrays.asList(
+            PaperChatListener.class,
+            PaperPlayerSpawnLocationListener.class,
+            PaperLoginValidationListener.class,
+            PlayerOpenSignListener.class);
     }
 }
