@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Mon Apr 20 11:07:35 CEST 2026. See authme-core/src/test/java/tools/docs/config/config.tpl.md -->
+<!-- File auto-generated on Tue Apr 21 23:21:34 CEST 2026. See authme-core/src/test/java/tools/docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder,
@@ -129,8 +129,14 @@ settings:
     # FINE for some additional detailed ones (like password failed),
     # and DEBUG for debugging
     logLevel: FINE
-    # By default we schedule async tasks when talking to the database. If you want
-    # typical communication with the database to happen synchronously, set this to false
+    # Whether to run authentication work (password hashing, database queries) on async threads.
+    # When true (strongly recommended), all CPU-intensive and I/O-bound operations — including
+    # password hashing and database access — are offloaded from the main server thread, keeping
+    # the server responsive during login and registration.
+    # Setting this to false forces all of that work onto the main thread, which will cause
+    # noticeable lag spikes on every login or registration attempt, especially with slow
+    # algorithms (Argon2, BCrypt) or a remote database. Only set this to false if you have
+    # a specific technical reason — it is not recommended under any normal circumstances.
     useAsyncTasks: true
     # The name of the server, used in some placeholders.
     serverName: Your Minecraft Server
@@ -201,9 +207,12 @@ settings:
         teleportUnAuthedToSpawn: false
         # Can unregistered players walk around?
         allowMovement: false
-        # After how many seconds should players who fail to login or register
-        # be kicked? Set to 0 to disable.
-        timeout: 30
+        # After how many seconds should players who fail to login be kicked?
+        # Set to 0 to disable.
+        loginTimeout: 30
+        # After how many seconds should players who fail to register be kicked?
+        # Set to 0 to disable.
+        registerTimeout: 30
         # Regex pattern of allowed characters in the player name.
         allowedNicknameCharacters: '[a-zA-Z0-9_]*'
         # How far can unregistered players walk?
@@ -610,4 +619,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Mon Apr 20 11:07:35 CEST 2026
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue Apr 21 23:21:34 CEST 2026
