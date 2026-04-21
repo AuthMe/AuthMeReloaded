@@ -103,9 +103,10 @@ public class OnJoinVerifierTest {
         Player player = mock(Player.class);
         PlayerLoginEvent event = new PlayerLoginEvent(player, "hostname", null);
         event.setResult(PlayerLoginEvent.Result.KICK_FULL);
-        given(permissionsManager.hasPermission(player, PlayerStatePermission.IS_VIP)).willReturn(false);
+        given(player.getName()).willReturn("VipCheck");
+        given(permissionsManager.hasPermissionOffline("VipCheck", PlayerStatePermission.IS_VIP)).willReturn(false);
         String serverFullMessage = "server is full";
-        given(messages.retrieveSingle(player, MessageKey.KICK_FULL_SERVER)).willReturn(serverFullMessage);
+        given(messages.retrieveSingle("VipCheck", MessageKey.KICK_FULL_SERVER)).willReturn(serverFullMessage);
 
         // when
         boolean result = onJoinVerifier.refusePlayerForFullServer(event);
@@ -123,13 +124,14 @@ public class OnJoinVerifierTest {
         Player player = mock(Player.class);
         PlayerLoginEvent event = new PlayerLoginEvent(player, "hostname", null);
         event.setResult(PlayerLoginEvent.Result.KICK_FULL);
-        given(permissionsManager.hasPermission(player, PlayerStatePermission.IS_VIP)).willReturn(true);
+        given(player.getName()).willReturn("VipPlayer");
+        given(permissionsManager.hasPermissionOffline("VipPlayer", PlayerStatePermission.IS_VIP)).willReturn(true);
         List<Player> onlinePlayers = Arrays.asList(mock(Player.class), mock(Player.class));
         given(permissionsManager.hasPermission(onlinePlayers.get(0), PlayerStatePermission.IS_VIP)).willReturn(true);
         given(permissionsManager.hasPermission(onlinePlayers.get(1), PlayerStatePermission.IS_VIP)).willReturn(false);
         given(bukkitService.getOnlinePlayers()).willReturn(onlinePlayers);
         given(server.getMaxPlayers()).willReturn(onlinePlayers.size());
-        given(messages.retrieveSingle(player, MessageKey.KICK_FOR_VIP)).willReturn("kick for vip");
+        given(messages.retrieveSingle("VipPlayer", MessageKey.KICK_FOR_VIP)).willReturn("kick for vip");
 
         // when
         boolean result = onJoinVerifier.refusePlayerForFullServer(event);
@@ -148,12 +150,13 @@ public class OnJoinVerifierTest {
         Player player = mock(Player.class);
         PlayerLoginEvent event = new PlayerLoginEvent(player, "hostname", null);
         event.setResult(PlayerLoginEvent.Result.KICK_FULL);
-        given(permissionsManager.hasPermission(player, PlayerStatePermission.IS_VIP)).willReturn(true);
+        given(player.getName()).willReturn("VipPlayer");
+        given(permissionsManager.hasPermissionOffline("VipPlayer", PlayerStatePermission.IS_VIP)).willReturn(true);
         List<Player> onlinePlayers = Collections.singletonList(mock(Player.class));
         given(permissionsManager.hasPermission(onlinePlayers.get(0), PlayerStatePermission.IS_VIP)).willReturn(true);
         given(bukkitService.getOnlinePlayers()).willReturn(onlinePlayers);
         given(server.getMaxPlayers()).willReturn(onlinePlayers.size());
-        given(messages.retrieveSingle(player, MessageKey.KICK_FULL_SERVER)).willReturn("kick full server");
+        given(messages.retrieveSingle("VipPlayer", MessageKey.KICK_FULL_SERVER)).willReturn("kick full server");
 
         // when
         boolean result = onJoinVerifier.refusePlayerForFullServer(event);
@@ -163,6 +166,20 @@ public class OnJoinVerifierTest {
         assertThat(event.getResult(), equalTo(PlayerLoginEvent.Result.KICK_FULL));
         assertThat(event.getKickMessage(), equalTo("kick full server"));
         verifyNoInteractions(onlinePlayers.get(0));
+    }
+
+    @Test
+    public void shouldReturnKickMessageForNonVipPlayerOnFullServer() {
+        // given
+        given(permissionsManager.hasPermissionOffline("RegularPlayer", PlayerStatePermission.IS_VIP)).willReturn(false);
+        given(messages.retrieveSingle("RegularPlayer", MessageKey.KICK_FULL_SERVER)).willReturn("server is full");
+
+        // when
+        String kickMessage = onJoinVerifier.getServerFullKickMessageIfDenied("RegularPlayer");
+
+        // then
+        assertThat(kickMessage, equalTo("server is full"));
+        verifyNoInteractions(bukkitService, dataSource);
     }
 
     @Test

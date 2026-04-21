@@ -14,6 +14,7 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.platform.ChatAdapter;
+import fr.xephi.authme.platform.PlatformAdapter;
 import fr.xephi.authme.platform.TeleportAdapter;
 import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.service.BukkitService;
@@ -137,6 +138,8 @@ public class PlayerListenerTest {
     private ChatAdapter chatAdapter;
     @Mock
     private TeleportAdapter teleportAdapter;
+    @Mock
+    private PlatformAdapter platformAdapter;
 
     /**
      * #831: If a player is kicked because of "logged in from another location", the kick
@@ -713,6 +716,7 @@ public class PlayerListenerTest {
         String name = "Player01";
         Player player = mockPlayerWithName(name);
         PlayerLoginEvent event = spy(new PlayerLoginEvent(player, "", null));
+        given(platformAdapter.shouldHandlePlayerLoginEvent()).willReturn(true);
         given(validationService.isUnrestricted(name)).willReturn(true);
 
         // when
@@ -731,6 +735,7 @@ public class PlayerListenerTest {
         String name = "someone";
         Player player = mockPlayerWithName(name);
         PlayerLoginEvent event = spy(new PlayerLoginEvent(player, "", null));
+        given(platformAdapter.shouldHandlePlayerLoginEvent()).willReturn(true);
         given(validationService.isUnrestricted(name)).willReturn(false);
         given(onJoinVerifier.refusePlayerForFullServer(event)).willReturn(true);
 
@@ -753,6 +758,7 @@ public class PlayerListenerTest {
         PlayerLoginEvent event = new PlayerLoginEvent(player, "", null);
         event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
         event = spy(event);
+        given(platformAdapter.shouldHandlePlayerLoginEvent()).willReturn(true);
         given(validationService.isUnrestricted(name)).willReturn(false);
         given(onJoinVerifier.refusePlayerForFullServer(event)).willReturn(false);
 
@@ -763,6 +769,20 @@ public class PlayerListenerTest {
         verify(validationService).isUnrestricted(name);
         verify(onJoinVerifier).checkSingleSession(name);
         verify(onJoinVerifier).refusePlayerForFullServer(event);
+        verifyNoModifyingCalls(event);
+    }
+
+    @Test
+    public void shouldIgnoreLegacyLoginEventWhenPlatformUsesModernEvents() {
+        // given
+        PlayerLoginEvent event = spy(new PlayerLoginEvent(mock(Player.class), "", null));
+        given(platformAdapter.shouldHandlePlayerLoginEvent()).willReturn(false);
+
+        // when
+        listener.onPlayerLogin(event);
+
+        // then
+        verifyNoInteractions(onJoinVerifier, validationService);
         verifyNoModifyingCalls(event);
     }
 
@@ -861,6 +881,7 @@ public class PlayerListenerTest {
         String ip = "12.34.56.78";
 
         PlayerLoginEvent loginEvent = spy(new PlayerLoginEvent(player, "", createInetAddress(ip)));
+        given(platformAdapter.shouldHandlePlayerLoginEvent()).willReturn(true);
         given(validationService.isUnrestricted(name)).willReturn(false);
         given(onJoinVerifier.refusePlayerForFullServer(loginEvent)).willReturn(false);
 

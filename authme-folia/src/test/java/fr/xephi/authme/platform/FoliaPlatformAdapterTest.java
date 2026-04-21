@@ -2,6 +2,7 @@ package fr.xephi.authme.platform;
 
 import fr.xephi.authme.listener.FoliaChatListener;
 import fr.xephi.authme.listener.FoliaPlayerSpawnLocationListener;
+import fr.xephi.authme.listener.PaperLoginValidationListener;
 import fr.xephi.authme.listener.PlayerOpenSignListener;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
@@ -50,7 +51,15 @@ public class FoliaPlatformAdapterTest {
         List<Class<? extends Listener>> listeners = adapter.getAdditionalListeners();
 
         assertThat(listeners, containsInAnyOrder(
-            FoliaChatListener.class, FoliaPlayerSpawnLocationListener.class, PlayerOpenSignListener.class));
+            FoliaChatListener.class,
+            FoliaPlayerSpawnLocationListener.class,
+            PaperLoginValidationListener.class,
+            PlayerOpenSignListener.class));
+    }
+
+    @Test
+    public void shouldDisableLegacyPlayerLoginEventHandling() {
+        assertThat(adapter.shouldHandlePlayerLoginEvent(), is(false));
     }
 
     @Test

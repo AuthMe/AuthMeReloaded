@@ -142,32 +142,47 @@ public class OnJoinVerifier implements Reloadable {
      *         further), false if the player is not refused
      */
     public boolean refusePlayerForFullServer(PlayerLoginEvent event) {
-        final Player player = event.getPlayer();
         if (event.getResult() != PlayerLoginEvent.Result.KICK_FULL) {
             // Server is not full, no need to do anything
             return false;
-        } else if (!permissionsManager.hasPermission(player, PlayerStatePermission.IS_VIP)) {
-            // Server is full and player is NOT VIP; set kick message and proceed with kick
-            event.setKickMessage(messages.retrieveSingle(player, MessageKey.KICK_FULL_SERVER));
-            return true;
         }
 
-        // Server is full and player is VIP; attempt to kick a non-VIP player to make room
+        String kickMessage = getServerFullKickMessageIfDenied(event.getPlayer().getName());
+        if (kickMessage == null) {
+            event.allow();
+            return false;
+        }
+
+        event.setKickMessage(kickMessage);
+        return true;
+    }
+
+    /**
+     * Handles the case of a full server for the given player name. If the user may join, {@code null}
+     * is returned and the caller should allow the connection. Otherwise the returned message should be
+     * used as the kick reason.
+     *
+     * @param playerName the joining player name
+     * @return the kick message if access should be denied, or null if the player may join
+     */
+    public String getServerFullKickMessageIfDenied(String playerName) {
+        if (!permissionsManager.hasPermissionOffline(playerName, PlayerStatePermission.IS_VIP)) {
+            return messages.retrieveSingle(playerName, MessageKey.KICK_FULL_SERVER);
+        }
+
         Collection<Player> onlinePlayers = bukkitService.getOnlinePlayers();
         if (onlinePlayers.size() < server.getMaxPlayers()) {
-            event.allow();
-            return false;
+            return null;
         }
+
         Player nonVipPlayer = generateKickPlayer(onlinePlayers);
         if (nonVipPlayer != null) {
-            nonVipPlayer.kickPlayer(messages.retrieveSingle(player, MessageKey.KICK_FOR_VIP));
-            event.allow();
-            return false;
-        } else {
-            logger.info("VIP player " + player.getName() + " tried to join, but the server was full");
-            event.setKickMessage(messages.retrieveSingle(player, MessageKey.KICK_FULL_SERVER));
-            return true;
+            nonVipPlayer.kickPlayer(messages.retrieveSingle(playerName, MessageKey.KICK_FOR_VIP));
+            return null;
         }
+
+        logger.info("VIP player " + playerName + " tried to join, but the server was full");
+        return messages.retrieveSingle(playerName, MessageKey.KICK_FULL_SERVER);
     }
 
     /**
