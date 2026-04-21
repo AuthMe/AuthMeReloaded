@@ -150,16 +150,16 @@ public class LimboPlayerTaskManagerTest {
     }
 
     @Test
-    public void shouldRegisterTimeoutTask() {
+    public void shouldRegisterLoginTimeoutTask() {
         // given
         Player player = mock(Player.class);
         LimboPlayer limboPlayer = mock(LimboPlayer.class);
-        given(settings.getProperty(RestrictionSettings.TIMEOUT)).willReturn(30);
+        given(settings.getProperty(RestrictionSettings.LOGIN_TIMEOUT)).willReturn(30);
         CancellableTask bukkitTask = mock(CancellableTask.class);
         given(bukkitService.runTaskLater(eq(player), any(TimeoutTask.class), anyLong())).willReturn(bukkitTask);
 
         // when
-        limboPlayerTaskManager.registerTimeoutTask(player, limboPlayer);
+        limboPlayerTaskManager.registerTimeoutTask(player, limboPlayer, LimboMessageType.LOG_IN);
 
         // then
         verify(limboPlayer).setTimeoutTask(bukkitTask);
@@ -168,14 +168,46 @@ public class LimboPlayerTaskManagerTest {
     }
 
     @Test
-    public void shouldNotRegisterTimeoutTaskForZeroTimeout() {
+    public void shouldRegisterRegisterTimeoutTask() {
         // given
         Player player = mock(Player.class);
         LimboPlayer limboPlayer = mock(LimboPlayer.class);
-        given(settings.getProperty(RestrictionSettings.TIMEOUT)).willReturn(0);
+        given(settings.getProperty(RestrictionSettings.REGISTER_TIMEOUT)).willReturn(60);
+        CancellableTask bukkitTask = mock(CancellableTask.class);
+        given(bukkitService.runTaskLater(eq(player), any(TimeoutTask.class), anyLong())).willReturn(bukkitTask);
 
         // when
-        limboPlayerTaskManager.registerTimeoutTask(player, limboPlayer);
+        limboPlayerTaskManager.registerTimeoutTask(player, limboPlayer, LimboMessageType.REGISTER);
+
+        // then
+        verify(limboPlayer).setTimeoutTask(bukkitTask);
+        verify(bukkitService).runTaskLater(eq(player), any(TimeoutTask.class), eq(1200L)); // 60 * TICKS_PER_SECOND
+        verify(messages).retrieveSingle(player, MessageKey.LOGIN_TIMEOUT_ERROR);
+    }
+
+    @Test
+    public void shouldNotRegisterTimeoutTaskForZeroLoginTimeout() {
+        // given
+        Player player = mock(Player.class);
+        LimboPlayer limboPlayer = mock(LimboPlayer.class);
+        given(settings.getProperty(RestrictionSettings.LOGIN_TIMEOUT)).willReturn(0);
+
+        // when
+        limboPlayerTaskManager.registerTimeoutTask(player, limboPlayer, LimboMessageType.LOG_IN);
+
+        // then
+        verifyNoInteractions(limboPlayer, bukkitService);
+    }
+
+    @Test
+    public void shouldNotRegisterTimeoutTaskForZeroRegisterTimeout() {
+        // given
+        Player player = mock(Player.class);
+        LimboPlayer limboPlayer = mock(LimboPlayer.class);
+        given(settings.getProperty(RestrictionSettings.REGISTER_TIMEOUT)).willReturn(0);
+
+        // when
+        limboPlayerTaskManager.registerTimeoutTask(player, limboPlayer, LimboMessageType.REGISTER);
 
         // then
         verifyNoInteractions(limboPlayer, bukkitService);
@@ -188,12 +220,12 @@ public class LimboPlayerTaskManagerTest {
         LimboPlayer limboPlayer = new LimboPlayer(null, false, Collections.emptyList(), true, 0.3f, 0.1f);
         CancellableTask existingTask = mock(CancellableTask.class);
         limboPlayer.setTimeoutTask(existingTask);
-        given(settings.getProperty(RestrictionSettings.TIMEOUT)).willReturn(18);
+        given(settings.getProperty(RestrictionSettings.LOGIN_TIMEOUT)).willReturn(18);
         CancellableTask bukkitTask = mock(CancellableTask.class);
         given(bukkitService.runTaskLater(eq(player), any(TimeoutTask.class), anyLong())).willReturn(bukkitTask);
 
         // when
-        limboPlayerTaskManager.registerTimeoutTask(player, limboPlayer);
+        limboPlayerTaskManager.registerTimeoutTask(player, limboPlayer, LimboMessageType.LOG_IN);
 
         // then
         verify(existingTask).cancel();

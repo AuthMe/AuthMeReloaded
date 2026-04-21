@@ -142,7 +142,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
 
     private void applyBlindEffect(Player player) {
         if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
-            int timeout = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
+            int timeout = service.getProperty(RestrictionSettings.REGISTER_TIMEOUT) * TICKS_PER_SECOND;
             player.addPotionEffect(bukkitService.createBlindnessEffect(timeout));
         }
     }

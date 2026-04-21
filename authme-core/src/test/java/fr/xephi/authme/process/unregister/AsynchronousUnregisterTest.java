@@ -119,7 +119,7 @@ public class AsynchronousUnregisterTest {
         given(dataSource.removeAuth(name)).willReturn(true);
         given(service.getProperty(RegistrationSettings.FORCE)).willReturn(true);
         given(service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)).willReturn(true);
-        given(service.getProperty(RestrictionSettings.TIMEOUT)).willReturn(21);
+        given(service.getProperty(RestrictionSettings.REGISTER_TIMEOUT)).willReturn(21);
         setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
         given(bukkitService.createBlindnessEffect(21 * 20)).willReturn(mock(PotionEffect.class));
 
