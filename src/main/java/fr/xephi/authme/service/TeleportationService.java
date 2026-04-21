@@ -1,11 +1,13 @@
 package fr.xephi.authme.service;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AbstractTeleportEvent;
+import fr.xephi.authme.events.AuthMeSpawnTeleportEvent;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.events.FirstSpawnTeleportEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
@@ -17,6 +19,7 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -76,23 +79,27 @@ public class TeleportationService implements Reloadable {
     /**
      * Returns the player's custom on join location.
      *
-     * @param player the player to process
+     * @param profile the profile to process
      *
      * @return the custom spawn location, null if the player should spawn at the original location
      */
-    public Location prepareOnJoinSpawnLocation(final Player player) {
+    public Location prepareOnJoinSpawnLocation(@NotNull PlayerProfile profile, @NotNull Location spawnLocation) {
         if (!settings.getProperty(RestrictionSettings.NO_TELEPORT)
             && settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)) {
-            final Location location = spawnLoader.getSpawnLocation(player);
+            var location = spawnLoader.getSpawnLocation(spawnLocation.getWorld());
 
-            SpawnTeleportEvent event = new SpawnTeleportEvent(player, location,
-                playerCache.isAuthenticated(player.getName()));
+            var event = new AuthMeSpawnTeleportEvent(
+                profile,
+                spawnLocation,
+                location,
+                profile.getName() != null && playerCache.isAuthenticated(profile.getName())
+            );
             bukkitService.callEvent(event);
             if (!isEventValid(event)) {
                 return null;
             }
 
-            logger.debug("Returning custom location for >1.9 join event for player `{0}`", player.getName());
+            logger.debug("Returning custom location for spawn event of player `{0}`", profile.getName());
             return location;
         }
         return null;
@@ -177,9 +184,25 @@ public class TeleportationService implements Reloadable {
         performTeleportation(player, new AuthMeTeleportEvent(player, location));
     }
 
-    private void teleportToSpawn(final Player player, final boolean isAuthenticated) {
-        final Location spawnLoc = spawnLoader.getSpawnLocation(player);
-        performTeleportation(player, new SpawnTeleportEvent(player, spawnLoc, isAuthenticated));
+    private void teleportToSpawn(Player player, boolean isAuthenticated) {
+        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
+            var spawnLoc = spawnLoader.getSpawnLocation(player.getWorld());
+            // Invoke deprecated event first
+            var legacyEvent = new SpawnTeleportEvent(player, spawnLoc, isAuthenticated);
+            bukkitService.callEvent(legacyEvent);
+            // Clone deprecated event state and invoke new event
+            var event = new AuthMeSpawnTeleportEvent(
+                player.getPlayerProfile(),
+                legacyEvent.getFrom(),
+                legacyEvent.getTo() != null ? legacyEvent.getFrom() : spawnLoc,
+                isAuthenticated
+            );
+            event.setCancelled(legacyEvent.isCancelled());
+            bukkitService.callEvent(event);
+            if (player.isOnline() && isEventValid(event)) {
+                player.teleport(event.getTo());
+            }
+        });
     }
 
     /**
@@ -196,6 +219,10 @@ public class TeleportationService implements Reloadable {
                 player.teleport(event.getTo());
             }
         });
+    }
+
+    private static boolean isEventValid(AuthMeSpawnTeleportEvent event) {
+        return !event.isCancelled() && event.getTo().getWorld() != null;
     }
 
     private static boolean isEventValid(AbstractTeleportEvent event) {

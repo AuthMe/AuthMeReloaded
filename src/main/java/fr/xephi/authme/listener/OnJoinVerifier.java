@@ -1,5 +1,6 @@
 package fr.xephi.authme.listener;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
@@ -18,6 +19,8 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -120,31 +123,46 @@ public class OnJoinVerifier implements Reloadable {
      * @return true if the player's connection should be refused (i.e. the event does not need to be processed
      *         further), false if the player is not refused
      */
-    public boolean refusePlayerForFullServer(PlayerLoginEvent event) {
-        final Player player = event.getPlayer();
-        if (event.getResult() != PlayerLoginEvent.Result.KICK_FULL) {
+    public boolean refusePlayerForFullServer(PlayerServerFullCheck event) {
+        var profile = event.getPlayerProfile();
+        if (event.isAllowed()) {
             // Server is not full, no need to do anything
             return false;
-        } else if (!permissionsManager.hasPermission(player, PlayerStatePermission.IS_VIP)) {
+        }
+        if (profile.getId() == null || profile.getName() == null) {
+            // Incomplete profile, ignore (should never happen)
+            return false;
+        }
+        var offlinePlayer = Bukkit.getOfflinePlayer(profile.getId());
+        if (!permissionsManager.hasPermissionOffline(offlinePlayer, PlayerStatePermission.IS_VIP)) {
             // Server is full and player is NOT VIP; set kick message and proceed with kick
-            event.setKickMessage(messages.retrieveSingle(player, MessageKey.KICK_FULL_SERVER));
+            var message = LegacyComponentSerializer.legacySection().deserialize(
+                messages.retrieveSingle(profile.getName(), MessageKey.KICK_FULL_SERVER)
+            );
+            event.deny(message);
             return true;
         }
 
         // Server is full and player is VIP; attempt to kick a non-VIP player to make room
-        Collection<Player> onlinePlayers = bukkitService.getOnlinePlayers();
+        var onlinePlayers = bukkitService.getOnlinePlayers();
         if (onlinePlayers.size() < server.getMaxPlayers()) {
             event.allow();
             return false;
         }
         Player nonVipPlayer = generateKickPlayer(onlinePlayers);
         if (nonVipPlayer != null) {
-            nonVipPlayer.kickPlayer(messages.retrieveSingle(player, MessageKey.KICK_FOR_VIP));
+            var message = LegacyComponentSerializer.legacySection().deserialize(
+                messages.retrieveSingle(profile.getName(), MessageKey.KICK_FOR_VIP)
+            );
+            nonVipPlayer.kick(message);
             event.allow();
             return false;
         } else {
-            logger.info("VIP player " + player.getName() + " tried to join, but the server was full");
-            event.setKickMessage(messages.retrieveSingle(player, MessageKey.KICK_FULL_SERVER));
+            logger.info("VIP player " + profile.getName() + " tried to join, but the server was full");
+            var message = LegacyComponentSerializer.legacySection().deserialize(
+                messages.retrieveSingle(profile.getName(), MessageKey.KICK_FULL_SERVER)
+            );
+            event.deny(message);
             return true;
         }
     }

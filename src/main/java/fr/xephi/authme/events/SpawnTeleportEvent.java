@@ -8,7 +8,10 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Called if a player is teleported to a specific spawn upon joining or logging in.
+ *
+ * @deprecated no longer invoked when a joining player is being spawned, use {@link AuthMeSpawnTeleportEvent} instead
  */
+@Deprecated(since = "5.7.1")
 public class SpawnTeleportEvent extends AbstractTeleportEvent {
 
     private static final HandlerList handlers = new HandlerList();

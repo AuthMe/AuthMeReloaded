@@ -75,11 +75,11 @@ class SpawnLocationViewer implements DebugSection {
     }
 
     private void showPlayerSpawn(CommandSender sender, String playerName) {
-        Player player = bukkitService.getPlayerExact(playerName);
+        var player = bukkitService.getPlayerExact(playerName);
         if (player == null) {
             sender.sendMessage("Player '" + playerName + "' is not online!");
         } else {
-            Location spawn = spawnLoader.getSpawnLocation(player);
+            var spawn = spawnLoader.getSpawnLocation(player.getWorld());
             sender.sendMessage("Player '" + playerName + "' has spawn location: " + formatLocation(spawn));
             sender.sendMessage("Note: this check excludes the AuthMe firstspawn.");
         }

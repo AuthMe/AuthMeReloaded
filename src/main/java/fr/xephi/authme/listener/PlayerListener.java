@@ -19,7 +19,6 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -44,14 +43,12 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.InventoryView;
-import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import javax.inject.Inject;
 import java.util.Locale;
@@ -154,29 +151,6 @@ public class PlayerListener implements Listener {
             event.setKickMessage(messages.retrieveSingle(name, e.getReason(), e.getArgs()));
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
         }
-    }
-
-    // Note: We can't teleport the player in the PlayerLoginEvent listener
-    // as the new player location will be reverted by the server.
-
-    @EventHandler(priority = EventPriority.LOW)
-    public void onPlayerLogin(PlayerLoginEvent event) {
-        final Player player = event.getPlayer();
-        final String name = player.getName();
-
-        try {
-            onJoinVerifier.checkSingleSession(name);
-        } catch (FailedVerificationException e) {
-            event.setKickMessage(messages.retrieveSingle(name, e.getReason(), e.getArgs()));
-            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-            return;
-        }
-
-        if (validationService.isUnrestricted(name)) {
-            return;
-        }
-
-        onJoinVerifier.refusePlayerForFullServer(event);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -328,11 +302,8 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        Location from = event.getFrom();
-        Location to = event.getTo();
-        if (to == null) {
-            return;
-        }
+        var from = event.getFrom();
+        var to = event.getTo();
 
         /*
          * Limit player X and Z movements to 1 block
@@ -345,7 +316,7 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        Player player = event.getPlayer();
+        var player = event.getPlayer();
         if (!listenerService.shouldCancelEvent(player)) {
             return;
         }
@@ -360,7 +331,7 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        Location spawn = spawnLoader.getSpawnLocation(player);
+        var spawn = spawnLoader.getSpawnLocation(player.getWorld());
         if (spawn != null && spawn.getWorld() != null) {
             if (!player.getWorld().equals(spawn.getWorld())) {
                 player.teleport(spawn);
@@ -378,7 +349,7 @@ public class PlayerListener implements Listener {
         if (!listenerService.shouldCancelEvent(event)) {
             return;
         }
-        Location spawn = spawnLoader.getSpawnLocation(event.getPlayer());
+        var spawn = spawnLoader.getSpawnLocation(event.getPlayer().getWorld());
         if (spawn != null && spawn.getWorld() != null) {
             event.setRespawnLocation(spawn);
         }
@@ -513,16 +484,6 @@ public class PlayerListener implements Listener {
         if (listenerService.shouldCancelEvent(event.getWhoClicked())
             && !isInventoryWhitelisted(event.getView())) {
             event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onPlayerSpawn(PlayerSpawnLocationEvent event) {
-        final Player player = event.getPlayer();
-
-        Location customSpawnLocation = teleportationService.prepareOnJoinSpawnLocation(player);
-        if (customSpawnLocation != null) {
-            event.setSpawnLocation(customSpawnLocation);
         }
     }
 }

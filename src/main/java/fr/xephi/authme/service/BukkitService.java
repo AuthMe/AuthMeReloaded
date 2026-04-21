@@ -17,12 +17,15 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 import java.util.function.Function;
 
 /**
@@ -171,6 +174,19 @@ public class BukkitService implements SettingsDependent {
      */
     public BukkitTask runTaskTimer(BukkitRunnable task, long delay, long period) {
         return task.runTaskTimer(authMe, delay, period);
+    }
+
+    /**
+     * Calls a method on the main thread and returns a Future object.
+     * This task will be executed by the main server thread.
+     *
+     * @param task Task to be executed
+     * @return Future object related to the task
+     * @param <T> The callable's return type
+     */
+    @NotNull
+    public <T> Future<T> callSyncMethod(@NotNull Callable<T> task) {
+        return Bukkit.getScheduler().callSyncMethod(authMe, task);
     }
 
     /**

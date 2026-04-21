@@ -15,6 +15,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -165,18 +166,15 @@ public class SpawnLoader implements Reloadable {
      * Return the spawn location for the given player. The source of the spawn location varies
      * depending on the spawn priority setting.
      *
-     * @param player The player to retrieve the spawn point for
+     * @param world The world to retrieve the spawn point for
      *
      * @return The spawn location, or the default spawn location upon failure
      *
      * @see RestrictionSettings#SPAWN_PRIORITY
      */
-    public Location getSpawnLocation(Player player) {
-        if (player == null) {
-            return null;
-        }
+    public Location getSpawnLocation(@NotNull World world) {
+        Objects.requireNonNull(world, "world cannot be null");
 
-        World world = player.getWorld();
         Location spawnLoc = null;
         for (String priority : spawnPriority) {
             switch (priority.toLowerCase(Locale.ROOT).trim()) {
@@ -271,7 +269,7 @@ public class SpawnLoader implements Reloadable {
      */
     public Location getPlayerLocationOrSpawn(Player player) {
         if (player.getHealth() <= 0.0) {
-            return getSpawnLocation(player);
+            return getSpawnLocation(player.getWorld());
         }
         return player.getLocation();
     }

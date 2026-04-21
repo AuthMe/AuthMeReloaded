@@ -1,5 +1,6 @@
 package fr.xephi.authme.listener;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
@@ -14,9 +15,11 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -31,6 +34,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -76,15 +80,15 @@ public class OnJoinVerifierTest {
     @Test
     public void shouldNotDoAnythingForNormalEvent() {
         // given
-        PlayerLoginEvent event = mock(PlayerLoginEvent.class);
-        given(event.getResult()).willReturn(PlayerLoginEvent.Result.ALLOWED);
+        var event = mock(PlayerServerFullCheck.class);
+        given(event.isAllowed()).willReturn(true);
 
         // when
-        boolean result = onJoinVerifier.refusePlayerForFullServer(event);
+        var result = onJoinVerifier.refusePlayerForFullServer(event);
 
         // then
         assertThat(result, equalTo(false));
-        verify(event).getResult();
+        verify(event).isAllowed();
         verifyNoMoreInteractions(event);
         verifyNoInteractions(bukkitService, dataSource, permissionsManager);
     }
@@ -92,68 +96,83 @@ public class OnJoinVerifierTest {
     @Test
     public void shouldRefuseNonVipPlayerForFullServer() {
         // given
-        Player player = mock(Player.class);
-        PlayerLoginEvent event = new PlayerLoginEvent(player, "hostname", null);
-        event.setResult(PlayerLoginEvent.Result.KICK_FULL);
-        given(permissionsManager.hasPermission(player, PlayerStatePermission.IS_VIP)).willReturn(false);
+        var uniqueId = UUID.fromString("693f4715-94b5-4b60-8b87-4ef8b532a3fd");
+        var name = "Steve";
+        var profile = mock(PlayerProfile.class);
+        given(profile.getId()).willReturn(uniqueId);
+        given(profile.getName()).willReturn(name);
+        var offlinePlayer = mock(OfflinePlayer.class);
+        given(Bukkit.getOfflinePlayer(uniqueId)).willReturn(offlinePlayer);
+        var event = new PlayerServerFullCheck(profile, LegacyComponentSerializer.legacySection().deserialize("something"), false);
+        given(permissionsManager.hasPermissionOffline(offlinePlayer, PlayerStatePermission.IS_VIP)).willReturn(false);
         String serverFullMessage = "server is full";
-        given(messages.retrieveSingle(player, MessageKey.KICK_FULL_SERVER)).willReturn(serverFullMessage);
+        given(messages.retrieveSingle(name, MessageKey.KICK_FULL_SERVER)).willReturn(serverFullMessage);
 
         // when
         boolean result = onJoinVerifier.refusePlayerForFullServer(event);
 
         // then
         assertThat(result, equalTo(true));
-        assertThat(event.getResult(), equalTo(PlayerLoginEvent.Result.KICK_FULL));
-        assertThat(event.getKickMessage(), equalTo(serverFullMessage));
+        assertThat(event.isAllowed(), equalTo(false));
+        assertThat(LegacyComponentSerializer.legacySection().serialize(event.getKickMessage()), equalTo(serverFullMessage));
         verifyNoInteractions(bukkitService, dataSource);
     }
 
     @Test
     public void shouldKickNonVipForJoiningVipPlayer() {
         // given
-        Player player = mock(Player.class);
-        PlayerLoginEvent event = new PlayerLoginEvent(player, "hostname", null);
-        event.setResult(PlayerLoginEvent.Result.KICK_FULL);
-        given(permissionsManager.hasPermission(player, PlayerStatePermission.IS_VIP)).willReturn(true);
-        List<Player> onlinePlayers = Arrays.asList(mock(Player.class), mock(Player.class));
+        var uniqueId = UUID.fromString("693f4715-94b5-4b60-8b87-4ef8b532a3fd");
+        var name = "Steve";
+        var profile = mock(PlayerProfile.class);
+        given(profile.getId()).willReturn(uniqueId);
+        given(profile.getName()).willReturn(name);
+        var offlinePlayer = mock(OfflinePlayer.class);
+        given(Bukkit.getOfflinePlayer(uniqueId)).willReturn(offlinePlayer);
+        var event = new PlayerServerFullCheck(profile, LegacyComponentSerializer.legacySection().deserialize("something"), false);
+        given(permissionsManager.hasPermissionOffline(offlinePlayer, PlayerStatePermission.IS_VIP)).willReturn(true);
+        var onlinePlayers = Arrays.asList(mock(Player.class), mock(Player.class));
         given(permissionsManager.hasPermission(onlinePlayers.get(0), PlayerStatePermission.IS_VIP)).willReturn(true);
         given(permissionsManager.hasPermission(onlinePlayers.get(1), PlayerStatePermission.IS_VIP)).willReturn(false);
         given(bukkitService.getOnlinePlayers()).willReturn(onlinePlayers);
         given(server.getMaxPlayers()).willReturn(onlinePlayers.size());
-        given(messages.retrieveSingle(player, MessageKey.KICK_FOR_VIP)).willReturn("kick for vip");
+        given(messages.retrieveSingle(name, MessageKey.KICK_FOR_VIP)).willReturn("kick for vip");
 
         // when
         boolean result = onJoinVerifier.refusePlayerForFullServer(event);
 
         // then
         assertThat(result, equalTo(false));
-        assertThat(event.getResult(), equalTo(PlayerLoginEvent.Result.ALLOWED));
+        assertThat(event.isAllowed(), equalTo(true));
         // First player is VIP, so expect no interactions there and second player to have been kicked
         verifyNoInteractions(onlinePlayers.get(0));
-        verify(onlinePlayers.get(1)).kickPlayer("kick for vip");
+        verify(onlinePlayers.get(1)).kick(LegacyComponentSerializer.legacySection().deserialize("kick for vip"));
     }
 
     @Test
     public void shouldKickVipPlayerIfNoPlayerCanBeKicked() {
         // given
-        Player player = mock(Player.class);
-        PlayerLoginEvent event = new PlayerLoginEvent(player, "hostname", null);
-        event.setResult(PlayerLoginEvent.Result.KICK_FULL);
-        given(permissionsManager.hasPermission(player, PlayerStatePermission.IS_VIP)).willReturn(true);
+        var uniqueId = UUID.fromString("693f4715-94b5-4b60-8b87-4ef8b532a3fd");
+        var name = "Steve";
+        var profile = mock(PlayerProfile.class);
+        given(profile.getId()).willReturn(uniqueId);
+        given(profile.getName()).willReturn(name);
+        var offlinePlayer = mock(OfflinePlayer.class);
+        given(Bukkit.getOfflinePlayer(uniqueId)).willReturn(offlinePlayer);
+        var event = new PlayerServerFullCheck(profile, LegacyComponentSerializer.legacySection().deserialize("something"), false);
+        given(permissionsManager.hasPermissionOffline(offlinePlayer, PlayerStatePermission.IS_VIP)).willReturn(true);
         List<Player> onlinePlayers = Collections.singletonList(mock(Player.class));
         given(permissionsManager.hasPermission(onlinePlayers.get(0), PlayerStatePermission.IS_VIP)).willReturn(true);
         given(bukkitService.getOnlinePlayers()).willReturn(onlinePlayers);
         given(server.getMaxPlayers()).willReturn(onlinePlayers.size());
-        given(messages.retrieveSingle(player, MessageKey.KICK_FULL_SERVER)).willReturn("kick full server");
+        given(messages.retrieveSingle(name, MessageKey.KICK_FULL_SERVER)).willReturn("kick full server");
 
         // when
         boolean result = onJoinVerifier.refusePlayerForFullServer(event);
 
         // then
         assertThat(result, equalTo(true));
-        assertThat(event.getResult(), equalTo(PlayerLoginEvent.Result.KICK_FULL));
-        assertThat(event.getKickMessage(), equalTo("kick full server"));
+        assertThat(event.isAllowed(), equalTo(false));
+        assertThat(event.getKickMessage(), equalTo(LegacyComponentSerializer.legacySection().deserialize("kick full server")));
         verifyNoInteractions(onlinePlayers.get(0));
     }
 

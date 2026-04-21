@@ -12,6 +12,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
 

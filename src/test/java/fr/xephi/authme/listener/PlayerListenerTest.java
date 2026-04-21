@@ -667,65 +667,6 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldNotInterfereWithUnrestrictedUser() throws FailedVerificationException {
-        // given
-        String name = "Player01";
-        Player player = mockPlayerWithName(name);
-        PlayerLoginEvent event = spy(new PlayerLoginEvent(player, "", null));
-        given(validationService.isUnrestricted(name)).willReturn(true);
-
-        // when
-        listener.onPlayerLogin(event);
-
-        // then
-        verify(validationService).isUnrestricted(name);
-        verify(onJoinVerifier).checkSingleSession(name);
-        verifyNoModifyingCalls(event);
-        verifyNoMoreInteractions(onJoinVerifier);
-    }
-
-    @Test
-    public void shouldStopHandlingForFullServer() throws FailedVerificationException {
-        // given
-        String name = "someone";
-        Player player = mockPlayerWithName(name);
-        PlayerLoginEvent event = spy(new PlayerLoginEvent(player, "", null));
-        given(validationService.isUnrestricted(name)).willReturn(false);
-        given(onJoinVerifier.refusePlayerForFullServer(event)).willReturn(true);
-
-        // when
-        listener.onPlayerLogin(event);
-
-        // then
-        verify(validationService).isUnrestricted(name);
-        verify(onJoinVerifier).checkSingleSession(name);
-        verify(onJoinVerifier).refusePlayerForFullServer(event);
-        verifyNoMoreInteractions(onJoinVerifier);
-        verifyNoModifyingCalls(event);
-    }
-
-    @Test
-    public void shouldStopHandlingEventForBadResult() throws FailedVerificationException {
-        // given
-        String name = "someone";
-        Player player = mockPlayerWithName(name);
-        PlayerLoginEvent event = new PlayerLoginEvent(player, "", null);
-        event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
-        event = spy(event);
-        given(validationService.isUnrestricted(name)).willReturn(false);
-        given(onJoinVerifier.refusePlayerForFullServer(event)).willReturn(false);
-
-        // when
-        listener.onPlayerLogin(event);
-
-        // then
-        verify(validationService).isUnrestricted(name);
-        verify(onJoinVerifier).checkSingleSession(name);
-        verify(onJoinVerifier).refusePlayerForFullServer(event);
-        verifyNoModifyingCalls(event);
-    }
-
-    @Test
     public void shouldPerformAllJoinVerificationsSuccessfullyPreLoginLowest() throws FailedVerificationException {
         // given
         String name = "someone";
@@ -1112,12 +1053,6 @@ public class PlayerListenerTest {
     private static void verifyNoModifyingCalls(PlayerMoveEvent event) {
         verify(event, atLeast(0)).getFrom();
         verify(event, atLeast(0)).getTo();
-        verifyNoMoreInteractions(event);
-    }
-
-    private static void verifyNoModifyingCalls(PlayerLoginEvent event) {
-        verify(event, atLeast(0)).getResult();
-        verify(event, atLeast(0)).getAddress();
         verifyNoMoreInteractions(event);
     }
 
