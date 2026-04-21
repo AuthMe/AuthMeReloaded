@@ -99,7 +99,7 @@
         <dependencies.spigot.version>1.16.5-R0.1-SNAPSHOT</dependencies.spigot.version>
         <dependencies.log4j-core.version>2.8.1</dependencies.log4j-core.version> <!-- version bundled 1.16.5 -->
         <!-- Spigot libraries -->
-        <dependencies.bstats.version>3.1.0</dependencies.bstats.version>
+        <dependencies.bstats.version>3.2.1</dependencies.bstats.version>
     </properties>
 
     <!-- Jenkins profile -->
