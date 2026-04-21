@@ -5,6 +5,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSortedMap;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.datasource.converter.AuthPlusConverter;
 import fr.xephi.authme.datasource.converter.Converter;
 import fr.xephi.authme.datasource.converter.CrazyLoginConverter;
 import fr.xephi.authme.datasource.converter.LoginSecurityConverter;
@@ -81,6 +82,7 @@ public class ConverterCommand implements ExecutableCommand {
      */
     private static Map<String, Class<? extends Converter>> getConverters() {
         return ImmutableSortedMap.<String, Class<? extends Converter>>naturalOrder()
+            .put("authplus", AuthPlusConverter.class)
             .put("crazylogin", CrazyLoginConverter.class)
             .put("rakamak", RakamakConverter.class)
             .put("royalauth", RoyalAuthConverter.class)

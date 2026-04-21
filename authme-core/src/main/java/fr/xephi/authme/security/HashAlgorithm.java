@@ -18,6 +18,7 @@ public enum HashAlgorithm {
     MD5VB(fr.xephi.authme.security.crypts.Md5vB.class),
     MYBB(fr.xephi.authme.security.crypts.MyBB.class),
     PBKDF2(fr.xephi.authme.security.crypts.Pbkdf2.class),
+    PBKDF2BASE64(fr.xephi.authme.security.crypts.Pbkdf2Base64.class),
     PBKDF2DJANGO(fr.xephi.authme.security.crypts.Pbkdf2Django.class),
     PHPBB(fr.xephi.authme.security.crypts.PhpBB.class),
     PHPFUSION(fr.xephi.authme.security.crypts.PhpFusion.class),
