@@ -103,15 +103,8 @@ class InventoryPacketAdapter extends PacketAdapter {
         ItemStack[] blankInventory = new ItemStack[inventorySize];
         Arrays.fill(blankInventory, new ItemStack(Material.AIR));
 
-        //old minecraft versions
-        StructureModifier<ItemStack[]> itemArrayModifier = inventoryPacket.getItemArrayModifier();
-        if (itemArrayModifier.size() > 0) {
-            itemArrayModifier.write(0, blankInventory);
-        } else {
-            //minecraft versions above 1.11
-            StructureModifier<List<ItemStack>> itemListModifier = inventoryPacket.getItemListModifier();
-            itemListModifier.write(0, Arrays.asList(blankInventory));
-        }
+        StructureModifier<List<ItemStack>> itemListModifier = inventoryPacket.getItemListModifier();
+        itemListModifier.write(0, Arrays.asList(blankInventory));
 
         try {
             protocolManager.sendServerPacket(player, inventoryPacket, false);

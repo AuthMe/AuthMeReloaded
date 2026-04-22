@@ -112,7 +112,7 @@ public class TeleportationService implements Reloadable {
                 return null;
             }
 
-            logger.debug("Returning custom location for >1.9 join event for player `{0}`", player.getName());
+            logger.debug("Returning custom location for join event for player `{0}`", player.getName());
             return event.getTo();
         }
         return null;
