@@ -347,6 +347,24 @@
                     <argLine>-Xshare:off -javaagent:${dependencies.mockito.javaagent} -Dfile.encoding=${project.build.sourceEncoding} -Duser.language=en</argLine>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <inherited>false</inherited>
+                <configuration>
+                    <source>${module.java.version}</source>
+                    <detectOfflineLinks>false</detectOfflineLinks>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>aggregate-apidocs</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>aggregate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

@@ -36,6 +36,9 @@ mvn clean package -pl authme-spigot-1.21 -am
 mvn clean package -P skipJavadocGeneration
 ```
 
+The default reactor build now also generates aggregated API docs for all built modules under
+`target/site/apidocs` at the repository root.
+
 ## Test commands
 
 ```bash
