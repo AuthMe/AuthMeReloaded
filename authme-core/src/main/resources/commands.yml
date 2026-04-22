@@ -1,4 +1,3 @@
-
 # This configuration file allows you to execute commands on various events.
 # Supported placeholders in commands:
 #   %p is replaced with the player name.
@@ -40,16 +39,16 @@
 #     command: 'say Uh oh! %p has many alt accounts!'
 #     executor: CONSOLE
 #     ifNumberOfAccountsAtLeast: 5
-# Commands to run for players logging in whose 'last login date' was empty
-onFirstLogin: {}
 onJoin: {}
 onLogin: {}
+onSessionLogin: {}
+# Commands to run for players logging in whose 'last login date' was empty
+onFirstLogin: {}
+onRegister: {}
+# Commands to run whenever a player is unregistered (by himself, or by an admin)
+onUnregister: {}
 # These commands are called whenever a logged in player uses /logout or quits.
 # The commands are not run if a player that was not logged in quits the server.
 # Note: if your server crashes, these commands won't be run, so don't rely on them to undo
 # 'onLogin' commands that would be dangerous for non-logged in players to have!
 onLogout: {}
-onRegister: {}
-onSessionLogin: {}
-# Commands to run whenever a player is unregistered (by himself, or by an admin)
-onUnregister: {}

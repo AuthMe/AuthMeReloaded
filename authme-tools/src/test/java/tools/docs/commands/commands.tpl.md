@@ -1,5 +1,5 @@
 <!-- {gen_warning} -->
-<!-- File auto-generated on {gen_date}. See authme-core/src/test/java/tools/docs/commands/commands.tpl.md -->
+<!-- File auto-generated on {gen_date}. See authme-tools/src/test/java/tools/docs/commands/commands.tpl.md -->
 
 ## AuthMe Commands
 You can use the following commands to use the features of AuthMe. Mandatory arguments are marked with `< >`

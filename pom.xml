@@ -56,6 +56,7 @@
 
     <modules>
         <module>authme-core</module>
+        <module>authme-tools</module>
         <module>authme-spigot-legacy</module>
     </modules>
 

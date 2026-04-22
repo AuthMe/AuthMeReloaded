@@ -1,9 +1,9 @@
 package tools;
 
 import fr.xephi.authme.ClassCollector;
-import fr.xephi.authme.TestHelper;
 import tools.utils.AutoToolTask;
 import tools.utils.ToolTask;
+import tools.utils.ToolsConstants;
 
 import java.util.Map;
 import java.util.Scanner;
@@ -28,7 +28,7 @@ public final class ToolsRunner {
     public static void main(String... args) {
         // Note ljacqu 20151212: If the tools folder becomes a lot bigger, it will make sense to restrict the depth
         // of this recursive collector
-        ClassCollector collector = new ClassCollector(TestHelper.TEST_SOURCES_FOLDER, "tools");
+        ClassCollector collector = new ClassCollector(ToolsConstants.TOOLS_TEST_SOURCE_ROOT, "tools");
         Map<String, ToolTask> tasks = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (ToolTask task : collector.getInstancesOfType(ToolTask.class)) {
             tasks.put(task.getTaskName(), task);

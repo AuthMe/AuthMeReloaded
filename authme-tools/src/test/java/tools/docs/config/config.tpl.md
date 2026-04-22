@@ -1,5 +1,5 @@
 <!-- {gen_warning} -->
-<!-- File auto-generated on {gen_date}. See authme-core/src/test/java/tools/docs/config/config.tpl.md -->
+<!-- File auto-generated on {gen_date}. See authme-tools/src/test/java/tools/docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder,
