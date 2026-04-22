@@ -108,7 +108,7 @@ You can also create your own translation file and, if you want, you can share it
   ```
 
 - **Statistics:**
-    ![Graph](https://bstats.org/signatures/bukkit/AuthMe.svg)
+    [![Graph](https://bstats.org/signatures/bukkit/AuthMe.svg)](https://bstats.org/plugin/bukkit/AuthMe/164)
 
 ## Requirements
 
