@@ -145,6 +145,19 @@ public class LimboService {
     }
 
     /**
+     * Re-applies limbo speed and flight restrictions after a player respawns.
+     * Bukkit sends a fresh PlayerAbilities packet on respawn that resets walk/fly speed,
+     * so the restrictions set during join must be re-applied one tick later.
+     *
+     * @param player the player to re-apply restrictions for
+     */
+    public void reapplyLimboRestrictions(Player player) {
+        if (hasLimboPlayer(player.getName())) {
+            helper.revokeLimboStates(player);
+        }
+    }
+
+    /**
      * Creates new tasks for the given player and cancels the old ones for a newly registered player.
      * This resets his time to log in (TimeoutTask) and updates the message he is shown (MessageTask).
      *
