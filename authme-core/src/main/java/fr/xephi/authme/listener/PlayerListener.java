@@ -2,6 +2,7 @@ package fr.xephi.authme.listener;
 
 import fr.xephi.authme.data.QuickCommandsProtectionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.limbo.EnderPearlRestoreData;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
@@ -294,13 +295,13 @@ public class PlayerListener implements Listener {
     }
 
     private void saveStateBeforeQuit(Player player) {
-        Set<UUID> pearlUuids = player.getServer().getWorlds().stream()
+        Set<EnderPearlRestoreData> pearls = player.getServer().getWorlds().stream()
             .flatMap(world -> world.getEntitiesByClass(EnderPearl.class).stream())
             .filter(pearl -> player.equals(pearl.getShooter()))
-            .map(Entity::getUniqueId)
+            .map(pearl -> new EnderPearlRestoreData(pearl.getUniqueId(), pearl.getLocation(), pearl.getVelocity()))
             .collect(Collectors.toSet());
-        if (!pearlUuids.isEmpty()) {
-            limboService.saveEnderPearlsForPlayer(player, pearlUuids);
+        if (!pearls.isEmpty()) {
+            limboService.saveEnderPearlsForPlayer(player, pearls);
         }
 
         if (player.isInsideVehicle()) {

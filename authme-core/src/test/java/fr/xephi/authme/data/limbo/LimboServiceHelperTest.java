@@ -5,14 +5,17 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.TestHelper;
+import org.bukkit.World;
 import org.bukkit.Location;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
 import java.util.Collections;
+import java.util.UUID;
 
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -75,6 +78,38 @@ public class LimboServiceHelperTest {
         assertThat(result.getWalkSpeed(), equalTo(0.3f));
         // flySpeed comes from newLimbo (most recent reading)
         assertThat(result.getFlySpeed(), equalTo(0.0f));
+    }
+
+    @Test
+    public void shouldMergeEnderPearlRestoreData() {
+        // given
+        World world = mock(World.class);
+        Location oldLocation = new Location(world, 1.0, 2.0, 3.0);
+        Location newLocation = new Location(world, 4.0, 5.0, 6.0);
+        UUID sharedUuid = UUID.nameUUIDFromBytes("shared-pearl".getBytes());
+        UUID oldUuid = UUID.nameUUIDFromBytes("old-pearl".getBytes());
+        UUID newUuid = UUID.nameUUIDFromBytes("new-pearl".getBytes());
+
+        LimboPlayer newLimbo = new LimboPlayer(null, false, Collections.emptyList(), false, 0.0f, 0.0f);
+        newLimbo.setEnderPearls(java.util.Arrays.asList(
+            new EnderPearlRestoreData(sharedUuid, newLocation, null),
+            new EnderPearlRestoreData(newUuid, newLocation, null)));
+
+        LimboPlayer oldLimbo = new LimboPlayer(null, false, Collections.emptyList(), false, 0.0f, 0.0f);
+        oldLimbo.setEnderPearls(java.util.Arrays.asList(
+            new EnderPearlRestoreData(sharedUuid, oldLocation, null),
+            new EnderPearlRestoreData(oldUuid, oldLocation, null)));
+
+        // when
+        LimboPlayer result = limboServiceHelper.merge(newLimbo, oldLimbo);
+
+        // then
+        assertThat(result.getEnderPearlUuids(), containsInAnyOrder(sharedUuid, oldUuid, newUuid));
+        java.util.Map<UUID, EnderPearlRestoreData> pearlsByUuid = result.getEnderPearls().stream()
+            .collect(java.util.stream.Collectors.toMap(EnderPearlRestoreData::getUuid, pearl -> pearl));
+        assertThat(pearlsByUuid.get(sharedUuid).getLocation(), equalTo(newLocation));
+        assertThat(pearlsByUuid.get(oldUuid).getLocation(), equalTo(oldLocation));
+        assertThat(pearlsByUuid.get(newUuid).getLocation(), equalTo(newLocation));
     }
 
     @Test

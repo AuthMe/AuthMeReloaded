@@ -8,9 +8,13 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Represents a player which is not logged in and keeps track of certain states (like OP status, flying)
@@ -32,6 +36,7 @@ public class LimboPlayer {
     private CancellableTask messageTaskHandle = null;
     private LimboPlayerState state = LimboPlayerState.PASSWORD_REQUIRED;
     private Set<UUID> enderPearlUuids = new HashSet<>();
+    private Map<UUID, EnderPearlRestoreData> enderPearls = new HashMap<>();
     private UUID vehicleUuid;
     private EntityType vehicleType;
 
@@ -170,6 +175,38 @@ public class LimboPlayer {
      */
     public void setEnderPearlUuids(Set<UUID> pearlUuids) {
         this.enderPearlUuids = new HashSet<>(pearlUuids);
+        this.enderPearls = new HashMap<>();
+        for (UUID pearlUuid : pearlUuids) {
+            enderPearls.put(pearlUuid, new EnderPearlRestoreData(pearlUuid, null, null));
+        }
+    }
+
+    /**
+     * Returns the tracked ender pearls for this player, including the data required
+     * to recreate them if the original entity can no longer be found.
+     *
+     * @return tracked ender pearls for this player
+     */
+    public Collection<EnderPearlRestoreData> getEnderPearls() {
+        return enderPearlUuids.stream()
+            .map(uuid -> enderPearls.getOrDefault(uuid, new EnderPearlRestoreData(uuid, null, null)))
+            .collect(toList());
+    }
+
+    /**
+     * Sets the tracked ender pearls for this player.
+     *
+     * @param pearls tracked ender pearls to restore on reconnect
+     */
+    public void setEnderPearls(Collection<EnderPearlRestoreData> pearls) {
+        this.enderPearlUuids = new HashSet<>();
+        this.enderPearls = new HashMap<>();
+        for (EnderPearlRestoreData pearl : pearls) {
+            if (pearl != null) {
+                enderPearlUuids.add(pearl.getUuid());
+                enderPearls.put(pearl.getUuid(), pearl);
+            }
+        }
     }
 
     /**

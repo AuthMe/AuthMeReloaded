@@ -7,12 +7,14 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import fr.xephi.authme.data.limbo.EnderPearlRestoreData;
 import fr.xephi.authme.data.limbo.LimboPlayer;
 import fr.xephi.authme.data.limbo.UserGroup;
 import fr.xephi.authme.service.BukkitService;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
+import org.bukkit.util.Vector;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -37,6 +39,11 @@ import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.LOC_X
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.LOC_Y;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.LOC_YAW;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.LOC_Z;
+import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.PEARL_UUID;
+import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.VELOCITY;
+import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.VEL_X;
+import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.VEL_Y;
+import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.VEL_Z;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.VEHICLE_TYPE;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.VEHICLE_UUID;
 import static fr.xephi.authme.data.limbo.persistence.LimboPlayerSerializer.WALK_SPEED;
@@ -76,14 +83,14 @@ class LimboPlayerDeserializer implements JsonDeserializer<LimboPlayer> {
 
         JsonElement pearlsElement = jsonObject.get(ENDER_PEARLS);
         if (pearlsElement != null && pearlsElement.isJsonArray()) {
-            Set<UUID> pearlUuids = new HashSet<>();
+            Set<EnderPearlRestoreData> pearls = new HashSet<>();
             for (JsonElement pearlElement : pearlsElement.getAsJsonArray()) {
-                try {
-                    pearlUuids.add(UUID.fromString(pearlElement.getAsString()));
-                } catch (IllegalArgumentException ignored) {
+                EnderPearlRestoreData pearl = deserializeEnderPearl(pearlElement);
+                if (pearl != null) {
+                    pearls.add(pearl);
                 }
             }
-            limboPlayer.setEnderPearlUuids(pearlUuids);
+            limboPlayer.setEnderPearls(pearls);
         }
 
         JsonElement vehicleUuidElement = jsonObject.get(VEHICLE_UUID);
@@ -101,20 +108,55 @@ class LimboPlayerDeserializer implements JsonDeserializer<LimboPlayer> {
     }
 
     private Location deserializeLocation(JsonObject jsonObject) {
-        JsonElement e;
-        if ((e = jsonObject.getAsJsonObject(LOCATION)) != null) {
-            JsonObject locationObject = e.getAsJsonObject();
-            World world = bukkitService.getWorld(getString(locationObject, LOC_WORLD));
-            if (world != null) {
-                double x = getDouble(locationObject, LOC_X);
-                double y = getDouble(locationObject, LOC_Y);
-                double z = getDouble(locationObject, LOC_Z);
-                float yaw = getFloat(locationObject, LOC_YAW);
-                float pitch = getFloat(locationObject, LOC_PITCH);
-                return new Location(world, x, y, z, yaw, pitch);
-            }
+        JsonObject locationObject = jsonObject.getAsJsonObject(LOCATION);
+        if (locationObject != null) {
+            return deserializeLocationObject(locationObject);
         }
         return null;
+    }
+
+    private EnderPearlRestoreData deserializeEnderPearl(JsonElement pearlElement) {
+        try {
+            if (!pearlElement.isJsonObject()) {
+                return new EnderPearlRestoreData(UUID.fromString(pearlElement.getAsString()), null, null);
+            }
+
+            JsonObject pearlObject = pearlElement.getAsJsonObject();
+            UUID pearlUuid = UUID.fromString(getString(pearlObject, PEARL_UUID));
+            Location location = deserializeLocationObject(pearlObject.getAsJsonObject(LOCATION));
+            Vector velocity = deserializeVelocity(pearlObject.getAsJsonObject(VELOCITY));
+            return new EnderPearlRestoreData(pearlUuid, location, velocity);
+        } catch (IllegalArgumentException ignored) {
+            return null;
+        }
+    }
+
+    private Location deserializeLocationObject(JsonObject locationObject) {
+        if (locationObject == null) {
+            return null;
+        }
+
+        World world = bukkitService.getWorld(getString(locationObject, LOC_WORLD));
+        if (world == null) {
+            return null;
+        }
+
+        double x = getDouble(locationObject, LOC_X);
+        double y = getDouble(locationObject, LOC_Y);
+        double z = getDouble(locationObject, LOC_Z);
+        float yaw = getFloat(locationObject, LOC_YAW);
+        float pitch = getFloat(locationObject, LOC_PITCH);
+        return new Location(world, x, y, z, yaw, pitch);
+    }
+
+    private Vector deserializeVelocity(JsonObject velocityObject) {
+        if (velocityObject == null) {
+            return null;
+        }
+        return new Vector(
+            getDouble(velocityObject, VEL_X),
+            getDouble(velocityObject, VEL_Y),
+            getDouble(velocityObject, VEL_Z));
     }
 
     private static String getString(JsonObject jsonObject, String memberName) {

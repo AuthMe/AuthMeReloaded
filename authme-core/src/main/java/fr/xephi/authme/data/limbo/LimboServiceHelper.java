@@ -14,7 +14,9 @@ import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -105,15 +107,32 @@ class LimboServiceHelper {
         Location location = firstNotNull(oldLimbo.getLocation(), newLimbo.getLocation());
 
         LimboPlayer merged = new LimboPlayer(location, isOperator, groups, canFly, walkSpeed, flySpeed);
-        Set<UUID> mergedPearls = new HashSet<>(newLimbo.getEnderPearlUuids());
-        mergedPearls.addAll(oldLimbo.getEnderPearlUuids());
-        merged.setEnderPearlUuids(mergedPearls);
+        merged.setEnderPearls(mergeEnderPearls(newLimbo, oldLimbo));
 
         UUID vehicleUuid = oldLimbo.getVehicleUuid() != null ? oldLimbo.getVehicleUuid() : newLimbo.getVehicleUuid();
         EntityType vehicleType = oldLimbo.getVehicleType() != null ? oldLimbo.getVehicleType() : newLimbo.getVehicleType();
         merged.setVehicle(vehicleUuid, vehicleType);
 
         return merged;
+    }
+
+    private static Collection<EnderPearlRestoreData> mergeEnderPearls(LimboPlayer newLimbo, LimboPlayer oldLimbo) {
+        Map<UUID, EnderPearlRestoreData> mergedPearls = new LinkedHashMap<>();
+        for (EnderPearlRestoreData pearl : oldLimbo.getEnderPearls()) {
+            mergedPearls.put(pearl.getUuid(), pearl);
+        }
+        for (EnderPearlRestoreData pearl : newLimbo.getEnderPearls()) {
+            mergedPearls.merge(pearl.getUuid(), pearl, LimboServiceHelper::preferPearlWithMoreState);
+        }
+        return mergedPearls.values();
+    }
+
+    private static EnderPearlRestoreData preferPearlWithMoreState(EnderPearlRestoreData existingPearl,
+                                                                  EnderPearlRestoreData incomingPearl) {
+        if (incomingPearl.hasDetailedState() == existingPearl.hasDetailedState()) {
+            return incomingPearl;
+        }
+        return incomingPearl.hasDetailedState() ? incomingPearl : existingPearl;
     }
 
     private static Location firstNotNull(Location first, Location second) {

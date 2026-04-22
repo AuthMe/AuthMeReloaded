@@ -66,6 +66,13 @@ public final class LimboSettings implements SettingsHolder {
     public static final Property<WalkFlySpeedRestoreType> RESTORE_WALK_SPEED =
         newProperty(WalkFlySpeedRestoreType.class, "limbo.restoreWalkSpeed", WalkFlySpeedRestoreType.RESTORE_NO_ZERO);
 
+    @Comment({
+        "If true, AuthMe recreates tracked ender pearls after login when the original entity",
+        "cannot be found anymore. Disable this if you only want to restore still-existing pearls."
+    })
+    public static final Property<Boolean> RECREATE_ENDER_PEARLS =
+        newProperty("limbo.recreateEnderPearls", true);
+
     private LimboSettings() {
     }
 

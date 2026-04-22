@@ -13,7 +13,12 @@ import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.LimboSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
+import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.EntityType;
+import org.bukkit.util.Vector;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -22,9 +27,12 @@ import org.mockito.Mockito;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
@@ -79,6 +87,7 @@ public class LimboServiceTest {
     @BeforeEach
     public void mockSettings() {
         given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
+        given(settings.getProperty(LimboSettings.RECREATE_ENDER_PEARLS)).willReturn(true);
         given(teleportationService.consumeOriginalJoinLocation(anyString(), any()))
             .willAnswer(invocation -> invocation.getArgument(1));
     }
@@ -255,6 +264,66 @@ public class LimboServiceTest {
         verify(taskManager).registerTimeoutTask(player, limbo, LimboMessageType.LOG_IN);
         verify(taskManager).registerMessageTask(player, limbo, LimboMessageType.LOG_IN);
         verify(authGroupHandler).setGroup(player, limbo, AuthGroupType.REGISTERED_UNAUTHENTICATED);
+    }
+
+    @Test
+    public void shouldRecreateMissingEnderPearls() {
+        // given
+        Player player = newPlayer("Pearlie");
+        Server server = mock(Server.class);
+        World world = mock(World.class);
+        EnderPearl recreatedPearl = mock(EnderPearl.class);
+        given(player.getServer()).willReturn(server);
+        given(server.getWorlds()).willReturn(Collections.singletonList(world));
+        given(world.getEntities()).willReturn(Collections.emptyList());
+
+        World pearlWorld = mock(World.class);
+        given(pearlWorld.spawnEntity(any(Location.class), eq(EntityType.ENDER_PEARL))).willReturn(recreatedPearl);
+        Location pearlLocation = new Location(pearlWorld, 5.0, 64.0, -2.5, 15.0f, 30.0f);
+        Vector pearlVelocity = new Vector(0.01, 0.2, -0.03);
+        UUID pearlUuid = UUID.nameUUIDFromBytes("missing-pearl".getBytes());
+
+        LimboPlayer limbo = new LimboPlayer(null, false, Collections.emptyList(), false, 0.0f, 0.0f);
+        limbo.setEnderPearls(Collections.singletonList(new EnderPearlRestoreData(pearlUuid, pearlLocation, pearlVelocity)));
+        getLimboMap().put("pearlie", limbo);
+
+        // when
+        limboService.restoreEntities(player);
+
+        // then
+        verify(pearlWorld).spawnEntity(pearlLocation, EntityType.ENDER_PEARL);
+        verify(recreatedPearl).setShooter(player);
+        verify(recreatedPearl).setVelocity(pearlVelocity);
+        assertThat(limbo.getEnderPearls(), hasSize(0));
+    }
+
+    @Test
+    public void shouldNotRecreateMissingEnderPearlsWhenDisabledInConfig() {
+        // given
+        given(settings.getProperty(LimboSettings.RECREATE_ENDER_PEARLS)).willReturn(false);
+
+        Player player = newPlayer("Pearlie");
+        Server server = mock(Server.class);
+        World world = mock(World.class);
+        World pearlWorld = mock(World.class);
+        given(player.getServer()).willReturn(server);
+        given(server.getWorlds()).willReturn(Collections.singletonList(world));
+        given(world.getEntities()).willReturn(Collections.emptyList());
+
+        Location pearlLocation = new Location(pearlWorld, 5.0, 64.0, -2.5, 15.0f, 30.0f);
+        Vector pearlVelocity = new Vector(0.01, 0.2, -0.03);
+        UUID pearlUuid = UUID.nameUUIDFromBytes("disabled-missing-pearl".getBytes());
+
+        LimboPlayer limbo = new LimboPlayer(null, false, Collections.emptyList(), false, 0.0f, 0.0f);
+        limbo.setEnderPearls(Collections.singletonList(new EnderPearlRestoreData(pearlUuid, pearlLocation, pearlVelocity)));
+        getLimboMap().put("pearlie", limbo);
+
+        // when
+        limboService.restoreEntities(player);
+
+        // then
+        verifyNoInteractions(pearlWorld);
+        assertThat(limbo.getEnderPearls(), hasSize(0));
     }
 
     @Test

@@ -12,17 +12,21 @@ import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import javax.inject.Inject;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static fr.xephi.authme.settings.properties.LimboSettings.RESTORE_ALLOW_FLIGHT;
+import static fr.xephi.authme.settings.properties.LimboSettings.RECREATE_ENDER_PEARLS;
 import static fr.xephi.authme.settings.properties.LimboSettings.RESTORE_FLY_SPEED;
 import static fr.xephi.authme.settings.properties.LimboSettings.RESTORE_WALK_SPEED;
 
@@ -222,16 +226,29 @@ public class LimboService {
      * @param player     the authenticated player who is quitting
      * @param pearlUuids entity UUIDs of the player's in-flight ender pearls
      */
-    public void saveEnderPearlsForPlayer(Player player, Set<UUID> pearlUuids) {
+    public void saveEnderPearlsForPlayer(Player player, Collection<EnderPearlRestoreData> pearls) {
         LimboPlayer limbo = persistence.getLimboPlayer(player);
         if (limbo == null) {
             limbo = new LimboPlayer(null, player.isOp(), Collections.emptyList(), player.getAllowFlight(),
                 player.getWalkSpeed(), player.getFlySpeed());
         }
-        limbo.setEnderPearlUuids(pearlUuids);
+        limbo.setEnderPearls(pearls);
         persistence.saveLimboPlayer(player, limbo);
         logger.debug("Saved {0} ender pearl(s) to disk for `{1}`",
-            pearlUuids.size(), player.getName().toLowerCase(Locale.ROOT));
+            pearls.size(), player.getName().toLowerCase(Locale.ROOT));
+    }
+
+    /**
+     * Saves ender pearl UUIDs without detailed state. This legacy overload is kept so older
+     * callers and persisted data can still be handled even though recreation requires more data.
+     *
+     * @param player     the authenticated player who is quitting
+     * @param pearlUuids entity UUIDs of the player's in-flight ender pearls
+     */
+    public void saveEnderPearlsForPlayer(Player player, java.util.Set<UUID> pearlUuids) {
+        saveEnderPearlsForPlayer(player, pearlUuids.stream()
+            .map(uuid -> new EnderPearlRestoreData(uuid, null, null))
+            .collect(Collectors.toList()));
     }
 
     /**
@@ -267,48 +284,84 @@ public class LimboService {
         if (limbo == null) {
             return;
         }
-        Set<UUID> pearlUuids = limbo.getEnderPearlUuids();
+        Map<UUID, EnderPearlRestoreData> pendingPearls = new HashMap<>();
+        for (EnderPearlRestoreData pearl : limbo.getEnderPearls()) {
+            pendingPearls.put(pearl.getUuid(), pearl);
+        }
         UUID vehicleUuid = limbo.getVehicleUuid();
         EntityType vehicleType = limbo.getVehicleType();
 
-        if (pearlUuids.isEmpty() && vehicleUuid == null) {
+        if (pendingPearls.isEmpty() && vehicleUuid == null) {
             return;
         }
 
-        int pearlTotal = pearlUuids.size();
+        int pearlTotal = pendingPearls.size();
         int pearlRestored = 0;
-        boolean vehicleRestored = false;
+        int pearlRecreated = 0;
+        boolean recreateMissingPearls = settings.getProperty(RECREATE_ENDER_PEARLS);
+        boolean vehicleDone = vehicleUuid == null;
 
         outer:
         for (World world : player.getServer().getWorlds()) {
             for (Entity entity : world.getEntities()) {
-                if (!pearlUuids.isEmpty() && entity instanceof EnderPearl
-                        && pearlUuids.contains(entity.getUniqueId())) {
+                if (!pendingPearls.isEmpty() && entity instanceof EnderPearl
+                        && pendingPearls.containsKey(entity.getUniqueId())) {
                     ((EnderPearl) entity).setShooter(player);
+                    pendingPearls.remove(entity.getUniqueId());
                     pearlRestored++;
-                } else if (vehicleUuid != null && !vehicleRestored
+                } else if (!vehicleDone
                         && vehicleUuid.equals(entity.getUniqueId())) {
                     entity.addPassenger(player);
-                    vehicleRestored = true;
+                    vehicleDone = true;
                 }
-                if (pearlUuids.isEmpty() && vehicleRestored) {
+                if (pendingPearls.isEmpty() && vehicleDone) {
                     break outer;
                 }
             }
         }
 
-        pearlUuids.clear();
+        if (recreateMissingPearls) {
+            for (EnderPearlRestoreData pearl : pendingPearls.values()) {
+                if (recreateEnderPearl(player, pearl)) {
+                    pearlRecreated++;
+                }
+            }
+        } else if (!pendingPearls.isEmpty()) {
+            logger.debug("Skipped recreation of {0} missing ender pearl(s) for `{1}` because it is disabled in config",
+                pendingPearls.size(), name);
+        }
+
+        limbo.setEnderPearls(Collections.emptyList());
         limbo.setVehicle(null, null);
 
         if (pearlTotal > 0) {
-            logger.debug("Restored {0}/{1} ender pearl(s) for `{2}`", pearlRestored, pearlTotal, name);
+            logger.debug("Restored {0}/{1} ender pearl(s) and recreated {2} for `{3}`",
+                pearlRestored, pearlTotal, pearlRecreated, name);
         }
         if (vehicleUuid != null) {
-            if (vehicleRestored) {
+            if (vehicleDone) {
                 logger.debug("Restored vehicle ({0}) for `{1}`", vehicleType, name);
             } else {
                 logger.debug("Vehicle ({0}) no longer exists for `{1}`, skipping", vehicleType, name);
             }
         }
+    }
+
+    private boolean recreateEnderPearl(Player player, EnderPearlRestoreData pearl) {
+        if (!pearl.canBeRecreated()) {
+            logger.debug("Unable to recreate ender pearl {0} for `{1}` because its saved location is unavailable",
+                pearl.getUuid(), player.getName().toLowerCase(Locale.ROOT));
+            return false;
+        }
+
+        EnderPearl recreatedPearl = (EnderPearl) pearl.getLocation().getWorld()
+            .spawnEntity(pearl.getLocation(), EntityType.ENDER_PEARL);
+        recreatedPearl.setShooter(player);
+
+        Vector velocity = pearl.getVelocity();
+        if (velocity != null) {
+            recreatedPearl.setVelocity(velocity);
+        }
+        return true;
     }
 }

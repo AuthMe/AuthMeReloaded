@@ -30,6 +30,7 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
@@ -69,6 +70,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -1043,6 +1045,48 @@ public class PlayerListenerTest {
         // then
         assertThat(event.getQuitMessage(), equalTo(quitMessage));
         verify(antiBotService).wasPlayerKicked(name);
+        verify(management).performQuit(player);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldSaveEnderPearlRestoreDataOnQuit() {
+        // given
+        String name = "Pearlie";
+        Player player = mockPlayerWithName(name);
+        Server server = mock(Server.class);
+        World world = mock(World.class);
+        EnderPearl pearl = mock(EnderPearl.class);
+        World pearlWorld = mock(World.class);
+        Location pearlLocation = new Location(pearlWorld, 10.0, 65.0, -1.0);
+        org.bukkit.util.Vector pearlVelocity = new org.bukkit.util.Vector(0.1, 0.2, 0.3);
+
+        given(settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)).willReturn(false);
+        given(settings.getProperty(RegistrationSettings.REMOVE_UNLOGGED_LEAVE_MESSAGE)).willReturn(false);
+        given(antiBotService.wasPlayerKicked(name)).willReturn(false);
+        given(listenerService.shouldCancelEvent(player)).willReturn(false);
+        given(player.getServer()).willReturn(server);
+        given(server.getWorlds()).willReturn(Collections.singletonList(world));
+        given(world.getEntitiesByClass(EnderPearl.class)).willReturn(Collections.singletonList(pearl));
+        given(pearl.getShooter()).willReturn(player);
+        given(pearl.getUniqueId()).willReturn(UUID.nameUUIDFromBytes("quit-pearl".getBytes()));
+        given(pearl.getLocation()).willReturn(pearlLocation);
+        given(pearl.getVelocity()).willReturn(pearlVelocity);
+
+        PlayerQuitEvent event = new PlayerQuitEvent(player, "quit");
+        org.mockito.ArgumentCaptor<Collection<fr.xephi.authme.data.limbo.EnderPearlRestoreData>> captor =
+            org.mockito.ArgumentCaptor.forClass(Collection.class);
+
+        // when
+        listener.onPlayerQuit(event);
+
+        // then
+        verify(limboService).saveEnderPearlsForPlayer(eq(player), captor.capture());
+        Collection<fr.xephi.authme.data.limbo.EnderPearlRestoreData> pearls = captor.getValue();
+        assertThat(pearls, hasSize(1));
+        fr.xephi.authme.data.limbo.EnderPearlRestoreData savedPearl = pearls.iterator().next();
+        assertThat(savedPearl.getLocation(), equalTo(pearlLocation));
+        assertThat(savedPearl.getVelocity(), equalTo(pearlVelocity));
         verify(management).performQuit(player);
     }
 
