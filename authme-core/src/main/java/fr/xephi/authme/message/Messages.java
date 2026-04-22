@@ -5,6 +5,8 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.util.expiring.Duration;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -44,18 +46,20 @@ public class Messages {
 
     private final BukkitService bukkitService;
     private final MessagesFileHandler messagesFileHandler;
+    private final Settings settings;
 
     /*
      * Constructor.
      */
     @Inject
-    Messages(MessagesFileHandler messagesFileHandler, BukkitService bukkitService) {
+    Messages(MessagesFileHandler messagesFileHandler, BukkitService bukkitService, Settings settings) {
         this.messagesFileHandler = messagesFileHandler;
         this.bukkitService = bukkitService;
+        this.settings = settings;
     }
 
     Messages(MessagesFileHandler messagesFileHandler) {
-        this(messagesFileHandler, null);
+        this(messagesFileHandler, null, null);
     }
 
     /**
@@ -131,12 +135,21 @@ public class Messages {
      * @return The message from the file
      */
     private String retrieveMessage(MessageKey key, CommandSender sender) {
-        String message = messagesFileHandler.getMessage(key.getKey());
-        String displayName = sender.getName();
-        if (sender instanceof Player) {
-            displayName = ((Player) sender).getDisplayName();
+        String message;
+        String displayName;
+        if (sender instanceof Player player) {
+            displayName = player.getDisplayName();
+            if (settings != null && settings.getProperty(PluginSettings.PER_PLAYER_LOCALE)) {
+                String language = PlayerLocaleResolver.toLanguageCode(player.getLocale());
+                message = messagesFileHandler.getMessage(key.getKey(), language);
+            } else {
+                message = messagesFileHandler.getMessage(key.getKey());
+            }
+        } else {
+            message = messagesFileHandler.getMessage(key.getKey());
+            displayName = sender.getName();
         }
-        
+
         return ChatColor.translateAlternateColorCodes('&', message)
                 .replace(NEWLINE_TAG, "\n")
                 .replace(USERNAME_TAG, sender.getName())
