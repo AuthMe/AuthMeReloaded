@@ -106,7 +106,7 @@ public class ConverterCommandTest {
     @Test
     public void shouldLaunchConverterForAllTypes() {
         // given
-        String converterName = "rakamak";
+        String converterName = "authplus";
         Class<? extends Converter> converterClass = ConverterCommand.CONVERTERS.get(converterName);
         Converter converter = createMockReturnedByInjector(converterClass);
         CommandSender sender = mock(CommandSender.class);
@@ -125,7 +125,7 @@ public class ConverterCommandTest {
     @Test
     public void shouldCatchExceptionInConverterAndInformSender() {
         // given
-        String converterName = "vauth";
+        String converterName = "authplus";
         Class<? extends Converter> converterClass = ConverterCommand.CONVERTERS.get(converterName);
         Converter converter = createMockReturnedByInjector(converterClass);
         doThrow(IllegalStateException.class).when(converter).execute(any(CommandSender.class));

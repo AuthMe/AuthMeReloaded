@@ -112,6 +112,7 @@ public class AbstractDataSourceConverterTest {
     }
 
     private static class DataSourceConverterTestImpl<S extends DataSource> extends AbstractDataSourceConverter<S> {
+
         private final S source;
 
         DataSourceConverterTestImpl(S source, DataSource destination, DataSourceType destinationType) {
@@ -121,8 +122,7 @@ public class AbstractDataSourceConverterTest {
 
         @Override
         protected S getSource() {
-          return source;
+            return source;
         }
     }
 }
-

@@ -7,13 +7,8 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.converter.AuthPlusConverter;
 import fr.xephi.authme.datasource.converter.Converter;
-import fr.xephi.authme.datasource.converter.CrazyLoginConverter;
-import fr.xephi.authme.datasource.converter.LoginSecurityConverter;
 import fr.xephi.authme.datasource.converter.MySqlToSqlite;
-import fr.xephi.authme.datasource.converter.RakamakConverter;
-import fr.xephi.authme.datasource.converter.RoyalAuthConverter;
 import fr.xephi.authme.datasource.converter.SqliteToSql;
-import fr.xephi.authme.datasource.converter.VAuthConverter;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.service.BukkitService;
@@ -83,13 +78,8 @@ public class ConverterCommand implements ExecutableCommand {
     private static Map<String, Class<? extends Converter>> getConverters() {
         return ImmutableSortedMap.<String, Class<? extends Converter>>naturalOrder()
             .put("authplus", AuthPlusConverter.class)
-            .put("crazylogin", CrazyLoginConverter.class)
-            .put("rakamak", RakamakConverter.class)
-            .put("royalauth", RoyalAuthConverter.class)
-            .put("vauth", VAuthConverter.class)
             .put("sqlitetosql", SqliteToSql.class)
             .put("mysqltosqlite", MySqlToSqlite.class)
-            .put("loginsecurity", LoginSecurityConverter.class)
             .build();
     }
 }

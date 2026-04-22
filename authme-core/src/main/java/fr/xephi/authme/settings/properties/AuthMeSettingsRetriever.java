@@ -23,6 +23,6 @@ public final class AuthMeSettingsRetriever {
             DatabaseSettings.class,  PluginSettings.class,    RestrictionSettings.class,
             EmailSettings.class,     HooksSettings.class,     ProtectionSettings.class,
             PurgeSettings.class,     SecuritySettings.class,  RegistrationSettings.class,
-            LimboSettings.class,     BackupSettings.class,    ConverterSettings.class);
+            LimboSettings.class,     BackupSettings.class);
     }
 }

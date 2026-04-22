@@ -165,7 +165,7 @@ commands:
         detailedDescription: 'AuthMeReloaded 的轉換器指令。'
         arg1:
             label: '工作'
-            description: '工作'
+            description: '工作: authplus / sqliteToSql / mysqlToSqlite'
     authme.messages:
         description: '修改目前的幫助檔案。'
         detailedDescription: '修改目前的幫助檔案。'

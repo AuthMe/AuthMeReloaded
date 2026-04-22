@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Wed Apr 22 20:38:37 CEST 2026. See authme-tools/src/test/java/tools/docs/config/config.tpl.md -->
+<!-- File auto-generated on Wed Apr 22 22:57:48 CEST 2026. See authme-tools/src/test/java/tools/docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder,
@@ -591,30 +591,6 @@ BackupSystem:
     OnServerStop: true
     # Windows only: MySQL installation path
     MysqlWindowsPath: C:\Program Files\MySQL\MySQL Server 5.1\
-# Converter settings: see https://github.com/AuthMe/AuthMeReloaded/wiki/Converters
-Converter:
-    Rakamak:
-        # Rakamak file name
-        fileName: users.rak
-        # Rakamak use IP?
-        useIP: false
-        # Rakamak IP file name
-        ipFileName: UsersIp.rak
-    CrazyLogin:
-        # CrazyLogin database file name
-        fileName: accounts.db
-    loginSecurity:
-        # LoginSecurity: convert from SQLite; if false we use MySQL
-        useSqlite: true
-        mySql:
-            # LoginSecurity MySQL: database host
-            host: ''
-            # LoginSecurity MySQL: database name
-            database: ''
-            # LoginSecurity MySQL: database user
-            user: ''
-            # LoginSecurity MySQL: password for database user
-            password: ''
 
 ```
 
@@ -623,4 +599,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed Apr 22 20:38:37 CEST 2026
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed Apr 22 22:57:48 CEST 2026

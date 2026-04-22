@@ -5,6 +5,10 @@ Run a converter with `/authme converter <name>` (requires `authme.admin.converte
 
 ---
 
+AuthMeReloaded currently ships the **Auth+** converter and the built-in database migration helpers below.
+
+---
+
 ### Auth+ → `authplus`
 
 Migrates accounts from the **Auth+** plugin.
@@ -19,47 +23,6 @@ Migrates accounts from the **Auth+** plugin.
 - Auth+ stores accounts by UUID only. AuthMe resolves each UUID to a player name via the server's
   local cache (`usercache.json`). Players who have never joined the server will be skipped.
 - Players already present in AuthMe's database are skipped automatically.
-
----
-
-### CrazyLogin → `crazylogin`
-
-Migrates accounts from the **CrazyLogin** plugin.
-
-**Source file:** configured via `Converter.crazyloginFileName` in AuthMe's `config.yml` (default: `crazylogin.db`).
-
----
-
-### LoginSecurity → `loginsecurity`
-
-Migrates accounts from the **LoginSecurity** plugin. Supports both SQLite and MySQL sources,
-configured under `Converter.LoginSecurity` in AuthMe's `config.yml`.
-
-**After running:** add `BCRYPT` to `legacyHashes` in your `config.yml`.
-
----
-
-### RakamakConverter → `rakamak`
-
-Migrates accounts from the **Rakamak** plugin.
-
-**Source file:** configured via `Converter.rakamakFile` in AuthMe's `config.yml`.
-
----
-
-### RoyalAuth → `royalauth`
-
-Migrates accounts from the **RoyalAuth** plugin.
-
-**Source file:** `plugins/RoyalAuth/players.yml`
-
----
-
-### vAuth → `vauth`
-
-Migrates accounts from the **vAuth** plugin.
-
-**Source file:** `plugins/vAuth/passwords.yml`
 
 ---
 

@@ -296,17 +296,6 @@ Security:
         # The length of time a IP address will be tempbanned in minutes
         # Default: 480 minutes, or 8 hours
         tempbanLength: 480
-Converter:
-    Rakamak:
-        # Rakamak file name
-        fileName: users.rak
-        # Rakamak use ip ?
-        useIP: false
-        # IP file name for rakamak
-        ipFileName: UsersIp.rak
-    CrazyLogin:
-        # CrazyLogin database file
-        fileName: accounts.db
 Email:
     # Email SMTP server host
     mailSMTP: smtp.gmail.com

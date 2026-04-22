@@ -445,8 +445,7 @@ public class CommandInitializer {
             .labels("converter", "convert", "conv")
             .description("Converter command")
             .detailedDescription("Converter command for AuthMeReloaded.")
-            .withArgument("job", "Conversion job: crazylogin / rakamak / "
-                + "royalauth / vauth / sqliteToSql / mysqlToSqlite / loginsecurity", OPTIONAL)
+            .withArgument("job", "Conversion job: authplus / sqliteToSql / mysqlToSqlite", OPTIONAL)
             .permission(AdminPermission.CONVERTER)
             .executableCommand(ConverterCommand.class)
             .register();

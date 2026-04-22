@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Wed Apr 22 20:38:39 CEST 2026. See authme-tools/src/test/java/tools/docs/permissions/permission_nodes.tpl.md -->
+<!-- File auto-generated on Wed Apr 22 22:57:49 CEST 2026. See authme-tools/src/test/java/tools/docs/permissions/permission_nodes.tpl.md -->
 
 ## AuthMe Permission Nodes
 The following are the permission nodes that are currently supported by the latest dev builds.
@@ -76,4 +76,4 @@ and Paper 1.21 builds.
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed Apr 22 20:38:39 CEST 2026
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed Apr 22 22:57:49 CEST 2026

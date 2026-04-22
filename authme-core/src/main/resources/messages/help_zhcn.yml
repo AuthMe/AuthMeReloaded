@@ -132,7 +132,7 @@ commands:
         detailedDescription: '转换数据命令'
         arg1:
             label: '类型'
-            description: '转换类型:crazylogin/rakamak/royalauth/vauth/sqliteToSql/mysqlToSqlite'
+            description: '转换类型: authplus / sqliteToSql / mysqlToSqlite'
     authme.messages:
         description: '添加信息'
         detailedDescription: '在语言文件夹中添加缺少的信息'

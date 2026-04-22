@@ -142,7 +142,7 @@ commands:
         detailedDescription: 'Comando per il convertitore di AuthMeReloaded.'
         arg1:
             label: 'incarico'
-            description: 'Incarico di conversione: crazylogin / rakamak / royalauth / vauth / sqliteToSql / mysqlToSqlite'
+            description: 'Incarico di conversione: authplus / sqliteToSql / mysqlToSqlite'
     authme.help:
         description: 'Visualizza l''assistenza'
         detailedDescription: 'Visualizza informazioni dettagliate per i comandi ''/authme''.'
