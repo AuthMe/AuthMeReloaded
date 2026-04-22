@@ -605,19 +605,37 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldIgnorePlayerRespawnWithNoTeleport() {
+    public void shouldIgnorePlayerRespawnForAuthenticatedPlayer() {
         // given
         Player player = mock(Player.class);
         Location respawnLocation = mock(Location.class);
         PlayerRespawnEvent event = spy(new PlayerRespawnEvent(player, respawnLocation, false));
+        given(listenerService.shouldCancelEvent(event)).willReturn(false);
+
+        // when
+        listener.onPlayerRespawn(event);
+
+        // then
+        verifyNoInteractions(spawnLoader, bukkitService);
+        verify(event, never()).setRespawnLocation(any());
+    }
+
+    @Test
+    public void shouldSkipTeleportOnRespawnWithNoTeleportButStillScheduleRestrictions() {
+        // given
+        Player player = mock(Player.class);
+        Location respawnLocation = mock(Location.class);
+        PlayerRespawnEvent event = spy(new PlayerRespawnEvent(player, respawnLocation, false));
+        given(listenerService.shouldCancelEvent(event)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(true);
 
         // when
         listener.onPlayerRespawn(event);
 
         // then
-        verifyNoInteractions(listenerService);
+        verifyNoInteractions(spawnLoader);
         verify(event, never()).setRespawnLocation(any());
+        verify(bukkitService).runTaskLater(eq(player), any(Runnable.class), eq(1L));
     }
 
     @Test
@@ -626,7 +644,6 @@ public class PlayerListenerTest {
         Player player = mock(Player.class);
         Location respawnLocation = mock(Location.class);
         PlayerRespawnEvent event = spy(new PlayerRespawnEvent(player, respawnLocation, false));
-        given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(false);
         given(listenerService.shouldCancelEvent(event)).willReturn(false);
 
         // when
@@ -656,6 +673,7 @@ public class PlayerListenerTest {
         // then
         verify(spawnLoader).getPlayerRespawnLocationOrSpawn(player);
         verify(event).setRespawnLocation(newLocation);
+        verify(bukkitService).runTaskLater(eq(player), any(Runnable.class), eq(1L));
     }
 
     @Test
@@ -676,6 +694,7 @@ public class PlayerListenerTest {
         // then
         verify(spawnLoader).getPlayerRespawnLocationOrSpawn(player);
         verify(event, never()).setRespawnLocation(any());
+        verify(bukkitService).runTaskLater(eq(player), any(Runnable.class), eq(1L));
     }
 
     @Test
@@ -694,6 +713,7 @@ public class PlayerListenerTest {
         // then
         verify(spawnLoader).getPlayerRespawnLocationOrSpawn(player);
         verify(event, never()).setRespawnLocation(any());
+        verify(bukkitService).runTaskLater(eq(player), any(Runnable.class), eq(1L));
     }
 
     @Test

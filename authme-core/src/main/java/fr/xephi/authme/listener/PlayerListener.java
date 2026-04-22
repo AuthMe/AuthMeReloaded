@@ -414,16 +414,19 @@ public class PlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        if (settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
-            return;
-        }
+        Player player = event.getPlayer();
         if (!listenerService.shouldCancelEvent(event)) {
             return;
         }
-        Location spawn = spawnLoader.getPlayerRespawnLocationOrSpawn(event.getPlayer());
-        if (spawn != null && spawn.getWorld() != null) {
-            event.setRespawnLocation(spawn);
+        if (!settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
+            Location spawn = spawnLoader.getPlayerRespawnLocationOrSpawn(player);
+            if (spawn != null && spawn.getWorld() != null) {
+                event.setRespawnLocation(spawn);
+            }
         }
+        // Bukkit sends a fresh PlayerAbilities packet on respawn that resets walk/fly speed,
+        // overriding the restriction set during join. Re-apply one tick later.
+        bukkitService.runTaskLater(player, () -> limboService.reapplyLimboRestrictions(player), 1L);
     }
 
     /*
