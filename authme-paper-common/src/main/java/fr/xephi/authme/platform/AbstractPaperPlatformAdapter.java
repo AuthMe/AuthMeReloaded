@@ -59,6 +59,11 @@ public abstract class AbstractPaperPlatformAdapter extends AbstractSpigotPlatfor
         return false;
     }
 
+    @Override
+    public boolean shouldHandlePlayerSpawnLocationEvent() {
+        return false;
+    }
+
     private static boolean hasDialogApi() {
         try {
             Class.forName("io.papermc.paper.dialog.Dialog", false, AbstractPaperPlatformAdapter.class.getClassLoader());

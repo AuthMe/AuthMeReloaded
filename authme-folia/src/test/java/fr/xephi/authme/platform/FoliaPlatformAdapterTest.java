@@ -63,6 +63,11 @@ public class FoliaPlatformAdapterTest {
     }
 
     @Test
+    public void shouldDisableLegacyPlayerSpawnLocationEventHandling() {
+        assertThat(adapter.shouldHandlePlayerSpawnLocationEvent(), is(false));
+    }
+
+    @Test
     public void showLoginDialogDelegatesToPaperDialogHelper() {
         // given
         Player player = mock(Player.class);

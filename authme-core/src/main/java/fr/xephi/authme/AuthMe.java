@@ -16,8 +16,6 @@ import fr.xephi.authme.initialization.TaskCloser;
 import fr.xephi.authme.listener.BlockListener;
 import fr.xephi.authme.listener.EntityListener;
 import fr.xephi.authme.listener.PlayerListener;
-import fr.xephi.authme.listener.PlayerListener111;
-import fr.xephi.authme.listener.PlayerListener19;
 import fr.xephi.authme.listener.ServerListener;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.platform.SchedulingAdapter;
@@ -298,9 +296,6 @@ public class AuthMe extends JavaPlugin {
         pluginManager.registerEvents(injector.getSingleton(EntityListener.class), this);
         pluginManager.registerEvents(injector.getSingleton(ServerListener.class), this);
 
-        // All supported versions are >= 1.16, so these listeners are always safe to register
-        pluginManager.registerEvents(injector.getSingleton(PlayerListener19.class), this);
-        pluginManager.registerEvents(injector.getSingleton(PlayerListener111.class), this);
         // Register platform-specific listeners provided by the version module
         EventRegistrationAdapter eventRegistration = injector.getSingleton(EventRegistrationAdapter.class);
         for (Class<? extends org.bukkit.event.Listener> listenerClass : eventRegistration.getAdditionalListeners()) {

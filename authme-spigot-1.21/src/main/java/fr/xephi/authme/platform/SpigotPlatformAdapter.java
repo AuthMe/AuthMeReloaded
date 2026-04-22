@@ -1,14 +1,13 @@
 package fr.xephi.authme.platform;
 
 import fr.xephi.authme.listener.PlayerSignOpenListener;
-import fr.xephi.authme.listener.PlayerListener19Spigot;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -50,7 +49,7 @@ public class SpigotPlatformAdapter extends AbstractSpigotPlatformAdapter {
 
     @Override
     public List<Class<? extends Listener>> getAdditionalListeners() {
-        return Arrays.asList(PlayerListener19Spigot.class, PlayerSignOpenListener.class);
+        return Collections.singletonList(PlayerSignOpenListener.class);
     }
 
     /**
