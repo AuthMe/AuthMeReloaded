@@ -14,6 +14,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.File;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static fr.xephi.authme.message.MessagePathHelper.DEFAULT_LANGUAGE;
 
@@ -21,6 +22,8 @@ import static fr.xephi.authme.message.MessagePathHelper.DEFAULT_LANGUAGE;
  * Handles a YAML message file with a default file fallback.
  */
 public abstract class AbstractMessageFileHandler implements Reloadable {
+
+    private static final FileConfiguration UNAVAILABLE = new YamlConfiguration();
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(AbstractMessageFileHandler.class);
 
@@ -34,6 +37,7 @@ public abstract class AbstractMessageFileHandler implements Reloadable {
     private String filename;
     private FileConfiguration configuration;
     private final String defaultFile;
+    private final ConcurrentHashMap<String, FileConfiguration> languageCache = new ConcurrentHashMap<>();
 
     protected AbstractMessageFileHandler() {
         this.defaultFile = createFilePath(DEFAULT_LANGUAGE);
@@ -46,6 +50,7 @@ public abstract class AbstractMessageFileHandler implements Reloadable {
         filename = createFilePath(language);
         File messagesFile = initializeFile(filename);
         configuration = YamlConfiguration.loadConfiguration(messagesFile);
+        languageCache.clear();
     }
 
     protected String getLanguage() {
@@ -92,6 +97,35 @@ public abstract class AbstractMessageFileHandler implements Reloadable {
      */
     public String getMessageIfExists(String key) {
         return configuration.getString(key);
+    }
+
+    /**
+     * Returns the message for the given key in the requested language, falling back to the
+     * server-configured language if the requested language is unavailable or missing the key.
+     *
+     * @param key the key to retrieve the message for
+     * @param language the AuthMe language code (e.g. {@code "fr"}), or {@code null} to use the server default
+     * @return the message
+     */
+    public String getMessage(String key, String language) {
+        if (language == null || language.equals(getLanguage())) {
+            return getMessage(key);
+        }
+        FileConfiguration config = languageCache.computeIfAbsent(language, this::loadLanguageConfiguration);
+        if (config == UNAVAILABLE) {
+            return getMessage(key);
+        }
+        String message = config.getString(key);
+        return message != null ? message : getMessage(key);
+    }
+
+    private FileConfiguration loadLanguageConfiguration(String language) {
+        String filePath = createFilePath(language);
+        File file = new File(dataFolder, filePath);
+        if (!file.exists() && FileUtils.getResourceFromJar(filePath) != null) {
+            FileUtils.copyFileFromResource(file, filePath);
+        }
+        return file.exists() ? YamlConfiguration.loadConfiguration(file) : UNAVAILABLE;
     }
 
     /**

@@ -35,6 +35,14 @@ public final class PluginSettings implements SettingsHolder {
         newProperty("settings.messagesLanguage", "en");
 
     @Comment({
+        "When enabled, messages are sent to each player in their client language,",
+        "falling back to messagesLanguage if their locale is unavailable.",
+        "Disable this if you want all players to receive messages in the same language."
+    })
+    public static final Property<Boolean> PER_PLAYER_LOCALE =
+        newProperty("settings.perPlayerLocale", true);
+
+    @Comment({
         "Enables switching a player to defined permission groups before they log in.",
         "See below for a detailed explanation."
     })
