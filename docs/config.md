@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Tue Apr 21 23:21:34 CEST 2026. See authme-core/src/test/java/tools/docs/config/config.tpl.md -->
+<!-- File auto-generated on Wed Apr 22 18:19:00 CEST 2026. See authme-core/src/test/java/tools/docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder,
@@ -123,6 +123,10 @@ settings:
     # Message language, available languages:
     # https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/translations.md
     messagesLanguage: en
+    # When enabled, messages are sent to each player in their client language,
+    # falling back to messagesLanguage if their locale is unavailable.
+    # Disable this if you want all players to receive messages in the same language.
+    perPlayerLocale: true
     # Forces authme to hook into Vault instead of a specific permission handler system.
     forceVaultHook: false
     # Log level: INFO, FINE, DEBUG. Use INFO for general messages,
@@ -619,4 +623,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue Apr 21 23:21:34 CEST 2026
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed Apr 22 18:19:00 CEST 2026
