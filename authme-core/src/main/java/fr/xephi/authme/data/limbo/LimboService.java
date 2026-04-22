@@ -223,8 +223,8 @@ public class LimboService {
      * to the player on reconnect (stasis chamber support). Called when an authenticated
      * player quits with pearls in flight.
      *
-     * @param player     the authenticated player who is quitting
-     * @param pearlUuids entity UUIDs of the player's in-flight ender pearls
+     * @param player the authenticated player who is quitting
+     * @param pearls tracked ender pearls of the player's in-flight ender pearls
      */
     public void saveEnderPearlsForPlayer(Player player, Collection<EnderPearlRestoreData> pearls) {
         LimboPlayer limbo = persistence.getLimboPlayer(player);
