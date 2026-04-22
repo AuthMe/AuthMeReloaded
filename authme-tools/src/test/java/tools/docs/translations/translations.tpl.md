@@ -1,5 +1,5 @@
 <!-- {gen_warning} -->
-<!-- File auto-generated on {gen_date}. See authme-core/src/test/java/tools/docs/translations/translations.tpl.md -->
+<!-- File auto-generated on {gen_date}. See authme-tools/src/test/java/tools/docs/translations/translations.tpl.md -->
 
 # AuthMe Translations
 The following translations are available in AuthMe. Set `messagesLanguage` to the language code

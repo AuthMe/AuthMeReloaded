@@ -14,6 +14,7 @@ import tools.utils.FileIoUtils;
 import tools.utils.ToolsConstants;
 
 import java.io.StringReader;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,7 +29,13 @@ import java.util.stream.Collectors;
  */
 public class GeneratePluginYml implements AutoToolTask {
 
-    private static final String PLUGIN_YML_FILE = ToolsConstants.MAIN_RESOURCES_ROOT + "plugin.yml";
+    private static final List<Path> PLUGIN_YML_FILES = List.of(
+        Paths.get(ToolsConstants.MAIN_RESOURCES_ROOT, "plugin.yml"),
+        Paths.get(ToolsConstants.CORE_TEST_RESOURCES_ROOT, "plugin.yml"),
+        Paths.get(ToolsConstants.REPOSITORY_ROOT_PATH, "authme-spigot-legacy", "src", "main", "resources", "plugin.yml"),
+        Paths.get(ToolsConstants.REPOSITORY_ROOT_PATH, "authme-spigot-1.21", "src", "main", "resources", "plugin.yml"),
+        Paths.get(ToolsConstants.REPOSITORY_ROOT_PATH, "authme-paper", "src", "main", "resources", "plugin.yml"),
+        Paths.get(ToolsConstants.REPOSITORY_ROOT_PATH, "authme-folia", "src", "main", "resources", "plugin.yml"));
 
     private static final Map<String, String> WILDCARD_PERMISSIONS = ImmutableMap.of(
         "authme.player.*", "Gives access to all player commands",
@@ -38,17 +45,20 @@ public class GeneratePluginYml implements AutoToolTask {
 
     private List<PermissionNode> permissionNodes;
 
-    private String pluginYmlStart;
-
     @Override
     public void executeDefault() {
-        FileConfiguration configuration = loadPartialPluginYmlFile();
+        Map<String, Object> commands = generateCommands();
+        Map<String, Object> permissions = generatePermissions();
 
-        configuration.set("commands", generateCommands());
-        configuration.set("permissions", generatePermissions());
+        for (Path pluginYmlFile : PLUGIN_YML_FILES) {
+            PartialPluginYml pluginYml = loadPartialPluginYmlFile(pluginYmlFile);
+            pluginYml.configuration().set("commands", commands);
+            pluginYml.configuration().set("permissions", permissions);
 
-        FileIoUtils.writeToFile(PLUGIN_YML_FILE,
-        pluginYmlStart + "\n" + configuration.saveToString());
+            FileIoUtils.writeToFile(pluginYmlFile,
+                pluginYml.pluginYmlStart() + "\n" + pluginYml.configuration().saveToString());
+            System.out.println("Updated " + pluginYmlFile);
+        }
     }
 
     @Override
@@ -61,10 +71,11 @@ public class GeneratePluginYml implements AutoToolTask {
      * to split the contents into an upper part that we ignore and a lower part we load as YAML. When
      * saving we prepend the YAML export with the stripped off part of the file again.
      *
-     * @return file configuration with the lower part of the plugin.yml file
+     * @param pluginYmlFile the file to update
+     * @return plugin.yml contents split into the preserved header and the editable YAML section
      */
-    private FileConfiguration loadPartialPluginYmlFile() {
-        List<String> pluginYmlLines = FileIoUtils.readLinesFromFile(Paths.get(PLUGIN_YML_FILE));
+    private static PartialPluginYml loadPartialPluginYmlFile(Path pluginYmlFile) {
+        List<String> pluginYmlLines = FileIoUtils.readLinesFromFile(pluginYmlFile);
         int lineNr = 0;
         for (String line : pluginYmlLines) {
             if ("commands:".equals(line)) {
@@ -75,9 +86,9 @@ public class GeneratePluginYml implements AutoToolTask {
         if (lineNr == pluginYmlLines.size()) {
             throw new IllegalStateException("Could not find line starting 'commands:' section");
         }
-        pluginYmlStart = String.join("\n", pluginYmlLines.subList(0, lineNr));
+        String pluginYmlStart = String.join("\n", pluginYmlLines.subList(0, lineNr));
         String yamlContents = String.join("\n", pluginYmlLines.subList(lineNr, pluginYmlLines.size()));
-        return YamlConfiguration.loadConfiguration(new StringReader(yamlContents));
+        return new PartialPluginYml(YamlConfiguration.loadConfiguration(new StringReader(yamlContents)), pluginYmlStart);
     }
 
     private static Map<String, Object> generateCommands() {
@@ -178,5 +189,8 @@ public class GeneratePluginYml implements AutoToolTask {
             default:
                 throw new IllegalArgumentException("Unknown default permission '" + defaultPermission + "'");
         }
+    }
+
+    private record PartialPluginYml(FileConfiguration configuration, String pluginYmlStart) {
     }
 }

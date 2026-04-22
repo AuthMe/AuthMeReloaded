@@ -125,10 +125,15 @@ You can also create your own translation file and, if you want, you can share it
 >- Execute command `mvn clean package`
 >- With JDK 17, Maven builds only the Java 17-compatible modules
 >- With JDK 21+, Maven builds the full reactor
+>- Build and tooling command reference: [docs/build.md](docs/build.md)
 
 ##### Running requirements:
->- Java 17+
->- Paper or Spigot (1.16.5 and up)
+>- Use the jar matching your server platform/version
+>- Java 17+ for `AuthMe-*-Spigot-Legacy.jar` (Spigot 1.16.x – 1.19.x)
+>- Java 21+ for:
+>  - `AuthMe-*-Spigot-1.21.jar` (Spigot 1.20.x – 1.21.x)
+>  - `AuthMe-*-Paper.jar` (Paper 1.21+)
+>  - `AuthMe-*-Folia.jar` (Folia 1.21+)
 >- ProtocolLib (optional, required by some features)
 
 ## Credits

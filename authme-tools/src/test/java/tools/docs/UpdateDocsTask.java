@@ -1,9 +1,9 @@
 package tools.docs;
 
 import fr.xephi.authme.ClassCollector;
-import fr.xephi.authme.TestHelper;
 import tools.utils.AutoToolTask;
 import tools.utils.ToolTask;
+import tools.utils.ToolsConstants;
 
 import java.util.List;
 import java.util.Scanner;
@@ -43,7 +43,7 @@ public class UpdateDocsTask implements AutoToolTask {
 
     private List<ToolTask> getDocTasks() {
         ClassCollector classCollector =
-            new ClassCollector(TestHelper.TEST_SOURCES_FOLDER, "tools/docs");
+            new ClassCollector(ToolsConstants.TOOLS_TEST_SOURCE_ROOT, "tools/docs");
         return classCollector.getInstancesOfType(ToolTask.class).stream()
             .filter(task -> task.getClass() != getClass())
             .collect(Collectors.toList());

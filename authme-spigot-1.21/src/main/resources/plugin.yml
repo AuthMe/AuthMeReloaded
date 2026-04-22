@@ -198,12 +198,12 @@ permissions:
   authme.allowmultipleaccounts:
     description: Permission to be able to register multiple accounts.
     default: op
-  authme.bypassbungeesend:
-    description: Permission node to bypass BungeeCord server teleportation.
-    default: false
   authme.bypassantibot:
     description: Permission node to bypass AntiBot protection.
     default: op
+  authme.bypassbungeesend:
+    description: Permission node to bypass BungeeCord server teleportation.
+    default: false
   authme.bypasscountrycheck:
     description: Permission to bypass the GeoIp country code check.
     default: false
@@ -338,4 +338,3 @@ permissions:
     description: When the server is full and someone with this permission joins the
       server, someone will be kicked.
     default: false
-

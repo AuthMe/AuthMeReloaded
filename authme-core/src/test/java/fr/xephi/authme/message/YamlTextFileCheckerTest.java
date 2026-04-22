@@ -16,7 +16,6 @@ import java.util.function.Predicate;
 
 import static fr.xephi.authme.message.MessagePathHelper.MESSAGES_FOLDER;
 import static org.junit.jupiter.api.Assertions.fail;
-import static tools.utils.FileIoUtils.listFilesOrThrow;
 
 /**
  * Tests that all YML text files can be loaded.
@@ -29,7 +28,10 @@ public class YamlTextFileCheckerTest {
     @BeforeAll
     public static void loadMessagesFiles() {
         File folder = TestHelper.getJarFile("/" + MESSAGES_FOLDER);
-        messageFiles = listFilesOrThrow(folder);
+        messageFiles = folder.listFiles();
+        if (messageFiles == null) {
+            throw new IllegalStateException("Could not read folder '" + folder + "'");
+        }
     }
 
     @Test

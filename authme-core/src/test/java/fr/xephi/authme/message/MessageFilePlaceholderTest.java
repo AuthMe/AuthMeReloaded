@@ -19,7 +19,6 @@ import java.util.stream.Stream;
 
 import static fr.xephi.authme.message.MessagePathHelper.MESSAGES_FOLDER;
 import static org.junit.jupiter.api.Assertions.fail;
-import static tools.utils.FileIoUtils.listFilesOrThrow;
 
 /**
  * Checks that the entries in messages_xx.yml files have the {@link MessageKey#getTags() placeholders}
@@ -67,7 +66,12 @@ public class MessageFilePlaceholderTest {
     public static Stream<Arguments> buildParams() {
         File folder = TestHelper.getJarFile("/" + MESSAGES_FOLDER);
 
-        List<Arguments> messageFiles = Arrays.stream(listFilesOrThrow(folder))
+        File[] files = folder.listFiles();
+        if (files == null) {
+            throw new IllegalStateException("Could not read folder '" + folder + "'");
+        }
+
+        List<Arguments> messageFiles = Arrays.stream(files)
             .filter(file -> MessagePathHelper.isMessagesFile(file.getName()))
             .map(file -> Arguments.of(file, file.getName()))
             .collect(Collectors.toList());
