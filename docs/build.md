@@ -37,7 +37,8 @@ mvn clean package -P skipJavadocGeneration
 ```
 
 On JDK 21+ builds, the full reactor also generates aggregated API docs for all built modules under
-`target/site/apidocs` at the repository root.
+`target/site/apidocs` at the repository root. The aggregate Javadoc step uses the same JDK that
+launches Maven, so it stays aligned with the active Java 21+ module set.
 
 ## Test commands
 

@@ -144,8 +144,9 @@
                         <artifactId>maven-javadoc-plugin</artifactId>
                         <inherited>false</inherited>
                         <configuration>
-                            <source>${module.java.version}</source>
+                            <source>21</source>
                             <detectOfflineLinks>false</detectOfflineLinks>
+                            <javadocExecutable>${java.home}/bin</javadocExecutable>
                         </configuration>
                         <executions>
                             <execution>
