@@ -102,8 +102,8 @@ You can also create your own translation file and, if you want, you can share it
     <dependencies>
         <dependency>
             <groupId>fr.xephi</groupId>
-            <artifactId>authme</artifactId>
-            <version>5.6.1-SNAPSHOT</version>
+            <artifactId>authme-core</artifactId>
+            <version>6.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
