@@ -3,6 +3,7 @@ package fr.xephi.authme.listener;
 import org.mockito.quality.Strictness;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.data.QuickCommandsProtectionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
@@ -32,6 +33,7 @@ import org.bukkit.World;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.entity.EntityAirChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
@@ -55,11 +57,14 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.InventoryView;
+import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -141,6 +146,13 @@ public class PlayerListenerTest {
     @Mock
     private PlatformAdapter platformAdapter;
 
+    @AfterEach
+    public void resetSpawnLocationTracker() throws ReflectiveOperationException {
+        Field eventCalledField = SpawnLocationTracker.class.getDeclaredField("eventCalled");
+        eventCalledField.setAccessible(true);
+        eventCalledField.setBoolean(null, false);
+    }
+
     /**
      * #831: If a player is kicked because of "logged in from another location", the kick
      * should be CANCELED when single session is enabled.
@@ -203,8 +215,10 @@ public class PlayerListenerTest {
         withServiceMock(listenerService)
             .check(listener::onPlayerShear, PlayerShearEntityEvent.class)
             .check(listener::onPlayerFish, PlayerFishEvent.class)
+            .check(listener::onPlayerSwapHandItems, PlayerSwapHandItemsEvent.class)
             .check(listener::onPlayerBedEnter, PlayerBedEnterEvent.class)
             .check(listener::onPlayerDropItem, PlayerDropItemEvent.class)
+            .check(listener::onPlayerAirChange, EntityAirChangeEvent.class)
             .check(listener::onPlayerHitPlayerEvent, EntityDamageByEntityEvent.class)
             .check(listener::onPlayerConsumeItem, PlayerItemConsumeEvent.class)
             .check(listener::onPlayerInteract, PlayerInteractEvent.class)
@@ -728,6 +742,38 @@ public class PlayerListenerTest {
         // then
         verify(teleportationService).teleportNewPlayerToFirstSpawn(player);
         verify(management).performJoin(player);
+    }
+
+    @Test
+    public void shouldSetCustomSpawnLocationForLegacySpawnEvent() {
+        // given
+        Player player = mock(Player.class);
+        Location originalSpawn = mock(Location.class);
+        Location customSpawn = mock(Location.class);
+        PlayerSpawnLocationEvent event = spy(new PlayerSpawnLocationEvent(player, originalSpawn));
+        given(platformAdapter.shouldHandlePlayerSpawnLocationEvent()).willReturn(true);
+        given(teleportationService.prepareOnJoinSpawnLocation(player, originalSpawn)).willReturn(customSpawn);
+
+        // when
+        listener.onPlayerSpawn(event);
+
+        // then
+        verify(teleportationService).prepareOnJoinSpawnLocation(player, originalSpawn);
+        verify(event).setSpawnLocation(customSpawn);
+    }
+
+    @Test
+    public void shouldIgnoreLegacySpawnEventWhenPlatformUsesModernEvent() {
+        // given
+        PlayerSpawnLocationEvent event = spy(new PlayerSpawnLocationEvent(mock(Player.class), mock(Location.class)));
+        given(platformAdapter.shouldHandlePlayerSpawnLocationEvent()).willReturn(false);
+
+        // when
+        listener.onPlayerSpawn(event);
+
+        // then
+        verifyNoInteractions(teleportationService);
+        verify(event, never()).setSpawnLocation(any(Location.class));
     }
 
     @Test

@@ -1,6 +1,5 @@
 package fr.xephi.authme.platform;
 
-import fr.xephi.authme.listener.PlayerListener19Spigot;
 import fr.xephi.authme.listener.PlayerSignOpenListener;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
@@ -42,7 +41,7 @@ public class SpigotPlatformAdapterTest {
     public void getAdditionalListenersContainsPlayerSignOpenListener() {
         List<Class<? extends Listener>> listeners = adapter.getAdditionalListeners();
 
-        assertThat(listeners, contains(PlayerListener19Spigot.class, PlayerSignOpenListener.class));
+        assertThat(listeners, contains(PlayerSignOpenListener.class));
     }
 
     @Test

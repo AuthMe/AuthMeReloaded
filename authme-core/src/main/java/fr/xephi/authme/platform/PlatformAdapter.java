@@ -33,4 +33,15 @@ public interface PlatformAdapter extends TeleportAdapter, ChatAdapter, EventRegi
     default boolean shouldHandlePlayerLoginEvent() {
         return true;
     }
+
+    /**
+     * Returns whether the core Spigot {@link org.spigotmc.event.player.PlayerSpawnLocationEvent}
+     * listener should be active. Paper-derived platforms disable it in favor of their async
+     * spawn-location event.
+     *
+     * @return true if the legacy PlayerSpawnLocationEvent listener should run
+     */
+    default boolean shouldHandlePlayerSpawnLocationEvent() {
+        return true;
+    }
 }
