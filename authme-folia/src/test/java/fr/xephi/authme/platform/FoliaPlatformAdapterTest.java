@@ -4,6 +4,10 @@ import fr.xephi.authme.listener.FoliaChatListener;
 import fr.xephi.authme.listener.FoliaPlayerSpawnLocationListener;
 import fr.xephi.authme.listener.PaperLoginValidationListener;
 import fr.xephi.authme.listener.PlayerOpenSignListener;
+import fr.xephi.authme.service.CancellableTask;
+import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+import org.bukkit.Bukkit;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
 import net.kyori.adventure.text.Component;
@@ -21,10 +25,13 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
+
+import java.util.concurrent.TimeUnit;
 
 public class FoliaPlatformAdapterTest {
 
@@ -122,6 +129,55 @@ public class FoliaPlatformAdapterTest {
 
         // then
         assertThat(reason, is("You were kicked"));
+    }
+
+    @Test
+    public void runAsyncTaskUsesFoliaAsyncScheduler() {
+        // given
+        Runnable task = mock(Runnable.class);
+        AsyncScheduler asyncScheduler = mock(AsyncScheduler.class);
+        ScheduledTask scheduledTask = mock(ScheduledTask.class);
+        given(asyncScheduler.runNow(isNull(), any())).willAnswer(invocation -> {
+            invocation.<java.util.function.Consumer<ScheduledTask>>getArgument(1).accept(scheduledTask);
+            return scheduledTask;
+        });
+
+        // when
+        CancellableTask cancellableTask;
+        try (MockedStatic<Bukkit> bukkit = mockStatic(Bukkit.class)) {
+            bukkit.when(Bukkit::getAsyncScheduler).thenReturn(asyncScheduler);
+            cancellableTask = adapter.runAsyncTask(null, task);
+        }
+        cancellableTask.cancel();
+
+        // then
+        verify(task).run();
+        verify(asyncScheduler).runNow(isNull(), any());
+        verify(scheduledTask).cancel();
+    }
+
+    @Test
+    public void runAsyncTaskTimerConvertsTicksToMilliseconds() {
+        // given
+        Runnable task = mock(Runnable.class);
+        AsyncScheduler asyncScheduler = mock(AsyncScheduler.class);
+        ScheduledTask scheduledTask = mock(ScheduledTask.class);
+        long delay = 4L;
+        long period = 7L;
+        given(asyncScheduler.runAtFixedRate(isNull(), any(), eq(200L), eq(350L), eq(TimeUnit.MILLISECONDS)))
+            .willReturn(scheduledTask);
+
+        // when
+        CancellableTask cancellableTask;
+        try (MockedStatic<Bukkit> bukkit = mockStatic(Bukkit.class)) {
+            bukkit.when(Bukkit::getAsyncScheduler).thenReturn(asyncScheduler);
+            cancellableTask = adapter.runAsyncTaskTimer(null, task, delay, period);
+        }
+        cancellableTask.cancel();
+
+        // then
+        verify(asyncScheduler).runAtFixedRate(isNull(), any(), eq(200L), eq(350L), eq(TimeUnit.MILLISECONDS));
+        verify(scheduledTask).cancel();
     }
 }
 

@@ -9,14 +9,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
+import fr.xephi.authme.service.CancellableTask;
 
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
-class PurgeTask extends BukkitRunnable {
+class PurgeTask implements Runnable {
 
     //how many players we should check for each tick
     private static final int INTERVAL_CHECK = 5;
@@ -31,6 +31,8 @@ class PurgeTask extends BukkitRunnable {
     private final int totalPurgeCount;
 
     private int currentPage = 0;
+    private CancellableTask taskHandle;
+    private boolean cancellationRequested;
 
     /**
      * Constructor.
@@ -108,13 +110,23 @@ class PurgeTask extends BukkitRunnable {
     }
 
     private void finish() {
-        cancel();
+        cancelTask();
 
         // Show a status message
         sendMessage(ChatColor.GREEN + "[AuthMe] Database has been purged successfully");
 
         logger.info("Purge finished!");
         purgeService.setPurging(false);
+    }
+
+    void setTaskHandle(CancellableTask taskHandle) {
+        synchronized (this) {
+            if (cancellationRequested) {
+                taskHandle.cancel();
+            } else {
+                this.taskHandle = taskHandle;
+            }
+        }
     }
 
     private void sendMessage(String message) {
@@ -124,6 +136,16 @@ class PurgeTask extends BukkitRunnable {
             Player player = Bukkit.getPlayer(sender);
             if (player != null) {
                 player.sendMessage(message);
+            }
+        }
+    }
+
+    private void cancelTask() {
+        synchronized (this) {
+            if (taskHandle != null) {
+                taskHandle.cancel();
+            } else {
+                cancellationRequested = true;
             }
         }
     }

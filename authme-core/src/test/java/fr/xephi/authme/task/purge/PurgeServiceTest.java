@@ -68,7 +68,7 @@ public class PurgeServiceTest {
     @Captor
     private ArgumentCaptor<Long> longCaptor;
     @Captor
-    private ArgumentCaptor<PurgeTask> purgeTaskCaptor;
+    private ArgumentCaptor<Runnable> purgeTaskCaptor;
 
     @BeforeAll
     public static void initLogger() {
@@ -196,7 +196,7 @@ public class PurgeServiceTest {
 
     private void verifyScheduledPurgeTask(UUID senderUuid, Set<String> names) {
         verify(bukkitService).runTaskTimerAsynchronously(purgeTaskCaptor.capture(), eq(0L), eq(1L));
-        PurgeTask task = purgeTaskCaptor.getValue();
+        PurgeTask task = (PurgeTask) purgeTaskCaptor.getValue();
 
         Object senderInTask = ReflectionTestUtils.getFieldValue(PurgeTask.class, task, "sender");
         Set<String> namesInTask = ReflectionTestUtils.getFieldValue(PurgeTask.class, task, "toPurge");

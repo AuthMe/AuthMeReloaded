@@ -59,6 +59,22 @@ public abstract class AbstractSpigotPlatformAdapter implements PlatformAdapter {
     }
 
     @Override
+    public CancellableTask runAsyncTask(AuthMe plugin, Runnable task) {
+        return wrapTask(Bukkit.getScheduler().runTaskAsynchronously(plugin, task));
+    }
+
+    @Override
+    public CancellableTask runAsyncTaskTimer(AuthMe plugin, Runnable task, long delay, long period) {
+        BukkitRunnable bukkitRunnable = new BukkitRunnable() {
+            @Override
+            public void run() {
+                task.run();
+            }
+        };
+        return wrapTask(bukkitRunnable.runTaskTimerAsynchronously(plugin, delay, period));
+    }
+
+    @Override
     public void runOnGlobalThread(AuthMe plugin, Runnable task) {
         Bukkit.getScheduler().runTask(plugin, task);
     }

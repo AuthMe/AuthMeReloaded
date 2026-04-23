@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Platform adapter implementation for Folia 1.21.11+.
@@ -64,6 +65,18 @@ public class FoliaPlatformAdapter extends AbstractPaperPlatformAdapter {
     }
 
     @Override
+    public CancellableTask runAsyncTask(AuthMe plugin, Runnable task) {
+        return Bukkit.getAsyncScheduler().runNow(plugin, ignored -> task.run())::cancel;
+    }
+
+    @Override
+    public CancellableTask runAsyncTaskTimer(AuthMe plugin, Runnable task, long delay, long period) {
+        return Bukkit.getAsyncScheduler()
+            .runAtFixedRate(plugin, ignored -> task.run(), ticksToMillis(delay), ticksToMillis(period),
+                TimeUnit.MILLISECONDS)::cancel;
+    }
+
+    @Override
     public void runOnGlobalThread(AuthMe plugin, Runnable task) {
         Bukkit.getGlobalRegionScheduler().run(plugin, ignored -> task.run());
     }
@@ -94,5 +107,9 @@ public class FoliaPlatformAdapter extends AbstractPaperPlatformAdapter {
             FoliaPlayerSpawnLocationListener.class,
             PaperLoginValidationListener.class,
             PlayerOpenSignListener.class);
+    }
+
+    private static long ticksToMillis(long ticks) {
+        return ticks * 50L;
     }
 }

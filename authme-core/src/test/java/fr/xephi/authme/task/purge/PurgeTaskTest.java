@@ -9,14 +9,12 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
+import fr.xephi.authme.service.CancellableTask;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -158,14 +156,10 @@ public class PurgeTaskTest {
         UUID uuid = UUID.randomUUID();
         given(sender.getUniqueId()).willReturn(uuid);
         PurgeTask task = new PurgeTask(purgeService, permissionsManager, sender, names, new OfflinePlayer[0]);
-
-        BukkitTask bukkitTask = mock(BukkitTask.class);
-        given(bukkitTask.getTaskId()).willReturn(10049);
-        ReflectionTestUtils.setField(BukkitRunnable.class, task, "task", bukkitTask);
+        CancellableTask taskHandle = mock(CancellableTask.class);
+        task.setTaskHandle(taskHandle);
 
         Server server = mock(Server.class);
-        BukkitScheduler scheduler = mock(BukkitScheduler.class);
-        given(server.getScheduler()).willReturn(scheduler);
         ReflectionTestUtils.setField(Bukkit.class, null, "server", server);
         given(server.getPlayer(uuid)).willReturn(sender);
 
@@ -175,7 +169,7 @@ public class PurgeTaskTest {
         task.run();
 
         // then
-        verify(scheduler).cancelTask(task.getTaskId());
+        verify(taskHandle).cancel();
         verify(sender).sendMessage(argThat(containsString("Database has been purged successfully")));
     }
 
@@ -184,14 +178,10 @@ public class PurgeTaskTest {
         // given
         Set<String> names = newHashSet("name1", "name2");
         PurgeTask task = new PurgeTask(purgeService, permissionsManager, null, names, new OfflinePlayer[0]);
-
-        BukkitTask bukkitTask = mock(BukkitTask.class);
-        given(bukkitTask.getTaskId()).willReturn(10049);
-        ReflectionTestUtils.setField(BukkitRunnable.class, task, "task", bukkitTask);
+        CancellableTask taskHandle = mock(CancellableTask.class);
+        task.setTaskHandle(taskHandle);
 
         Server server = mock(Server.class);
-        BukkitScheduler scheduler = mock(BukkitScheduler.class);
-        given(server.getScheduler()).willReturn(scheduler);
         ReflectionTestUtils.setField(Bukkit.class, null, "server", server);
         ConsoleCommandSender consoleSender = mock(ConsoleCommandSender.class);
         given(server.getConsoleSender()).willReturn(consoleSender);
@@ -202,7 +192,7 @@ public class PurgeTaskTest {
         task.run();
 
         // then
-        verify(scheduler).cancelTask(task.getTaskId());
+        verify(taskHandle).cancel();
         verify(consoleSender).sendMessage(argThat(containsString("Database has been purged successfully")));
     }
 

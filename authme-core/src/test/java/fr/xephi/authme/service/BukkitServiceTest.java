@@ -217,7 +217,7 @@ public class BukkitServiceTest {
         // given
         Runnable task = mock(Runnable.class);
         BukkitService spy = Mockito.spy(bukkitService);
-        doReturn(null).when(spy).runTaskAsynchronously(task);
+        doReturn(mock(CancellableTask.class)).when(spy).runTaskAsynchronously(task);
 
         // when
         spy.runTaskOptionallyAsync(task);
@@ -247,35 +247,32 @@ public class BukkitServiceTest {
     public void shouldRunTaskAsynchronously() {
         // given
         Runnable task = () -> {/* noop */};
-        BukkitTask bukkitTask = mock(BukkitTask.class);
-        given(scheduler.runTaskAsynchronously(authMe, task)).willReturn(bukkitTask);
+        CancellableTask cancellableTask = mock(CancellableTask.class);
+        given(schedulingAdapter.runAsyncTask(authMe, task)).willReturn(cancellableTask);
 
         // when
-        BukkitTask resultingTask = bukkitService.runTaskAsynchronously(task);
+        CancellableTask resultingTask = bukkitService.runTaskAsynchronously(task);
 
         // then
-        assertThat(resultingTask, equalTo(bukkitTask));
-        verify(scheduler, only()).runTaskAsynchronously(authMe, task);
+        assertThat(resultingTask, equalTo(cancellableTask));
+        verify(schedulingAdapter, only()).runAsyncTask(authMe, task);
     }
 
     @Test
     public void shouldRunTaskTimerAsynchronously() {
         // given
-        BukkitRunnable task = new BukkitRunnable() {
-            @Override
-            public void run() {
-            }
-        };
+        Runnable task = mock(Runnable.class);
         long delay = 20L;
         long period = 4000L;
-        BukkitTask bukkitTask = mock(BukkitTask.class);
-        given(task.runTaskTimerAsynchronously(authMe, delay, period)).willReturn(bukkitTask);
+        CancellableTask cancellableTask = mock(CancellableTask.class);
+        given(schedulingAdapter.runAsyncTaskTimer(authMe, task, delay, period)).willReturn(cancellableTask);
 
         // when
-        BukkitTask resultingTask = bukkitService.runTaskTimerAsynchronously(task, delay, period);
+        CancellableTask resultingTask = bukkitService.runTaskTimerAsynchronously(task, delay, period);
 
         // then
-        assertThat(resultingTask, equalTo(bukkitTask));
+        assertThat(resultingTask, equalTo(cancellableTask));
+        verify(schedulingAdapter, only()).runAsyncTaskTimer(authMe, task, delay, period);
     }
 
     @Test

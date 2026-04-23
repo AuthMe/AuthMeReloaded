@@ -4,6 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.service.CancellableTask;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PurgeSettings;
@@ -99,7 +100,8 @@ public class PurgeService {
 
         isPurging = true;
         PurgeTask purgeTask = new PurgeTask(this, permissionsManager, sender, names, players);
-        bukkitService.runTaskTimerAsynchronously(purgeTask, 0, 1);
+        CancellableTask taskHandle = bukkitService.runTaskTimerAsynchronously(purgeTask, 0, 1);
+        purgeTask.setTaskHandle(taskHandle);
     }
 
     /**
