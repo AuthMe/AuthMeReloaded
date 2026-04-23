@@ -1,9 +1,5 @@
 package fr.xephi.authme.command.executable.authme;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
@@ -18,18 +14,19 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Locale;
 
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskOptionallyAsync;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -40,8 +37,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link RegisterAdminCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class RegisterAdminCommandTest {
+class RegisterAdminCommandTest {
 
     @InjectMocks
     private RegisterAdminCommand command;
@@ -60,16 +56,14 @@ public class RegisterAdminCommandTest {
 
     @Mock
     private ValidationService validationService;
-    @Captor
-    private ArgumentCaptor<PlayerAuth> captor;
 
     @BeforeAll
-    public static void setUpLogger() {
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldRejectInvalidPassword() {
+    void shouldRejectInvalidPassword() {
         // given
         String user = "tester";
         String password = "myPassword";
@@ -87,7 +81,7 @@ public class RegisterAdminCommandTest {
     }
 
     @Test
-    public void shouldRejectAlreadyRegisteredAccount() {
+    void shouldRejectAlreadyRegisteredAccount() {
         // given
         String user = "my_name55";
         String password = "@some-pass@";
@@ -106,7 +100,7 @@ public class RegisterAdminCommandTest {
     }
 
     @Test
-    public void shouldHandleSavingError() {
+    void shouldHandleSavingError() {
         // given
         String user = "test-test";
         String password = "afdjhfkt";
@@ -124,12 +118,13 @@ public class RegisterAdminCommandTest {
         // then
         verify(validationService).validatePassword(password, user);
         verify(commandService).send(sender, MessageKey.ERROR);
+        ArgumentCaptor<PlayerAuth> captor = ArgumentCaptor.forClass(PlayerAuth.class);
         verify(dataSource).saveAuth(captor.capture());
         assertAuthHasInfo(captor.getValue(), user, hashedPassword);
     }
 
     @Test
-    public void shouldRegisterOfflinePlayer() {
+    void shouldRegisterOfflinePlayer() {
         // given
         String user = "someone";
         String password = "Al1O3P49S5%";
@@ -148,12 +143,13 @@ public class RegisterAdminCommandTest {
         // then
         verify(validationService).validatePassword(password, user);
         verify(commandService).send(sender, MessageKey.REGISTER_SUCCESS);
+        ArgumentCaptor<PlayerAuth> captor = ArgumentCaptor.forClass(PlayerAuth.class);
         verify(dataSource).saveAuth(captor.capture());
         assertAuthHasInfo(captor.getValue(), user, hashedPassword);
     }
 
     @Test
-    public void shouldRegisterOnlinePlayer() {
+    void shouldRegisterOnlinePlayer() {
         // given
         String user = "someone";
         String password = "Al1O3P49S5%";
@@ -176,6 +172,7 @@ public class RegisterAdminCommandTest {
         // then
         verify(validationService).validatePassword(password, user);
         verify(commandService).send(sender, MessageKey.REGISTER_SUCCESS);
+        ArgumentCaptor<PlayerAuth> captor = ArgumentCaptor.forClass(PlayerAuth.class);
         verify(dataSource).saveAuth(captor.capture());
         assertAuthHasInfo(captor.getValue(), user, hashedPassword);
         verify(player).kickPlayer(kickForAdminRegister);
@@ -187,5 +184,3 @@ public class RegisterAdminCommandTest {
         assertThat(auth.getPassword(), equalTo(hashedPassword));
     }
 }
-
-

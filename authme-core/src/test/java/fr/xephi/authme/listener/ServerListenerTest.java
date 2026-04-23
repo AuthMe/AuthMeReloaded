@@ -1,9 +1,5 @@
 package fr.xephi.authme.listener;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.listener.protocollib.ProtocolLibService;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -15,8 +11,10 @@ import org.bukkit.event.server.PluginEvent;
 import org.bukkit.plugin.Plugin;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -29,8 +27,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * Test for {@link ServerListener}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class ServerListenerTest {
+class ServerListenerTest {
 
     private static final String ESSENTIALS = "Essentials";
     private static final String ESSENTIALS_SPAWN = "EssentialsSpawn";
@@ -54,12 +51,12 @@ public class ServerListenerTest {
     private SpawnLoader spawnLoader;
 
     @BeforeAll
-    public static void initLogger() {
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldForwardPluginNameOnEnable() {
+    void shouldForwardPluginNameOnEnable() {
         checkEnableHandling(ESSENTIALS,       () -> verify(pluginHookService).tryHookToEssentials());
         checkEnableHandling(ESSENTIALS_SPAWN, () -> verify(spawnLoader).loadEssentialsSpawn());
         checkEnableHandling(CMI,              () -> {
@@ -72,7 +69,7 @@ public class ServerListenerTest {
     }
 
     @Test
-    public void shouldForwardPluginNameOnDisable() {
+    void shouldForwardPluginNameOnDisable() {
         checkDisableHandling(ESSENTIALS,       () -> verify(pluginHookService).unhookEssentials());
         checkDisableHandling(ESSENTIALS_SPAWN, () -> verify(spawnLoader).unloadEssentialsSpawn());
         checkDisableHandling(CMI,              () -> {
@@ -113,5 +110,3 @@ public class ServerListenerTest {
         return event;
     }
 }
-
-

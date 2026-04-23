@@ -1,9 +1,5 @@
 package fr.xephi.authme.data;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.message.MessageKey;
@@ -14,9 +10,10 @@ import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.expiring.TimedCounter;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -25,11 +22,10 @@ import java.util.Map;
 
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunOnGlobalRegion;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask;
-import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTask;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.lessThan;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -40,8 +36,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link TempbanManager}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class TempbanManagerTest {
+class TempbanManagerTest {
 
     private static final long DATE_TOLERANCE_MILLISECONDS = 200L;
     private static final long TEST_EXPIRATION_THRESHOLD = 120_000L;
@@ -51,11 +46,9 @@ public class TempbanManagerTest {
 
     @Mock
     private Messages messages;
-    @Captor
-    private ArgumentCaptor<Date> captor;
 
     @Test
-    public void shouldAddCounts() {
+    void shouldAddCounts() {
         // given
         Settings settings = mockSettings(3, 60, "");
         TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
@@ -75,7 +68,7 @@ public class TempbanManagerTest {
     }
 
     @Test
-    public void shouldIncreaseAndResetCount() {
+    void shouldIncreaseAndResetCount() {
         // given
         String address = "192.168.1.2";
         Settings settings = mockSettings(3, 60, "");
@@ -99,7 +92,7 @@ public class TempbanManagerTest {
     }
 
     @Test
-    public void shouldNotIncreaseCountForDisabledTempban() {
+    void shouldNotIncreaseCountForDisabledTempban() {
         // given
         String address = "192.168.1.3";
         Settings settings = mockSettings(1, 5, "");
@@ -115,7 +108,7 @@ public class TempbanManagerTest {
     }
 
     @Test
-    public void shouldNotCheckCountIfTempbanIsDisabled() {
+    void shouldNotCheckCountIfTempbanIsDisabled() {
         // given
         String address = "192.168.1.4";
         Settings settings = mockSettings(1, 5, "");
@@ -136,7 +129,7 @@ public class TempbanManagerTest {
     }
 
     @Test
-    public void shouldNotIssueBanIfDisabled() {
+    void shouldNotIssueBanIfDisabled() {
         // given
         Settings settings = mockSettings(0, 0, "");
         given(settings.getProperty(SecuritySettings.TEMPBAN_ON_MAX_LOGINS)).willReturn(false);
@@ -151,7 +144,7 @@ public class TempbanManagerTest {
     }
 
     @Test
-    public void shouldBanPlayerIp() {
+    void shouldBanPlayerIp() {
         // given
         Player player = mock(Player.class);
         String ip = "123.45.67.89";
@@ -168,6 +161,7 @@ public class TempbanManagerTest {
 
         // then
         verify(player).kickPlayer(banReason);
+        ArgumentCaptor<Date> captor = ArgumentCaptor.forClass(Date.class);
         verify(bukkitService).banIp(eq(ip), eq(banReason), captor.capture(), eq("AuthMe"));
 
         // Compute the expected expiration date and check that the actual date is within the difference tolerance
@@ -178,7 +172,7 @@ public class TempbanManagerTest {
     }
 
     @Test
-    public void shouldBanPlayerIpCustom() {
+    void shouldBanPlayerIpCustom() {
         // given
         Player player = mock(Player.class);
         given(player.getName()).willReturn("Bob");
@@ -197,7 +191,7 @@ public class TempbanManagerTest {
     }
 
     @Test
-    public void shouldResetCountAfterBan() {
+    void shouldResetCountAfterBan() {
         // given
         Player player = mock(Player.class);
         String ip = "22.44.66.88";
@@ -221,7 +215,7 @@ public class TempbanManagerTest {
     }
 
     @Test
-    public void shouldPerformCleanup() {
+    void shouldPerformCleanup() {
         // given
         Map<String, TimedCounter<String>> counts = new HashMap<>();
         TimedCounter<String> counter1 = mockCounter();
@@ -272,5 +266,3 @@ public class TempbanManagerTest {
         return mock(TimedCounter.class);
     }
 }
-
-

@@ -1,9 +1,5 @@
 package fr.xephi.authme.command.executable.authme;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
@@ -13,8 +9,10 @@ import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 
@@ -31,8 +29,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * Test for {@link SetEmailCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class SetEmailCommandTest {
+class SetEmailCommandTest {
 
     @InjectMocks
     private SetEmailCommand command;
@@ -48,12 +45,12 @@ public class SetEmailCommandTest {
 
     @Mock
     private BukkitService bukkitService;
-    
+
     @Mock
     private ValidationService validationService;
 
     @Test
-    public void shouldRejectInvalidMail() {
+    void shouldRejectInvalidMail() {
         // given
         String user = "somebody";
         String email = "some.test@example.org";
@@ -70,7 +67,7 @@ public class SetEmailCommandTest {
     }
 
     @Test
-    public void shouldHandleUnknownUser() {
+    void shouldHandleUnknownUser() {
         // given
         String user = "nonexistent";
         String email = "mail@example.com";
@@ -90,7 +87,7 @@ public class SetEmailCommandTest {
     }
 
     @Test
-    public void shouldHandleAlreadyTakenEmail() {
+    void shouldHandleAlreadyTakenEmail() {
         // given
         String user = "someone";
         String email = "mail@example.com";
@@ -114,7 +111,7 @@ public class SetEmailCommandTest {
     }
 
     @Test
-    public void shouldHandlePersistenceError() {
+    void shouldHandlePersistenceError() {
         // given
         String user = "Bobby";
         String email = "new-addr@example.org";
@@ -139,7 +136,7 @@ public class SetEmailCommandTest {
     }
 
     @Test
-    public void shouldUpdateEmail() {
+    void shouldUpdateEmail() {
         // given
         String user = "Bobby";
         String email = "new-addr@example.org";
@@ -166,7 +163,7 @@ public class SetEmailCommandTest {
     }
 
     @Test
-    public void shouldUpdateEmailAndPlayerCache() {
+    void shouldUpdateEmailAndPlayerCache() {
         // given
         String user = "Bobby";
         String email = "new-addr@example.org";
@@ -193,5 +190,3 @@ public class SetEmailCommandTest {
     }
 
 }
-
-

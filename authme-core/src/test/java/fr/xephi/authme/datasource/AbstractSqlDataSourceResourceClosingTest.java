@@ -27,7 +27,7 @@ public abstract class AbstractSqlDataSourceResourceClosingTest extends AbstractR
     private static Settings settings;
 
     @BeforeAll
-    public static void initializeSettings() {
+    static void initializeSettings() {
         settings = mock(Settings.class);
         TestHelper.returnDefaultsForAllProperties(settings);
         TestHelper.setupLogger();
@@ -44,9 +44,18 @@ public abstract class AbstractSqlDataSourceResourceClosingTest extends AbstractR
     /* Create a DataSource instance with the given mock settings and mock connection. */
     protected abstract DataSource createDataSource(Settings settings, Connection connection) throws Exception;
 
-    @Override
-    protected Collection<Method> getMethodsToTest() {
-        return getDataSourceMethods();
+    /**
+     * Initialization method -- provides the parameters to run the test with by scanning all DataSource methods.
+     *
+     * @return Test parameters
+     */
+    public static Collection<Object[]> createParameters() {
+        List<Method> methods = getDataSourceMethods();
+        List<Object[]> data = new ArrayList<>();
+        for (Method method : methods) {
+            data.add(new Object[]{method, method.getName()});
+        }
+        return data;
     }
 
     /* Get all methods of the DataSource interface, minus the ones in the ignored list. */
@@ -56,4 +65,3 @@ public abstract class AbstractSqlDataSourceResourceClosingTest extends AbstractR
             .collect(Collectors.toList());
     }
 }
-

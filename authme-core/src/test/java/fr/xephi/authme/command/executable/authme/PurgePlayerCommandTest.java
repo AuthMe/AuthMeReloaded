@@ -1,22 +1,19 @@
 package fr.xephi.authme.command.executable.authme;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.task.purge.PurgeExecutor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Locale;
 
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskAsynchronously;
-import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskOptionallyAsync;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.containsString;
@@ -30,8 +27,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link PurgePlayerCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class PurgePlayerCommandTest {
+class PurgePlayerCommandTest {
 
     @InjectMocks
     private PurgePlayerCommand command;
@@ -46,7 +42,7 @@ public class PurgePlayerCommandTest {
     private DataSource dataSource;
 
     @Test
-    public void shouldNotExecutePurgeForRegisteredPlayer() {
+    void shouldNotExecutePurgeForRegisteredPlayer() {
         // given
         String name = "Bobby";
         given(dataSource.isAuthAvailable(name)).willReturn(true);
@@ -62,7 +58,7 @@ public class PurgePlayerCommandTest {
     }
 
     @Test
-    public void shouldExecutePurge() {
+    void shouldExecutePurge() {
         // given
         String name = "Frank";
         given(dataSource.isAuthAvailable(name)).willReturn(false);
@@ -80,7 +76,7 @@ public class PurgePlayerCommandTest {
     }
 
     @Test
-    public void shouldExecutePurgeOfRegisteredPlayer() {
+    void shouldExecutePurgeOfRegisteredPlayer() {
         // given
         String name = "GhiJKlmn7";
         OfflinePlayer player = mock(OfflinePlayer.class);
@@ -95,5 +91,3 @@ public class PurgePlayerCommandTest {
         verify(purgeExecutor).executePurge(singletonList(player), singletonList(name.toLowerCase(Locale.ROOT)));
     }
 }
-
-

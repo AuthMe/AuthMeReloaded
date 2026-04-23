@@ -1,15 +1,13 @@
 package fr.xephi.authme.listener;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -20,8 +18,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * Test for {@link BlockListener}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class BlockListenerTest {
+class BlockListenerTest {
 
     @InjectMocks
     private BlockListener listener;
@@ -30,7 +27,7 @@ public class BlockListenerTest {
     private ListenerService listenerService;
 
     @Test
-    public void shouldAllowPlaceEvent() {
+    void shouldAllowPlaceEvent() {
         // given
         Player player = mock(Player.class);
         BlockPlaceEvent event = mock(BlockPlaceEvent.class);
@@ -46,7 +43,7 @@ public class BlockListenerTest {
     }
 
     @Test
-    public void shouldDenyPlaceEvent() {
+    void shouldDenyPlaceEvent() {
         // given
         Player player = mock(Player.class);
         BlockPlaceEvent event = mock(BlockPlaceEvent.class);
@@ -63,7 +60,7 @@ public class BlockListenerTest {
     }
 
     @Test
-    public void shouldAllowBreakEvent() {
+    void shouldAllowBreakEvent() {
         // given
         Player player = mock(Player.class);
         BlockBreakEvent event = mock(BlockBreakEvent.class);
@@ -79,7 +76,7 @@ public class BlockListenerTest {
     }
 
     @Test
-    public void shouldDenyBreakEvent() {
+    void shouldDenyBreakEvent() {
         // given
         Player player = mock(Player.class);
         BlockBreakEvent event = mock(BlockBreakEvent.class);
@@ -96,5 +93,3 @@ public class BlockListenerTest {
     }
 
 }
-
-

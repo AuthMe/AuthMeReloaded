@@ -1,9 +1,5 @@
 package fr.xephi.authme.datasource.mysqlextensions;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.Columns;
@@ -11,6 +7,8 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -22,13 +20,12 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link NoOpExtension}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class NoOpExtensionTest {
+class NoOpExtensionTest {
 
     private NoOpExtension extension;
 
     @BeforeEach
-    public void createExtension() {
+    void createExtension() {
         Settings settings = mock(Settings.class);
         TestHelper.returnDefaultsForAllProperties(settings);
         Columns columns = new Columns(settings);
@@ -36,7 +33,7 @@ public class NoOpExtensionTest {
     }
 
     @Test
-    public void shouldNotHaveAnyInteractionsWithConnection() throws SQLException {
+    void shouldNotHaveAnyInteractionsWithConnection() throws SQLException {
         // given
         Connection connection = mock(Connection.class);
         PlayerAuth auth = mock(PlayerAuth.class);
@@ -55,5 +52,3 @@ public class NoOpExtensionTest {
         verifyNoInteractions(connection, auth);
     }
 }
-
-

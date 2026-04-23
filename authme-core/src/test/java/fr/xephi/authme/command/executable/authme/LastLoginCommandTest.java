@@ -1,26 +1,23 @@
 package fr.xephi.authme.command.executable.authme;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.Date;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -30,8 +27,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link LastLoginCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class LastLoginCommandTest {
+class LastLoginCommandTest {
 
     private static final long HOUR_IN_MSEC = 3600 * 1000;
     private static final long DAY_IN_MSEC = 24 * HOUR_IN_MSEC;
@@ -44,12 +40,10 @@ public class LastLoginCommandTest {
 
     @Mock
     private CommonService service;
-    @Captor
-    private ArgumentCaptor<String> captor;
 
 
     @Test
-    public void shouldRejectNonExistentUser() {
+    void shouldRejectNonExistentUser() {
         // given
         String player = "tester";
         given(dataSource.getAuth(player)).willReturn(null);
@@ -64,7 +58,7 @@ public class LastLoginCommandTest {
     }
 
     @Test
-    public void shouldDisplayLastLoginOfUser() {
+    void shouldDisplayLastLoginOfUser() {
         // given
         String player = "SomePlayer";
         long lastLogin = System.currentTimeMillis() -
@@ -80,6 +74,7 @@ public class LastLoginCommandTest {
 
         // then
         verify(dataSource).getAuth(player);
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(sender, times(3)).sendMessage(captor.capture());
         String lastLoginString = new Date(lastLogin).toString();
         assertThat(captor.getAllValues().get(0),
@@ -89,7 +84,7 @@ public class LastLoginCommandTest {
     }
 
     @Test
-    public void shouldDisplayLastLoginOfCommandSender() {
+    void shouldDisplayLastLoginOfCommandSender() {
         // given
         String name = "CommandSender";
         CommandSender sender = mock(CommandSender.class);
@@ -107,6 +102,7 @@ public class LastLoginCommandTest {
 
         // then
         verify(dataSource).getAuth(name);
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(sender, times(3)).sendMessage(captor.capture());
         String lastLoginString = new Date(lastLogin).toString();
         assertThat(captor.getAllValues().get(0),
@@ -116,7 +112,7 @@ public class LastLoginCommandTest {
     }
 
     @Test
-    public void shouldHandleNullLastLoginDate() {
+    void shouldHandleNullLastLoginDate() {
         // given
         String name = "player";
         PlayerAuth auth = PlayerAuth.builder()
@@ -131,10 +127,9 @@ public class LastLoginCommandTest {
 
         // then
         verify(dataSource).getAuth(name);
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(sender, times(2)).sendMessage(captor.capture());
         assertThat(captor.getAllValues().get(0), allOf(containsString(name), containsString("never")));
         assertThat(captor.getAllValues().get(1), containsString("123.45.67.89"));
     }
 }
-
-

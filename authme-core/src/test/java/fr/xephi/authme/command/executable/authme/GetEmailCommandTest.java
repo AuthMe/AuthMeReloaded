@@ -1,17 +1,15 @@
 package fr.xephi.authme.command.executable.authme;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import ch.jalu.datasourcecolumns.data.DataSourceValueImpl;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -24,8 +22,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link GetEmailCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class GetEmailCommandTest {
+class GetEmailCommandTest {
 
     @InjectMocks
     private GetEmailCommand command;
@@ -37,7 +34,7 @@ public class GetEmailCommandTest {
     private CommonService service;
 
     @Test
-    public void shouldReportUnknownUser() {
+    void shouldReportUnknownUser() {
         // given
         String user = "myTestUser";
         given(dataSource.getEmail(user)).willReturn(DataSourceValueImpl.unknownRow());
@@ -51,7 +48,7 @@ public class GetEmailCommandTest {
     }
 
     @Test
-    public void shouldReturnEmail() {
+    void shouldReturnEmail() {
         // given
         String user = "userToView";
         String email = "user.email@example.org";
@@ -65,5 +62,3 @@ public class GetEmailCommandTest {
         verify(service).send(eq(sender), eq(MessageKey.ADMIN_EMAIL_SHOW), eq(user), eq(email));
     }
 }
-
-

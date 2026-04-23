@@ -1,19 +1,17 @@
 package fr.xephi.authme.data;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -21,8 +19,7 @@ import static org.mockito.Mockito.mock;
  * Test for {@link QuickCommandsProtectionManager}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class QuickCommandsProtectionManagerTest {
+class QuickCommandsProtectionManagerTest {
 
     @Mock
     private Settings settings;
@@ -31,7 +28,7 @@ public class QuickCommandsProtectionManagerTest {
     private PermissionsManager permissionsManager;
 
     @Test
-    public void shouldAllowCommand() {
+    void shouldAllowCommand() {
         // given
         String playername = "PlayerName";
         Player player = mockPlayerWithName(playername);
@@ -53,7 +50,7 @@ public class QuickCommandsProtectionManagerTest {
     }
 
     @Test
-    public void shouldDenyCommand() {
+    void shouldDenyCommand() {
         // given
         String name = "TestName1";
         Player player = mockPlayerWithName(name);
@@ -81,5 +78,3 @@ public class QuickCommandsProtectionManagerTest {
     }
 
 }
-
-

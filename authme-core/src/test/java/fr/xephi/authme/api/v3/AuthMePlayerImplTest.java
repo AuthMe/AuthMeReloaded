@@ -16,16 +16,16 @@ import static org.hamcrest.Matchers.equalTo;
 /**
  * Test for {@link AuthMePlayerImpl}.
  */
-public class AuthMePlayerImplTest {
+class AuthMePlayerImplTest {
 
     @Test
-    public void shouldMapNullWithoutError() {
+    void shouldMapNullWithoutError() {
         // given / when / then
         assertThat(AuthMePlayerImpl.fromPlayerAuth(null), emptyOptional());
     }
 
     @Test
-    public void shouldMapFromPlayerAuth() {
+    void shouldMapFromPlayerAuth() {
         // given
         PlayerAuth auth = PlayerAuth.builder()
             .name("victor")
@@ -53,7 +53,7 @@ public class AuthMePlayerImplTest {
     }
 
     @Test
-    public void shouldHandleNullAndDefaultValues() {
+    void shouldHandleNullAndDefaultValues() {
         // given
         PlayerAuth auth = PlayerAuth.builder()
             .name("victor")
@@ -93,4 +93,3 @@ public class AuthMePlayerImplTest {
         };
     }
 }
-

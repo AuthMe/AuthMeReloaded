@@ -6,7 +6,7 @@ import fr.xephi.authme.settings.Settings;
 /**
  * Resource closing test for {@link PhpBbExtension}.
  */
-public class PhpBbExtensionResourceClosingTest extends AbstractMySqlExtensionResourceClosingTest {
+class PhpBbExtensionResourceClosingTest extends AbstractMySqlExtensionResourceClosingTest {
 
     @Override
     protected MySqlExtension createExtension(Settings settings, Columns columns) {

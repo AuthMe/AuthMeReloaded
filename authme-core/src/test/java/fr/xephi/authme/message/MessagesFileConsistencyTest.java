@@ -17,12 +17,12 @@ import static org.junit.jupiter.api.Assertions.fail;
  * <p>
  * Translators can change the file name in {@link #MESSAGES_FILE} to validate their translation.
  */
-public class MessagesFileConsistencyTest {
+class MessagesFileConsistencyTest {
 
     private static final String MESSAGES_FILE = MessagePathHelper.DEFAULT_MESSAGES_FILE;
 
     @Test
-    public void shouldHaveAllMessages() {
+    void shouldHaveAllMessages() {
         File file = TestHelper.getJarFile("/" + MESSAGES_FILE);
         PropertyReader reader = new YamlFileReader(file);
         List<String> errors = new ArrayList<>();
@@ -59,4 +59,3 @@ public class MessagesFileConsistencyTest {
         }
     }
 }
-

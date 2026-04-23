@@ -1,9 +1,5 @@
 package fr.xephi.authme.command.executable.authme;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.command.CommandMapper;
 import fr.xephi.authme.command.FoundCommandResult;
 import fr.xephi.authme.command.help.HelpProvider;
@@ -12,8 +8,10 @@ import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.service.AntiBotService;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -29,8 +27,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link SwitchAntiBotCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class SwitchAntiBotCommandTest {
+class SwitchAntiBotCommandTest {
 
     @InjectMocks
     private SwitchAntiBotCommand command;
@@ -48,7 +45,7 @@ public class SwitchAntiBotCommandTest {
     private Messages messages;
 
     @Test
-    public void shouldReturnAntiBotState() {
+    void shouldReturnAntiBotState() {
         // given
         given(antiBot.getAntiBotStatus()).willReturn(AntiBotService.AntiBotStatus.ACTIVE);
         CommandSender sender = mock(CommandSender.class);
@@ -61,7 +58,7 @@ public class SwitchAntiBotCommandTest {
     }
 
     @Test
-    public void shouldActivateAntiBot() {
+    void shouldActivateAntiBot() {
         // given
         CommandSender sender = mock(CommandSender.class);
 
@@ -74,7 +71,7 @@ public class SwitchAntiBotCommandTest {
     }
 
     @Test
-    public void shouldDeactivateAntiBot() {
+    void shouldDeactivateAntiBot() {
         // given
         CommandSender sender = mock(CommandSender.class);
 
@@ -87,7 +84,7 @@ public class SwitchAntiBotCommandTest {
     }
 
     @Test
-    public void shouldShowHelpForUnknownState() {
+    void shouldShowHelpForUnknownState() {
         // given
         CommandSender sender = mock(CommandSender.class);
         FoundCommandResult foundCommandResult = mock(FoundCommandResult.class);
@@ -103,5 +100,3 @@ public class SwitchAntiBotCommandTest {
         verify(messages).send(eq(sender), eq(MessageKey.COMMAND_DETAILED_HELP), eq("authme help antibot"));
     }
 }
-
-

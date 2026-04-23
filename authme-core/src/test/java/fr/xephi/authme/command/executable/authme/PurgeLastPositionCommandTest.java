@@ -1,9 +1,5 @@
 package fr.xephi.authme.command.executable.authme;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
@@ -11,8 +7,10 @@ import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,8 +25,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link PurgeLastPositionCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class PurgeLastPositionCommandTest {
+class PurgeLastPositionCommandTest {
 
     @InjectMocks
     private PurgeLastPositionCommand command;
@@ -43,7 +40,7 @@ public class PurgeLastPositionCommandTest {
     private BungeeSender bungeeSender;
 
     @Test
-    public void shouldPurgeLastPosOfUser() {
+    void shouldPurgeLastPosOfUser() {
         // given
         String player = "_Bobby";
         PlayerAuth auth = mock(PlayerAuth.class);
@@ -60,7 +57,7 @@ public class PurgeLastPositionCommandTest {
     }
 
     @Test
-    public void shouldPurgePositionOfCommandSender() {
+    void shouldPurgePositionOfCommandSender() {
         // given
         String player = "_Bobby";
         CommandSender sender = mock(CommandSender.class);
@@ -78,7 +75,7 @@ public class PurgeLastPositionCommandTest {
     }
 
     @Test
-    public void shouldHandleNonExistentUser() {
+    void shouldHandleNonExistentUser() {
         // given
         String name = "invalidPlayer";
         CommandSender sender = mock(CommandSender.class);
@@ -92,7 +89,7 @@ public class PurgeLastPositionCommandTest {
     }
 
     @Test
-    public void shouldResetAllLastPositions() {
+    void shouldResetAllLastPositions() {
         // given
         PlayerAuth auth1 = mock(PlayerAuth.class);
         PlayerAuth auth2 = mock(PlayerAuth.class);
@@ -119,5 +116,3 @@ public class PurgeLastPositionCommandTest {
         verify(auth).setWorld("world");
     }
 }
-
-
