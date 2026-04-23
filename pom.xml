@@ -144,6 +144,7 @@
                         <artifactId>maven-javadoc-plugin</artifactId>
                         <inherited>false</inherited>
                         <configuration>
+                            <disableNoFonts>true</disableNoFonts>
                             <source>21</source>
                             <detectOfflineLinks>false</detectOfflineLinks>
                             <javadocExecutable>${java.home}/bin</javadocExecutable>
@@ -259,6 +260,9 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>3.12.0</version>
+                    <configuration>
+                        <disableNoFonts>true</disableNoFonts>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
