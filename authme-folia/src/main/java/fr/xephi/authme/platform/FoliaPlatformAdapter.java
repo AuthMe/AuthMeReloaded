@@ -4,6 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.listener.FoliaChatListener;
 import fr.xephi.authme.listener.PaperLoginValidationListener;
 import fr.xephi.authme.listener.FoliaPlayerSpawnLocationListener;
+import fr.xephi.authme.listener.PaperDialogFlowListener;
 import fr.xephi.authme.listener.PlayerOpenSignListener;
 import fr.xephi.authme.service.CancellableTask;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
@@ -106,6 +107,7 @@ public class FoliaPlatformAdapter extends AbstractPaperPlatformAdapter {
             super.getListeners(),
             Arrays.asList(
                 FoliaChatListener.class,
+                PaperDialogFlowListener.class,
                 FoliaPlayerSpawnLocationListener.class,
                 PaperLoginValidationListener.class,
                 PlayerOpenSignListener.class));

@@ -4,6 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.listener.PaperChatListener;
+import fr.xephi.authme.listener.PaperDialogFlowListener;
 import fr.xephi.authme.listener.PaperLoginValidationListener;
 import fr.xephi.authme.listener.PlayerOpenSignListener;
 import fr.xephi.authme.listener.PaperPlayerSpawnLocationListener;
@@ -51,6 +52,7 @@ public class PaperPlatformAdapter extends AbstractPaperPlatformAdapter {
             super.getListeners(),
             Arrays.asList(
                 PaperChatListener.class,
+                PaperDialogFlowListener.class,
                 PaperPlayerSpawnLocationListener.class,
                 PaperLoginValidationListener.class,
                 PlayerOpenSignListener.class));

@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Thu Apr 23 16:54:01 CEST 2026. See authme-tools/src/test/java/tools/docs/translations/translations.tpl.md -->
+<!-- File auto-generated on Thu Apr 23 19:32:21 CEST 2026. See authme-tools/src/test/java/tools/docs/translations/translations.tpl.md -->
 
 # AuthMe Translations
 The following translations are available in AuthMe. Set `messagesLanguage` to the language code
@@ -44,4 +44,4 @@ Code | Language | Translated | &nbsp;
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Thu Apr 23 16:54:01 CEST 2026
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Thu Apr 23 19:32:21 CEST 2026

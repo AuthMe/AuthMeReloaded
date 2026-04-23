@@ -14,8 +14,13 @@ import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.login.AsynchronousLogin;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
+import fr.xephi.authme.process.register.AsyncRegister;
+import fr.xephi.authme.process.register.executors.EmailRegisterParams;
+import fr.xephi.authme.process.register.executors.PasswordRegisterParams;
+import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.PreJoinDialogService;
 import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.ValidationService;
@@ -34,6 +39,7 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import java.util.Locale;
+import java.util.UUID;
 
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
@@ -67,6 +73,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private AsynchronousLogin asynchronousLogin;
 
     @Inject
+    private AsyncRegister asyncRegister;
+
+    @Inject
     private CommandManager commandManager;
 
     @Inject
@@ -90,6 +99,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
     @Inject
     private DialogAdapter dialogAdapter;
 
+    @Inject
+    private PreJoinDialogService preJoinDialogService;
+
     AsynchronousJoin() {
     }
 
@@ -101,6 +113,11 @@ public class AsynchronousJoin implements AsynchronousProcess {
     public void processJoin(Player player) {
         String name = player.getName().toLowerCase(Locale.ROOT);
         String ip = PlayerUtils.getPlayerIp(player);
+        UUID playerId = player.getUniqueId();
+        String pendingLoginPassword = preJoinDialogService.consumePendingLoginPassword(playerId);
+        PreJoinDialogService.PendingRegistration pendingRegistration =
+            preJoinDialogService.consumePendingRegistration(playerId);
+        boolean shouldSkipPostJoinDialog = preJoinDialogService.consumeSkipPostJoinDialog(playerId);
 
         if (!validationService.fulfillsNameRestrictions(player)) {
             handlePlayerWithUnmetNameRestriction(player, ip);
@@ -156,7 +173,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                     + "as present in autologin queue.");
                 return;
             }
-        } else if (!service.getProperty(RegistrationSettings.FORCE)) {
+        } else if (!service.getProperty(RegistrationSettings.FORCE) && pendingRegistration == null) {
             bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player, () -> {
                 welcomeMessageConfiguration.sendWelcomeMessage(player);
             });
@@ -172,7 +189,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             return;
         }
 
-        processJoinSync(player, isAuthAvailable);
+        processJoinSync(player, isAuthAvailable, pendingLoginPassword, pendingRegistration, shouldSkipPostJoinDialog);
     }
 
     private void handlePlayerWithUnmetNameRestriction(Player player, String ip) {
@@ -190,7 +207,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
      * @param player the player to process
      * @param isAuthAvailable true if the player is registered, false otherwise
      */
-    private void processJoinSync(Player player, boolean isAuthAvailable) {
+    private void processJoinSync(Player player, boolean isAuthAvailable, String pendingLoginPassword,
+                                 PreJoinDialogService.PendingRegistration pendingRegistration,
+                                 boolean shouldSkipPostJoinDialog) {
         int registrationTimeout = service.getProperty(
             isAuthAvailable ? RestrictionSettings.LOGIN_TIMEOUT : RestrictionSettings.REGISTER_TIMEOUT
         ) * TICKS_PER_SECOND;
@@ -208,18 +227,48 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 player.addPotionEffect(bukkitService.createBlindnessEffect(blindTimeOut));
             }
             commandManager.runCommandsOnJoin(player);
-            if (!playerCache.isAuthenticated(player.getName())
+            if (pendingRegistration != null) {
+                bukkitService.runTaskOptionallyAsync(() -> processPendingRegistration(player, pendingRegistration));
+                return;
+            }
+            if (pendingLoginPassword != null) {
+                bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.login(player, pendingLoginPassword));
+                return;
+            }
+            if (!shouldSkipPostJoinDialog
+                && !playerCache.isAuthenticated(player.getName())
                 && service.getProperty(RegistrationSettings.USE_DIALOG_UI)
                 && dialogAdapter.isDialogSupported()) {
-                if (isAuthAvailable) {
-                    dialogAdapter.showLoginDialog(player);
-                } else {
-                    dialogAdapter.showRegisterDialog(player,
-                        service.getProperty(RegistrationSettings.REGISTRATION_TYPE),
-                        service.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT));
-                }
+                bukkitService.runTaskLater(player, () -> showPostJoinDialogIfNecessary(player, isAuthAvailable), 1L);
             }
         });
+    }
+
+    private void showPostJoinDialogIfNecessary(Player player, boolean isAuthAvailable) {
+        if (!player.isOnline()
+            || playerCache.isAuthenticated(player.getName())
+            || !service.getProperty(RegistrationSettings.USE_DIALOG_UI)
+            || !dialogAdapter.isDialogSupported()) {
+            return;
+        }
+
+        if (isAuthAvailable) {
+            dialogAdapter.showLoginDialog(player);
+        } else {
+            dialogAdapter.showRegisterDialog(player,
+                service.getProperty(RegistrationSettings.REGISTRATION_TYPE),
+                service.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT));
+        }
+    }
+
+    private void processPendingRegistration(Player player, PreJoinDialogService.PendingRegistration pendingRegistration) {
+        if (pendingRegistration.isEmailRegistration()) {
+            asyncRegister.register(RegistrationMethod.EMAIL_REGISTRATION,
+                EmailRegisterParams.of(player, pendingRegistration.primaryValue()));
+        } else {
+            asyncRegister.register(RegistrationMethod.PASSWORD_REGISTRATION,
+                PasswordRegisterParams.of(player, pendingRegistration.primaryValue(), pendingRegistration.secondaryValue()));
+        }
     }
 
     /**

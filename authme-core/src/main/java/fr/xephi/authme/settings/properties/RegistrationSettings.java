@@ -108,11 +108,18 @@ public final class RegistrationSettings implements SettingsHolder {
         newProperty("settings.preventOtherCase", true);
 
     @Comment({
-        "Show a graphical dialog UI for login/register instead of chat messages.",
+        "Show a graphical dialog UI for post-join login/register instead of chat messages.",
         "Requires Minecraft 1.21.6+ on Spigot, or 1.21.11+ on Paper.",
         "On older server versions, this option is automatically ignored."})
     public static final Property<Boolean> USE_DIALOG_UI =
         newProperty("settings.registration.useDialogUi", true);
+
+    @Comment({
+        "Show the login/register dialog during the Paper/Folia pre-join phase.",
+        "Independent from useDialogUi; you may enable either or both options.",
+        "On non-Paper/Folia platforms this option has no effect."})
+    public static final Property<Boolean> USE_PREJOIN_DIALOG_UI =
+        newProperty("settings.registration.usePreJoinDialogUi", true);
 
 
     private RegistrationSettings() {

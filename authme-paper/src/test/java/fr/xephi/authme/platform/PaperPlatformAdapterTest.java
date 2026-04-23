@@ -3,6 +3,7 @@ package fr.xephi.authme.platform;
 import fr.xephi.authme.listener.BlockListener;
 import fr.xephi.authme.listener.EntityListener;
 import fr.xephi.authme.listener.PaperChatListener;
+import fr.xephi.authme.listener.PaperDialogFlowListener;
 import fr.xephi.authme.listener.PaperLoginValidationListener;
 import fr.xephi.authme.listener.PaperPlayerSpawnLocationListener;
 import fr.xephi.authme.listener.PlayerListener;
@@ -60,6 +61,7 @@ public class PaperPlatformAdapterTest {
             EntityListener.class,
             ServerListener.class,
             PaperChatListener.class,
+            PaperDialogFlowListener.class,
             PaperPlayerSpawnLocationListener.class,
             PaperLoginValidationListener.class,
             PlayerOpenSignListener.class));
