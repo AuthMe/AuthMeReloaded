@@ -105,6 +105,8 @@
         <dependencies.mockito.javaagent>
             ${settings.localRepository}/org/mockito/mockito-core/${dependencies.mockito.version}/mockito-core-${dependencies.mockito.version}.jar
         </dependencies.mockito.javaagent>
+        <dependencies.velocity.version>3.4.0</dependencies.velocity.version>
+        <dependencies.bungeecord.version>1.19-R0.1-SNAPSHOT</dependencies.bungeecord.version>
         <!-- Spigot -->
         <dependencies.spigot.version>1.16.5-R0.1-SNAPSHOT</dependencies.spigot.version>
         <dependencies.log4j-core.version>2.8.1</dependencies.log4j-core.version> <!-- version bundled 1.16.5 -->
@@ -132,10 +134,12 @@
                 <jdk>[21,)</jdk>
             </activation>
             <modules>
+                <module>authme-bungee</module>
                 <module>authme-spigot-1.21</module>
                 <module>authme-paper-common</module>
                 <module>authme-paper</module>
                 <module>authme-folia</module>
+                <module>authme-velocity</module>
             </modules>
             <build>
                 <plugins>
@@ -897,6 +901,22 @@
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
             <version>1.21.11-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- BungeeCord API -->
+        <dependency>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-api</artifactId>
+            <version>${dependencies.bungeecord.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Velocity API -->
+        <dependency>
+            <groupId>com.velocitypowered</groupId>
+            <artifactId>velocity-api</artifactId>
+            <version>${dependencies.velocity.version}</version>
             <scope>provided</scope>
         </dependency>
 

@@ -77,6 +77,23 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
      * @param authsWithSameIp registered names with the same IP address as the player's
      */
     public void processPlayerLogin(Player player, boolean isFirstLogin, List<String> authsWithSameIp) {
+        processPlayerLogin(player, isFirstLogin, authsWithSameIp, false);
+    }
+
+    /**
+     * Performs operations in sync mode for a player that has just been auto-logged in by the proxy.
+     * Skips the BungeeCord server redirect — the proxy is responsible for routing.
+     *
+     * @param player the player that was logged in
+     * @param isFirstLogin true if this is the first time the player logged in
+     * @param authsWithSameIp registered names with the same IP address as the player's
+     */
+    public void processPlayerLoginFromProxy(Player player, boolean isFirstLogin, List<String> authsWithSameIp) {
+        processPlayerLogin(player, isFirstLogin, authsWithSameIp, true);
+    }
+
+    private void processPlayerLogin(Player player, boolean isFirstLogin, List<String> authsWithSameIp,
+                                    boolean proxyInitiated) {
         final String name = player.getName().toLowerCase(Locale.ROOT);
         final LimboPlayer limbo = limboService.getLimboPlayer(name);
 
@@ -120,7 +137,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         }
         commandManager.runCommandsOnLogin(player, authsWithSameIp);
 
-        if (!permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_BUNGEE_SEND)) {
+        if (!proxyInitiated && !permissionsManager.hasPermission(player, PlayerStatePermission.BYPASS_BUNGEE_SEND)) {
             // Send Bungee stuff. The service will check if it is enabled or not.
             bungeeSender.connectPlayerOnLogin(player);
         }

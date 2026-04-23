@@ -1,0 +1,7 @@
+# {gen_warning}
+# File auto-generated on {gen_date}. See authme-tools/src/test/java/tools/docs/proxies/bungee/config.tpl.yml
+#
+# Reference configuration for the native AuthMe Bungee proxy plugin.
+# The live file is created in plugins/AuthMeBungee/config.yml.
+
+{config}

@@ -431,6 +431,16 @@ public class BukkitService implements SettingsDependent {
     }
 
     /**
+     * Send the specified bytes on the dedicated AuthMe plugin messaging channel.
+     *
+     * @param player the player
+     * @param bytes the message
+     */
+    public void sendAuthMePluginMessage(Player player, byte[] bytes) {
+        player.sendPluginMessage(authMe, "authme:main", bytes);
+    }
+
+    /**
      * Adds a ban to the list. If a previous ban exists, this will
      * update the previous entry.
      *

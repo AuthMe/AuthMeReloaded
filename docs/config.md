@@ -438,6 +438,10 @@ Hooks:
     bungeecord: false
     # Send player to this BungeeCord server after register/login
     sendPlayerTo: ''
+    # Shared secret used to verify perform.login messages from the AuthMe proxy plugin.
+    # Must match the proxySharedSecret value in your AuthMe Velocity or Bungee proxy config.
+    # Leave empty to disable verification (not recommended for production).
+    proxySharedSecret: ''
     # Do we need to disable Essentials SocialSpy on join?
     disableSocialSpy: false
     # Do we need to force /motd Essentials command on join?

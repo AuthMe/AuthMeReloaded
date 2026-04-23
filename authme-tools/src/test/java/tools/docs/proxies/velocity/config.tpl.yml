@@ -1,0 +1,7 @@
+# {gen_warning}
+# File auto-generated on {gen_date}. See authme-tools/src/test/java/tools/docs/proxies/velocity/config.tpl.yml
+#
+# Reference configuration for the native AuthMe Velocity proxy plugin.
+# The live file is created in plugins/authmevelocity/config.yml.
+
+{config}

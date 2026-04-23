@@ -23,6 +23,14 @@ public final class HooksSettings implements SettingsHolder {
     public static final Property<String> BUNGEECORD_SERVER =
         newProperty("Hooks.sendPlayerTo", "");
 
+    @Comment({
+        "Shared secret used to verify perform.login messages from the AuthMe proxy plugin.",
+        "Must match the proxySharedSecret value in your AuthMe Velocity or Bungee proxy config.",
+        "All backend servers must have the same value set here."
+    })
+    public static final Property<String> PROXY_SHARED_SECRET =
+        newProperty("Hooks.proxySharedSecret", "");
+
     @Comment("Do we need to disable Essentials SocialSpy on join?")
     public static final Property<Boolean> DISABLE_SOCIAL_SPY =
         newProperty("Hooks.disableSocialSpy", false);

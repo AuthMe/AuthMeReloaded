@@ -5,15 +5,12 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.Argon2;
-import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.properties.EmailSettings;
-import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 
 import javax.inject.Inject;
-import java.util.Optional;
 
 /**
  * Logs warning messages in cases where the configured values suggest a misconfiguration.
@@ -31,9 +28,6 @@ public class SettingsWarner {
 
     @Inject
     private AuthMe authMe;
-
-    @Inject
-    private BukkitService bukkitService;
 
     SettingsWarner() {
     }
@@ -59,22 +53,6 @@ public class SettingsWarner {
             logger.warning("Warning: Session timeout needs to be positive in order to work!");
         }
 
-        // Warn if spigot.yml has settings.bungeecord set to true but config.yml has Hooks.bungeecord set to false
-        if (isTrue(bukkitService.isBungeeCordConfiguredForSpigot())
-            && !settings.getProperty(HooksSettings.BUNGEECORD)) {
-            logger.warning("Note: Hooks.bungeecord is set to false but your server appears to be running in"
-                + " bungeecord mode (see your spigot.yml). In order to allow the datasource caching and the"
-                + " AuthMeBungee add-on to work properly you have to enable this option!");
-        }
-
-        if (!isTrue(bukkitService.isBungeeCordConfiguredForSpigot())
-            && settings.getProperty(HooksSettings.BUNGEECORD)) {
-            logger.warning("Note: Hooks.bungeecord is set to true but your server appears to be running in"
-                + " non-bungeecord mode (see your spigot.yml). In order to prevent untrusted payload attack, "
-                + "BungeeCord hook will be automatically disabled!");
-        }
-
-
         // Check if argon2 library is present and can be loaded
         if (settings.getProperty(SecuritySettings.PASSWORD_HASH).equals(HashAlgorithm.ARGON2)
             && !Argon2.isLibraryLoaded()) {
@@ -84,7 +62,4 @@ public class SettingsWarner {
         }
     }
 
-    private static boolean isTrue(Optional<Boolean> value) {
-        return value.isPresent() && value.get();
-    }
 }
