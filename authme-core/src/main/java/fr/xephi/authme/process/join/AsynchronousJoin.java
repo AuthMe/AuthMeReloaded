@@ -2,6 +2,7 @@ package fr.xephi.authme.process.join;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.ProxySessionManager;
+import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
@@ -76,6 +77,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     @Inject
     private SessionService sessionService;
+
+    @Inject
+    private PlayerCache playerCache;
 
     @Inject
     private BungeeSender bungeeSender;
@@ -204,7 +208,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 player.addPotionEffect(bukkitService.createBlindnessEffect(blindTimeOut));
             }
             commandManager.runCommandsOnJoin(player);
-            if (service.getProperty(RegistrationSettings.USE_DIALOG_UI) && dialogAdapter.isDialogSupported()) {
+            if (!playerCache.isAuthenticated(player.getName())
+                && service.getProperty(RegistrationSettings.USE_DIALOG_UI)
+                && dialogAdapter.isDialogSupported()) {
                 if (isAuthAvailable) {
                     dialogAdapter.showLoginDialog(player);
                 } else {
