@@ -106,8 +106,8 @@
             <artifactId>bstats-bukkit</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.comphenix.protocol</groupId>
-            <artifactId>ProtocolLib</artifactId>
+            <groupId>com.github.retrooper</groupId>
+            <artifactId>packetevents-spigot</artifactId>
         </dependency>
         <dependency>
             <groupId>net.luckperms</groupId>

@@ -18,7 +18,7 @@ softdepend:
     - Multiverse-Core
     - Essentials
     - EssentialsSpawn
-    - ProtocolLib
+    - packetevents
 libraries:
   - ch.jalu:injector:${dependencies.injector.version}
   - net.ricecode:string-similarity:${dependencies.string-similarity.version}

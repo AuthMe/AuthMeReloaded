@@ -3,6 +3,9 @@ package fr.xephi.authme.platform;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.listener.LegacyPlayerLoginListener;
 import fr.xephi.authme.listener.LegacyPlayerSpawnLocationListener;
+import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.listener.packetevents.PacketEventsListenerRegistry;
 import fr.xephi.authme.service.CancellableTask;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
@@ -96,6 +99,44 @@ public abstract class AbstractSpigotPlatformAdapter implements PlatformAdapter {
         return wrapTask(Bukkit.getScheduler().runTaskLater(plugin, task, delay));
     }
 
+    // Kept lazy so PacketEvents-dependent classes are only loaded after PacketEvents has been confirmed present.
+    private PacketInterceptionAdapter packetInterceptionAdapter;
+
+    @Override
+    public void registerInventoryProtection(PlayerCache playerCache, DataSource dataSource) {
+        getOrCreatePacketInterceptionAdapter().registerInventoryProtection(playerCache, dataSource);
+    }
+
+    @Override
+    public void unregisterInventoryProtection() {
+        if (packetInterceptionAdapter != null) {
+            packetInterceptionAdapter.unregisterInventoryProtection();
+        }
+    }
+
+    @Override
+    public void sendBlankInventoryPacket(Player player) {
+        if (packetInterceptionAdapter != null) {
+            packetInterceptionAdapter.sendBlankInventoryPacket(player);
+        }
+    }
+
+    @Override
+    public void registerTabCompleteBlock(PlayerCache playerCache) {
+        getOrCreatePacketInterceptionAdapter().registerTabCompleteBlock(playerCache);
+    }
+
+    @Override
+    public void unregisterTabCompleteBlock() {
+        if (packetInterceptionAdapter != null) {
+            packetInterceptionAdapter.unregisterTabCompleteBlock();
+        }
+    }
+
+    protected PacketInterceptionAdapter createPacketInterceptionAdapter() {
+        return new PacketEventsListenerRegistry();
+    }
+
     protected final String getCompatibilityError(String errorMessage, String... requiredClasses) {
         for (String className : requiredClasses) {
             if (!Utils.isClassLoaded(className)) {
@@ -107,5 +148,12 @@ public abstract class AbstractSpigotPlatformAdapter implements PlatformAdapter {
 
     private static CancellableTask wrapTask(BukkitTask task) {
         return task::cancel;
+    }
+
+    private PacketInterceptionAdapter getOrCreatePacketInterceptionAdapter() {
+        if (packetInterceptionAdapter == null) {
+            packetInterceptionAdapter = createPacketInterceptionAdapter();
+        }
+        return packetInterceptionAdapter;
     }
 }

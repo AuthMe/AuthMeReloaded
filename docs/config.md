@@ -222,9 +222,9 @@ settings:
         # How far can unregistered players walk?
         # Set to 0 for unlimited radius
         allowedMovementRadius: 100
-        # Should we protect the player inventory before logging in? Requires ProtocolLib.
+        # Should we protect the player inventory before logging in? Requires PacketEvents.
         ProtectInventoryBeforeLogIn: true
-        # Should we deny the tabcomplete feature before logging in? Requires ProtocolLib.
+        # Should we deny the tabcomplete feature before logging in? Requires PacketEvents.
         DenyTabCompleteBeforeLogin: false
         # Should we display all other accounts from a player when he joins?
         # permission: /authme.admin.accounts

@@ -2,7 +2,7 @@ package fr.xephi.authme.listener;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
-import fr.xephi.authme.listener.protocollib.ProtocolLibService;
+import fr.xephi.authme.listener.packetevents.PacketEventsService;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.settings.SpawnLoader;
@@ -26,7 +26,7 @@ public class ServerListener implements Listener {
     @Inject
     private SpawnLoader spawnLoader;
     @Inject
-    private ProtocolLibService protocolLibService;
+    private PacketEventsService packetEventsService;
     @Inject
     private PermissionsManager permissionsManager;
 
@@ -50,9 +50,9 @@ public class ServerListener implements Listener {
         } else if ("EssentialsSpawn".equalsIgnoreCase(pluginName)) {
             spawnLoader.unloadEssentialsSpawn();
             logger.info("EssentialsSpawn has been disabled: unhooking");
-        } else if ("ProtocolLib".equalsIgnoreCase(pluginName)) {
-            protocolLibService.disable();
-            logger.warning("ProtocolLib has been disabled, unhooking packet adapters!");
+        } else if ("packetevents".equalsIgnoreCase(pluginName)) {
+            packetEventsService.disable();
+            logger.warning("PacketEvents has been disabled, unhooking packet listeners!");
         }
     }
 
@@ -72,8 +72,8 @@ public class ServerListener implements Listener {
         } else if ("CMI".equalsIgnoreCase(pluginName)) {
             pluginHookService.tryHookToCmi();
             spawnLoader.loadCmiSpawn();
-        } else if ("ProtocolLib".equalsIgnoreCase(pluginName)) {
-            protocolLibService.setup();
+        } else if ("packetevents".equalsIgnoreCase(pluginName)) {
+            packetEventsService.setup();
         }
     }
 }

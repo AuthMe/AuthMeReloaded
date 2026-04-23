@@ -82,6 +82,11 @@
             <version>1.21-R0.3</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.retrooper</groupId>
+            <artifactId>packetevents-spigot</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
