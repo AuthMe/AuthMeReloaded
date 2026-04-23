@@ -156,6 +156,24 @@ public class AsynchronousJoinTest {
     }
 
     @Test
+    public void shouldResumeSessionWithoutOpeningDialog() {
+        // given
+        Player player = mockPlayer("Bobby");
+        setUpRegisteredJoin(player);
+        given(sessionService.canResumeSession(player)).willReturn(true);
+
+        // when
+        asynchronousJoin.processJoin(player);
+
+        // then
+        verify(service).send(player, fr.xephi.authme.message.MessageKey.SESSION_RECONNECTION);
+        verify(commandManager).runCommandsOnSessionLogin(player);
+        verify(asynchronousLogin).forceLogin(player);
+        verify(limboService, never()).createLimboPlayer(player, true);
+        verify(dialogAdapter, never()).showLoginDialog(player);
+    }
+
+    @Test
     public void shouldProcessPendingPreJoinLoginInsteadOfShowingDialog() {
         // given
         Player player = mockPlayer("Bobby");

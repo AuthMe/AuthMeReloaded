@@ -46,9 +46,7 @@ public class SessionService implements Reloadable {
         if (isEnabled && database.hasSession(name)) {
             database.setUnlogged(name);
             database.revokeSession(name);
-            PlayerAuth auth = database.getAuth(name);
-
-            SessionState state = fetchSessionStatus(auth, player);
+            SessionState state = fetchSessionStatus(name, database.getAuth(name), PlayerUtils.getPlayerIp(player));
             if (state.equals(SessionState.VALID)) {
                 RestoreSessionEvent event = bukkitService.createAndCallEvent(
                     isAsync -> new RestoreSessionEvent(player, isAsync));
@@ -61,16 +59,33 @@ public class SessionService implements Reloadable {
     }
 
     /**
+     * Returns whether the given player name has a valid resumable session for the supplied IP address.
+     * This check is side-effect free and can be used before a Bukkit {@link Player} instance exists.
+     *
+     * @param playerName the player name
+     * @param ipAddress the player's IP address
+     * @return true if the player's session is currently valid, false otherwise
+     */
+    public boolean hasValidSession(String playerName, String ipAddress) {
+        if (!isEnabled || ipAddress == null || !database.hasSession(playerName)) {
+            return false;
+        }
+
+        return fetchSessionStatus(playerName, database.getAuth(playerName), ipAddress) == SessionState.VALID;
+    }
+
+    /**
      * Checks if the given Player has a current session by comparing its properties
      * with the given PlayerAuth's.
      *
+     * @param playerName the player name associated with the session check
      * @param auth the player auth
-     * @param player the associated player
+     * @param ipAddress the player's IP address
      * @return SessionState based on the state of the session (VALID, NOT_VALID, OUTDATED, IP_CHANGED)
      */
-    private SessionState fetchSessionStatus(PlayerAuth auth, Player player) {
+    private SessionState fetchSessionStatus(String playerName, PlayerAuth auth, String ipAddress) {
         if (auth == null) {
-            logger.warning("No PlayerAuth in database for '" + player.getName() + "' during session check");
+            logger.warning("No PlayerAuth in database for '" + playerName + "' during session check");
             return SessionState.NOT_VALID;
         } else if (auth.getLastLogin() == null) {
             return SessionState.NOT_VALID;
@@ -79,7 +94,7 @@ public class SessionService implements Reloadable {
 
         if (timeSinceLastLogin > 0
             && timeSinceLastLogin < service.getProperty(PluginSettings.SESSIONS_TIMEOUT) * MILLIS_PER_MINUTE) {
-            if (PlayerUtils.getPlayerIp(player).equals(auth.getLastIp())) {
+            if (ipAddress.equals(auth.getLastIp())) {
                 return SessionState.VALID;
             } else {
                 return SessionState.IP_CHANGED;

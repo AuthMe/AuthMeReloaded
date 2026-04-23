@@ -2,6 +2,7 @@ package fr.xephi.authme.listener;
 
 import com.destroystokyo.paper.event.player.PlayerConnectionCloseEvent;
 import com.destroystokyo.paper.profile.PlayerProfile;
+import fr.xephi.authme.data.ProxySessionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
@@ -14,6 +15,7 @@ import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PreJoinDialogService;
+import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -28,6 +30,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import javax.inject.Inject;
+import java.net.InetSocketAddress;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
@@ -67,6 +70,12 @@ public class PaperDialogFlowListener implements Listener {
     @Inject
     private PreJoinDialogService preJoinDialogService;
 
+    @Inject
+    private SessionService sessionService;
+
+    @Inject
+    private ProxySessionManager proxySessionManager;
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerConfigure(AsyncPlayerConnectionConfigureEvent event) {
         if (!commonService.getProperty(RegistrationSettings.USE_PREJOIN_DIALOG_UI)) {
@@ -90,7 +99,7 @@ public class PaperDialogFlowListener implements Listener {
         if (unrestrictedNames.contains(normalizedName)) {
             return;
         }
-        if (playerCache.isAuthenticated(normalizedName)) {
+        if (shouldSkipDialogs(normalizedName, connection)) {
             return;
         }
 
@@ -273,5 +282,15 @@ public class PaperDialogFlowListener implements Listener {
         if (registerResponse != null) {
             registerResponse.complete(skipPostJoinDialog);
         }
+    }
+
+    private boolean shouldSkipDialogs(String normalizedName, PlayerConfigurationConnection connection) {
+        if (playerCache.isAuthenticated(normalizedName) || proxySessionManager.shouldResumeSession(normalizedName)) {
+            return true;
+        }
+
+        InetSocketAddress clientAddress = connection.getClientAddress();
+        String ipAddress = clientAddress == null ? null : clientAddress.getAddress().getHostAddress();
+        return sessionService.hasValidSession(normalizedName, ipAddress);
     }
 }

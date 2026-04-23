@@ -1,12 +1,14 @@
 package fr.xephi.authme.listener;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
+import fr.xephi.authme.data.ProxySessionManager;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.platform.PaperDialogActionKeys;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PreJoinDialogService;
+import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import io.papermc.paper.connection.PlayerConfigurationConnection;
@@ -20,6 +22,8 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -52,9 +56,13 @@ public class PaperDialogFlowListenerTest {
         CommonService commonService = mock(CommonService.class);
         PlayerCache playerCache = mock(PlayerCache.class);
         PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
+        SessionService sessionService = mock(SessionService.class);
+        ProxySessionManager proxySessionManager = mock(ProxySessionManager.class);
         setField(listener, "commonService", commonService);
         setField(listener, "playerCache", playerCache);
         setField(listener, "preJoinDialogService", preJoinDialogService);
+        setField(listener, "sessionService", sessionService);
+        setField(listener, "proxySessionManager", proxySessionManager);
 
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.PASSWORD);
         given(commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT))
@@ -127,9 +135,13 @@ public class PaperDialogFlowListenerTest {
         CommonService commonService = mock(CommonService.class);
         PlayerCache playerCache = mock(PlayerCache.class);
         PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
+        SessionService sessionService = mock(SessionService.class);
+        ProxySessionManager proxySessionManager = mock(ProxySessionManager.class);
         setField(listener, "commonService", commonService);
         setField(listener, "playerCache", playerCache);
         setField(listener, "preJoinDialogService", preJoinDialogService);
+        setField(listener, "sessionService", sessionService);
+        setField(listener, "proxySessionManager", proxySessionManager);
 
         given(commonService.getProperty(RegistrationSettings.USE_DIALOG_UI)).willReturn(false);
         given(commonService.getProperty(RegistrationSettings.USE_PREJOIN_DIALOG_UI)).willReturn(true);
@@ -153,6 +165,86 @@ public class PaperDialogFlowListenerTest {
 
         verify(preJoinDialogService).clear(playerId);
         verifyNoInteractions(audience);
+    }
+
+    @Test
+    public void shouldSkipPreJoinDialogsForPlayerWithValidSession() throws Exception {
+        PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        CommonService commonService = mock(CommonService.class);
+        PlayerCache playerCache = mock(PlayerCache.class);
+        PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
+        SessionService sessionService = mock(SessionService.class);
+        ProxySessionManager proxySessionManager = mock(ProxySessionManager.class);
+        setField(listener, "commonService", commonService);
+        setField(listener, "playerCache", playerCache);
+        setField(listener, "preJoinDialogService", preJoinDialogService);
+        setField(listener, "sessionService", sessionService);
+        setField(listener, "proxySessionManager", proxySessionManager);
+
+        given(commonService.getProperty(RegistrationSettings.USE_PREJOIN_DIALOG_UI)).willReturn(true);
+        given(commonService.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(Set.of());
+        given(playerCache.isAuthenticated("bobby")).willReturn(false);
+        given(proxySessionManager.shouldResumeSession("bobby")).willReturn(false);
+        given(sessionService.hasValidSession("bobby", "203.0.113.5")).willReturn(true);
+
+        UUID playerId = UUID.randomUUID();
+        PlayerProfile profile = mock(PlayerProfile.class);
+        given(profile.getId()).willReturn(playerId);
+        given(profile.getName()).willReturn("Bobby");
+
+        Audience audience = mock(Audience.class);
+        PlayerConfigurationConnection connection = mock(PlayerConfigurationConnection.class);
+        given(connection.getProfile()).willReturn(profile);
+        given(connection.getAudience()).willReturn(audience);
+        given(connection.getClientAddress())
+            .willReturn(new InetSocketAddress(InetAddress.getByName("203.0.113.5"), 25565));
+
+        AsyncPlayerConnectionConfigureEvent event = mock(AsyncPlayerConnectionConfigureEvent.class);
+        given(event.getConnection()).willReturn(connection);
+
+        listener.onPlayerConfigure(event);
+
+        verify(preJoinDialogService).clear(playerId);
+        verifyNoInteractions(audience);
+    }
+
+    @Test
+    public void shouldSkipPreJoinDialogsForProxyAutoLogin() throws Exception {
+        PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        CommonService commonService = mock(CommonService.class);
+        PlayerCache playerCache = mock(PlayerCache.class);
+        PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
+        SessionService sessionService = mock(SessionService.class);
+        ProxySessionManager proxySessionManager = mock(ProxySessionManager.class);
+        setField(listener, "commonService", commonService);
+        setField(listener, "playerCache", playerCache);
+        setField(listener, "preJoinDialogService", preJoinDialogService);
+        setField(listener, "sessionService", sessionService);
+        setField(listener, "proxySessionManager", proxySessionManager);
+
+        given(commonService.getProperty(RegistrationSettings.USE_PREJOIN_DIALOG_UI)).willReturn(true);
+        given(commonService.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(Set.of());
+        given(playerCache.isAuthenticated("bobby")).willReturn(false);
+        given(proxySessionManager.shouldResumeSession("bobby")).willReturn(true);
+
+        UUID playerId = UUID.randomUUID();
+        PlayerProfile profile = mock(PlayerProfile.class);
+        given(profile.getId()).willReturn(playerId);
+        given(profile.getName()).willReturn("Bobby");
+
+        Audience audience = mock(Audience.class);
+        PlayerConfigurationConnection connection = mock(PlayerConfigurationConnection.class);
+        given(connection.getProfile()).willReturn(profile);
+        given(connection.getAudience()).willReturn(audience);
+
+        AsyncPlayerConnectionConfigureEvent event = mock(AsyncPlayerConnectionConfigureEvent.class);
+        given(event.getConnection()).willReturn(connection);
+
+        listener.onPlayerConfigure(event);
+
+        verify(preJoinDialogService).clear(playerId);
+        verifyNoInteractions(audience);
+        verifyNoInteractions(sessionService);
     }
 
     private static void setField(Object target, String fieldName, Object value) throws ReflectiveOperationException {
