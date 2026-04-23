@@ -101,12 +101,14 @@ public class FoliaPlatformAdapter extends AbstractPaperPlatformAdapter {
     }
 
     @Override
-    public List<Class<? extends Listener>> getAdditionalListeners() {
-        return Arrays.asList(
-            FoliaChatListener.class,
-            FoliaPlayerSpawnLocationListener.class,
-            PaperLoginValidationListener.class,
-            PlayerOpenSignListener.class);
+    public List<Class<? extends Listener>> getListeners() {
+        return EventRegistrationAdapter.combineListeners(
+            super.getListeners(),
+            Arrays.asList(
+                FoliaChatListener.class,
+                FoliaPlayerSpawnLocationListener.class,
+                PaperLoginValidationListener.class,
+                PlayerOpenSignListener.class));
     }
 
     private static long ticksToMillis(long ticks) {

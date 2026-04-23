@@ -1,9 +1,13 @@
 package fr.xephi.authme.platform;
 
+import fr.xephi.authme.listener.BlockListener;
+import fr.xephi.authme.listener.EntityListener;
 import fr.xephi.authme.listener.FoliaChatListener;
 import fr.xephi.authme.listener.FoliaPlayerSpawnLocationListener;
 import fr.xephi.authme.listener.PaperLoginValidationListener;
+import fr.xephi.authme.listener.PlayerListener;
 import fr.xephi.authme.listener.PlayerOpenSignListener;
+import fr.xephi.authme.listener.ServerListener;
 import fr.xephi.authme.service.CancellableTask;
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
@@ -54,24 +58,18 @@ public class FoliaPlatformAdapterTest {
     }
 
     @Test
-    public void getAdditionalListenersContainsBothFoliaListeners() {
-        List<Class<? extends Listener>> listeners = adapter.getAdditionalListeners();
+    public void getListenersContainsCoreAndFoliaListeners() {
+        List<Class<? extends Listener>> listeners = adapter.getListeners();
 
         assertThat(listeners, containsInAnyOrder(
+            PlayerListener.class,
+            BlockListener.class,
+            EntityListener.class,
+            ServerListener.class,
             FoliaChatListener.class,
             FoliaPlayerSpawnLocationListener.class,
             PaperLoginValidationListener.class,
             PlayerOpenSignListener.class));
-    }
-
-    @Test
-    public void shouldDisableLegacyPlayerLoginEventHandling() {
-        assertThat(adapter.shouldHandlePlayerLoginEvent(), is(false));
-    }
-
-    @Test
-    public void shouldDisableLegacyPlayerSpawnLocationEventHandling() {
-        assertThat(adapter.shouldHandlePlayerSpawnLocationEvent(), is(false));
     }
 
     @Test

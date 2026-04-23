@@ -46,11 +46,13 @@ public class PaperPlatformAdapter extends AbstractPaperPlatformAdapter {
     }
 
     @Override
-    public List<Class<? extends Listener>> getAdditionalListeners() {
-        return Arrays.asList(
-            PaperChatListener.class,
-            PaperPlayerSpawnLocationListener.class,
-            PaperLoginValidationListener.class,
-            PlayerOpenSignListener.class);
+    public List<Class<? extends Listener>> getListeners() {
+        return EventRegistrationAdapter.combineListeners(
+            super.getListeners(),
+            Arrays.asList(
+                PaperChatListener.class,
+                PaperPlayerSpawnLocationListener.class,
+                PaperLoginValidationListener.class,
+                PlayerOpenSignListener.class));
     }
 }

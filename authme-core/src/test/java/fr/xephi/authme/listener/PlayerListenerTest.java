@@ -9,7 +9,6 @@ import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.platform.ChatAdapter;
-import fr.xephi.authme.platform.PlatformAdapter;
 import fr.xephi.authme.platform.TeleportAdapter;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.AntiBotService;
@@ -48,7 +47,6 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -61,7 +59,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import java.lang.reflect.Field;
 import java.net.InetAddress;
@@ -142,8 +139,6 @@ class PlayerListenerTest {
     private ChatAdapter chatAdapter;
     @Mock
     private TeleportAdapter teleportAdapter;
-    @Mock
-    private PlatformAdapter platformAdapter;
 
     @AfterEach
     void resetSpawnLocationTracker() throws ReflectiveOperationException {
@@ -744,114 +739,6 @@ class PlayerListenerTest {
     }
 
     @Test
-    void shouldSetCustomSpawnLocationForLegacySpawnEvent() {
-        // given
-        Player player = mock(Player.class);
-        Location originalSpawn = mock(Location.class);
-        Location customSpawn = mock(Location.class);
-        PlayerSpawnLocationEvent event = spy(new PlayerSpawnLocationEvent(player, originalSpawn));
-        given(platformAdapter.shouldHandlePlayerSpawnLocationEvent()).willReturn(true);
-        given(teleportationService.prepareOnJoinSpawnLocation(player, originalSpawn)).willReturn(customSpawn);
-
-        // when
-        listener.onPlayerSpawn(event);
-
-        // then
-        verify(teleportationService).prepareOnJoinSpawnLocation(player, originalSpawn);
-        verify(event).setSpawnLocation(customSpawn);
-    }
-
-    @Test
-    void shouldIgnoreLegacySpawnEventWhenPlatformUsesModernEvent() {
-        // given
-        PlayerSpawnLocationEvent event = spy(new PlayerSpawnLocationEvent(mock(Player.class), mock(Location.class)));
-        given(platformAdapter.shouldHandlePlayerSpawnLocationEvent()).willReturn(false);
-
-        // when
-        listener.onPlayerSpawn(event);
-
-        // then
-        verifyNoInteractions(teleportationService);
-        verify(event, never()).setSpawnLocation(any(Location.class));
-    }
-
-    @Test
-    void shouldNotInterfereWithUnrestrictedUser() throws FailedVerificationException {
-        // given
-        String name = "Player01";
-        Player player = mockPlayerWithName(name);
-        PlayerLoginEvent event = spy(new PlayerLoginEvent(player, "", null));
-        given(platformAdapter.shouldHandlePlayerLoginEvent()).willReturn(true);
-        given(validationService.isUnrestricted(name)).willReturn(true);
-
-        // when
-        listener.onPlayerLogin(event);
-
-        // then
-        verify(validationService).isUnrestricted(name);
-        verify(onJoinVerifier).checkSingleSession(name);
-        verifyNoModifyingCalls(event);
-        verifyNoMoreInteractions(onJoinVerifier);
-    }
-
-    @Test
-    void shouldStopHandlingForFullServer() throws FailedVerificationException {
-        // given
-        String name = "someone";
-        Player player = mockPlayerWithName(name);
-        PlayerLoginEvent event = spy(new PlayerLoginEvent(player, "", null));
-        given(platformAdapter.shouldHandlePlayerLoginEvent()).willReturn(true);
-        given(validationService.isUnrestricted(name)).willReturn(false);
-        given(onJoinVerifier.refusePlayerForFullServer(event)).willReturn(true);
-
-        // when
-        listener.onPlayerLogin(event);
-
-        // then
-        verify(validationService).isUnrestricted(name);
-        verify(onJoinVerifier).checkSingleSession(name);
-        verify(onJoinVerifier).refusePlayerForFullServer(event);
-        verifyNoMoreInteractions(onJoinVerifier);
-        verifyNoModifyingCalls(event);
-    }
-
-    @Test
-    void shouldStopHandlingEventForBadResult() throws FailedVerificationException {
-        // given
-        String name = "someone";
-        Player player = mockPlayerWithName(name);
-        PlayerLoginEvent event = new PlayerLoginEvent(player, "", null);
-        event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
-        event = spy(event);
-        given(platformAdapter.shouldHandlePlayerLoginEvent()).willReturn(true);
-        given(validationService.isUnrestricted(name)).willReturn(false);
-        given(onJoinVerifier.refusePlayerForFullServer(event)).willReturn(false);
-
-        // when
-        listener.onPlayerLogin(event);
-
-        // then
-        verify(validationService).isUnrestricted(name);
-        verify(onJoinVerifier).checkSingleSession(name);
-        verify(onJoinVerifier).refusePlayerForFullServer(event);
-        verifyNoModifyingCalls(event);
-    }
-
-    @Test
-    void shouldIgnoreLegacyLoginEventWhenPlatformUsesModernEvents() {
-        // given
-        PlayerLoginEvent event = spy(new PlayerLoginEvent(mock(Player.class), "", null));
-        given(platformAdapter.shouldHandlePlayerLoginEvent()).willReturn(false);
-
-        // when
-        listener.onPlayerLogin(event);
-
-        // then
-        verifyNoInteractions(onJoinVerifier, validationService);
-        verifyNoModifyingCalls(event);
-    }
-
-    @Test
     void shouldPerformAllJoinVerificationsSuccessfullyPreLoginLowest() throws FailedVerificationException {
         // given
         String name = "someone";
@@ -936,28 +823,6 @@ class PlayerListenerTest {
         verify(onJoinVerifier).checkNameRestrictions(eq(name), any(InetAddress.class));
         verify(event).setKickMessage(message);
         verify(event).setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-    }
-
-    @Test
-    void shouldPerformAllJoinVerificationsSuccessfullyLogin() {
-        // given
-        String name = "someone";
-        Player player = mockPlayerWithName(name);
-        String ip = "12.34.56.78";
-
-        PlayerLoginEvent loginEvent = spy(new PlayerLoginEvent(player, "", createInetAddress(ip)));
-        given(platformAdapter.shouldHandlePlayerLoginEvent()).willReturn(true);
-        given(validationService.isUnrestricted(name)).willReturn(false);
-        given(onJoinVerifier.refusePlayerForFullServer(loginEvent)).willReturn(false);
-
-        // when
-        listener.onPlayerLogin(loginEvent);
-
-        // then
-        verify(validationService).isUnrestricted(name);
-        verify(onJoinVerifier).refusePlayerForFullServer(loginEvent);
-        verifyNoInteractions(dataSource);
-        verifyNoModifyingCalls(loginEvent);
     }
 
     @Test
@@ -1308,13 +1173,6 @@ class PlayerListenerTest {
         verify(event, atLeast(0)).getPlayer();
         verify(event, atLeast(0)).getFrom();
         verify(event, atLeast(0)).getTo();
-        verifyNoMoreInteractions(event);
-    }
-
-    private static void verifyNoModifyingCalls(PlayerLoginEvent event) {
-        verify(event, atLeast(0)).getPlayer();
-        verify(event, atLeast(0)).getResult();
-        verify(event, atLeast(0)).getAddress();
         verifyNoMoreInteractions(event);
     }
 

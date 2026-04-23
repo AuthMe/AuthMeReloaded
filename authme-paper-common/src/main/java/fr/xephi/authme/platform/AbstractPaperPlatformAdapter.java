@@ -8,9 +8,11 @@ import fr.xephi.authme.process.register.RegistrationType;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerKickEvent;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Shared platform adapter behavior for Paper-derived servers.
@@ -55,13 +57,8 @@ public abstract class AbstractPaperPlatformAdapter extends AbstractSpigotPlatfor
     }
 
     @Override
-    public boolean shouldHandlePlayerLoginEvent() {
-        return false;
-    }
-
-    @Override
-    public boolean shouldHandlePlayerSpawnLocationEvent() {
-        return false;
+    public List<Class<? extends Listener>> getListeners() {
+        return EventRegistrationAdapter.getCommonListeners();
     }
 
     private static boolean hasDialogApi() {

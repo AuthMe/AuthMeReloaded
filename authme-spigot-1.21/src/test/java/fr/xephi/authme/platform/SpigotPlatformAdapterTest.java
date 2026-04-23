@@ -1,6 +1,12 @@
 package fr.xephi.authme.platform;
 
+import fr.xephi.authme.listener.BlockListener;
+import fr.xephi.authme.listener.EntityListener;
+import fr.xephi.authme.listener.LegacyPlayerLoginListener;
+import fr.xephi.authme.listener.LegacyPlayerSpawnLocationListener;
+import fr.xephi.authme.listener.PlayerListener;
 import fr.xephi.authme.listener.PlayerSignOpenListener;
+import fr.xephi.authme.listener.ServerListener;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
 import net.md_5.bungee.api.dialog.MultiActionDialog;
@@ -11,7 +17,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -38,10 +44,17 @@ public class SpigotPlatformAdapterTest {
     }
 
     @Test
-    public void getAdditionalListenersContainsPlayerSignOpenListener() {
-        List<Class<? extends Listener>> listeners = adapter.getAdditionalListeners();
+    public void getListenersContainsCoreAndSpigotListeners() {
+        List<Class<? extends Listener>> listeners = adapter.getListeners();
 
-        assertThat(listeners, contains(PlayerSignOpenListener.class));
+        assertThat(listeners, containsInAnyOrder(
+            PlayerListener.class,
+            BlockListener.class,
+            EntityListener.class,
+            ServerListener.class,
+            LegacyPlayerLoginListener.class,
+            LegacyPlayerSpawnLocationListener.class,
+            PlayerSignOpenListener.class));
     }
 
     @Test

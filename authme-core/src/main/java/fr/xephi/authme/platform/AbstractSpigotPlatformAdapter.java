@@ -1,20 +1,32 @@
 package fr.xephi.authme.platform;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.listener.LegacyPlayerLoginListener;
+import fr.xephi.authme.listener.LegacyPlayerSpawnLocationListener;
 import fr.xephi.authme.service.CancellableTask;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+
+import java.util.List;
 
 /**
  * Base implementation of {@link PlatformAdapter} for all Spigot versions.
  * Uses synchronous (blocking) teleport via the Bukkit API.
  */
 public abstract class AbstractSpigotPlatformAdapter implements PlatformAdapter {
+
+    @Override
+    public List<Class<? extends Listener>> getListeners() {
+        return EventRegistrationAdapter.combineListeners(
+            EventRegistrationAdapter.getCommonListeners(),
+            List.of(LegacyPlayerLoginListener.class, LegacyPlayerSpawnLocationListener.class));
+    }
 
     @Override
     public void teleportPlayer(Player player, Location location) {
