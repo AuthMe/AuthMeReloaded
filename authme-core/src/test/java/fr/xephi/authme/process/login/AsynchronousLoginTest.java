@@ -7,13 +7,24 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.captcha.LoginCaptchaManager;
+import fr.xephi.authme.data.limbo.LimboMessageType;
+import fr.xephi.authme.data.limbo.LimboPlayer;
+import fr.xephi.authme.data.limbo.LimboPlayerState;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.PlayerStatePermission;
+import fr.xephi.authme.platform.DialogAdapter;
+import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.CancellableTask;
+import fr.xephi.authme.service.SessionService;
+import fr.xephi.authme.service.bungeecord.BungeeSender;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
+import fr.xephi.authme.data.TempbanManager;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
@@ -33,10 +44,12 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.only;
@@ -62,6 +75,18 @@ public class AsynchronousLoginTest {
     private LimboService limboService;
     @Mock
     private BukkitService bukkitService;
+    @Mock
+    private PasswordSecurity passwordSecurity;
+    @Mock
+    private LoginCaptchaManager loginCaptchaManager;
+    @Mock
+    private TempbanManager tempbanManager;
+    @Mock
+    private SessionService sessionService;
+    @Mock
+    private BungeeSender bungeeSender;
+    @Mock
+    private DialogAdapter dialogAdapter;
 
     @BeforeAll
     public static void initLogger() {
@@ -235,6 +260,65 @@ public class AsynchronousLoginTest {
         assertThat(result, equalTo(true));
         verify(commonService).hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS);
         verify(bukkitService).getOnlinePlayers();
+    }
+
+    @Test
+    public void shouldShowTotpDialogAfterSuccessfulPasswordCheckWhenDialogsAreEnabled() {
+        // given
+        Player player = mockPlayer("bobby");
+        TestHelper.mockIpAddressToPlayer(player, "203.0.113.5");
+        PlayerAuth auth = PlayerAuth.builder().name("bobby").totpKey("secret").build();
+        LimboPlayer limboPlayer = mock(LimboPlayer.class);
+        given(playerCache.isAuthenticated("bobby")).willReturn(false, false);
+        given(dataSource.getAuth("bobby")).willReturn(auth);
+        given(commonService.getProperty(DatabaseSettings.MYSQL_COL_GROUP)).willReturn("");
+        given(commonService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(0);
+        given(commonService.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(false);
+        given(loginCaptchaManager.isCaptchaRequired("bobby")).willReturn(false);
+        given(passwordSecurity.comparePassword("hunter2", auth.getPassword(), "bobby")).willReturn(true);
+        given(limboService.getLimboPlayer("bobby")).willReturn(limboPlayer);
+        given(commonService.getProperty(RegistrationSettings.USE_DIALOG_UI)).willReturn(true);
+        given(dialogAdapter.isDialogSupported()).willReturn(true);
+        given(player.isOnline()).willReturn(true);
+        doAnswer(invocation -> {
+            invocation.<Runnable>getArgument(1).run();
+            return mock(CancellableTask.class);
+        }).when(bukkitService).runTaskLater(eq(player), any(Runnable.class), eq(1L));
+
+        // when
+        asynchronousLogin.login(player, "hunter2");
+
+        // then
+        verify(limboService).resetMessageTask(player, LimboMessageType.TOTP_CODE);
+        verify(limboPlayer).setState(LimboPlayerState.TOTP_REQUIRED);
+        verify(dialogAdapter).showTotpDialog(player);
+        verify(asynchronousLogin, never()).performLogin(player, auth);
+    }
+
+    @Test
+    public void shouldNotShowTotpDialogWhenDialogsAreDisabled() {
+        // given
+        Player player = mockPlayer("bobby");
+        TestHelper.mockIpAddressToPlayer(player, "203.0.113.5");
+        PlayerAuth auth = PlayerAuth.builder().name("bobby").totpKey("secret").build();
+        LimboPlayer limboPlayer = mock(LimboPlayer.class);
+        given(playerCache.isAuthenticated("bobby")).willReturn(false);
+        given(dataSource.getAuth("bobby")).willReturn(auth);
+        given(commonService.getProperty(DatabaseSettings.MYSQL_COL_GROUP)).willReturn("");
+        given(commonService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(0);
+        given(commonService.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(false);
+        given(loginCaptchaManager.isCaptchaRequired("bobby")).willReturn(false);
+        given(passwordSecurity.comparePassword("hunter2", auth.getPassword(), "bobby")).willReturn(true);
+        given(limboService.getLimboPlayer("bobby")).willReturn(limboPlayer);
+        given(commonService.getProperty(RegistrationSettings.USE_DIALOG_UI)).willReturn(false);
+
+        // when
+        asynchronousLogin.login(player, "hunter2");
+
+        // then
+        verify(limboService).resetMessageTask(player, LimboMessageType.TOTP_CODE);
+        verify(limboPlayer).setState(LimboPlayerState.TOTP_REQUIRED);
+        verify(dialogAdapter, never()).showTotpDialog(player);
     }
 
     private static Player mockPlayer(String name) {

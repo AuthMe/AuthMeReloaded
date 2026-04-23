@@ -38,6 +38,18 @@ final class SpigotDialogHelper {
             new ActionButton(new TextComponent("Login"), new RunCommandAction("login $(password)"))));
     }
 
+    static void showTotpDialog(Player player) {
+        List<DialogInput> inputs = new ArrayList<>();
+        inputs.add(new TextInput("code", new TextComponent("2FA Code")).maxLength(16));
+
+        DialogBase base = new DialogBase(new TextComponent("Two-Factor Authentication"))
+            .inputs(inputs)
+            .afterAction(DialogBase.AfterAction.CLOSE);
+
+        player.showDialog(new MultiActionDialog(base,
+            new ActionButton(new TextComponent("Verify"), new RunCommandAction("2fa code $(code)"))));
+    }
+
     static void showRegisterDialog(Player player, RegistrationType type, RegisterSecondaryArgument secondArg) {
         List<DialogInput> inputs = new ArrayList<>();
         String template;

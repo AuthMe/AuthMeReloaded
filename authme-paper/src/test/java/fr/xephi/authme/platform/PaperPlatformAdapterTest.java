@@ -82,6 +82,19 @@ public class PaperPlatformAdapterTest {
     }
 
     @Test
+    public void showTotpDialogDelegatesToPaperDialogHelper() {
+        // given
+        Player player = mock(Player.class);
+
+        // when / then
+        try (MockedStatic<PaperDialogHelper> helperMock = mockStatic(PaperDialogHelper.class)) {
+            adapter.showTotpDialog(player);
+
+            helperMock.verify(() -> PaperDialogHelper.showTotpDialog(player));
+        }
+    }
+
+    @Test
     public void showRegisterDialogDelegatesToPaperDialogHelper() {
         // given
         Player player = mock(Player.class);

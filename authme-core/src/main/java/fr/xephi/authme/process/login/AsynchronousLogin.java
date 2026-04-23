@@ -18,6 +18,7 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.permission.PlayerStatePermission;
+import fr.xephi.authme.platform.DialogAdapter;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.security.PasswordSecurity;
@@ -30,6 +31,7 @@ import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.InternetProtocolUtils;
 import fr.xephi.authme.util.PlayerUtils;
@@ -85,6 +87,9 @@ public class AsynchronousLogin implements AsynchronousProcess {
     @Inject
     private BungeeSender bungeeSender;
 
+    @Inject
+    private DialogAdapter dialogAdapter;
+
     AsynchronousLogin() {
     }
 
@@ -100,6 +105,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             if (auth.getTotpKey() != null) {
                 limboService.resetMessageTask(player, LimboMessageType.TOTP_CODE);
                 limboService.getLimboPlayer(player.getName()).setState(LimboPlayerState.TOTP_REQUIRED);
+                showTotpDialogIfEnabled(player);
                 // TODO #1141: Check if we should check limbo state before processing password
             } else {
                 performLogin(player, auth);
@@ -257,6 +263,19 @@ public class AsynchronousLogin implements AsynchronousProcess {
                 service.send(player, MessageKey.FORGOT_PASSWORD_MESSAGE);
             }
         }
+    }
+
+    private void showTotpDialogIfEnabled(Player player) {
+        if (!service.getProperty(RegistrationSettings.USE_DIALOG_UI) || !dialogAdapter.isDialogSupported()) {
+            return;
+        }
+
+        bukkitService.runTaskLater(player, () -> {
+            if (!player.isOnline() || playerCache.isAuthenticated(player.getName())) {
+                return;
+            }
+            dialogAdapter.showTotpDialog(player);
+        }, 1L);
     }
 
     /**

@@ -29,6 +29,19 @@ public class SpigotDialogHelperTest {
     }
 
     @Test
+    public void showTotpDialogSendsCorrectCommandTemplate() {
+        // given
+        Player player = mock(Player.class);
+
+        // when
+        SpigotDialogHelper.showTotpDialog(player);
+
+        // then
+        RunCommandAction action = captureRunCommandAction(player);
+        assertThat(action.template(), is("2fa code $(code)"));
+    }
+
+    @Test
     public void showRegisterDialogWithPasswordAndNoSecondArgSendsPasswordTemplate() {
         // given
         Player player = mock(Player.class);

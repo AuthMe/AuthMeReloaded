@@ -70,6 +70,18 @@ public class SpigotPlatformAdapterTest {
     }
 
     @Test
+    public void showTotpDialogDelegatesToPlayer() {
+        // given
+        Player player = mock(Player.class);
+
+        // when
+        adapter.showTotpDialog(player);
+
+        // then
+        verify(player).showDialog(any(MultiActionDialog.class));
+    }
+
+    @Test
     public void showRegisterDialogDelegatesToPlayer() {
         // given
         Player player = mock(Player.class);

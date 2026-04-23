@@ -105,9 +105,6 @@ public class PaperDialogFlowListener implements Listener {
 
         PlayerAuth auth = dataSource.getAuth(normalizedName);
         if (auth != null) {
-            if (auth.getTotpKey() != null) {
-                return;
-            }
             handleBlockingLoginDialog(connection, playerId, playerName);
         } else if (commonService.getProperty(RegistrationSettings.FORCE)) {
             handleBlockingRegisterDialog(connection, playerId, PaperDialogHelper.createPreJoinRegisterDialog(

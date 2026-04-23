@@ -26,6 +26,10 @@ public final class PaperDialogHelper {
         player.showDialog(createInGameLoginDialog());
     }
 
+    static void showTotpDialog(Player player) {
+        player.showDialog(createInGameTotpDialog());
+    }
+
     static void showRegisterDialog(Player player, RegistrationType type, RegisterSecondaryArgument secondArg) {
         player.showDialog(createInGameRegisterDialog(type, secondArg));
     }
@@ -81,6 +85,21 @@ public final class PaperDialogHelper {
         return Dialog.create(factory -> factory.empty()
             .base(base)
             .type(DialogType.multiAction(List.of(loginButton)).build()));
+    }
+
+    private static Dialog createInGameTotpDialog() {
+        DialogBase base = DialogBase.builder(Component.text("Two-Factor Authentication"))
+            .inputs(List.of(DialogInput.text("code", Component.text("2FA Code")).maxLength(16).build()))
+            .afterAction(DialogBase.DialogAfterAction.CLOSE)
+            .build();
+
+        ActionButton submitButton = ActionButton.builder(Component.text("Verify"))
+            .action(DialogAction.commandTemplate("2fa code $(code)"))
+            .build();
+
+        return Dialog.create(factory -> factory.empty()
+            .base(base)
+            .type(DialogType.multiAction(List.of(submitButton)).build()));
     }
 
     private static Dialog createInGameRegisterDialog(RegistrationType type, RegisterSecondaryArgument secondArg) {
