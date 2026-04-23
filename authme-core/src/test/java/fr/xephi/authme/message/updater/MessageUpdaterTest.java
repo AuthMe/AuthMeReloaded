@@ -8,7 +8,7 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.message.MessageKey;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import fr.xephi.authme.TempFolder;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,28 +18,31 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static fr.xephi.authme.TestHelper.createFile;
 import static fr.xephi.authme.message.MessagePathHelper.DEFAULT_MESSAGES_FILE;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 /**
  * Test for {@link MessageUpdater}.
  */
-public class MessageUpdaterTest {
+class MessageUpdaterTest {
 
     private MessageUpdater messageUpdater = new MessageUpdater();
-    public TempFolder temporaryFolder = new TempFolder();
+
+    @TempDir
+    File temporaryFolder;
 
     @BeforeAll
-    public static void setUpLogger() {
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldNotUpdateDefaultFile() throws IOException {
+    void shouldNotUpdateDefaultFile() throws IOException {
         // given
         String messagesFilePath = DEFAULT_MESSAGES_FILE;
-        File messagesFile = temporaryFolder.newFile();
+        File messagesFile = createFile(temporaryFolder, "fffff");
         Files.copy(TestHelper.getJarFile("/" + messagesFilePath), messagesFile);
         long modifiedDate = messagesFile.lastModified();
 
@@ -50,13 +53,13 @@ public class MessageUpdaterTest {
         assertThat(wasChanged, equalTo(false));
         assertThat(messagesFile.lastModified(), equalTo(modifiedDate));
     }
-    
+
     @Test
-    public void shouldAddMissingKeys() throws IOException {
+    void shouldAddMissingKeys() throws IOException {
         // given
-        File messagesFile = temporaryFolder.newFile();
+        File messagesFile = createFile(temporaryFolder, "file");
         Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/messages_test.yml"), messagesFile);
-        
+
         // when
         boolean wasChanged = messageUpdater.migrateAndSave(messagesFile, "does-not-exist", DEFAULT_MESSAGES_FILE);
 
@@ -72,9 +75,9 @@ public class MessageUpdaterTest {
     }
 
     @Test
-    public void shouldMigrateOldEntries() throws IOException {
+    void shouldMigrateOldEntries() throws IOException {
         // given
-        File messagesFile = temporaryFolder.newFile();
+        File messagesFile = createFile(temporaryFolder, "messages.yml");
         Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/messages_en_old.yml"), messagesFile);
 
         // when
@@ -98,9 +101,9 @@ public class MessageUpdaterTest {
     }
 
     @Test
-    public void shouldPerformNewerMigrations() throws IOException {
+    void shouldPerformNewerMigrations() throws IOException {
         // given
-        File messagesFile = temporaryFolder.newFile();
+        File messagesFile = createFile(temporaryFolder, "newFile");
         Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/messages_test2.yml"), messagesFile);
 
         // when
@@ -115,7 +118,7 @@ public class MessageUpdaterTest {
     }
 
     @Test
-    public void shouldHaveAllKeysInConfigurationData() {
+    void shouldHaveAllKeysInConfigurationData() {
         // given
         Set<String> messageKeysFromEnum = Arrays.stream(MessageKey.values())
             .map(MessageKey::getKey)
@@ -131,7 +134,7 @@ public class MessageUpdaterTest {
     }
 
     @Test
-    public void shouldHaveCommentForAllRootPathsInConfigurationData() {
+    void shouldHaveCommentForAllRootPathsInConfigurationData() {
         // given
         Set<String> rootPaths = Arrays.stream(MessageKey.values())
             .map(key -> key.getKey().split("\\.")[0])
@@ -144,5 +147,3 @@ public class MessageUpdaterTest {
         assertThat(comments.keySet(), equalTo(rootPaths));
     }
 }
-
-

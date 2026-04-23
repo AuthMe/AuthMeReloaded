@@ -1,24 +1,21 @@
 package fr.xephi.authme.command.executable.authme;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.task.purge.PurgeService;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Calendar;
 import java.util.Collections;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -29,19 +26,16 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link PurgeCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class PurgeCommandTest {
+class PurgeCommandTest {
 
     @InjectMocks
     private PurgeCommand command;
 
     @Mock
     private PurgeService purgeService;
-    @Captor
-    private ArgumentCaptor<Long> captor;
 
     @Test
-    public void shouldHandleInvalidNumber() {
+    void shouldHandleInvalidNumber() {
         // given
         String interval = "invalid";
         CommandSender sender = mock(CommandSender.class);
@@ -55,7 +49,7 @@ public class PurgeCommandTest {
     }
 
     @Test
-    public void shouldRejectTooSmallInterval() {
+    void shouldRejectTooSmallInterval() {
         // given
         String interval = "29";
         CommandSender sender = mock(CommandSender.class);
@@ -69,7 +63,7 @@ public class PurgeCommandTest {
     }
 
     @Test
-    public void shouldForwardToService() {
+    void shouldForwardToService() {
         // given
         String interval = "45";
         CommandSender sender = mock(CommandSender.class);
@@ -78,6 +72,7 @@ public class PurgeCommandTest {
         command.executeCommand(sender, Collections.singletonList(interval));
 
         // then
+        ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
         verify(purgeService).runPurge(eq(sender), captor.capture());
 
         // Check the timestamp with a certain tolerance
@@ -92,5 +87,3 @@ public class PurgeCommandTest {
     }
 
 }
-
-

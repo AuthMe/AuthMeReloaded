@@ -20,11 +20,11 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link WalkFlySpeedRestoreType}.
  */
-public class WalkFlySpeedRestoreTypeTest {
+class WalkFlySpeedRestoreTypeTest {
 
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest
     @MethodSource("buildParams")
-    public void shouldRestoreToExpectedValue(TestParameters parameters) {
+    void shouldRestoreToExpectedValue(TestParameters parameters) {
         // given
         LimboPlayer limbo = mock(LimboPlayer.class);
         given(limbo.getWalkSpeed()).willReturn(parameters.givenLimboWalkSpeed);
@@ -43,8 +43,7 @@ public class WalkFlySpeedRestoreTypeTest {
         verify(player).setFlySpeed(parameters.expectedFlySpeed);
     }
 
-    
-    public static List<TestParameters> buildParams() {
+    private static List<TestParameters> buildParams() {
         return Arrays.asList(
             create(RESTORE).withLimbo(0.1f, 0.4f).withPlayer(0.3f, 0.9f).expect(0.1f, 0.4f),
             create(RESTORE).withLimbo(0.9f, 0.2f).withPlayer(0.3f, 0.0f).expect(0.9f, 0.2f),
@@ -70,19 +69,19 @@ public class WalkFlySpeedRestoreTypeTest {
         private float givenPlayerFlySpeed;
         private float expectedWalkSpeed;
         private float expectedFlySpeed;
-        
+
         TestParameters withLimbo(float walkSpeed, float flySpeed) {
             this.givenLimboWalkSpeed = walkSpeed;
             this.givenLimboFlySpeed = flySpeed;
             return this;
         }
-        
+
         TestParameters withPlayer(float walkSpeed, float flySpeed) {
             this.givenPlayerWalkSpeed = walkSpeed;
             this.givenPlayerFlySpeed = flySpeed;
             return this;
         }
-        
+
         TestParameters expect(float walkSpeed, float flySpeed) {
             this.expectedWalkSpeed = walkSpeed;
             this.expectedFlySpeed = flySpeed;
@@ -95,4 +94,3 @@ public class WalkFlySpeedRestoreTypeTest {
         }
     }
 }
-

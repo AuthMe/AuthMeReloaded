@@ -1,24 +1,22 @@
 package fr.xephi.authme.data.limbo;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.TestHelper;
 import org.bukkit.World;
 import org.bukkit.Location;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.UUID;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -28,19 +26,18 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Note: some methods are tested directly where they are used via {@link LimboServiceTest}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class LimboServiceHelperTest {
+class LimboServiceHelperTest {
 
     @InjectMocks
     private LimboServiceHelper limboServiceHelper;
 
     @BeforeAll
-    public static void initLogger() {
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldMergeLimboPlayers() {
+    void shouldMergeLimboPlayers() {
         // given
         Location newLocation = mock(Location.class);
         LimboPlayer newLimbo = new LimboPlayer(newLocation, false, Collections.singletonList(new UserGroup("grp-new")), false, 0.0f, 0.0f);
@@ -61,7 +58,7 @@ public class LimboServiceHelperTest {
     }
 
     @Test
-    public void shouldFallBackToNewLimboForMissingData() {
+    void shouldFallBackToNewLimboForMissingData() {
         // given
         Location newLocation = mock(Location.class);
         LimboPlayer newLimbo = new LimboPlayer(newLocation, false, Collections.singletonList(new UserGroup("grp-new")), true, 0.3f, 0.0f);
@@ -81,7 +78,7 @@ public class LimboServiceHelperTest {
     }
 
     @Test
-    public void shouldMergeEnderPearlRestoreData() {
+    void shouldMergeEnderPearlRestoreData() {
         // given
         World world = mock(World.class);
         Location oldLocation = new Location(world, 1.0, 2.0, 3.0);
@@ -113,7 +110,7 @@ public class LimboServiceHelperTest {
     }
 
     @Test
-    public void shouldHandleNullInputs() {
+    void shouldHandleNullInputs() {
         // given
         LimboPlayer limbo = mock(LimboPlayer.class);
 
@@ -129,5 +126,3 @@ public class LimboServiceHelperTest {
         assertThat(result3, nullValue());
     }
 }
-
-

@@ -6,9 +6,7 @@ import fr.xephi.authme.datasource.Columns;
 import fr.xephi.authme.settings.Settings;
 import org.junit.jupiter.api.BeforeAll;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +22,7 @@ public abstract class AbstractMySqlExtensionResourceClosingTest extends Abstract
     private static Columns columns;
 
     @BeforeAll
-    public static void initSettings() {
+    static void initSettings() {
         settings = mock(Settings.class);
         TestHelper.returnDefaultsForAllProperties(settings);
         columns = new Columns(settings);
@@ -37,13 +35,6 @@ public abstract class AbstractMySqlExtensionResourceClosingTest extends Abstract
 
     protected abstract MySqlExtension createExtension(Settings settings, Columns columns);
 
-    @Override
-    protected Collection<Method> getMethodsToTest() {
-        return Arrays.stream(MySqlExtension.class.getDeclaredMethods())
-            .filter(m -> Modifier.isPublic(m.getModifiers()))
-            .collect(Collectors.toList());
-    }
-
     public static List<Object[]> createParameters() {
         return Arrays.stream(MySqlExtension.class.getDeclaredMethods())
             .filter(m -> Modifier.isPublic(m.getModifiers()))
@@ -51,4 +42,3 @@ public abstract class AbstractMySqlExtensionResourceClosingTest extends Abstract
             .collect(Collectors.toList());
     }
 }
-

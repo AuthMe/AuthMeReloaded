@@ -1,17 +1,15 @@
 package fr.xephi.authme.command.executable.authme;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.settings.SpawnLoader;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -26,8 +24,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link FirstSpawnCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class FirstSpawnCommandTest {
+class FirstSpawnCommandTest {
 
     @InjectMocks
     private FirstSpawnCommand command;
@@ -39,7 +36,7 @@ public class FirstSpawnCommandTest {
     private Messages messages;
 
     @Test
-    public void shouldTeleportToFirstSpawn() {
+    void shouldTeleportToFirstSpawn() {
         // given
         Location firstSpawn = mock(Location.class);
         given(spawnLoader.getFirstSpawn()).willReturn(firstSpawn);
@@ -54,7 +51,7 @@ public class FirstSpawnCommandTest {
     }
 
     @Test
-    public void shouldHandleMissingFirstSpawn() {
+    void shouldHandleMissingFirstSpawn() {
         // given
         given(spawnLoader.getFirstSpawn()).willReturn(null);
         Player player = mock(Player.class);
@@ -67,5 +64,3 @@ public class FirstSpawnCommandTest {
         verify(player, never()).teleport(any(Location.class));
     }
 }
-
-

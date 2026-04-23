@@ -1,9 +1,5 @@
 package fr.xephi.authme.command.executable.authme;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
@@ -11,8 +7,10 @@ import fr.xephi.authme.service.BukkitService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -29,8 +27,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link GetIpCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class GetIpCommandTest {
+class GetIpCommandTest {
 
     @InjectMocks
     private GetIpCommand command;
@@ -43,7 +40,7 @@ public class GetIpCommandTest {
 
 
     @Test
-    public void shouldGetIpOfPlayer() {
+    void shouldGetIpOfPlayer() {
         // given
         given(bukkitService.getPlayerExact(anyString())).willReturn(null);
         given(dataSource.getAuth(anyString())).willReturn(null);
@@ -60,7 +57,7 @@ public class GetIpCommandTest {
     }
 
     @Test
-    public void shouldReturnIpAddressOfPlayer() {
+    void shouldReturnIpAddressOfPlayer() {
         // given
         String playerName = "charlie";
         String ip = "123.34.56.88";
@@ -81,7 +78,7 @@ public class GetIpCommandTest {
     }
 
     @Test
-    public void shouldHandleUnregisteredOnlinePlayer() {
+    void shouldHandleUnregisteredOnlinePlayer() {
         // given
         String playerName = "Test";
         String ip = "44.111.22.33";
@@ -107,5 +104,3 @@ public class GetIpCommandTest {
         return player;
     }
 }
-
-

@@ -1,9 +1,5 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.ClassCollector;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.permission.AdminPermission;
@@ -13,20 +9,21 @@ import fr.xephi.authme.service.BukkitService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
@@ -37,8 +34,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link HasPermissionChecker}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class HasPermissionCheckerTest {
+class HasPermissionCheckerTest {
 
     @InjectMocks
     private HasPermissionChecker hasPermissionChecker;
@@ -48,11 +44,9 @@ public class HasPermissionCheckerTest {
 
     @Mock
     private BukkitService bukkitService;
-    @Captor
-    private ArgumentCaptor<String> msgCaptor;
 
     @Test
-    public void shouldListAllPermissionNodeClasses() {
+    void shouldListAllPermissionNodeClasses() {
         // given
         List<Class<? extends PermissionNode>> permissionClasses =
             new ClassCollector(TestHelper.SOURCES_FOLDER, TestHelper.PROJECT_ROOT)
@@ -65,7 +59,7 @@ public class HasPermissionCheckerTest {
     }
 
     @Test
-    public void shouldShowUsageInfo() {
+    void shouldShowUsageInfo() {
         // given
         CommandSender sender = mock(CommandSender.class);
 
@@ -73,6 +67,7 @@ public class HasPermissionCheckerTest {
         hasPermissionChecker.execute(sender, emptyList());
 
         // then
+        ArgumentCaptor<String> msgCaptor = ArgumentCaptor.forClass(String.class);
         verify(sender, atLeast(2)).sendMessage(msgCaptor.capture());
         assertThat(
             msgCaptor.getAllValues().stream().anyMatch(msg -> msg.contains("/authme debug perm bobby my.perm.node")),
@@ -80,7 +75,7 @@ public class HasPermissionCheckerTest {
     }
 
     @Test
-    public void shouldShowSuccessfulTestWithRegularPlayer() {
+    void shouldShowSuccessfulTestWithRegularPlayer() {
         // given
         String name = "Chuck";
         Player player = mock(Player.class);
@@ -99,5 +94,3 @@ public class HasPermissionCheckerTest {
             + "' has permission '" + permission.getNode() + "'")));
     }
 }
-
-

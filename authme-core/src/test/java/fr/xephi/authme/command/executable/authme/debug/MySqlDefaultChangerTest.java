@@ -1,9 +1,5 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
@@ -15,15 +11,17 @@ import fr.xephi.authme.datasource.SqlDataSourceTestUtil;
 import fr.xephi.authme.settings.Settings;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -32,19 +30,18 @@ import static org.mockito.Mockito.verify;
  * Test for {@link MySqlDefaultChanger}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class MySqlDefaultChangerTest {
+class MySqlDefaultChangerTest {
 
     @Mock
     private Settings settings;
 
     @BeforeAll
-    public static void setUpLogger() {
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldReturnMySqlConnection() throws SQLException {
+    void shouldReturnMySqlConnection() throws SQLException {
         // given
         Settings settings = mock(Settings.class);
         TestHelper.returnDefaultsForAllProperties(settings);
@@ -63,7 +60,7 @@ public class MySqlDefaultChangerTest {
     }
 
     @Test
-    public void shouldSetMySqlFieldOnInitialization() {
+    void shouldSetMySqlFieldOnInitialization() {
         // given
         MySQL mySql = mock(MySQL.class);
         MySqlDefaultChanger defaultChanger = createDefaultChanger(mySql);
@@ -77,7 +74,7 @@ public class MySqlDefaultChangerTest {
     }
 
     @Test
-    public void shouldLeaveMySqlFieldToNullOnInitialization() {
+    void shouldLeaveMySqlFieldToNullOnInitialization() {
         // given
         DataSource dataSource = mock(DataSource.class);
         PlayerCache playerCache = mock(PlayerCache.class);
@@ -99,5 +96,3 @@ public class MySqlDefaultChangerTest {
         return defaultChanger;
     }
 }
-
-

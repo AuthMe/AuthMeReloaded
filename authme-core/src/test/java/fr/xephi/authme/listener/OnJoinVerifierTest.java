@@ -1,9 +1,5 @@
 package fr.xephi.authme.listener;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
@@ -26,9 +22,11 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -36,13 +34,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -52,8 +49,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * Test for {@link OnJoinVerifier}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class OnJoinVerifierTest {
+class OnJoinVerifierTest {
 
     @InjectMocks
     private OnJoinVerifier onJoinVerifier;
@@ -76,12 +72,12 @@ public class OnJoinVerifierTest {
     private Server server;
 
     @BeforeAll
-    public static void setUpLogger() {
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldNotDoAnythingForNormalEvent() {
+    void shouldNotDoAnythingForNormalEvent() {
         // given
         PlayerLoginEvent event = mock(PlayerLoginEvent.class);
         given(event.getResult()).willReturn(PlayerLoginEvent.Result.ALLOWED);
@@ -92,13 +88,12 @@ public class OnJoinVerifierTest {
         // then
         assertThat(result, equalTo(false));
         verify(event).getResult();
-        verify(event, atLeast(0)).getPlayer();
         verifyNoMoreInteractions(event);
         verifyNoInteractions(bukkitService, dataSource, permissionsManager);
     }
 
     @Test
-    public void shouldRefuseNonVipPlayerForFullServer() {
+    void shouldRefuseNonVipPlayerForFullServer() {
         // given
         Player player = mock(Player.class);
         PlayerLoginEvent event = new PlayerLoginEvent(player, "hostname", null);
@@ -119,7 +114,7 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldKickNonVipForJoiningVipPlayer() {
+    void shouldKickNonVipForJoiningVipPlayer() {
         // given
         Player player = mock(Player.class);
         PlayerLoginEvent event = new PlayerLoginEvent(player, "hostname", null);
@@ -145,7 +140,7 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldKickVipPlayerIfNoPlayerCanBeKicked() {
+    void shouldKickVipPlayerIfNoPlayerCanBeKicked() {
         // given
         Player player = mock(Player.class);
         PlayerLoginEvent event = new PlayerLoginEvent(player, "hostname", null);
@@ -169,7 +164,7 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldReturnKickMessageForNonVipPlayerOnFullServer() {
+    void shouldReturnKickMessageForNonVipPlayerOnFullServer() {
         // given
         given(permissionsManager.hasPermissionOffline("RegularPlayer", PlayerStatePermission.IS_VIP)).willReturn(false);
         given(messages.retrieveSingle("RegularPlayer", MessageKey.KICK_FULL_SERVER)).willReturn("server is full");
@@ -183,21 +178,23 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldKickNonRegistered() throws FailedVerificationException {
+    void shouldKickNonRegistered() {
         // given
         given(settings.getProperty(RestrictionSettings.KICK_NON_REGISTERED)).willReturn(true);
 
-        assertValidationException(() -> onJoinVerifier.checkKickNonRegistered(false), MessageKey.MUST_REGISTER_MESSAGE);
+        // when / then
+        expectValidationExceptionWith(() -> onJoinVerifier.checkKickNonRegistered(false),
+            MessageKey.MUST_REGISTER_MESSAGE);
     }
 
     @Test
-    public void shouldNotKickRegisteredPlayer() throws FailedVerificationException {
+    void shouldNotKickRegisteredPlayer() throws FailedVerificationException {
         // given / when / then
         onJoinVerifier.checkKickNonRegistered(true);
     }
 
     @Test
-    public void shouldNotKickUnregisteredPlayer() throws FailedVerificationException {
+    void shouldNotKickUnregisteredPlayer() throws FailedVerificationException {
         // given
         given(settings.getProperty(RestrictionSettings.KICK_NON_REGISTERED)).willReturn(false);
 
@@ -206,7 +203,7 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldAllowValidName() throws FailedVerificationException {
+    void shouldAllowValidName() throws FailedVerificationException {
         // given
         given(settings.getProperty(RestrictionSettings.MIN_NICKNAME_LENGTH)).willReturn(4);
         given(settings.getProperty(RestrictionSettings.MAX_NICKNAME_LENGTH)).willReturn(8);
@@ -218,41 +215,45 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldRejectTooLongName() throws FailedVerificationException {
+    void shouldRejectTooLongName() {
         // given
         given(settings.getProperty(RestrictionSettings.MAX_NICKNAME_LENGTH)).willReturn(8);
         given(settings.getProperty(RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS)).willReturn("[a-zA-Z0-9]+");
         onJoinVerifier.reload(); // @PostConstruct method
 
-        assertValidationException(() -> onJoinVerifier.checkIsValidName("longerthaneight"),
+        // when / then
+        expectValidationExceptionWith(() -> onJoinVerifier.checkIsValidName("longerthaneight"),
             MessageKey.INVALID_NAME_LENGTH);
     }
 
     @Test
-    public void shouldRejectTooShortName() throws FailedVerificationException {
+    void shouldRejectTooShortName() {
         // given
         given(settings.getProperty(RestrictionSettings.MIN_NICKNAME_LENGTH)).willReturn(4);
         given(settings.getProperty(RestrictionSettings.MAX_NICKNAME_LENGTH)).willReturn(8);
         given(settings.getProperty(RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS)).willReturn("[a-zA-Z0-9]+");
         onJoinVerifier.reload(); // @PostConstruct method
 
-        assertValidationException(() -> onJoinVerifier.checkIsValidName("abc"), MessageKey.INVALID_NAME_LENGTH);
+        // when / then
+        expectValidationExceptionWith(() -> onJoinVerifier.checkIsValidName("abc"),
+            MessageKey.INVALID_NAME_LENGTH);
     }
 
     @Test
-    public void shouldRejectNameWithInvalidCharacters() throws FailedVerificationException {
+    void shouldRejectNameWithInvalidCharacters() {
         // given
         given(settings.getProperty(RestrictionSettings.MIN_NICKNAME_LENGTH)).willReturn(4);
         given(settings.getProperty(RestrictionSettings.MAX_NICKNAME_LENGTH)).willReturn(8);
         given(settings.getProperty(RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS)).willReturn("[a-zA-Z0-9]+");
         onJoinVerifier.reload(); // @PostConstruct method
 
-        assertValidationException(() -> onJoinVerifier.checkIsValidName("Tester!"),
+        // when / then
+        expectValidationExceptionWith(() -> onJoinVerifier.checkIsValidName("Tester!"),
             MessageKey.INVALID_NAME_CHARACTERS, "[a-zA-Z0-9]+");
     }
 
     @Test
-    public void shouldAllowProperlyCasedName() throws FailedVerificationException {
+    void shouldAllowProperlyCasedName() throws FailedVerificationException {
         // given
         String name = "Bobby";
         PlayerAuth auth = PlayerAuth.builder().name("bobby").realName("Bobby").build();
@@ -266,18 +267,21 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldRejectNameWithWrongCasing() throws FailedVerificationException {
+    void shouldRejectNameWithWrongCasing() {
         // given
         String name = "Tester";
         PlayerAuth auth = PlayerAuth.builder().name("tester").realName("testeR").build();
         given(settings.getProperty(RegistrationSettings.PREVENT_OTHER_CASE)).willReturn(true);
 
-        assertValidationException(() -> onJoinVerifier.checkNameCasing(name, auth),
+        // when / then
+        expectValidationExceptionWith(() -> onJoinVerifier.checkNameCasing(name, auth),
             MessageKey.INVALID_NAME_CASE, "testeR", "Tester");
+
+        verifyNoInteractions(dataSource);
     }
 
     @Test
-    public void shouldUpdateMissingRealName() throws FailedVerificationException {
+    void shouldUpdateMissingRealName() throws FailedVerificationException {
         // given
         String name = "Authme";
         PlayerAuth auth = PlayerAuth.builder().name("authme").realName("").build();
@@ -291,7 +295,7 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldUpdateDefaultRealName() throws FailedVerificationException {
+    void shouldUpdateDefaultRealName() throws FailedVerificationException {
         // given
         String name = "SOMEONE";
         PlayerAuth auth = PlayerAuth.builder().name("someone").realName("Player").build();
@@ -305,7 +309,7 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldAcceptCasingMismatchForDisabledSetting() throws FailedVerificationException {
+    void shouldAcceptCasingMismatchForDisabledSetting() throws FailedVerificationException {
         // given
         String name = "Test";
         PlayerAuth auth = PlayerAuth.builder().name("test").realName("TEST").build();
@@ -319,7 +323,7 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldAcceptNameForUnregisteredAccount() throws FailedVerificationException {
+    void shouldAcceptNameForUnregisteredAccount() throws FailedVerificationException {
         // given
         String name = "MyPlayer";
         PlayerAuth auth = null;
@@ -332,7 +336,7 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldAcceptNameThatIsNotOnline() throws FailedVerificationException {
+    void shouldAcceptNameThatIsNotOnline() throws FailedVerificationException {
         // given
         String name = "bobby";
         given(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)).willReturn(true);
@@ -346,7 +350,7 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldRejectNameAlreadyOnline() throws FailedVerificationException {
+    void shouldRejectNameAlreadyOnline() {
         // given
         String name = "Charlie";
 
@@ -355,12 +359,13 @@ public class OnJoinVerifierTest {
         given(bukkitService.getPlayerExact("Charlie")).willReturn(onlinePlayer);
         given(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)).willReturn(true);
 
-        assertValidationException(() -> onJoinVerifier.checkSingleSession(name),
+        // when / then
+        expectValidationExceptionWith(() -> onJoinVerifier.checkSingleSession(name),
             MessageKey.USERNAME_ALREADY_ONLINE_ERROR);
     }
 
     @Test
-    public void shouldAcceptAlreadyOnlineNameForDisabledSetting() throws FailedVerificationException {
+    void shouldAcceptAlreadyOnlineNameForDisabledSetting() throws FailedVerificationException {
         // given
         String name = "Felipe";
         given(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)).willReturn(false);
@@ -373,7 +378,7 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldAllowUser() throws FailedVerificationException {
+    void shouldAllowUser() throws FailedVerificationException {
         // given
         String name = "Bobby";
         boolean isAuthAvailable = false;
@@ -389,7 +394,7 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldAllowUserWithAuth() throws FailedVerificationException {
+    void shouldAllowUserWithAuth() throws FailedVerificationException {
         // given
         String name = "Lacey";
         boolean isAuthAvailable = true;
@@ -402,7 +407,7 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldAllowUserWithBypassPermission() throws FailedVerificationException {
+    void shouldAllowUserWithBypassPermission() throws FailedVerificationException {
         // given
         String name = "Steward";
         boolean isAuthAvailable = false;
@@ -417,7 +422,7 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldKickUserForFailedAntibotCheck() {
+    void shouldKickUserForFailedAntibotCheck() {
         // given
         String name = "D3";
         boolean isAuthAvailable = false;
@@ -439,7 +444,7 @@ public class OnJoinVerifierTest {
      * Tests various scenarios in which the country check should not take place.
      */
     @Test
-    public void shouldNotCheckCountry() throws FailedVerificationException {
+    void shouldNotCheckCountry() throws FailedVerificationException {
         // given
         String name = "david";
         String ip = "127.0.0.1";
@@ -456,7 +461,7 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldCheckAndAcceptUnregisteredPlayerCountry() throws FailedVerificationException {
+    void shouldCheckAndAcceptUnregisteredPlayerCountry() throws FailedVerificationException {
         // given
         String ip = "192.168.0.1";
         String name = "lucas";
@@ -471,7 +476,7 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldCheckAndAcceptRegisteredPlayerCountry() throws FailedVerificationException {
+    void shouldCheckAndAcceptRegisteredPlayerCountry() throws FailedVerificationException {
         // given
         String ip = "192.168.10.24";
         String name = "gabriel";
@@ -487,19 +492,20 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldThrowForBannedCountry() throws FailedVerificationException {
+    void shouldThrowForBannedCountry() {
         // given
         String ip = "192.168.40.0";
         String name = "bob";
         given(settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)).willReturn(true);
         given(validationService.isCountryAdmitted(ip)).willReturn(false);
 
-        assertValidationException(() -> onJoinVerifier.checkPlayerCountry(name, ip, false),
+        // when / then
+        expectValidationExceptionWith(() -> onJoinVerifier.checkPlayerCountry(name, ip, false),
             MessageKey.COUNTRY_BANNED_ERROR);
     }
 
     @Test
-    public void shouldAllowPlayerWithMatchingNameRestriction() throws FailedVerificationException {
+    void shouldAllowPlayerWithMatchingNameRestriction() throws FailedVerificationException {
         // given
         String name = "Bobby";
         InetAddress address = createInetAddress("127.0.0.4");
@@ -514,19 +520,20 @@ public class OnJoinVerifierTest {
     }
 
     @Test
-    public void shouldKickPlayerWithUnmatchedNameRestriction() throws FailedVerificationException {
+    void shouldKickPlayerWithUnmatchedNameRestriction() {
         // given
         String name = "Bobby";
         InetAddress address = createInetAddress("99.99.99.99");
         given(validationService.fulfillsNameRestrictions(name, address)).willReturn(false);
         given(settings.getProperty(RestrictionSettings.BAN_UNKNOWN_IP)).willReturn(false);
 
-        assertValidationException(() -> onJoinVerifier.checkNameRestrictions(name, address),
+        // when / then
+        expectValidationExceptionWith(() -> onJoinVerifier.checkNameRestrictions(name, address),
             MessageKey.NOT_OWNER_ERROR);
     }
 
     @Test
-    public void shouldBanIpWhenNameRestrictionFailsAndBanIsEnabled() {
+    void shouldBanIpWhenNameRestrictionFailsAndBanIsEnabled() {
         // given
         String name = "Bobby";
         InetAddress address = createInetAddress("99.99.99.99");
@@ -553,7 +560,7 @@ public class OnJoinVerifierTest {
         }
     }
 
-    private void assertValidationException(Executable executable, MessageKey messageKey, String... args) {
+    private void expectValidationExceptionWith(Executable executable, MessageKey messageKey, String... args) {
         FailedVerificationException exception = assertThrows(FailedVerificationException.class, executable);
         assertThat(exception, exceptionWithData(messageKey, args));
     }
@@ -575,5 +582,3 @@ public class OnJoinVerifierTest {
     }
 
 }
-
-

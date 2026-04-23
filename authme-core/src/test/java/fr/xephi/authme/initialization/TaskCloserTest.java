@@ -37,8 +37,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link TaskCloser}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class TaskCloserTest {
+class TaskCloserTest {
 
     private static final int[] ACTIVE_WORKERS_ID = {2, 5};
 
@@ -55,7 +54,7 @@ public class TaskCloserTest {
     private ArgumentCaptor<Integer> taskIds;
 
     @BeforeEach
-    public void initAuthMe() {
+    void initAuthMe() {
         Server server = mock(Server.class);
         given(server.getScheduler()).willReturn(bukkitScheduler);
         given(authMe.getServer()).willReturn(server);
@@ -64,7 +63,7 @@ public class TaskCloserTest {
     }
 
     @Test
-    public void shouldWaitForTasksToClose() throws InterruptedException {
+    void shouldWaitForTasksToClose() throws InterruptedException {
         // given
         doNothing().when(taskCloser).sleep(); // avoid sleeping in tests
         mockActiveWorkers();
@@ -85,7 +84,7 @@ public class TaskCloserTest {
     }
 
     @Test
-    public void shouldAbortForNeverEndingTask() throws InterruptedException {
+    void shouldAbortForNeverEndingTask() throws InterruptedException {
         // given
         doNothing().when(taskCloser).sleep(); // avoid sleeping in tests
         mockActiveWorkers();
@@ -104,7 +103,7 @@ public class TaskCloserTest {
     }
 
     @Test
-    public void shouldStopForInterruptedThread() throws InterruptedException, ExecutionException {
+    void shouldStopForInterruptedThread() throws InterruptedException, ExecutionException {
         // Note ljacqu 20160827: This test must be run in its own thread because we throw an InterruptedException.
         // Somehow the java.nio.Files API used in tests that are run subsequently don't like this and fail otherwise.
         ExecutorService executor = Executors.newSingleThreadExecutor();

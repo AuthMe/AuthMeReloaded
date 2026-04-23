@@ -6,8 +6,8 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -44,15 +43,12 @@ import static org.mockito.Mockito.verify;
  * which is set to create additional mocks on demand for Statement and ResultSet objects.
  * This test ensures that all such objects that are created will be closed again by
  * keeping a list of mocks ({@link #closeables}) and then verifying that all have been
- * closed ({@link #verifyHaveMocksBeenClosed()}).
+ * closed ({@link #verifyHaveMocksBeenClosed(Method)}).
  */
 public abstract class AbstractResourceClosingTest {
 
     /** Collection of values to use to call methods with the parameters they expect. */
     private static final Map<Class<?>, Object> PARAM_VALUES = getDefaultParameters();
-
-    /** The DataSource method to test. */
-    private Method method;
 
     /** Keeps track of the closeables which are created during the tested call. */
     private List<AutoCloseable> closeables = new ArrayList<>();
@@ -60,33 +56,32 @@ public abstract class AbstractResourceClosingTest {
     private boolean hasCreatedConnection = false;
 
     @BeforeAll
-    public static void initializeLogger() {
+    static void initializeLogger() {
         TestHelper.setupLogger();
     }
 
-    @TestFactory
-    public List<DynamicTest> shouldCloseResources() {
-        return getMethodsToTest().stream()
-            .map(method -> DynamicTest.dynamicTest(method.getName(), () -> assertResourcesClosed(method)))
-            .collect(Collectors.toList());
-    }
-
-    protected final void assertResourcesClosed(Method method) throws IllegalAccessException, InvocationTargetException {
-        this.method = method;
-        this.closeables = new ArrayList<>();
-        this.hasCreatedConnection = false;
+    /**
+     * The actual test -- executes the method given through the constructor and then verifies that all
+     * AutoCloseable mocks it constructed have been closed.
+     */
+    @ParameterizedTest(name = "{1}")
+    @MethodSource("createParameters")
+    // Note ljacqu 20160227: The name parameter is necessary as we pass it from the arguments source method;
+    // we use the method name in the annotation to name the test sensibly
+    void shouldCloseResources(Method method, String name) throws IllegalAccessException, InvocationTargetException {
         method.invoke(getObjectUnderTest(), buildParamListForMethod(method));
-        verifyHaveMocksBeenClosed();
+        verifyHaveMocksBeenClosed(method);
     }
 
     protected abstract Object getObjectUnderTest();
 
-    protected abstract Collection<Method> getMethodsToTest();
-
     /**
      * Verify that all AutoCloseables that have been created during the method execution have been closed.
      */
-    private void verifyHaveMocksBeenClosed() {
+    private void verifyHaveMocksBeenClosed(Method method) {
+        if (closeables.isEmpty()) {
+            System.out.println("Note: detected no AutoCloseables for method '" + method.getName() + "'");
+        }
         try {
             for (AutoCloseable autoCloseable : closeables) {
                 verify(autoCloseable).close();
@@ -193,27 +188,21 @@ public abstract class AbstractResourceClosingTest {
 
     /* Create Answer that returns a PreparedStatement mock. */
     private Answer<PreparedStatement> preparedStatementAnswer() {
-        return new Answer<PreparedStatement>() {
-            @Override
-            public PreparedStatement answer(InvocationOnMock invocation) throws SQLException {
-                PreparedStatement pst = mock(PreparedStatement.class);
-                closeables.add(pst);
-                given(pst.executeQuery()).willAnswer(resultSetAnswer());
-                given(pst.executeQuery(anyString())).willAnswer(resultSetAnswer());
-                return pst;
-            }
+        return invocation -> {
+            PreparedStatement pst = mock(PreparedStatement.class);
+            closeables.add(pst);
+            given(pst.executeQuery()).willAnswer(resultSetAnswer());
+            given(pst.executeQuery(anyString())).willAnswer(resultSetAnswer());
+            return pst;
         };
     }
 
     /* Create Answer that returns a ResultSet mock. */
-    private Answer<ResultSet> resultSetAnswer() throws SQLException {
-        return new Answer<ResultSet>() {
-            @Override
-            public ResultSet answer(InvocationOnMock invocation) throws Throwable {
-                ResultSet rs = initResultSet();
-                closeables.add(rs);
-                return rs;
-            }
+    private Answer<ResultSet> resultSetAnswer() {
+        return invocation -> {
+            ResultSet rs = initResultSet();
+            closeables.add(rs);
+            return rs;
         };
     }
 
@@ -244,4 +233,3 @@ public abstract class AbstractResourceClosingTest {
     }
 
 }
-

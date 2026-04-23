@@ -9,23 +9,23 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 /**
  * Test for {@link CommandUtils}.
  */
-public class CommandUtilsTest {
+class CommandUtilsTest {
 
     private static Collection<CommandDescription> commands;
 
     @BeforeAll
-    public static void setUpTestCommands() {
+    static void setUpTestCommands() {
         commands = Collections.unmodifiableCollection(TestCommandsUtil.generateCommands());
     }
 
     @Test
-    public void shouldReturnCommandPath() {
+    void shouldReturnCommandPath() {
         // given
         CommandDescription base = CommandDescription.builder()
             .labels("authme", "auth")
@@ -49,7 +49,7 @@ public class CommandUtilsTest {
     }
 
     @Test
-    public void shouldComputeMinAndMaxOnEmptyCommand() {
+    void shouldComputeMinAndMaxOnEmptyCommand() {
         // given
         CommandDescription command = getBuilderForArgsTest().register();
 
@@ -58,7 +58,7 @@ public class CommandUtilsTest {
     }
 
     @Test
-    public void shouldComputeMinAndMaxOnCommandWithMandatoryArgs() {
+    void shouldComputeMinAndMaxOnCommandWithMandatoryArgs() {
         // given
         CommandDescription command = getBuilderForArgsTest()
             .withArgument("Test", "Arg description", false)
@@ -70,7 +70,7 @@ public class CommandUtilsTest {
     }
 
     @Test
-    public void shouldComputeMinAndMaxOnCommandIncludingOptionalArgs() {
+    void shouldComputeMinAndMaxOnCommandIncludingOptionalArgs() {
         // given
         CommandDescription command = getBuilderForArgsTest()
             .withArgument("arg1", "Arg description", false)
@@ -83,7 +83,7 @@ public class CommandUtilsTest {
     }
 
     @Test
-    public void shouldFormatSimpleArgument() {
+    void shouldFormatSimpleArgument() {
         // given
         CommandDescription command = TestCommandsUtil.getCommandWithLabel(commands, "authme");
         List<String> labels = Collections.singletonList("authme");
@@ -96,7 +96,7 @@ public class CommandUtilsTest {
     }
 
     @Test
-    public void shouldFormatCommandWithMultipleArguments() {
+    void shouldFormatCommandWithMultipleArguments() {
         // given
         CommandDescription command = TestCommandsUtil.getCommandWithLabel(commands, "authme", "register");
         List<String> labels = Arrays.asList("authme", "reg");
@@ -110,7 +110,7 @@ public class CommandUtilsTest {
 
 
     @Test
-    public void shouldFormatCommandWithOptionalArgument() {
+    void shouldFormatCommandWithOptionalArgument() {
         // given
         CommandDescription command = TestCommandsUtil.getCommandWithLabel(commands, "email");
         List<String> labels = Collections.singletonList("email");
@@ -123,64 +123,64 @@ public class CommandUtilsTest {
     }
 
     @Test
-    public void shouldReturnEmptyListForNullInput() {
+    void shouldReturnEmptyListForNullInput() {
         assertSplitInput(null);
     }
 
     @Test
-    public void shouldReturnEmptyListForBlankInput() {
+    void shouldReturnEmptyListForBlankInput() {
         assertSplitInput("   \t  \n ");
     }
 
     @Test
-    public void shouldReturnEmptyListForSlashOnlyInput() {
+    void shouldReturnEmptyListForSlashOnlyInput() {
         assertSplitInput("/");
     }
 
     @Test
-    public void shouldReturnEmptyListForSlashWithOnlyWhitespace() {
+    void shouldReturnEmptyListForSlashWithOnlyWhitespace() {
         assertSplitInput("/   \t   ");
     }
 
     @Test
-    public void shouldSplitSingleCommandWithoutLeadingSlash() {
+    void shouldSplitSingleCommandWithoutLeadingSlash() {
         assertSplitInput("authme", "authme");
     }
 
     @Test
-    public void shouldSplitSingleCommandWithLeadingSlash() {
+    void shouldSplitSingleCommandWithLeadingSlash() {
         assertSplitInput("/authme", "authme");
     }
 
     @Test
-    public void shouldTrimInputBeforeRemovingLeadingSlash() {
+    void shouldTrimInputBeforeRemovingLeadingSlash() {
         assertSplitInput("   /authme register   ", "authme", "register");
     }
 
     @Test
-    public void shouldIgnoreRepeatedWhitespaceBetweenParts() {
+    void shouldIgnoreRepeatedWhitespaceBetweenParts() {
         assertSplitInput("/authme    register     player    password",
             "authme", "register", "player", "password");
     }
 
     @Test
-    public void shouldSplitTabsAndNewlinesAsWhitespace() {
+    void shouldSplitTabsAndNewlinesAsWhitespace() {
         assertSplitInput("/authme\tregister\nplayer\r\npassword",
             "authme", "register", "player", "password");
     }
 
     @Test
-    public void shouldSupportSlashSeparatedByWhitespaceFromCommand() {
+    void shouldSupportSlashSeparatedByWhitespaceFromCommand() {
         assertSplitInput("/   authme   register", "authme", "register");
     }
 
     @Test
-    public void shouldPreserveAdditionalLeadingSlashInFirstPart() {
+    void shouldPreserveAdditionalLeadingSlashInFirstPart() {
         assertSplitInput("//authme register", "/authme", "register");
     }
 
     @Test
-    public void shouldPreserveNonEmptySpecialCharactersInsideParts() {
+    void shouldPreserveNonEmptySpecialCharactersInsideParts() {
         assertSplitInput("/login p@ss-word_123", "login", "p@ss-word_123");
     }
 
@@ -202,4 +202,3 @@ public class CommandUtilsTest {
             .executableCommand(ExecutableCommand.class);
     }
 }
-

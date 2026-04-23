@@ -10,22 +10,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Consistency tests for {@link DebugSection} implementors.
  */
-public class DebugSectionConsistencyTest {
+class DebugSectionConsistencyTest {
 
     private static List<Class<?>> debugClasses;
     private static List<DebugSection> debugSections;
 
     @BeforeAll
-    public static void collectClasses() {
+    static void collectClasses() {
         // TODO ljacqu 20171021: Improve ClassCollector (pass pkg by class, improve #getInstancesOfType's instantiation)
         ClassCollector classCollector = new ClassCollector(
             TestHelper.SOURCES_FOLDER, TestHelper.PROJECT_ROOT + "command/executable/authme/debug");
@@ -35,7 +35,7 @@ public class DebugSectionConsistencyTest {
     }
 
     @Test
-    public void shouldAllBePackagePrivate() {
+    void shouldAllBePackagePrivate() {
         for (Class<?> clazz : debugClasses) {
             if (clazz != DebugCommand.class) {
                 assertThat(clazz + " should be package-private",
@@ -45,7 +45,7 @@ public class DebugSectionConsistencyTest {
     }
 
     @Test
-    public void shouldHaveDifferentSubcommandName() throws IllegalAccessException, InstantiationException {
+    void shouldHaveDifferentSubcommandName() {
         Set<String> names = new HashSet<>();
         for (DebugSection debugSection : debugSections) {
             if (!names.add(debugSection.getName())) {
@@ -55,7 +55,7 @@ public class DebugSectionConsistencyTest {
     }
 
     @Test
-    public void shouldAllHaveDescription() {
+    void shouldAllHaveDescription() {
         for (DebugSection debugSection : debugSections) {
             assertThat("Description of '" + debugSection.getClass() + "' may not be null",
                 debugSection.getDescription(), not(nullValue()));
@@ -70,4 +70,3 @@ public class DebugSectionConsistencyTest {
         }
     }
 }
-

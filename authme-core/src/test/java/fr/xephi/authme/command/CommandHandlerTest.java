@@ -1,9 +1,5 @@
 package fr.xephi.authme.command;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import ch.jalu.injector.factory.Factory;
 import com.google.common.collect.Sets;
 import fr.xephi.authme.command.TestCommandsUtil.TestLoginCommand;
@@ -16,10 +12,11 @@ import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 
 import java.util.Collections;
@@ -32,8 +29,8 @@ import static fr.xephi.authme.command.FoundResultStatus.NO_PERMISSION;
 import static fr.xephi.authme.command.FoundResultStatus.SUCCESS;
 import static fr.xephi.authme.command.FoundResultStatus.UNKNOWN_LABEL;
 import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -51,8 +48,7 @@ import static org.mockito.Mockito.verify;
 // often consists of only one element, e.g. myMethod(asList("authme"), asList("my", "args"), ...)
 @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class CommandHandlerTest {
+class CommandHandlerTest {
 
     private CommandHandler handler;
 
@@ -66,14 +62,12 @@ public class CommandHandlerTest {
     private Messages messages;
     @Mock
     private HelpProvider helpProvider;
-    @Captor
-    private ArgumentCaptor<String> cmdCaptor;
 
     private Map<Class<? extends ExecutableCommand>, ExecutableCommand> mockedCommands = new HashMap<>();
 
     @BeforeEach
     @SuppressWarnings("unchecked")
-    public void initializeCommandMapper() {
+    void initializeCommandMapper() {
         given(commandMapper.getCommandClasses()).willReturn(Sets.newHashSet(
             ExecutableCommand.class, TestLoginCommand.class, TestRegisterCommand.class, TestUnregisterCommand.class));
         setInjectorToMockExecutableCommandClasses();
@@ -107,7 +101,7 @@ public class CommandHandlerTest {
 
 
     @Test
-    public void shouldCallMappedCommandWithArgs() {
+    void shouldCallMappedCommandWithArgs() {
         // given
         String bukkitLabel = "Authme";
         String[] bukkitArgs = {"Login", "myPass"};
@@ -130,7 +124,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    public void shouldCallMappedCommandWithPreSplitParts() {
+    void shouldCallMappedCommandWithPreSplitParts() {
         // given
         CommandSender sender = mock(CommandSender.class);
         CommandDescription command = mock(CommandDescription.class);
@@ -149,7 +143,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    public void shouldNotCallExecutableCommandIfNoPermission() {
+    void shouldNotCallExecutableCommandIfNoPermission() {
         // given
         String bukkitLabel = "unreg";
         String[] bukkitArgs = {"testPlayer"};
@@ -168,7 +162,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    public void shouldNotCallExecutableForWrongArguments() {
+    void shouldNotCallExecutableForWrongArguments() {
         // given
         String bukkitLabel = "unreg";
         String[] bukkitArgs = {"testPlayer"};
@@ -191,7 +185,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    public void shouldUseCustomMessageUponArgumentMismatch() {
+    void shouldUseCustomMessageUponArgumentMismatch() {
         // given
         String bukkitLabel = "unreg";
         String[] bukkitArgs = {"testPlayer"};
@@ -214,7 +208,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    public void shouldNotCallExecutableForWrongArgumentsAndPermissionDenied() {
+    void shouldNotCallExecutableForWrongArgumentsAndPermissionDenied() {
         // given
         String bukkitLabel = "unreg";
         String[] bukkitArgs = {"testPlayer"};
@@ -234,7 +228,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    public void shouldNotCallExecutableForFailedParsing() {
+    void shouldNotCallExecutableForFailedParsing() {
         // given
         String bukkitLabel = "unreg";
         String[] bukkitArgs = {"testPlayer"};
@@ -254,7 +248,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    public void shouldNotCallExecutableForUnknownLabelAndHaveSuggestion() {
+    void shouldNotCallExecutableForUnknownLabelAndHaveSuggestion() {
         // given
         String bukkitLabel = "unreg";
         String[] bukkitArgs = {"testPlayer"};
@@ -271,6 +265,7 @@ public class CommandHandlerTest {
         verify(commandMapper).mapPartsToCommand(sender, asList("unreg", "testPlayer"));
         verify(command, never()).getExecutableCommand();
         verify(messages).send(sender, MessageKey.UNKNOWN_COMMAND);
+        ArgumentCaptor<String> cmdCaptor = ArgumentCaptor.forClass(String.class);
         verify(messages).send(eq(sender), eq(MessageKey.COMMAND_DID_YOU_MEAN), cmdCaptor.capture());
         assertThat(cmdCaptor.getValue(), containsString("test_cmd"));
         verify(messages).send(eq(sender), eq(MessageKey.COMMAND_SEE_HELP), anyString());
@@ -278,7 +273,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    public void shouldNotCallExecutableForUnknownLabelAndNotSuggestCommand() {
+    void shouldNotCallExecutableForUnknownLabelAndNotSuggestCommand() {
         // given
         String bukkitLabel = "unreg";
         String[] bukkitArgs = {"testPlayer"};
@@ -299,7 +294,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    public void shouldStripWhitespace() {
+    void shouldStripWhitespace() {
         // given
         String bukkitLabel = "AuthMe";
         String[] bukkitArgs = {" ", "", "REGISTER", "  ", "testArg", " "};
@@ -321,5 +316,3 @@ public class CommandHandlerTest {
     }
 
 }
-
-

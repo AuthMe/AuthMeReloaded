@@ -1,17 +1,15 @@
 package fr.xephi.authme.command.executable.authme;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.settings.SpawnLoader;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -23,8 +21,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link SetSpawnCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class SetSpawnCommandTest {
+class SetSpawnCommandTest {
 
     @InjectMocks
     private SetSpawnCommand command;
@@ -36,7 +33,7 @@ public class SetSpawnCommandTest {
     private Messages messages;
 
     @Test
-    public void shouldSetSpawn() {
+    void shouldSetSpawn() {
         // given
         Player player = mock(Player.class);
         Location location = mock(Location.class);
@@ -52,7 +49,7 @@ public class SetSpawnCommandTest {
     }
 
     @Test
-    public void shouldHandleError() {
+    void shouldHandleError() {
         // given
         Player player = mock(Player.class);
         Location location = mock(Location.class);
@@ -67,5 +64,3 @@ public class SetSpawnCommandTest {
         verify(messages).send(player, MessageKey.SPAWN_SET_FAIL);
     }
 }
-
-

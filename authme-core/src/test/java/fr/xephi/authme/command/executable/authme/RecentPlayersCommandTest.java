@@ -1,16 +1,14 @@
 package fr.xephi.authme.command.executable.authme;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.ZoneId;
 import java.util.Arrays;
@@ -28,8 +26,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link RecentPlayersCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class RecentPlayersCommandTest {
+class RecentPlayersCommandTest {
 
     @InjectMocks
     @Spy
@@ -39,7 +36,7 @@ public class RecentPlayersCommandTest {
     private DataSource dataSource;
 
     @Test
-    public void shouldShowRecentPlayers() {
+    void shouldShowRecentPlayers() {
         // given
         PlayerAuth auth1 = PlayerAuth.builder()
             .name("hannah").realName("Hannah").lastIp("11.11.11.11")
@@ -64,7 +61,7 @@ public class RecentPlayersCommandTest {
     }
 
     @Test
-    public void shouldHandlePlayerWithNullLastLogin() {
+    void shouldHandlePlayerWithNullLastLogin() {
         // given
         PlayerAuth auth1 = PlayerAuth.builder()
             .name("xephren").realName("Xephren").lastIp("11.11.11.11")
@@ -88,5 +85,3 @@ public class RecentPlayersCommandTest {
         verify(sender).sendMessage(argThat(equalToIgnoringCase("- silvah777 (11:15 PM, 09 Nov with IP 22.11.22.33)")));
     }
 }
-
-

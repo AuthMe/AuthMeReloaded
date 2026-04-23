@@ -1,23 +1,20 @@
 package fr.xephi.authme.command.executable.authme.debug;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -28,19 +25,16 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link PlayerAuthViewer}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class PlayerAuthViewerTest {
+class PlayerAuthViewerTest {
 
     @InjectMocks
     private PlayerAuthViewer authViewer;
 
     @Mock
     private DataSource dataSource;
-    @Captor
-    private ArgumentCaptor<String> textCaptor;
 
     @Test
-    public void shouldMakeExample() {
+    void shouldMakeExample() {
         // given
         CommandSender sender = mock(CommandSender.class);
 
@@ -52,7 +46,7 @@ public class PlayerAuthViewerTest {
     }
 
     @Test
-    public void shouldHandleMissingPlayer() {
+    void shouldHandleMissingPlayer() {
         // given
         CommandSender sender = mock(CommandSender.class);
 
@@ -65,7 +59,7 @@ public class PlayerAuthViewerTest {
     }
 
     @Test
-    public void shouldDisplayAuthInfo() {
+    void shouldDisplayAuthInfo() {
         // given
         CommandSender sender = mock(CommandSender.class);
         PlayerAuth auth = PlayerAuth.builder().name("george").realName("George")
@@ -79,6 +73,7 @@ public class PlayerAuthViewerTest {
         authViewer.execute(sender, Collections.singletonList("George"));
 
         // then
+        ArgumentCaptor<String> textCaptor = ArgumentCaptor.forClass(String.class);
         verify(sender, atLeastOnce()).sendMessage(textCaptor.capture());
         assertThat(textCaptor.getAllValues(), hasItem(containsString("Player george / George")));
         assertThat(textCaptor.getAllValues(), hasItem(containsString("Registration: 2005-03-18T")));
@@ -87,7 +82,7 @@ public class PlayerAuthViewerTest {
     }
 
     @Test
-    public void shouldHandleCornerCases() {
+    void shouldHandleCornerCases() {
         // given
         CommandSender sender = mock(CommandSender.class);
         PlayerAuth auth = PlayerAuth.builder().name("tar")
@@ -100,6 +95,7 @@ public class PlayerAuthViewerTest {
         authViewer.execute(sender, Collections.singletonList("Tar"));
 
         // then
+        ArgumentCaptor<String> textCaptor = ArgumentCaptor.forClass(String.class);
         verify(sender, atLeastOnce()).sendMessage(textCaptor.capture());
         assertThat(textCaptor.getAllValues(), hasItem(containsString("Player tar / Player")));
         assertThat(textCaptor.getAllValues(), hasItem(containsString("Registration: Not available (0)")));
@@ -108,5 +104,3 @@ public class PlayerAuthViewerTest {
         assertThat(textCaptor.getAllValues(), hasItem(containsString("TOTP code (partial): ''")));
     }
 }
-
-

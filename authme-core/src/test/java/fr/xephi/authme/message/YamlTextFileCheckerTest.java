@@ -20,13 +20,13 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * Tests that all YML text files can be loaded.
  */
-public class YamlTextFileCheckerTest {
+class YamlTextFileCheckerTest {
 
     /** Contains all files of the MESSAGES_FOLDER. */
     private static File[] messageFiles;
 
     @BeforeAll
-    public static void loadMessagesFiles() {
+    static void loadMessagesFiles() {
         File folder = TestHelper.getJarFile("/" + MESSAGES_FOLDER);
         messageFiles = folder.listFiles();
         if (messageFiles == null) {
@@ -35,14 +35,14 @@ public class YamlTextFileCheckerTest {
     }
 
     @Test
-    public void testAllMessagesYmlFiles() {
+    void testAllMessagesYmlFiles() {
         checkFiles(
             MessagePathHelper::isMessagesFile,
             MessageKey.LOGIN_MESSAGE.getKey());
     }
 
     @Test
-    public void testAllHelpYmlFiles() {
+    void testAllHelpYmlFiles() {
         checkFiles(
             MessagePathHelper::isHelpFile,
             HelpSection.ALTERNATIVES.getKey());
@@ -91,4 +91,3 @@ public class YamlTextFileCheckerTest {
         }
     }
 }
-

@@ -1,9 +1,5 @@
 package fr.xephi.authme.command.executable.authme;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
@@ -12,8 +8,10 @@ import fr.xephi.authme.message.Messages;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -28,8 +26,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link TotpViewStatusCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class TotpViewStatusCommandTest {
+class TotpViewStatusCommandTest {
 
     @InjectMocks
     private TotpViewStatusCommand command;
@@ -41,12 +38,12 @@ public class TotpViewStatusCommandTest {
     private Messages messages;
 
     @BeforeAll
-    public static void initLogger() {
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldHandleUnknownUser() {
+    void shouldHandleUnknownUser() {
         // given
         CommandSender sender = mock(CommandSender.class);
         given(dataSource.getAuth("user")).willReturn(null);
@@ -60,7 +57,7 @@ public class TotpViewStatusCommandTest {
     }
 
     @Test
-    public void shouldInformForUserWithoutTotp() {
+    void shouldInformForUserWithoutTotp() {
         // given
         CommandSender sender = mock(CommandSender.class);
         PlayerAuth auth = PlayerAuth.builder()
@@ -77,7 +74,7 @@ public class TotpViewStatusCommandTest {
     }
 
     @Test
-    public void shouldInformForUserWithTotpEnabled() {
+    void shouldInformForUserWithTotpEnabled() {
         // given
         CommandSender sender = mock(CommandSender.class);
         PlayerAuth auth = PlayerAuth.builder()
@@ -93,5 +90,3 @@ public class TotpViewStatusCommandTest {
         verify(sender).sendMessage(argThat(containsString("'Billy' has enabled two-factor authentication")));
     }
 }
-
-
