@@ -1,10 +1,5 @@
 package fr.xephi.authme.listener;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.data.QuickCommandsProtectionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.limbo.LimboService;
@@ -13,10 +8,10 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
-import fr.xephi.authme.process.Management;
 import fr.xephi.authme.platform.ChatAdapter;
 import fr.xephi.authme.platform.PlatformAdapter;
 import fr.xephi.authme.platform.TeleportAdapter;
+import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.JoinMessageService;
@@ -36,6 +31,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityAirChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -54,16 +50,18 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.InventoryView;
-import org.spigotmc.event.player.PlayerSpawnLocationEvent;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import java.lang.reflect.Field;
 import java.net.InetAddress;
@@ -105,8 +103,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * Test for {@link PlayerListener}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class PlayerListenerTest {
+class PlayerListenerTest {
 
     @InjectMocks
     private PlayerListener listener;
@@ -149,7 +146,7 @@ public class PlayerListenerTest {
     private PlatformAdapter platformAdapter;
 
     @AfterEach
-    public void resetSpawnLocationTracker() throws ReflectiveOperationException {
+    void resetSpawnLocationTracker() throws ReflectiveOperationException {
         Field eventCalledField = SpawnLocationTracker.class.getDeclaredField("eventCalled");
         eventCalledField.setAccessible(true);
         eventCalledField.setBoolean(null, false);
@@ -160,7 +157,7 @@ public class PlayerListenerTest {
      * should be CANCELED when single session is enabled.
      */
     @Test
-    public void shouldCancelKick() {
+    void shouldCancelKick() {
         // given
         given(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)).willReturn(true);
         given(chatAdapter.getKickReason(any())).willAnswer(inv -> inv.getArgument(0, PlayerKickEvent.class).getReason());
@@ -176,7 +173,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldNotCancelKick() {
+    void shouldNotCancelKick() {
         // given
         given(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)).willReturn(false);
         String name = "Bobby";
@@ -194,7 +191,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldNotCancelOrdinaryKick() {
+    void shouldNotCancelOrdinaryKick() {
         // given
         given(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)).willReturn(true);
         given(chatAdapter.getKickReason(any())).willAnswer(inv -> inv.getArgument(0, PlayerKickEvent.class).getReason());
@@ -213,7 +210,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldHandleSimpleCancelableEvents() {
+    void shouldHandleSimpleCancelableEvents() {
         withServiceMock(listenerService)
             .check(listener::onPlayerShear, PlayerShearEntityEvent.class)
             .check(listener::onPlayerFish, PlayerFishEvent.class)
@@ -229,7 +226,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldCancelPickupItemForUnauthenticatedPlayer() {
+    void shouldCancelPickupItemForUnauthenticatedPlayer() {
         // given
         Player player = mock(Player.class);
         EntityPickupItemEvent event = mock(EntityPickupItemEvent.class);
@@ -244,7 +241,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldAllowPickupItemForAuthenticatedPlayer() {
+    void shouldAllowPickupItemForAuthenticatedPlayer() {
         // given
         Player player = mock(Player.class);
         EntityPickupItemEvent event = mock(EntityPickupItemEvent.class);
@@ -259,7 +256,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldIgnorePickupItemForNonPlayer() {
+    void shouldIgnorePickupItemForNonPlayer() {
         // given
         EntityPickupItemEvent event = mock(EntityPickupItemEvent.class);
         given(event.getEntity()).willReturn(mock(org.bukkit.entity.LivingEntity.class));
@@ -273,7 +270,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldAllowEssentialsMotd() {
+    void shouldAllowEssentialsMotd() {
         // given
         given(settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)).willReturn(true);
         PlayerCommandPreprocessEvent event = mockCommandEvent("/MOTD");
@@ -287,7 +284,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldNotStopAllowedCommand() {
+    void shouldNotStopAllowedCommand() {
         // given
         given(settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS)).willReturn(newHashSet("/plugins", "/mail", "/msg"));
@@ -302,7 +299,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldNotCancelEventForAuthenticatedPlayer() {
+    void shouldNotCancelEventForAuthenticatedPlayer() {
         // given
         given(settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)).willReturn(false);
         given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS)).willReturn(Collections.emptySet());
@@ -324,7 +321,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldCancelCommandEvent() {
+    void shouldCancelCommandEvent() {
         // given
         given(settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)).willReturn(false);
         given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS)).willReturn(newHashSet("/spawn", "/help"));
@@ -343,7 +340,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldCancelFastCommandEvent() {
+    void shouldCancelFastCommandEvent() {
         // given
         given(settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)).willReturn(false);
         given(settings.getProperty(RestrictionSettings.ALLOW_COMMANDS)).willReturn(newHashSet("/spawn", "/help"));
@@ -360,7 +357,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldAllowChat() {
+    void shouldAllowChat() {
         // given
         given(settings.getProperty(RestrictionSettings.ALLOW_CHAT)).willReturn(true);
         AsyncPlayerChatEvent event = mock(AsyncPlayerChatEvent.class);
@@ -373,7 +370,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldCancelChatForUnauthedPlayer() {
+    void shouldCancelChatForUnauthedPlayer() {
         // given
         given(settings.getProperty(RestrictionSettings.ALLOW_CHAT)).willReturn(false);
         AsyncPlayerChatEvent event = newAsyncChatEvent();
@@ -391,7 +388,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldSendChatToEveryone() {
+    void shouldSendChatToEveryone() {
         // given
         given(settings.getProperty(RestrictionSettings.ALLOW_CHAT)).willReturn(false);
         AsyncPlayerChatEvent event = newAsyncChatEvent();
@@ -409,7 +406,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldHideChatFromUnauthed() {
+    void shouldHideChatFromUnauthed() {
         // given
         given(settings.getProperty(RestrictionSettings.ALLOW_CHAT)).willReturn(false);
         AsyncPlayerChatEvent event = newAsyncChatEvent();
@@ -430,7 +427,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldCancelChatEventForNoRemainingRecipients() {
+    void shouldCancelChatEventForNoRemainingRecipients() {
         // given
         given(settings.getProperty(RestrictionSettings.ALLOW_CHAT)).willReturn(false);
         AsyncPlayerChatEvent event = newAsyncChatEvent();
@@ -450,7 +447,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldAllowChatForBypassPermission() {
+    void shouldAllowChatForBypassPermission() {
         // given
         given(settings.getProperty(RestrictionSettings.ALLOW_CHAT)).willReturn(false);
         AsyncPlayerChatEvent event = newAsyncChatEvent();
@@ -469,7 +466,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldAllowUnlimitedMovement() {
+    void shouldAllowUnlimitedMovement() {
         // given
         given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.ALLOWED_MOVEMENT_RADIUS)).willReturn(0);
@@ -485,7 +482,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldAllowFalling() {
+    void shouldAllowFalling() {
         // given
         given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
         Player player = mock(Player.class);
@@ -501,7 +498,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldAllowMovementForAuthedPlayer() {
+    void shouldAllowMovementForAuthedPlayer() {
         // given
         given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
         Player player = mock(Player.class);
@@ -519,7 +516,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldCancelEventForDisabledUnauthedMovement() {
+    void shouldCancelEventForDisabledUnauthedMovement() {
         // given
         given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
         Player player = mock(Player.class);
@@ -538,7 +535,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldTeleportPlayerInDifferentWorldToSpawn() {
+    void shouldTeleportPlayerInDifferentWorldToSpawn() {
         // given
         given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.ALLOWED_MOVEMENT_RADIUS)).willReturn(20);
@@ -565,7 +562,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldAllowMovementWithinRadius() {
+    void shouldAllowMovementWithinRadius() {
         // given
         given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.ALLOWED_MOVEMENT_RADIUS)).willReturn(12);
@@ -593,7 +590,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldRejectMovementOutsideOfRadius() {
+    void shouldRejectMovementOutsideOfRadius() {
         // given
         given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.ALLOWED_MOVEMENT_RADIUS)).willReturn(12);
@@ -621,7 +618,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldIgnorePlayerRespawnForAuthenticatedPlayer() {
+    void shouldIgnorePlayerRespawnWithNoTeleport() {
         // given
         Player player = mock(Player.class);
         Location respawnLocation = mock(Location.class);
@@ -637,7 +634,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldSkipTeleportOnRespawnWithNoTeleportButStillScheduleRestrictions() {
+    void shouldSkipTeleportOnRespawnWithNoTeleportButStillScheduleRestrictions() {
         // given
         Player player = mock(Player.class);
         Location respawnLocation = mock(Location.class);
@@ -655,7 +652,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldIgnorePlayerRespawn() {
+    void shouldIgnorePlayerRespawn() {
         // given
         Player player = mock(Player.class);
         Location respawnLocation = mock(Location.class);
@@ -671,7 +668,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldHandlePlayerRespawn() {
+    void shouldHandlePlayerRespawn() {
         // given
         Player player = mock(Player.class);
         Location originalLocation = mock(Location.class);
@@ -693,7 +690,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldIgnorePlayerRespawnUnloadedWorld() {
+    void shouldIgnorePlayerRespawnUnloadedWorld() {
         // given
         Player player = mock(Player.class);
         Location originalLocation = mock(Location.class);
@@ -714,7 +711,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldHandlePlayerRespawnNoChanges() {
+    void shouldHandlePlayerRespawnNoChanges() {
         // given
         Player player = mock(Player.class);
         Location originalLocation = mock(Location.class);
@@ -733,7 +730,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldHandlePlayerJoining() {
+    void shouldHandlePlayerJoining() {
         // given
         Player player = mock(Player.class);
         PlayerJoinEvent event = new PlayerJoinEvent(player, "join message");
@@ -747,7 +744,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldSetCustomSpawnLocationForLegacySpawnEvent() {
+    void shouldSetCustomSpawnLocationForLegacySpawnEvent() {
         // given
         Player player = mock(Player.class);
         Location originalSpawn = mock(Location.class);
@@ -765,7 +762,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldIgnoreLegacySpawnEventWhenPlatformUsesModernEvent() {
+    void shouldIgnoreLegacySpawnEventWhenPlatformUsesModernEvent() {
         // given
         PlayerSpawnLocationEvent event = spy(new PlayerSpawnLocationEvent(mock(Player.class), mock(Location.class)));
         given(platformAdapter.shouldHandlePlayerSpawnLocationEvent()).willReturn(false);
@@ -779,7 +776,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldNotInterfereWithUnrestrictedUser() throws FailedVerificationException {
+    void shouldNotInterfereWithUnrestrictedUser() throws FailedVerificationException {
         // given
         String name = "Player01";
         Player player = mockPlayerWithName(name);
@@ -798,7 +795,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldStopHandlingForFullServer() throws FailedVerificationException {
+    void shouldStopHandlingForFullServer() throws FailedVerificationException {
         // given
         String name = "someone";
         Player player = mockPlayerWithName(name);
@@ -819,7 +816,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldStopHandlingEventForBadResult() throws FailedVerificationException {
+    void shouldStopHandlingEventForBadResult() throws FailedVerificationException {
         // given
         String name = "someone";
         Player player = mockPlayerWithName(name);
@@ -841,7 +838,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldIgnoreLegacyLoginEventWhenPlatformUsesModernEvents() {
+    void shouldIgnoreLegacyLoginEventWhenPlatformUsesModernEvents() {
         // given
         PlayerLoginEvent event = spy(new PlayerLoginEvent(mock(Player.class), "", null));
         given(platformAdapter.shouldHandlePlayerLoginEvent()).willReturn(false);
@@ -855,7 +852,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldPerformAllJoinVerificationsSuccessfullyPreLoginLowest() throws FailedVerificationException {
+    void shouldPerformAllJoinVerificationsSuccessfullyPreLoginLowest() throws FailedVerificationException {
         // given
         String name = "someone";
         UUID uniqueId = UUID.fromString("753493c9-33ba-4a4a-bf61-1bce9d3c9a71");
@@ -875,7 +872,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldKickPreLoginLowestUnresolvedHostname() {
+    void shouldKickPreLoginLowestUnresolvedHostname() {
         // given
         String name = "someone";
         UUID uniqueId = UUID.fromString("753493c9-33ba-4a4a-bf61-1bce9d3c9a71");
@@ -893,7 +890,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldPerformAllJoinVerificationsSuccessfullyPreLoginHighest() throws FailedVerificationException {
+    void shouldPerformAllJoinVerificationsSuccessfullyPreLoginHighest() throws FailedVerificationException {
         // given
         String name = "someone";
         UUID uniqueId = UUID.fromString("753493c9-33ba-4a4a-bf61-1bce9d3c9a71");
@@ -918,7 +915,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldAbortPreLoginHighestForFailedNameRestriction() throws FailedVerificationException {
+    void shouldAbortPreLoginHighestForFailedNameRestriction() throws FailedVerificationException {
         // given
         String name = "restrictedPlayer";
         UUID uniqueId = UUID.fromString("c60b7305-3a78-4f71-8a60-70a3f17e1c90");
@@ -942,7 +939,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldPerformAllJoinVerificationsSuccessfullyLogin() {
+    void shouldPerformAllJoinVerificationsSuccessfullyLogin() {
         // given
         String name = "someone";
         Player player = mockPlayerWithName(name);
@@ -964,7 +961,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldAbortPlayerJoinForInvalidName() throws FailedVerificationException {
+    void shouldAbortPlayerJoinForInvalidName() throws FailedVerificationException {
         // given
         String name = "inval!dName";
         UUID uniqueId = UUID.fromString("753493c9-33ba-4a4a-bf61-1bce9d3c9a71");
@@ -990,7 +987,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldRemoveMessageOnQuit() {
+    void shouldRemoveMessageOnQuit() {
         // given
         given(settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)).willReturn(true);
         given(antiBotService.wasPlayerKicked(anyString())).willReturn(false);
@@ -1008,7 +1005,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldRemoveMessageForUnloggedUser() {
+    void shouldRemoveMessageForUnloggedUser() {
         // given
         given(settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)).willReturn(false);
         given(settings.getProperty(RegistrationSettings.REMOVE_UNLOGGED_LEAVE_MESSAGE)).willReturn(true);
@@ -1028,7 +1025,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldProcessPlayerAndKeepQuitMessage() {
+    void shouldProcessPlayerAndKeepQuitMessage() {
         // given
         String name = "Louis";
         Player player = mockPlayerWithName(name);
@@ -1050,7 +1047,7 @@ public class PlayerListenerTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldSaveEnderPearlRestoreDataOnQuit() {
+    void shouldSaveEnderPearlRestoreDataOnQuit() {
         // given
         String name = "Pearlie";
         Player player = mockPlayerWithName(name);
@@ -1091,7 +1088,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldCancelInventoryClickEvent() {
+    void shouldCancelInventoryClickEvent() {
         // given
         InventoryClickEvent event = mock(InventoryClickEvent.class);
         HumanEntity player = mock(Player.class);
@@ -1106,7 +1103,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldAllowInventoryClickEvent() {
+    void shouldAllowInventoryClickEvent() {
         // given
         InventoryClickEvent event = mock(InventoryClickEvent.class);
         HumanEntity player = mock(Player.class);
@@ -1121,7 +1118,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldAllowSignChangeEvent() {
+    void shouldAllowSignChangeEvent() {
         // given
         SignChangeEvent event = mock(SignChangeEvent.class);
         Player player = mock(Player.class);
@@ -1136,7 +1133,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldCancelSignChangeEvent() {
+    void shouldCancelSignChangeEvent() {
         // given
         SignChangeEvent event = mock(SignChangeEvent.class);
         Player player = mock(Player.class);
@@ -1151,7 +1148,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldAllowInventoryOpen() {
+    void shouldAllowInventoryOpen() {
         // given
         HumanEntity player = mock(Player.class);
         InventoryView transaction = mock(InventoryView.class);
@@ -1168,7 +1165,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldCancelInventoryOpen() {
+    void shouldCancelInventoryOpen() {
         // given
         HumanEntity player = mock(Player.class);
         InventoryView transaction = mock(InventoryView.class);
@@ -1188,7 +1185,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldNotModifyJoinMessage() {
+    void shouldNotModifyJoinMessage() {
         // given
         Player player = mock(Player.class);
         String joinMsg = "The player joined";
@@ -1206,7 +1203,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldRemoveJoinMessage() {
+    void shouldRemoveJoinMessage() {
         // given
         Player player = mock(Player.class);
         String joinMsg = "The player joined";
@@ -1222,7 +1219,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldUseCustomMessage() {
+    void shouldUseCustomMessage() {
         // given
         Player player = mock(Player.class);
         given(player.getName()).willReturn("doooew");
@@ -1243,7 +1240,7 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldDelayJoinMessage() {
+    void shouldDelayJoinMessage() {
         // given
         Player player = mock(Player.class);
         given(player.getName()).willReturn("thename0");
@@ -1264,13 +1261,13 @@ public class PlayerListenerTest {
     }
 
     @Test
-    public void shouldCancelPlayerEditBookEvent() {
+    void shouldCancelPlayerEditBookEvent() {
         withServiceMock(listenerService)
             .check(listener::onPlayerEditBook, PlayerEditBookEvent.class);
     }
 
     @Test
-    public void shouldCancelPlayerInteractAtEntityEvent() {
+    void shouldCancelPlayerInteractAtEntityEvent() {
         withServiceMock(listenerService)
             .check(listener::onPlayerInteractAtEntity, PlayerInteractAtEntityEvent.class);
     }
@@ -1287,10 +1284,9 @@ public class PlayerListenerTest {
      *
      * @return Player mock
      */
-    @SuppressWarnings("unchecked")
     private static Player playerWithMockedServer() {
         Server server = mock(Server.class);
-        given(server.getOnlinePlayers()).willReturn(Collections.EMPTY_LIST);
+        given(server.getOnlinePlayers()).willReturn(Collections.emptyList());
         Player player = mock(Player.class);
         given(player.getServer()).willReturn(server);
         return player;
@@ -1337,5 +1333,3 @@ public class PlayerListenerTest {
         }
     }
 }
-
-

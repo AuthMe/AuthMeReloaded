@@ -10,20 +10,20 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Checks the consistency of the AuthMe event classes.
  */
-public class EventsConsistencyTest {
+class EventsConsistencyTest {
 
     private static final String EVENTS_FOLDER = TestHelper.PROJECT_ROOT + "events/";
     private static List<Class<? extends Event>> classes;
 
     @BeforeAll
-    public static void scanEventClasses() {
+    static void scanEventClasses() {
         ClassCollector classCollector = new ClassCollector(TestHelper.SOURCES_FOLDER, EVENTS_FOLDER);
         classes = classCollector.collectClasses(Event.class);
 
@@ -33,7 +33,7 @@ public class EventsConsistencyTest {
     }
 
     @Test
-    public void shouldExtendFromCustomEvent() {
+    void shouldExtendFromCustomEvent() {
         for (Class<?> clazz : classes) {
             assertThat("Class " + clazz.getSimpleName() + " is subtype of CustomEvent",
                 CustomEvent.class.isAssignableFrom(clazz), equalTo(true));
@@ -46,7 +46,7 @@ public class EventsConsistencyTest {
      * is not instantiable (abstract class).
      */
     @Test
-    public void shouldHaveStaticEventHandlerMethod() {
+    void shouldHaveStaticEventHandlerMethod() {
         for (Class<?> clazz : classes) {
             Method handlerListMethod = null;
             try {
@@ -67,4 +67,3 @@ public class EventsConsistencyTest {
         return !clazz.isInterface() && !clazz.isEnum() && !Modifier.isAbstract(clazz.getModifiers());
     }
 }
-
