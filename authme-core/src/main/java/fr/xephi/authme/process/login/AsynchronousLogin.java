@@ -130,15 +130,16 @@ public class AsynchronousLogin implements AsynchronousProcess {
     }
 
     /**
-     * Logs a player in without requiring a password.
+     * Logs a player in without requiring a password, initiated by the proxy.
+     * Suppresses pre-condition messages and skips the BungeeCord server redirect
+     * (the proxy manages routing).
      *
      * @param player the player to log in
-     * @param quiet if true no messages will be sent
      */
-    public void forceLogin(Player player, boolean quiet) {
-        PlayerAuth auth = getPlayerAuth(player, quiet);
+    public void forceLoginFromProxy(Player player) {
+        PlayerAuth auth = getPlayerAuth(player, true);
         if (auth != null) {
-            performLogin(player, auth);
+            performLoginFromProxy(player, auth);
         }
     }
 
@@ -289,6 +290,21 @@ public class AsynchronousLogin implements AsynchronousProcess {
      * @param auth the associated PlayerAuth object
      */
     public void performLogin(Player player, PlayerAuth auth) {
+        doPerformLogin(player, auth, false);
+    }
+
+    /**
+     * Sets the player to the logged in state when initiated by the proxy.
+     * Skips the BungeeCord server redirect — the proxy handles routing.
+     *
+     * @param player the player to log in
+     * @param auth the associated PlayerAuth object
+     */
+    private void performLoginFromProxy(Player player, PlayerAuth auth) {
+        doPerformLogin(player, auth, true);
+    }
+
+    private void doPerformLogin(Player player, PlayerAuth auth, boolean proxyInitiated) {
         if (player.isOnline()) {
             boolean isFirstLogin = (auth.getLastLogin() == null);
 
@@ -335,7 +351,11 @@ public class AsynchronousLogin implements AsynchronousProcess {
             // task, we schedule it in the end
             // so that we can be sure, and have not to care if it might be
             // processed in other order.
-            syncProcessManager.processSyncPlayerLogin(player, isFirstLogin, auths);
+            if (proxyInitiated) {
+                syncProcessManager.processSyncPlayerLoginFromProxy(player, isFirstLogin, auths);
+            } else {
+                syncProcessManager.processSyncPlayerLogin(player, isFirstLogin, auths);
+            }
         } else {
             logger.warning("Player '" + player.getName() + "' wasn't online during login process, aborted...");
         }

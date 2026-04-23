@@ -2,8 +2,11 @@ package fr.xephi.authme.security;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Hashing utilities (interface for common hashing algorithms).
@@ -77,6 +80,25 @@ public final class HashUtils {
      */
     public static boolean isValidBcryptHash(String hash) {
         return hash.length() == 60 && hash.substring(0, 2).equals("$2");
+    }
+
+    /**
+     * Compute the HMAC-SHA256 of the given message using the given secret key,
+     * and return the result as a lowercase hexadecimal string.
+     *
+     * @param secret the secret key
+     * @param message the message to authenticate
+     * @return the HMAC-SHA256 digest as a hex string
+     */
+    public static String hmacSha256(String secret, String message) {
+        try {
+            Mac mac = Mac.getInstance("HmacSHA256");
+            mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+            byte[] digest = mac.doFinal(message.getBytes(StandardCharsets.UTF_8));
+            return String.format("%064x", new BigInteger(1, digest));
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new UnsupportedOperationException("HmacSHA256 is not available on this system", e);
+        }
     }
 
     /**

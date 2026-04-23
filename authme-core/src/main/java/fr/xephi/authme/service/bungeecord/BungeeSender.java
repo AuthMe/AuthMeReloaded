@@ -38,40 +38,27 @@ public class BungeeSender implements SettingsDependent {
     public void reload(Settings settings) {
         this.isEnabled = settings.getProperty(HooksSettings.BUNGEECORD);
         this.destinationServerOnLogin = settings.getProperty(HooksSettings.BUNGEECORD_SERVER);
+        Messenger messenger = plugin.getServer().getMessenger();
 
-        if (this.isEnabled) {
-            Messenger messenger = plugin.getServer().getMessenger();
+        if (this.isEnabled && messenger != null) {
             if (!messenger.isOutgoingChannelRegistered(plugin, "BungeeCord")) {
                 messenger.registerOutgoingPluginChannel(plugin, "BungeeCord");
+            }
+            if (!messenger.isOutgoingChannelRegistered(plugin, "authme:main")) {
+                messenger.registerOutgoingPluginChannel(plugin, "authme:main");
+            }
+        } else if (messenger != null) {
+            if (messenger.isOutgoingChannelRegistered(plugin, "BungeeCord")) {
+                messenger.unregisterOutgoingPluginChannel(plugin, "BungeeCord");
+            }
+            if (messenger.isOutgoingChannelRegistered(plugin, "authme:main")) {
+                messenger.unregisterOutgoingPluginChannel(plugin, "authme:main");
             }
         }
     }
 
     public boolean isEnabled() {
         return isEnabled;
-    }
-
-    private void sendBungeecordMessage(Player player, String... data) {
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        for (String element : data) {
-            out.writeUTF(element);
-        }
-        bukkitService.sendBungeeMessage(player, out.toByteArray());
-    }
-
-    private void sendForwardedBungeecordMessage(Player player, String subChannel, String... data) {
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("Forward");
-        out.writeUTF("ONLINE");
-        out.writeUTF(subChannel);
-        ByteArrayDataOutput dataOut = ByteStreams.newDataOutput();
-        for (String element : data) {
-            dataOut.writeUTF(element);
-        }
-        byte[] dataBytes = dataOut.toByteArray();
-        out.writeShort(dataBytes.length);
-        out.write(dataBytes);
-        bukkitService.sendBungeeMessage(player, out.toByteArray());
     }
 
     /**
@@ -84,9 +71,13 @@ public class BungeeSender implements SettingsDependent {
         if (!isEnabled || destinationServerOnLogin.isEmpty()) {
             return;
         }
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("Connect");
+        out.writeUTF(destinationServerOnLogin);
+        byte[] payload = out.toByteArray();
         // Add a small delay, just in case...
         bukkitService.scheduleSyncDelayedTask(player, () ->
-            sendBungeecordMessage(player, "Connect", destinationServerOnLogin), 10L);
+            bukkitService.sendBungeeMessage(player, payload), 20L);
     }
 
     /**
@@ -103,11 +94,10 @@ public class BungeeSender implements SettingsDependent {
             logger.debug("Tried to send a " + type + " bungeecord message but the plugin was disabled!");
             return;
         }
-        if (type.isBroadcast()) {
-            sendForwardedBungeecordMessage(player, "AuthMe.v2.Broadcast", type.getId(), player.getName().toLowerCase(Locale.ROOT));
-        } else {
-            sendBungeecordMessage(player, "AuthMe.v2", type.getId(), player.getName().toLowerCase(Locale.ROOT));
-        }
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF(type.getId());
+        out.writeUTF(player.getName().toLowerCase(Locale.ROOT));
+        bukkitService.sendAuthMePluginMessage(player, out.toByteArray());
     }
 
 }

@@ -8,6 +8,7 @@ import fr.xephi.authme.data.ProxySessionManager;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.process.Management;
+import fr.xephi.authme.security.HashUtils;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -18,6 +19,7 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import javax.inject.Inject;
 import java.util.Optional;
 
+
 public class BungeeReceiver implements PluginMessageListener, SettingsDependent {
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(BungeeReceiver.class);
@@ -26,134 +28,116 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
     private final BukkitService bukkitService;
     private final ProxySessionManager proxySessionManager;
     private final Management management;
+    private final BungeeSender bungeeSender;
+
+    private static final String AUTHME_CHANNEL = "authme:main";
+    private static final long MAX_AGE_MILLIS = 30_000L;
 
     private boolean isEnabled;
+    private String proxySharedSecret;
 
     @Inject
     BungeeReceiver(AuthMe plugin, BukkitService bukkitService, ProxySessionManager proxySessionManager,
-                   Management management, Settings settings) {
+                   Management management, BungeeSender bungeeSender, Settings settings) {
         this.plugin = plugin;
         this.bukkitService = bukkitService;
         this.proxySessionManager = proxySessionManager;
         this.management = management;
+        this.bungeeSender = bungeeSender;
         reload(settings);
     }
 
     @Override
     public void reload(Settings settings) {
+        this.proxySharedSecret = settings.getProperty(HooksSettings.PROXY_SHARED_SECRET);
         this.isEnabled = settings.getProperty(HooksSettings.BUNGEECORD);
-        if (this.isEnabled) {
-            this.isEnabled = bukkitService.isBungeeCordConfiguredForSpigot().orElse(false);
-        }
-        if (this.isEnabled) {
-            final Messenger messenger = plugin.getServer().getMessenger();
-            if (!messenger.isIncomingChannelRegistered(plugin, "BungeeCord")) {
-                messenger.registerIncomingPluginChannel(plugin, "BungeeCord", this);
+        final Messenger messenger = plugin.getServer().getMessenger();
+        if (this.isEnabled && messenger != null) {
+            if (!messenger.isIncomingChannelRegistered(plugin, AUTHME_CHANNEL)) {
+                messenger.registerIncomingPluginChannel(plugin, AUTHME_CHANNEL, this);
             }
-        }
-    }
-
-    /**
-     * Processes the given data input and attempts to translate it to a message for the "AuthMe.v2.Broadcast" channel.
-     *
-     * @param in the input to handle
-     */
-    private void handleBroadcast(ByteArrayDataInput in) {
-        // Read data byte array
-        short dataLength = in.readShort();
-        byte[] dataBytes = new byte[dataLength];
-        in.readFully(dataBytes);
-        ByteArrayDataInput dataIn = ByteStreams.newDataInput(dataBytes);
-
-        // Parse type
-        String typeId = dataIn.readUTF();
-        Optional<MessageType> type = MessageType.fromId(typeId);
-        if (!type.isPresent()) {
-            logger.debug("Received unsupported forwarded bungeecord message type! ({0})", typeId);
-            return;
-        }
-
-        // Parse argument
-        String argument;
-        try {
-            argument = dataIn.readUTF();
-        } catch (IllegalStateException e) {
-            logger.warning("Received invalid forwarded plugin message of type " + type.get().name()
-                + ": argument is missing!");
-            return;
-        }
-
-        // Handle type
-        switch (type.get()) {
-            case LOGIN:
-            case LOGOUT:
-                // TODO: unused
-                break;
-            default:
-        }
-    }
-
-    /**
-     * Processes the given data input and attempts to translate it to a message for the "AuthMe.v2" channel.
-     *
-     * @param in the input to handle
-     */
-    private void handle(ByteArrayDataInput in) {
-        // Parse type
-        String typeId = in.readUTF();
-        Optional<MessageType> type = MessageType.fromId(typeId);
-        if (!type.isPresent()) {
-            logger.debug("Received unsupported bungeecord message type! ({0})", typeId);
-            return;
-        }
-
-        // Parse argument
-        String argument;
-        try {
-            argument = in.readUTF();
-        } catch (IllegalStateException e) {
-            logger.warning("Received invalid plugin message of type " + type.get().name()
-                + ": argument is missing!");
-            return;
-        }
-
-        // Handle type
-        switch (type.get()) {
-            case PERFORM_LOGIN:
-                performLogin(argument);
-                break;
-            default:
+        } else if (messenger != null && messenger.isIncomingChannelRegistered(plugin, AUTHME_CHANNEL)) {
+            messenger.unregisterIncomingPluginChannel(plugin, AUTHME_CHANNEL, this);
         }
     }
 
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] data) {
-        if (!isEnabled) {
+        if (!isEnabled || !channel.equals(AUTHME_CHANNEL)) {
             return;
         }
 
         ByteArrayDataInput in = ByteStreams.newDataInput(data);
 
-        // Check subchannel
-        String subChannel = in.readUTF();
-        if ("AuthMe.v2.Broadcast".equals(subChannel)) {
-            handleBroadcast(in);
-        } else if ("AuthMe.v2".equals(subChannel)) {
-            handle(in);
+        String typeId;
+        try {
+            typeId = in.readUTF();
+        } catch (IllegalStateException e) {
+            logger.warning("Received malformed AuthMe plugin message on authme:main");
+            return;
+        }
+
+        Optional<MessageType> type = MessageType.fromId(typeId);
+        if (!type.isPresent()) {
+            logger.debug("Received unsupported AuthMe plugin message type: {0}", typeId);
+            return;
+        }
+
+        String argument;
+        try {
+            argument = in.readUTF();
+        } catch (IllegalStateException e) {
+            logger.warning("Received invalid AuthMe plugin message of type " + type.get().name()
+                + ": argument is missing!");
+            return;
+        }
+
+        if (type.get() == MessageType.PROXY_STARTED) {
+            logger.info("Proxy plugin '" + argument + "' has started and registered the authme:main channel");
+            return;
+        }
+
+        if (type.get() == MessageType.PERFORM_LOGIN) {
+            long timestamp;
+            String hmac;
+            try {
+                timestamp = in.readLong();
+                hmac = in.readUTF();
+            } catch (IllegalStateException e) {
+                logger.warning("Received perform.login without HMAC — update your proxy plugin");
+                return;
+            }
+            if (!verifyHmac(argument, timestamp, hmac)) {
+                return;
+            }
+            performLogin(argument);
         }
     }
 
+    private boolean verifyHmac(String playerName, long timestamp, String providedHmac) {
+        if (Math.abs(System.currentTimeMillis() - timestamp) > MAX_AGE_MILLIS) {
+            logger.warning("Rejected perform.login for " + playerName + ": message has expired");
+            return false;
+        }
+        String expectedHmac = HashUtils.hmacSha256(proxySharedSecret, playerName + ":" + timestamp);
+        if (!HashUtils.isEqual(expectedHmac, providedHmac)) {
+            logger.warning("Rejected perform.login for " + playerName + ": invalid HMAC");
+            return false;
+        }
+        return true;
+    }
+
     private void performLogin(String name) {
+        logger.debug("Received perform.login request for " + name);
         Player player = bukkitService.getPlayerExact(name);
         if (player != null && player.isOnline()) {
-            management.forceLogin(player, true);
-            logger.info("The user " + player.getName() + " has been automatically logged in, "
-                + "as requested via plugin messaging.");
+            management.forceLoginFromProxy(player);
+            logger.debug("Sending auto-login ACK for " + player.getName());
+            bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.PERFORM_LOGIN_ACK);
+            logger.info(player.getName() + " has been automatically logged in via proxy request.");
         } else {
             proxySessionManager.processProxySessionMessage(name);
-            logger.info("The user " + name + " should be automatically logged in, "
-                + "as requested via plugin messaging but has not been detected, nickname has been"
-                + " added to autologin queue.");
+            logger.info(name + " is not yet online; queued for auto-login when they connect.");
         }
     }
 
