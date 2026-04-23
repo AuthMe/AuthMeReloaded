@@ -1,9 +1,5 @@
 package fr.xephi.authme.command.executable.authme;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.CommonService;
@@ -11,8 +7,10 @@ import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.ValidationService.ValidationResult;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 
@@ -25,8 +23,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link ChangePasswordAdminCommand}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class ChangePasswordAdminCommandTest {
+class ChangePasswordAdminCommandTest {
 
     @InjectMocks
     private ChangePasswordAdminCommand command;
@@ -41,7 +38,7 @@ public class ChangePasswordAdminCommandTest {
     private Management management;
 
     @Test
-    public void shouldForwardRequestToManagement() {
+    void shouldForwardRequestToManagement() {
         // given
         String name = "theUser";
         String pass = "newPassword";
@@ -57,7 +54,7 @@ public class ChangePasswordAdminCommandTest {
     }
 
     @Test
-    public void shouldSendErrorToCommandSender() {
+    void shouldSendErrorToCommandSender() {
         // given
         String name = "theUser";
         String pass = "newPassword";
@@ -74,5 +71,3 @@ public class ChangePasswordAdminCommandTest {
         verifyNoInteractions(management);
     }
 }
-
-

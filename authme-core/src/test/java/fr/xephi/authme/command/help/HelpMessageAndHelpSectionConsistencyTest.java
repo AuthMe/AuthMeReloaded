@@ -6,17 +6,17 @@ import org.junit.jupiter.api.Test;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test for enums {@link HelpMessage} and {@link HelpSection}.
  */
-public class HelpMessageAndHelpSectionConsistencyTest {
+class HelpMessageAndHelpSectionConsistencyTest {
 
     @Test
-    public void shouldHaveUniqueNonEmptyKeys() {
+    void shouldHaveUniqueNonEmptyKeys() {
         // given
         Set<String> keys = new HashSet<>();
 
@@ -37,4 +37,3 @@ public class HelpMessageAndHelpSectionConsistencyTest {
         }
     }
 }
-
