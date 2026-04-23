@@ -882,7 +882,7 @@
         <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
-            <version>3.49.5</version>
+            <version>4.0.0</version>
             <scope>test</scope>
         </dependency>
 
