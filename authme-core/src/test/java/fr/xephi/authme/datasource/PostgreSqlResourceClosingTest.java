@@ -14,7 +14,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Resource closing test for {@link PostgreSqlDataSource}.
  */
-public class PostgreSqlResourceClosingTest extends AbstractSqlDataSourceResourceClosingTest {
+class PostgreSqlResourceClosingTest extends AbstractSqlDataSourceResourceClosingTest {
 
     @Override
     protected DataSource createDataSource(Settings settings, Connection connection) throws Exception {
@@ -24,5 +24,4 @@ public class PostgreSqlResourceClosingTest extends AbstractSqlDataSourceResource
         given(extensionsFactory.buildExtension(any(Columns.class))).willReturn(mock(MySqlExtension.class));
         return new PostgreSqlDataSource(settings, hikariDataSource, extensionsFactory);
     }
-
 }

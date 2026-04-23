@@ -7,11 +7,10 @@ import java.sql.Connection;
 /**
  * Resource closing test for {@link SQLite}.
  */
-public class SQLiteResourceClosingTest extends AbstractSqlDataSourceResourceClosingTest {
+class SQLiteResourceClosingTest extends AbstractSqlDataSourceResourceClosingTest {
 
     @Override
-    protected DataSource createDataSource(Settings settings, Connection connection) throws Exception {
+    protected DataSource createDataSource(Settings settings, Connection connection) {
         return new SQLite(settings, null, connection);
     }
-
 }

@@ -1,8 +1,5 @@
 package fr.xephi.authme.data.limbo;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-import fr.xephi.authme.DelayedInjectionExtension;
-import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.limbo.persistence.LimboPersistence;
@@ -16,31 +13,34 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.EnderPearl;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
@@ -49,13 +49,13 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * Test for {@link LimboService}, and {@link LimboServiceHelper}.
  */
-@ExtendWith(DelayedInjectionExtension.class)
-public class LimboServiceTest {
+@ExtendWith(MockitoExtension.class)
+class LimboServiceTest {
 
-    @InjectDelayed
+    @InjectMocks
     private LimboService limboService;
 
-    @InjectDelayed
+    @InjectMocks
     private LimboServiceHelper limboServiceHelper;
 
     @Mock
@@ -85,15 +85,12 @@ public class LimboServiceTest {
     }
 
     @BeforeEach
-    public void mockSettings() {
-        given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
-        given(settings.getProperty(LimboSettings.RECREATE_ENDER_PEARLS)).willReturn(true);
-        given(teleportationService.consumeOriginalJoinLocation(anyString(), any()))
-            .willAnswer(invocation -> invocation.getArgument(1));
+    void mockSettings() {
+        ReflectionTestUtils.setField(limboService, "helper", limboServiceHelper);
     }
 
     @Test
-    public void shouldCreateLimboPlayer() {
+    void shouldCreateLimboPlayer() {
         // given
         Player player = newPlayer("Bobby", true, 0.3f, false, 0.2f);
         Location playerLoc = mock(Location.class);
@@ -101,6 +98,9 @@ public class LimboServiceTest {
         given(permissionsManager.hasGroupSupport()).willReturn(true);
         given(permissionsManager.getGroups(player)).willReturn(Collections.singletonList(new UserGroup("permgrwp")));
         given(settings.getProperty(LimboSettings.RESTORE_ALLOW_FLIGHT)).willReturn(AllowFlightRestoreType.ENABLE);
+        given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
+        given(teleportationService.consumeOriginalJoinLocation(anyString(), any(Location.class)))
+            .willAnswer(invocation -> invocation.getArgument(1));
 
         // when
         limboService.createLimboPlayer(player, true);
@@ -125,13 +125,16 @@ public class LimboServiceTest {
     }
 
     @Test
-    public void shouldNotKeepOpStatusForUnregisteredPlayer() {
+    void shouldNotKeepOpStatusForUnregisteredPlayer() {
         // given
         Player player = newPlayer("CharleS", true, 0.1f, true, 0.4f);
         Location playerLoc = mock(Location.class);
         given(spawnLoader.getPlayerLocationOrSpawn(player)).willReturn(playerLoc);
         given(permissionsManager.hasGroupSupport()).willReturn(false);
         given(settings.getProperty(LimboSettings.RESTORE_ALLOW_FLIGHT)).willReturn(AllowFlightRestoreType.RESTORE);
+        given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
+        given(teleportationService.consumeOriginalJoinLocation(anyString(), any(Location.class)))
+            .willAnswer(invocation -> invocation.getArgument(1));
 
         // when
         limboService.createLimboPlayer(player, false);
@@ -156,12 +159,13 @@ public class LimboServiceTest {
     }
 
     @Test
-    public void shouldClearTasksOnAlreadyExistingLimbo() {
+    void shouldClearTasksOnAlreadyExistingLimbo() {
         // given
         LimboPlayer existingLimbo = mock(LimboPlayer.class);
         getLimboMap().put("carlos", existingLimbo);
         Player player = newPlayer("Carlos");
         given(settings.getProperty(LimboSettings.RESTORE_ALLOW_FLIGHT)).willReturn(AllowFlightRestoreType.ENABLE);
+        given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
 
         // when
         limboService.createLimboPlayer(player, false);
@@ -175,7 +179,7 @@ public class LimboServiceTest {
     }
 
     @Test
-    public void shouldUseRememberedJoinLocationWhenCreatingLimboPlayer() {
+    void shouldUseRememberedJoinLocationWhenCreatingLimboPlayer() {
         // given
         Player player = newPlayer("Bobby", true, 0.3f, false, 0.2f);
         Location fallbackLocation = mock(Location.class);
@@ -185,6 +189,7 @@ public class LimboServiceTest {
             .willReturn(rememberedJoinLocation);
         given(permissionsManager.hasGroupSupport()).willReturn(false);
         given(settings.getProperty(LimboSettings.RESTORE_ALLOW_FLIGHT)).willReturn(AllowFlightRestoreType.ENABLE);
+        given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
 
         // when
         limboService.createLimboPlayer(player, true);
@@ -194,7 +199,7 @@ public class LimboServiceTest {
     }
 
     @Test
-    public void shouldRestoreData() {
+    void shouldRestoreData() {
         // given
         LimboPlayer limbo = Mockito.spy(convertToLimboPlayer(
             newPlayer("John", true, 0.4f, false, 0.0f), null, Collections.emptyList()));
@@ -220,7 +225,7 @@ public class LimboServiceTest {
     }
 
     @Test
-    public void shouldHandleMissingLimboPlayerWhileRestoring() {
+    void shouldHandleMissingLimboPlayerWhileRestoring() {
         // given
         Player player = newPlayer("Test");
 
@@ -236,7 +241,7 @@ public class LimboServiceTest {
     }
 
     @Test
-    public void shouldRemoveDiskLimboEvenWhenNoInMemoryLimboExists() {
+    void shouldRemoveDiskLimboEvenWhenNoInMemoryLimboExists() {
         // given - simulates race condition: player quit before createLimboPlayer ran
         Player player = newPlayer("Speedy");
         // no entry in memory map for this player
@@ -250,7 +255,7 @@ public class LimboServiceTest {
     }
 
     @Test
-    public void shouldReplaceTasks() {
+    void shouldReplaceTasks() {
         // given
         LimboPlayer limbo = mock(LimboPlayer.class);
         getLimboMap().put("jeff", limbo);
@@ -267,7 +272,7 @@ public class LimboServiceTest {
     }
 
     @Test
-    public void shouldRecreateMissingEnderPearls() {
+    void shouldRecreateMissingEnderPearls() {
         // given
         Player player = newPlayer("Pearlie");
         Server server = mock(Server.class);
@@ -287,6 +292,8 @@ public class LimboServiceTest {
         limbo.setEnderPearls(Collections.singletonList(new EnderPearlRestoreData(pearlUuid, pearlLocation, pearlVelocity)));
         getLimboMap().put("pearlie", limbo);
 
+        given(settings.getProperty(LimboSettings.RECREATE_ENDER_PEARLS)).willReturn(true);
+
         // when
         limboService.restoreEntities(player);
 
@@ -298,7 +305,7 @@ public class LimboServiceTest {
     }
 
     @Test
-    public void shouldNotRecreateMissingEnderPearlsWhenDisabledInConfig() {
+    void shouldNotRecreateMissingEnderPearlsWhenDisabledInConfig() {
         // given
         given(settings.getProperty(LimboSettings.RECREATE_ENDER_PEARLS)).willReturn(false);
 
@@ -327,7 +334,7 @@ public class LimboServiceTest {
     }
 
     @Test
-    public void shouldHandleMissingLimboForReplaceTasks() {
+    void shouldHandleMissingLimboForReplaceTasks() {
         // given
         Player player = newPlayer("ghost");
 
@@ -341,16 +348,16 @@ public class LimboServiceTest {
 
     private static Player newPlayer(String name) {
         Player player = mock(Player.class);
-        given(player.getName()).willReturn(name);
+        lenient().when(player.getName()).thenReturn(name);
         return player;
     }
 
     private static Player newPlayer(String name, boolean isOp, float walkSpeed, boolean canFly, float flySpeed) {
         Player player = newPlayer(name);
-        given(player.isOp()).willReturn(isOp);
-        given(player.getWalkSpeed()).willReturn(walkSpeed);
-        given(player.getAllowFlight()).willReturn(canFly);
-        given(player.getFlySpeed()).willReturn(flySpeed);
+        lenient().when(player.isOp()).thenReturn(isOp);
+        lenient().when(player.getWalkSpeed()).thenReturn(walkSpeed);
+        lenient().when(player.getAllowFlight()).thenReturn(canFly);
+        lenient().when(player.getFlySpeed()).thenReturn(flySpeed);
         return player;
     }
 
@@ -363,5 +370,3 @@ public class LimboServiceTest {
         return ReflectionTestUtils.getFieldValue(LimboService.class, limboService, "entries");
     }
 }
-
-
