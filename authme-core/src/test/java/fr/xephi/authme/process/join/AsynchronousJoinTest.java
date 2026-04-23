@@ -7,6 +7,8 @@ import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.platform.DialogAdapter;
 import fr.xephi.authme.process.login.AsynchronousLogin;
+import fr.xephi.authme.process.register.AsyncRegister;
+import fr.xephi.authme.service.PreJoinDialogService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PluginHookService;
@@ -30,9 +32,15 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask;
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskLater;
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskOptionallyAsync;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -57,6 +65,8 @@ public class AsynchronousJoinTest {
     @Mock
     private AsynchronousLogin asynchronousLogin;
     @Mock
+    private AsyncRegister asyncRegister;
+    @Mock
     private CommandManager commandManager;
     @Mock
     private ValidationService validationService;
@@ -72,6 +82,8 @@ public class AsynchronousJoinTest {
     private ProxySessionManager proxySessionManager;
     @Mock
     private DialogAdapter dialogAdapter;
+    @Mock
+    private PreJoinDialogService preJoinDialogService;
 
     @BeforeAll
     public static void initLogger() {
@@ -81,6 +93,8 @@ public class AsynchronousJoinTest {
     @BeforeEach
     public void setUp() {
         setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+        setBukkitServiceToRunTaskOptionallyAsync(bukkitService);
+        setBukkitServiceToRunTaskLater(bukkitService);
     }
 
     @Test
@@ -97,6 +111,7 @@ public class AsynchronousJoinTest {
 
         // then
         verify(limboService).createLimboPlayer(player, true);
+        verify(bukkitService).runTaskLater(eq(player), any(Runnable.class), eq(1L));
         verify(dialogAdapter).showLoginDialog(player);
     }
 
@@ -106,6 +121,89 @@ public class AsynchronousJoinTest {
         Player player = mockPlayer("Bobby");
         setUpRegisteredJoin(player);
         given(playerCache.isAuthenticated("Bobby")).willReturn(true);
+
+        // when
+        asynchronousJoin.processJoin(player);
+
+        // then
+        verify(limboService).createLimboPlayer(player, true);
+        verify(dialogAdapter, never()).showLoginDialog(player);
+    }
+
+    @Test
+    public void shouldNotShowDelayedDialogIfPlayerGetsAuthenticatedBeforeTaskRuns() {
+        // given
+        Player player = mockPlayer("Bobby");
+        setUpRegisteredJoin(player);
+        given(player.isOnline()).willReturn(true);
+        given(playerCache.isAuthenticated("Bobby")).willReturn(false, true);
+        given(service.getProperty(RegistrationSettings.USE_DIALOG_UI)).willReturn(true);
+        given(dialogAdapter.isDialogSupported()).willReturn(true);
+
+        AtomicReference<Runnable> delayedTask = new AtomicReference<>();
+        doAnswer(invocation -> {
+            delayedTask.set(invocation.getArgument(1));
+            return mock(fr.xephi.authme.service.CancellableTask.class);
+        }).when(bukkitService).runTaskLater(eq(player), any(Runnable.class), eq(1L));
+
+        // when
+        asynchronousJoin.processJoin(player);
+        delayedTask.get().run();
+
+        // then
+        verify(limboService).createLimboPlayer(player, true);
+        verify(dialogAdapter, never()).showLoginDialog(player);
+    }
+
+    @Test
+    public void shouldResumeSessionWithoutOpeningDialog() {
+        // given
+        Player player = mockPlayer("Bobby");
+        setUpRegisteredJoin(player);
+        given(sessionService.canResumeSession(player)).willReturn(true);
+
+        // when
+        asynchronousJoin.processJoin(player);
+
+        // then
+        verify(service).send(player, fr.xephi.authme.message.MessageKey.SESSION_RECONNECTION);
+        verify(commandManager).runCommandsOnSessionLogin(player);
+        verify(asynchronousLogin).forceLogin(player);
+        verify(limboService, never()).createLimboPlayer(player, true);
+        verify(dialogAdapter, never()).showLoginDialog(player);
+    }
+
+    @Test
+    public void shouldProcessPendingPreJoinLoginInsteadOfShowingDialog() {
+        // given
+        Player player = mockPlayer("Bobby");
+        setUpRegisteredJoin(player);
+        java.util.UUID playerId = java.util.UUID.randomUUID();
+        given(player.getUniqueId()).willReturn(playerId);
+        given(preJoinDialogService.consumePendingLoginPassword(playerId)).willReturn("hunter2");
+        given(preJoinDialogService.consumeSkipPostJoinDialog(playerId)).willReturn(false);
+        given(playerCache.isAuthenticated("Bobby")).willReturn(false);
+
+        // when
+        asynchronousJoin.processJoin(player);
+
+        // then
+        verify(limboService).createLimboPlayer(player, true);
+        verify(asynchronousLogin).login(player, "hunter2");
+        verify(dialogAdapter, never()).showLoginDialog(player);
+    }
+
+    @Test
+    public void shouldSkipPostJoinDialogWhenPreJoinDialogWasDeferred() {
+        // given
+        Player player = mockPlayer("Bobby");
+        setUpRegisteredJoin(player);
+        java.util.UUID playerId = java.util.UUID.randomUUID();
+        given(player.getUniqueId()).willReturn(playerId);
+        given(preJoinDialogService.consumeSkipPostJoinDialog(playerId)).willReturn(true);
+        given(playerCache.isAuthenticated("Bobby")).willReturn(false);
+        given(service.getProperty(RegistrationSettings.USE_DIALOG_UI)).willReturn(true);
+        given(dialogAdapter.isDialogSupported()).willReturn(true);
 
         // when
         asynchronousJoin.processJoin(player);
@@ -134,6 +232,7 @@ public class AsynchronousJoinTest {
     private static Player mockPlayer(String name) {
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
+        given(player.isOnline()).willReturn(true);
         TestHelper.mockIpAddressToPlayer(player, "127.0.0.1");
         return player;
     }

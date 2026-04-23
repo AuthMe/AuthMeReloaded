@@ -9,6 +9,8 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
+import fr.xephi.authme.platform.ChatAdapter;
+import fr.xephi.authme.platform.TeleportAdapter;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.service.BukkitService;
@@ -16,9 +18,6 @@ import fr.xephi.authme.service.JoinMessageService;
 import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.platform.ChatAdapter;
-import fr.xephi.authme.platform.PlatformAdapter;
-import fr.xephi.authme.platform.TeleportAdapter;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -51,7 +50,6 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -59,7 +57,6 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.InventoryView;
-import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import javax.inject.Inject;
 import java.util.Locale;
@@ -109,8 +106,6 @@ public class PlayerListener implements Listener {
     private ChatAdapter chatAdapter;
     @Inject
     private TeleportAdapter teleportAdapter;
-    @Inject
-    private PlatformAdapter platformAdapter;
 
     // Lowest priority to apply fast protection checks
     @EventHandler(priority = EventPriority.LOWEST)
@@ -175,33 +170,6 @@ public class PlayerListener implements Listener {
         }
     }
 
-    // Note: We can't teleport the player in the PlayerLoginEvent listener
-    // as the new player location will be reverted by the server.
-
-    @EventHandler(priority = EventPriority.LOW)
-    public void onPlayerLogin(PlayerLoginEvent event) {
-        if (!platformAdapter.shouldHandlePlayerLoginEvent()) {
-            return;
-        }
-
-        final Player player = event.getPlayer();
-        final String name = player.getName();
-
-        try {
-            onJoinVerifier.checkSingleSession(name);
-        } catch (FailedVerificationException e) {
-            event.setKickMessage(messages.retrieveSingle(name, e.getReason(), e.getArgs()));
-            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-            return;
-        }
-
-        if (validationService.isUnrestricted(name)) {
-            return;
-        }
-
-        onJoinVerifier.refusePlayerForFullServer(event);
-    }
-
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
@@ -217,21 +185,6 @@ public class PlayerListener implements Listener {
         management.performJoin(player);
 
         teleportationService.teleportNewPlayerToFirstSpawn(player);
-    }
-
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onPlayerSpawn(PlayerSpawnLocationEvent event) {
-        if (!platformAdapter.shouldHandlePlayerSpawnLocationEvent()) {
-            return;
-        }
-
-        SpawnLocationTracker.markEventCalled();
-        final Player player = event.getPlayer();
-
-        Location customSpawnLocation = teleportationService.prepareOnJoinSpawnLocation(player, event.getSpawnLocation());
-        if (customSpawnLocation != null) {
-            event.setSpawnLocation(customSpawnLocation);
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGH) // HIGH as EssentialsX listens at HIGHEST

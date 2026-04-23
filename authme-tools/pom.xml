@@ -125,8 +125,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.comphenix.protocol</groupId>
-            <artifactId>ProtocolLib</artifactId>
+            <groupId>com.github.retrooper</groupId>
+            <artifactId>packetevents-spigot</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

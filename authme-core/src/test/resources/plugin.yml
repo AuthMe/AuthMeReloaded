@@ -17,7 +17,7 @@ softdepend:
     - Multiverse-Core
     - Essentials
     - EssentialsSpawn
-    - ProtocolLib
+    - packetevents
 commands:
   authme:
     description: AuthMe op commands

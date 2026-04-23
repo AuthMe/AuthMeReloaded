@@ -28,6 +28,14 @@ public interface DialogAdapter {
     }
 
     /**
+     * Shows the two-factor authentication dialog to the given player.
+     *
+     * @param player the player to show the dialog to
+     */
+    default void showTotpDialog(Player player) {
+    }
+
+    /**
      * Shows the register dialog to the given player.
      *
      * @param player    the player to show the dialog to

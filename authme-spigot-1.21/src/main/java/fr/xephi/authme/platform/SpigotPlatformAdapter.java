@@ -48,8 +48,10 @@ public class SpigotPlatformAdapter extends AbstractSpigotPlatformAdapter {
     }
 
     @Override
-    public List<Class<? extends Listener>> getAdditionalListeners() {
-        return Collections.singletonList(PlayerSignOpenListener.class);
+    public List<Class<? extends Listener>> getListeners() {
+        return EventRegistrationAdapter.combineListeners(
+            super.getListeners(),
+            Collections.singletonList(PlayerSignOpenListener.class));
     }
 
     /**
@@ -69,6 +71,11 @@ public class SpigotPlatformAdapter extends AbstractSpigotPlatformAdapter {
     @Override
     public void showLoginDialog(Player player) {
         SpigotDialogHelper.showLoginDialog(player);
+    }
+
+    @Override
+    public void showTotpDialog(Player player) {
+        SpigotDialogHelper.showTotpDialog(player);
     }
 
     @Override

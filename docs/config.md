@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Wed Apr 22 23:25:58 CEST 2026. See authme-tools/src/test/java/tools/docs/config/config.tpl.md -->
+<!-- File auto-generated on Thu Apr 23 19:32:20 CEST 2026. See authme-tools/src/test/java/tools/docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder,
@@ -222,9 +222,9 @@ settings:
         # How far can unregistered players walk?
         # Set to 0 for unlimited radius
         allowedMovementRadius: 100
-        # Should we protect the player inventory before logging in? Requires ProtocolLib.
+        # Should we protect the player inventory before logging in? Requires PacketEvents.
         ProtectInventoryBeforeLogIn: true
-        # Should we deny the tabcomplete feature before logging in? Requires ProtocolLib.
+        # Should we deny the tabcomplete feature before logging in? Requires PacketEvents.
         DenyTabCompleteBeforeLogin: false
         # Should we display all other accounts from a player when he joins?
         # permission: /authme.admin.accounts
@@ -320,10 +320,14 @@ settings:
         forceKickAfterRegister: false
         # Does AuthMe need to enforce a /login after a successful registration?
         forceLoginAfterRegister: false
-        # Show a graphical dialog UI for login/register instead of chat messages.
+        # Show a graphical dialog UI for post-join login/register instead of chat messages.
         # Requires Minecraft 1.21.6+ on Spigot, or 1.21.11+ on Paper.
         # On older server versions, this option is automatically ignored.
         useDialogUi: true
+        # Show the login/register dialog during the Paper/Folia pre-join phase.
+        # Independent from useDialogUi; you may enable either or both options.
+        # On non-Paper/Folia platforms this option has no effect.
+        usePreJoinDialogUi: true
     # Enable to display the welcome message (welcome.txt) after a login
     # You can use colors in this welcome.txt + some replaced strings:
     # {PLAYER}: player name, {ONLINE}: display number of online players,
@@ -602,4 +606,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed Apr 22 23:25:58 CEST 2026
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Thu Apr 23 19:32:20 CEST 2026

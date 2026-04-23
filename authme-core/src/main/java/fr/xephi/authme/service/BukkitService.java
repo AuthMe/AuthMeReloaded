@@ -216,12 +216,12 @@ public class BukkitService implements SettingsDependent {
      * Returns a task that will run asynchronously.
      *
      * @param task the task to be run
-     * @return a BukkitTask that contains the id number
+     * @return the scheduled task handle
      * @throws IllegalArgumentException if plugin is null
      * @throws IllegalArgumentException if task is null
      */
-    public BukkitTask runTaskAsynchronously(Runnable task) {
-        return Bukkit.getScheduler().runTaskAsynchronously(authMe, task);
+    public CancellableTask runTaskAsynchronously(Runnable task) {
+        return schedulingAdapter.runAsyncTask(authMe, task);
     }
 
     /**
@@ -235,12 +235,11 @@ public class BukkitService implements SettingsDependent {
      * @param delay the ticks to wait before running the task for the first
      *     time
      * @param period the ticks to wait between runs
-     * @return a BukkitTask that contains the id number
+     * @return the scheduled task handle
      * @throws IllegalArgumentException if task is null
-     * @throws IllegalStateException if this was already scheduled
      */
-    public BukkitTask runTaskTimerAsynchronously(BukkitRunnable task, long delay, long period) {
-        return task.runTaskTimerAsynchronously(authMe, delay, period);
+    public CancellableTask runTaskTimerAsynchronously(Runnable task, long delay, long period) {
+        return schedulingAdapter.runAsyncTaskTimer(authMe, task, delay, period);
     }
 
     /**

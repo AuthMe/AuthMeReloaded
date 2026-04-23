@@ -14,9 +14,14 @@ import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.listener.BlockListener;
+import fr.xephi.authme.listener.LegacyPlayerLoginListener;
+import fr.xephi.authme.listener.LegacyPlayerSpawnLocationListener;
+import fr.xephi.authme.listener.PlayerListener;
 import fr.xephi.authme.platform.ChatAdapter;
+import fr.xephi.authme.platform.CommandRegistrationAdapter;
 import fr.xephi.authme.platform.DialogAdapter;
 import fr.xephi.authme.platform.EventRegistrationAdapter;
+import fr.xephi.authme.platform.PacketInterceptionAdapter;
 import fr.xephi.authme.platform.PlatformAdapter;
 import fr.xephi.authme.platform.SchedulingAdapter;
 import fr.xephi.authme.platform.TeleportAdapter;
@@ -31,6 +36,7 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.purge.PurgeService;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPluginLoader;
@@ -38,20 +44,22 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import fr.xephi.authme.TempFolder;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.logging.Logger;
 
 import static fr.xephi.authme.settings.properties.AuthMeSettingsRetriever.buildConfigurationData;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -115,13 +123,15 @@ public class AuthMeInitializationTest {
         injector.register(DataSource.class, mock(DataSource.class));
         injector.register(BukkitService.class, mock(BukkitService.class));
         PlatformAdapter platformAdapter = mock(PlatformAdapter.class);
-        given(platformAdapter.getAdditionalListeners()).willReturn(Collections.emptyList());
+        given(platformAdapter.getListeners()).willReturn(EventRegistrationAdapter.getCommonListeners());
         injector.register(PlatformAdapter.class, platformAdapter);
         injector.register(TeleportAdapter.class, platformAdapter);
         injector.register(ChatAdapter.class, platformAdapter);
         injector.register(EventRegistrationAdapter.class, platformAdapter);
         injector.register(SchedulingAdapter.class, platformAdapter);
         injector.register(DialogAdapter.class, platformAdapter);
+        injector.register(CommandRegistrationAdapter.class, platformAdapter);
+        injector.register(PacketInterceptionAdapter.class, platformAdapter);
 
         // when
         authMe.instantiateServices(injector);
@@ -139,6 +149,34 @@ public class AuthMeInitializationTest {
         assertThat(injector.getIfAvailable(PermissionsManager.class), not(nullValue()));
         assertThat(injector.getIfAvailable(ProcessSyncPlayerLogin.class), not(nullValue()));
         assertThat(injector.getIfAvailable(PurgeService.class), not(nullValue()));
+    }
+
+    @Test
+    public void shouldRegisterPlatformListenersFromAdapter() {
+        // given
+        Injector injector = mock(Injector.class);
+        PlatformAdapter platformAdapter = mock(PlatformAdapter.class);
+        PlayerListener playerListener = mock(PlayerListener.class);
+        LegacyPlayerLoginListener legacyLoginListener = new LegacyPlayerLoginListener();
+        LegacyPlayerSpawnLocationListener legacySpawnListener = new LegacyPlayerSpawnLocationListener();
+        List<Class<? extends Listener>> listeners = List.of(
+            PlayerListener.class,
+            LegacyPlayerLoginListener.class,
+            LegacyPlayerSpawnLocationListener.class);
+        given(server.getPluginManager()).willReturn(pluginManager);
+        given(injector.getSingleton(EventRegistrationAdapter.class)).willReturn(platformAdapter);
+        given(platformAdapter.getListeners()).willReturn(listeners);
+        given(injector.getSingleton(PlayerListener.class)).willReturn(playerListener);
+        given(injector.getSingleton(LegacyPlayerLoginListener.class)).willReturn(legacyLoginListener);
+        given(injector.getSingleton(LegacyPlayerSpawnLocationListener.class)).willReturn(legacySpawnListener);
+
+        // when
+        authMe.registerEventListeners(injector);
+
+        // then
+        verify(pluginManager).registerEvents(playerListener, authMe);
+        verify(pluginManager).registerEvents(legacyLoginListener, authMe);
+        verify(pluginManager).registerEvents(legacySpawnListener, authMe);
     }
 
     @Test

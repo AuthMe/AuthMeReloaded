@@ -113,4 +113,12 @@ public final class BukkitServiceTestHelper {
             return mock(CancellableTask.class);
         }).when(bukkitService).runTaskLaterOnGlobalRegion(any(Runnable.class), anyLong());
     }
+
+    public static void setBukkitServiceToRunTaskLater(BukkitService bukkitService) {
+        lenient().doAnswer(invocation -> {
+            Runnable runnable = invocation.getArgument(1);
+            runnable.run();
+            return mock(CancellableTask.class);
+        }).when(bukkitService).runTaskLater(any(Player.class), any(Runnable.class), anyLong());
+    }
 }

@@ -2,7 +2,7 @@
 name: ${pluginDescription.name}
 # noinspection YAMLSchemaValidation
 authors: [${pluginDescription.authors}]
-website: ${project.url}
+website: ${project.parent.url}
 description: ${project.description}
 # noinspection YAMLSchemaValidation
 main: ${pluginDescription.main}
@@ -18,7 +18,7 @@ softdepend:
     - Multiverse-Core
     - Essentials
     - EssentialsSpawn
-    - ProtocolLib
+    - packetevents
 libraries:
   - ch.jalu:injector:${dependencies.injector.version}
   - net.ricecode:string-similarity:${dependencies.string-similarity.version}

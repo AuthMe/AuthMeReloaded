@@ -54,8 +54,9 @@ You can also create your own translation file and, if you want, you can share it
   <li><strong>Cached database queries!</strong></li>
   <li><strong>Fully compatible with Citizens2, CombatTag, CombatTagPlus!</strong></li>
   <li>Compatible with Minecraft mods like <strong>BuildCraft or RedstoneCraft</strong></li>
+  <li>Graphical login/register dialogs, with optional Paper/Folia pre-join dialogs</li>
   <li>Restricted users (associate a username with an IP)</li>
-  <li>Protect player's inventory until correct authentication (requires ProtocolLib)</li>
+  <li>Protect player's inventory until correct authentication (requires PacketEvents)</li>
   <li>Saves the quit location of the player</li>
   <li>Automatic database backup</li>
   <li>Available languages: <a href="https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/translations.md">translations</a></li>
@@ -65,6 +66,15 @@ You can also create your own translation file and, if you want, you can share it
 
 #### Configuration
 [How to configure AuthMe](https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/config.md)
+
+#### Dialog UI
+AuthMe can display graphical login/register dialogs instead of chat-based prompts.
+
+- `settings.registration.useDialogUi` enables the **post-join** dialog flow.
+- `settings.registration.usePreJoinDialogUi` enables the **pre-join** dialog flow on **Paper/Folia**.
+- Both options are independent: you can enable either one, both, or neither.
+- Pre-join dialogs currently require modern dialog-capable server versions such as **Paper/Folia 1.21.11+**.
+
 #### Commands
 [Command list and usage](https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/commands.md)
 #### Permissions
@@ -132,7 +142,7 @@ You can also create your own translation file and, if you want, you can share it
 >  - `AuthMe-*-Spigot-1.21.jar` (Spigot 1.20.x – 1.21.x)
 >  - `AuthMe-*-Paper.jar` (Paper 1.21+)
 >  - `AuthMe-*-Folia.jar` (Folia 1.21+)
->- ProtocolLib (optional, required by some features)
+>- PacketEvents (optional, required by some features)
 
 ## Credits
 

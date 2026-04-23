@@ -55,6 +55,26 @@ public interface SchedulingAdapter {
     CancellableTask runAtFixedRateOnEntityThread(AuthMe plugin, Entity entity, Runnable task, long delay, long period);
 
     /**
+     * Runs a one-off background task that is not tied to a global or entity-owned thread.
+     *
+     * @param plugin the plugin scheduling the task
+     * @param task the task to run
+     * @return the scheduled task handle
+     */
+    CancellableTask runAsyncTask(AuthMe plugin, Runnable task);
+
+    /**
+     * Runs a repeating background task that is not tied to a global or entity-owned thread.
+     *
+     * @param plugin the plugin scheduling the task
+     * @param task the task to run
+     * @param delay the initial delay in ticks
+     * @param period the repeat period in ticks
+     * @return the scheduled task handle
+     */
+    CancellableTask runAsyncTaskTimer(AuthMe plugin, Runnable task, long delay, long period);
+
+    /**
      * Runs a task on the platform's global execution context.
      *
      * @param plugin the plugin scheduling the task

@@ -13,10 +13,6 @@ import fr.xephi.authme.initialization.OnShutdownPlayerSaver;
 import fr.xephi.authme.initialization.OnStartupTasks;
 import fr.xephi.authme.initialization.SettingsProvider;
 import fr.xephi.authme.initialization.TaskCloser;
-import fr.xephi.authme.listener.BlockListener;
-import fr.xephi.authme.listener.EntityListener;
-import fr.xephi.authme.listener.PlayerListener;
-import fr.xephi.authme.listener.ServerListener;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.platform.SchedulingAdapter;
 import fr.xephi.authme.security.crypts.Sha256;
@@ -34,6 +30,7 @@ import fr.xephi.authme.util.ExceptionUtils;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -44,6 +41,7 @@ import fr.xephi.authme.platform.ChatAdapter;
 import fr.xephi.authme.platform.CommandRegistrationAdapter;
 import fr.xephi.authme.platform.DialogAdapter;
 import fr.xephi.authme.platform.EventRegistrationAdapter;
+import fr.xephi.authme.platform.PacketInterceptionAdapter;
 import fr.xephi.authme.platform.PlatformAdapter;
 import fr.xephi.authme.platform.TeleportAdapter;
 
@@ -166,7 +164,8 @@ public class AuthMe extends JavaPlugin {
 
         // Schedule clean up task
         CleanupTask cleanupTask = injector.getSingleton(CleanupTask.class);
-        cleanupTask.runTaskTimerAsynchronously(this, CLEANUP_INTERVAL, CLEANUP_INTERVAL);
+        injector.getSingleton(BukkitService.class)
+            .runTaskTimerAsynchronously(cleanupTask, CLEANUP_INTERVAL, CLEANUP_INTERVAL);
 
         // Do a backup on start
         backupService.doBackup(BackupService.BackupCause.START);
@@ -224,6 +223,7 @@ public class AuthMe extends JavaPlugin {
         injector.register(SchedulingAdapter.class, platformAdapter);
         injector.register(DialogAdapter.class, platformAdapter);
         injector.register(CommandRegistrationAdapter.class, platformAdapter);
+        injector.register(PacketInterceptionAdapter.class, platformAdapter);
 
         // Get settings and set up logger
         settings = injector.getSingleton(Settings.class);
@@ -287,18 +287,9 @@ public class AuthMe extends JavaPlugin {
      * @param injector the injector
      */
     void registerEventListeners(Injector injector) {
-        // Get the plugin manager instance
         PluginManager pluginManager = getServer().getPluginManager();
-
-        // Register event listeners
-        pluginManager.registerEvents(injector.getSingleton(PlayerListener.class), this);
-        pluginManager.registerEvents(injector.getSingleton(BlockListener.class), this);
-        pluginManager.registerEvents(injector.getSingleton(EntityListener.class), this);
-        pluginManager.registerEvents(injector.getSingleton(ServerListener.class), this);
-
-        // Register platform-specific listeners provided by the version module
         EventRegistrationAdapter eventRegistration = injector.getSingleton(EventRegistrationAdapter.class);
-        for (Class<? extends org.bukkit.event.Listener> listenerClass : eventRegistration.getAdditionalListeners()) {
+        for (Class<? extends Listener> listenerClass : eventRegistration.getListeners()) {
             pluginManager.registerEvents(injector.getSingleton(listenerClass), this);
         }
     }

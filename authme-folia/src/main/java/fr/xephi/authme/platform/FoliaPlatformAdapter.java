@@ -4,6 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.listener.FoliaChatListener;
 import fr.xephi.authme.listener.PaperLoginValidationListener;
 import fr.xephi.authme.listener.FoliaPlayerSpawnLocationListener;
+import fr.xephi.authme.listener.PaperDialogFlowListener;
 import fr.xephi.authme.listener.PlayerOpenSignListener;
 import fr.xephi.authme.service.CancellableTask;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
@@ -13,6 +14,7 @@ import org.bukkit.Bukkit;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Platform adapter implementation for Folia 1.21.11+.
@@ -64,6 +66,18 @@ public class FoliaPlatformAdapter extends AbstractPaperPlatformAdapter {
     }
 
     @Override
+    public CancellableTask runAsyncTask(AuthMe plugin, Runnable task) {
+        return Bukkit.getAsyncScheduler().runNow(plugin, ignored -> task.run())::cancel;
+    }
+
+    @Override
+    public CancellableTask runAsyncTaskTimer(AuthMe plugin, Runnable task, long delay, long period) {
+        return Bukkit.getAsyncScheduler()
+            .runAtFixedRate(plugin, ignored -> task.run(), ticksToMillis(delay), ticksToMillis(period),
+                TimeUnit.MILLISECONDS)::cancel;
+    }
+
+    @Override
     public void runOnGlobalThread(AuthMe plugin, Runnable task) {
         Bukkit.getGlobalRegionScheduler().run(plugin, ignored -> task.run());
     }
@@ -88,11 +102,18 @@ public class FoliaPlatformAdapter extends AbstractPaperPlatformAdapter {
     }
 
     @Override
-    public List<Class<? extends Listener>> getAdditionalListeners() {
-        return Arrays.asList(
-            FoliaChatListener.class,
-            FoliaPlayerSpawnLocationListener.class,
-            PaperLoginValidationListener.class,
-            PlayerOpenSignListener.class);
+    public List<Class<? extends Listener>> getListeners() {
+        return EventRegistrationAdapter.combineListeners(
+            super.getListeners(),
+            Arrays.asList(
+                FoliaChatListener.class,
+                PaperDialogFlowListener.class,
+                FoliaPlayerSpawnLocationListener.class,
+                PaperLoginValidationListener.class,
+                PlayerOpenSignListener.class));
+    }
+
+    private static long ticksToMillis(long ticks) {
+        return ticks * 50L;
     }
 }
