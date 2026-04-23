@@ -1,7 +1,7 @@
 package fr.xephi.authme.listener;
 
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.listener.protocollib.ProtocolLibService;
+import fr.xephi.authme.listener.packetevents.PacketEventsService;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.settings.SpawnLoader;
@@ -33,7 +33,7 @@ class ServerListenerTest {
     private static final String ESSENTIALS_SPAWN = "EssentialsSpawn";
     private static final String CMI = "CMI";
     private static final String MULTIVERSE = "Multiverse-Core";
-    private static final String PROTOCOL_LIB = "ProtocolLib";
+    private static final String PACKET_EVENTS = "packetevents";
 
     @InjectMocks
     private ServerListener serverListener;
@@ -45,7 +45,7 @@ class ServerListenerTest {
     private PluginHookService pluginHookService;
 
     @Mock
-    private ProtocolLibService protocolLibService;
+    private PacketEventsService packetEventsService;
 
     @Mock
     private SpawnLoader spawnLoader;
@@ -64,7 +64,7 @@ class ServerListenerTest {
             verify(spawnLoader).loadCmiSpawn();
         });
         checkEnableHandling(MULTIVERSE,       () -> verify(pluginHookService).tryHookToMultiverse());
-        checkEnableHandling(PROTOCOL_LIB,     () -> verify(protocolLibService).setup());
+        checkEnableHandling(PACKET_EVENTS,     () -> verify(packetEventsService).setup());
         checkEnableHandling("UnknownPlugin",  () -> verifyNoInteractions(pluginHookService, spawnLoader));
     }
 
@@ -77,7 +77,7 @@ class ServerListenerTest {
             verify(spawnLoader).unloadCmiSpawn();
         });
         checkDisableHandling(MULTIVERSE,       () -> verify(pluginHookService).unhookMultiverse());
-        checkDisableHandling(PROTOCOL_LIB,     () -> verify(protocolLibService).disable());
+        checkDisableHandling(PACKET_EVENTS,     () -> verify(packetEventsService).disable());
         checkDisableHandling("UnknownPlugin",  () -> verifyNoInteractions(pluginHookService, spawnLoader));
     }
 
@@ -98,8 +98,8 @@ class ServerListenerTest {
     }
 
     private void verifyNoMoreInteractionsAndReset() {
-        verifyNoMoreInteractions(permissionsManager, pluginHookService, protocolLibService, spawnLoader);
-        reset(permissionsManager, pluginHookService, protocolLibService, spawnLoader);
+        verifyNoMoreInteractions(permissionsManager, pluginHookService, packetEventsService, spawnLoader);
+        reset(permissionsManager, pluginHookService, packetEventsService, spawnLoader);
     }
 
     private static  <T extends PluginEvent> T mockEventWithPluginName(Class<T> eventClass, String name) {

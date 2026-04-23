@@ -133,11 +133,11 @@ public final class RestrictionSettings implements SettingsHolder {
     public static final Property<Integer> ALLOWED_MOVEMENT_RADIUS =
         newProperty("settings.restrictions.allowedMovementRadius", 100);
 
-    @Comment("Should we protect the player inventory before logging in? Requires ProtocolLib.")
+    @Comment("Should we protect the player inventory before logging in? Requires PacketEvents.")
     public static final Property<Boolean> PROTECT_INVENTORY_BEFORE_LOGIN =
         newProperty("settings.restrictions.ProtectInventoryBeforeLogIn", true);
 
-    @Comment("Should we deny the tabcomplete feature before logging in? Requires ProtocolLib.")
+    @Comment("Should we deny the tabcomplete feature before logging in? Requires PacketEvents.")
     public static final Property<Boolean> DENY_TABCOMPLETE_BEFORE_LOGIN =
         newProperty("settings.restrictions.DenyTabCompleteBeforeLogin", false);
 
