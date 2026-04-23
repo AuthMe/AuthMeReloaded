@@ -89,6 +89,17 @@ public final class SecuritySettings implements SettingsHolder {
         newLowercaseStringSetProperty("settings.security.unsafePasswords",
             "123456", "password", "qwerty", "12345", "54321", "123456789", "help");
 
+    @Comment({
+        "Reject passwords found in the Have I Been Pwned Pwned Passwords database.",
+        "Only the first 5 SHA-1 hash characters are sent; the full hash and password stay local."
+    })
+    public static final Property<Boolean> ENABLE_PWNED_PASSWORD_CHECK =
+        newProperty("settings.security.pwnedPasswords.enabled", false);
+
+    @Comment("Reject passwords found more than this many times in the Pwned Passwords database")
+    public static final Property<Integer> PWNED_PASSWORD_CHECK_THRESHOLD =
+        newProperty("settings.security.pwnedPasswords.threshold", 0);
+
     @Comment("Tempban a user's IP address if they enter the wrong password too many times")
     public static final Property<Boolean> TEMPBAN_ON_MAX_LOGINS =
         newProperty("Security.tempban.enableTempban", false);
