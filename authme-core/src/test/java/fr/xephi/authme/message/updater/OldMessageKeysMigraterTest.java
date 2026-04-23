@@ -14,10 +14,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * Test for {@link OldMessageKeysMigrater}.
  */
-public class OldMessageKeysMigraterTest {
+class OldMessageKeysMigraterTest {
 
     @Test
-    public void shouldHasOldKeysThatAreNewParentsFirstInMap() {
+    void shouldHasOldKeysThatAreNewParentsFirstInMap() {
         // given
         Set<String> parentPaths = collectParentPathsFromMessageKeys();
         Set<String> encounteredParents = new HashSet<>();
@@ -39,4 +39,3 @@ public class OldMessageKeysMigraterTest {
             .collect(Collectors.toSet());
     }
 }
-

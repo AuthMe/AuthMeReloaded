@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  * Checks that the entries in messages_xx.yml files have the {@link MessageKey#getTags() placeholders}
  * that are defined for the given message.
  */
-public class MessageFilePlaceholderTest {
+class MessageFilePlaceholderTest {
 
     /** Defines exclusions: a (key, tag) pair in this map will not be checked in the test. */
     private static final Multimap<MessageKey, String> EXCLUSIONS = ImmutableMultimap.<MessageKey, String>builder()
@@ -32,9 +32,10 @@ public class MessageFilePlaceholderTest {
         .putAll(MessageKey.MAX_REGISTER_EXCEEDED, "%max_acc", "%reg_count", "%reg_names")
         .build();
 
+    // Note ljacqu 20170506: We pass the file name separately so we can use it as the test name
     @ParameterizedTest(name = "{1}")
     @MethodSource("buildParams")
-    public void shouldHaveAllPlaceholders(File messagesFile, String messagesFilename) {
+    void shouldHaveAllPlaceholders(File messagesFile, String messagesFilename) {
         // given
         PropertyReader reader = new YamlFileReader(messagesFile);
         List<String> errors = new ArrayList<>(0);
@@ -63,7 +64,7 @@ public class MessageFilePlaceholderTest {
         return Collections.emptyList();
     }
 
-    public static Stream<Arguments> buildParams() {
+    static Stream<Arguments> buildParams() {
         File folder = TestHelper.getJarFile("/" + MESSAGES_FOLDER);
 
         File[] files = folder.listFiles();
@@ -81,4 +82,3 @@ public class MessageFilePlaceholderTest {
         return messageFiles.stream();
     }
 }
-
