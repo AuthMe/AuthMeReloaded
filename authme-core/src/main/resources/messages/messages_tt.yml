@@ -27,7 +27,7 @@ login:
   wrong_password: '&cХаталы серсүз!'
   success: '&2Уңышлы керү!'
   login_request: '&cКүрсәтелгән боерык кулланып, керегезче: /login <серсүз>'
-  timeout_error: '&4Login timeout exceeded, you have been kicked from the server; яңадан карагызчы!'
+  timeout_error: '&4Керү вакыты бетте: сез сервердан чыгарылдыгыз; яңадан карагызчы!'
 
 # Errors
 error:
@@ -35,18 +35,18 @@ error:
   denied_command: '&cШундый боерыкны куллану өчен сез керергә тиеш!'
   denied_chat: '&cАралашу өчен сез керергә тиеш!'
   not_logged_in: '&cСез кермәдегез!'
-  tempban_max_logins: '&cYou have been temporarily banned for failing to log in too many times.'
+  tempban_max_logins: '&cАртык күп тапкыр кереп булмау сәбәпле вакытлыча блокландыгыз.'
   max_registration: '&cYou have exceeded the maximum number of registrations (%reg_count/%max_acc %reg_names) for your connection!'
   no_permission: '&4Бу гамәлне эшләү өчен хокугыгыз юк!'
   unexpected_error: '&4Көтелмәгән хата булды; әдмин белән бәйләнегезче!'
-  kick_for_vip: '&3A VIP player has joined the server when it was full!'
+  kick_for_vip: '&3Сервер тулганда VIP уенчысы серверга кушылды!'
   logged_in: '&cСез кердегез инде!'
-  kick_unresolved_hostname: '&cХата булды: unresolved player hostname!'
+  kick_unresolved_hostname: '&cХата булды: unresolved уенчы host исеме!'
 
 # AntiBot
 antibot:
-  kick_antibot: 'AntiBot саклау шарты кушылды! You have to wait some minutes before joining the server.'
-  auto_enabled: '&4[AntiBotService] AntiBot enabled due to the huge number of connections!'
+  kick_antibot: 'AntiBot саклау шарты кушылды! Серверга кушылганчы, сезгә аз минут көтәргә кирәк.'
+  auto_enabled: '&4[AntiBotService] Зур тоташу саны дип, AntiBot кушылды!'
   auto_disabled: '&2[AntiBotService] AntiBot %m минуттан соң сүндерелде!'
 
 unregister:
@@ -60,13 +60,13 @@ misc:
   account_not_activated: '&cСезнең аккаунт активлаштырылмады әле, электрон почтасын тикшерегезче!'
   password_changed: '&2Серсүз үзгәртелде!'
   logout: '&2Чыкты!'
-  reload: '&2Configuration and database have been reloaded correctly!'
+  reload: '&2Көйләү һәм мәгълүмат нигезе дөрес яңадан йөкләнде!'
   usage_change_password: '&cКуллану: /changepassword <иске серсүз> <яңа серсүз>'
 
 # Session messages
 session:
   invalid_session: '&cСезнең IP адресы үзгәртелде, һәм сезнең сессия мәгълүматы тәмамланды!'
-  valid_session: '&2Logged-in due to Session Reconnection.'
+  valid_session: '&2Сессиягә яңадан тоташылу сәбәпле керде.'
 
 # Error messages when joining
 on_join_validation:
@@ -126,7 +126,7 @@ verification:
   code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
   command_usage: '&cКуллану: /verification <код>'
   incorrect_code: '&cХаталы код; сез хаттан алынган кодны кулланып, чатта «/verification <код>» языгызчы'
-  success: '&2Your identity has been verified! You can now execute all commands within the current session!'
+  success: '&2Сезнең identity расланды! You can now execute all commands within the current session!'
   already_verified: '&2You can already execute every sensitive command within the current session!'
   code_expired: '&3Сезнең код тәмамланды! Execute another sensitive command to get a new code!'
   email_needed: '&3To verify your identity you need to link an email address with your account!!'
@@ -170,25 +170,25 @@ command:
 admin:
   force_login:
     player_offline: '&cУенчы онлайн булырга тиеш!'
-    forbidden: '&cYou cannot force login the player %name!'
-    success: '&2Force login for %name performed!'
+    forbidden: '&cСез %name уенчыны мәжбүри кереп булмыйсыз!'
+    success: '&2%name өчен мәжбүри керү үтәлде!'
   accounts:
     ip_not_found: '&cIP адресы мәгълүмат нигезендә юк.'
-    single_account: '&2%name is a single account player.'
+    single_account: '&2%name — берлек аккаунтлы уенчы.'
     no_last_ip: '&cУенчының билгеле соңгы IP адресы табылмады.'
   email_show: '&2%name электрон почтасы: %email'
   antibot:
     status: '&2AntiBot халәте: %status'
-    override_enabled: '&2AntiBot Manual Override: кушык!'
-    override_disabled: '&2AntiBot Manual Override: сүнек!'
+    override_enabled: '&2AntiBot кул күчерүе: кушык!'
+    override_disabled: '&2AntiBot кул күчерүе: сүнек!'
     invalid_mode: '&cХаталы AntiBot шарты!'
   reload:
     db_type_change: '&eЯзма: «/authme reload» эшләү сәбәпле мәгълүмат нигезен үзгәртеп булмый.'
     error: '&cAuthMe яңадан йөкләнгәндә хата булды.'
   spawn:
     set_success: '&2Correctly defined new spawn point.'
-    set_fail: '&cSetSpawn has failed; янадан кабатлагызчы.'
+    set_fail: '&cЧакыру ноктасын урнаштырып булмады; янадан кабатлагызчы.'
     first_set_success: '&2Correctly defined new first spawn point.'
-    first_set_fail: '&cSetFirstSpawn has failed; янадан кабатлагызчы.'
-    not_defined: '&cSpawn has failed; please try to define the spawn.'
-    first_not_defined: '&cFirst spawn has failed; please try to define the first spawn.'
+    first_set_fail: '&cБеренче чакыру ноктасын урнаштырып булмады; янадан кабатлагызчы.'
+    not_defined: '&cЧакырып булмады; please try to define the spawn.'
+    first_not_defined: '&cБеренче чакырып булмады; please try to define the first spawn.'
