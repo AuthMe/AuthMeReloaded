@@ -32,7 +32,6 @@ class MessageFilePlaceholderTest {
         .putAll(MessageKey.MAX_REGISTER_EXCEEDED, "%max_acc", "%reg_count", "%reg_names")
         .build();
 
-    // Note ljacqu 20170506: We pass the file name separately so we can use it as the test name
     @ParameterizedTest(name = "{1}")
     @MethodSource("buildParams")
     void shouldHaveAllPlaceholders(File messagesFile, String messagesFilename) {

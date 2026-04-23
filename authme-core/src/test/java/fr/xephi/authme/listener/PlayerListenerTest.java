@@ -618,7 +618,7 @@ class PlayerListenerTest {
     }
 
     @Test
-    void shouldIgnorePlayerRespawnWithNoTeleport() {
+    void shouldIgnorePlayerRespawnForAuthenticatedPlayer() {
         // given
         Player player = mock(Player.class);
         Location respawnLocation = mock(Location.class);
