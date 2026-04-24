@@ -145,6 +145,27 @@ two_factor:
     invalid_code: 'Vale kood!'
 
 # Time units
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6Sisselogimine'
+    password: '&fParool'
+    button: '&aLogi sisse'
+  register:
+    title: '&6Registreerimine'
+    password: '&fParool'
+    confirm_password: '&fKinnita parool'
+    email: '&fE-post'
+    confirm_email: '&fKinnita e-post'
+    button: '&aRegistreeru'
+  two_factor:
+    title: '&6Kaheastmeline autentimine'
+    code: '&f2FA kood'
+    button: '&aKinnita'
+  button:
+    cancel: '&cTühista'
+
 time:
     second: 'sekund'
     seconds: 'sekundit'

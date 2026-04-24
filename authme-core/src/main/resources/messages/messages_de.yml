@@ -133,6 +133,27 @@ verification:
     email_needed: '&3Um deine Identität zu überprüfen, musst Du eine E-Mail-Adresse mit deinem Konto verknüpfen!'
 
 # Time units
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6Anmeldung'
+    password: '&fPasswort'
+    button: '&aAnmelden'
+  register:
+    title: '&6Registrierung'
+    password: '&fPasswort'
+    confirm_password: '&fPasswort bestätigen'
+    email: '&fE-Mail'
+    confirm_email: '&fE-Mail bestätigen'
+    button: '&aRegistrieren'
+  two_factor:
+    title: '&6Zwei-Faktor-Authentifizierung'
+    code: '&f2FA-Code'
+    button: '&aVerifizieren'
+  button:
+    cancel: '&cAbbrechen'
+
 time:
     second: 'Sekunde'
     seconds: 'Sekunden'

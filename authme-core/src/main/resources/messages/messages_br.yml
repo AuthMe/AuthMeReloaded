@@ -149,6 +149,27 @@ two_factor:
     invalid_code: 'Código inválido!'
 
 # Unidades de tempo
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6Login'
+    password: '&fSenha'
+    button: '&aEntrar'
+  register:
+    title: '&6Registro'
+    password: '&fSenha'
+    confirm_password: '&fConfirmar senha'
+    email: '&fE-mail'
+    confirm_email: '&fConfirmar e-mail'
+    button: '&aRegistrar'
+  two_factor:
+    title: '&6Autenticação de dois fatores'
+    code: '&fCódigo 2FA'
+    button: '&aVerificar'
+  button:
+    cancel: '&cCancelar'
+
 time:
     second: 'segundo'
     seconds: 'segundos'

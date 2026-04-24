@@ -133,6 +133,27 @@ verification:
     email_needed: '&3Da biste verifikovali svoj identitet morate da povežete svoju email adresu sa svojim nalogom!!'
 
 # Time units
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6Prijava'
+    password: '&fLozinka'
+    button: '&aPrijavi se'
+  register:
+    title: '&6Registracija'
+    password: '&fLozinka'
+    confirm_password: '&fPotvrdi lozinku'
+    email: '&fE-pošta'
+    confirm_email: '&fPotvrdi e-poštu'
+    button: '&aRegistruj se'
+  two_factor:
+    title: '&6Dvofaktorska autentifikacija'
+    code: '&f2FA kod'
+    button: '&aPotvrdi'
+  button:
+    cancel: '&cOtkaži'
+
 time:
     second: 'sekund'
     seconds: 'sekundi'

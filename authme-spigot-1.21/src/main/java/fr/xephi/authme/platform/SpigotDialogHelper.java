@@ -26,60 +26,62 @@ final class SpigotDialogHelper {
     private SpigotDialogHelper() {
     }
 
-    static void showLoginDialog(Player player) {
-        List<DialogInput> inputs = new ArrayList<>();
-        inputs.add(new TextInput("password", new TextComponent("Password")).maxLength(100));
-
-        DialogBase base = new DialogBase(new TextComponent("Login"))
-            .inputs(inputs)
+    static void showLoginDialog(Player player, DialogWindowSpec dialog) {
+        DialogBase base = new DialogBase(toTextComponent(dialog.title()))
+            .inputs(createInputs(dialog))
             .afterAction(DialogBase.AfterAction.CLOSE);
 
         player.showDialog(new MultiActionDialog(base,
-            new ActionButton(new TextComponent("Login"), new RunCommandAction("login $(password)"))));
+            new ActionButton(toTextComponent(dialog.primaryButtonLabel()), new RunCommandAction("login $(password)"))));
     }
 
-    static void showTotpDialog(Player player) {
-        List<DialogInput> inputs = new ArrayList<>();
-        inputs.add(new TextInput("code", new TextComponent("2FA Code")).maxLength(16));
-
-        DialogBase base = new DialogBase(new TextComponent("Two-Factor Authentication"))
-            .inputs(inputs)
+    static void showTotpDialog(Player player, DialogWindowSpec dialog) {
+        DialogBase base = new DialogBase(toTextComponent(dialog.title()))
+            .inputs(createInputs(dialog))
             .afterAction(DialogBase.AfterAction.CLOSE);
 
         player.showDialog(new MultiActionDialog(base,
-            new ActionButton(new TextComponent("Verify"), new RunCommandAction("2fa code $(code)"))));
+            new ActionButton(toTextComponent(dialog.primaryButtonLabel()), new RunCommandAction("2fa code $(code)"))));
     }
 
-    static void showRegisterDialog(Player player, RegistrationType type, RegisterSecondaryArgument secondArg) {
-        List<DialogInput> inputs = new ArrayList<>();
-        String template;
+    static void showRegisterDialog(Player player, RegistrationType type, RegisterSecondaryArgument secondArg,
+                                   DialogWindowSpec dialog) {
+        DialogBase base = new DialogBase(toTextComponent(dialog.title()))
+            .inputs(createInputs(dialog))
+            .afterAction(DialogBase.AfterAction.CLOSE);
 
+        player.showDialog(new MultiActionDialog(base,
+            new ActionButton(toTextComponent(dialog.primaryButtonLabel()),
+                new RunCommandAction(createRegisterTemplate(type, secondArg)))));
+    }
+
+    private static List<DialogInput> createInputs(DialogWindowSpec dialog) {
+        List<DialogInput> inputs = new ArrayList<>();
+        for (DialogInputSpec input : dialog.inputs()) {
+            inputs.add(new TextInput(input.id(), toTextComponent(input.label())).maxLength(input.maxLength()));
+        }
+        return inputs;
+    }
+
+    private static String createRegisterTemplate(RegistrationType type, RegisterSecondaryArgument secondArg) {
         if (type == RegistrationType.EMAIL) {
-            inputs.add(new TextInput("email", new TextComponent("Email")).maxLength(100));
             if (secondArg == RegisterSecondaryArgument.CONFIRMATION) {
-                inputs.add(new TextInput("confirm", new TextComponent("Confirm Email")).maxLength(100));
-                template = "register $(email) $(confirm)";
-            } else {
-                template = "register $(email)";
+                return "register $(email) $(confirm)";
             }
-        } else {
-            inputs.add(new TextInput("password", new TextComponent("Password")).maxLength(100));
-            if (secondArg == RegisterSecondaryArgument.CONFIRMATION) {
-                inputs.add(new TextInput("confirm", new TextComponent("Confirm Password")).maxLength(100));
-                template = "register $(password) $(confirm)";
-            } else if (secondArg == RegisterSecondaryArgument.EMAIL_MANDATORY) {
-                inputs.add(new TextInput("email", new TextComponent("Email")).maxLength(100));
-                template = "register $(password) $(email)";
-            } else {
-                template = "register $(password)";
-            }
+            return "register $(email)";
         }
 
-        DialogBase base = new DialogBase(new TextComponent("Register"))
-            .inputs(inputs)
-            .afterAction(DialogBase.AfterAction.CLOSE);
+        if (secondArg == RegisterSecondaryArgument.CONFIRMATION) {
+            return "register $(password) $(confirm)";
+        }
+        if (secondArg == RegisterSecondaryArgument.EMAIL_MANDATORY
+            || secondArg == RegisterSecondaryArgument.EMAIL_OPTIONAL) {
+            return "register $(password) $(email)";
+        }
+        return "register $(password)";
+    }
 
-        player.showDialog(new MultiActionDialog(base,
-            new ActionButton(new TextComponent("Register"), new RunCommandAction(template))));
+    private static TextComponent toTextComponent(String text) {
+        return new TextComponent(TextComponent.fromLegacyText(text));
     }
 }

@@ -69,17 +69,18 @@ public class SpigotPlatformAdapter extends AbstractSpigotPlatformAdapter {
     }
 
     @Override
-    public void showLoginDialog(Player player) {
-        SpigotDialogHelper.showLoginDialog(player);
+    public void showLoginDialog(Player player, DialogWindowSpec dialog) {
+        SpigotDialogHelper.showLoginDialog(player, dialog);
     }
 
     @Override
-    public void showTotpDialog(Player player) {
-        SpigotDialogHelper.showTotpDialog(player);
+    public void showTotpDialog(Player player, DialogWindowSpec dialog) {
+        SpigotDialogHelper.showTotpDialog(player, dialog);
     }
 
     @Override
-    public void showRegisterDialog(Player player, RegistrationType type, RegisterSecondaryArgument secondArg) {
-        SpigotDialogHelper.showRegisterDialog(player, type, secondArg);
+    public void showRegisterDialog(Player player, RegistrationType type,
+                                   RegisterSecondaryArgument secondArg, DialogWindowSpec dialog) {
+        SpigotDialogHelper.showRegisterDialog(player, type, secondArg, dialog);
     }
 }

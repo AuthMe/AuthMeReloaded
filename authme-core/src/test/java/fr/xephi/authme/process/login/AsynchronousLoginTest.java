@@ -17,10 +17,13 @@ import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.platform.DialogAdapter;
+import fr.xephi.authme.platform.DialogInputSpec;
+import fr.xephi.authme.platform.DialogWindowSpec;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.CancellableTask;
+import fr.xephi.authme.service.DialogWindowService;
 import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -87,6 +90,8 @@ public class AsynchronousLoginTest {
     private BungeeSender bungeeSender;
     @Mock
     private DialogAdapter dialogAdapter;
+    @Mock
+    private DialogWindowService dialogWindowService;
 
     @BeforeAll
     public static void initLogger() {
@@ -280,6 +285,7 @@ public class AsynchronousLoginTest {
         given(commonService.getProperty(RegistrationSettings.USE_DIALOG_UI)).willReturn(true);
         given(dialogAdapter.isDialogSupported()).willReturn(true);
         given(player.isOnline()).willReturn(true);
+        given(dialogWindowService.createTotpDialog(player)).willReturn(createDialogSpec("2FA", "Verify"));
         doAnswer(invocation -> {
             invocation.<Runnable>getArgument(1).run();
             return mock(CancellableTask.class);
@@ -291,7 +297,7 @@ public class AsynchronousLoginTest {
         // then
         verify(limboService).resetMessageTask(player, LimboMessageType.TOTP_CODE);
         verify(limboPlayer).setState(LimboPlayerState.TOTP_REQUIRED);
-        verify(dialogAdapter).showTotpDialog(player);
+        verify(dialogAdapter).showTotpDialog(eq(player), any(DialogWindowSpec.class));
         verify(asynchronousLogin, never()).performLogin(player, auth);
     }
 
@@ -318,13 +324,22 @@ public class AsynchronousLoginTest {
         // then
         verify(limboService).resetMessageTask(player, LimboMessageType.TOTP_CODE);
         verify(limboPlayer).setState(LimboPlayerState.TOTP_REQUIRED);
-        verify(dialogAdapter, never()).showTotpDialog(player);
+        verify(dialogAdapter, never()).showTotpDialog(eq(player), any(DialogWindowSpec.class));
     }
 
     private static Player mockPlayer(String name) {
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
         return player;
+    }
+
+    private static DialogWindowSpec createDialogSpec(String title, String buttonLabel) {
+        return new DialogWindowSpec(title,
+            List.of(new DialogInputSpec("code", "Code", 16)),
+            buttonLabel,
+            "Cancel",
+            false,
+            false);
     }
 
     private void mockOnlinePlayersInBukkitService(String checkedIp) {

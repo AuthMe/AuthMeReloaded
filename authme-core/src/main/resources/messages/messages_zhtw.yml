@@ -135,6 +135,27 @@ verification:
     email_needed: '&b【AuthMe】&3若需要身分驗證，請先新增電子郵件！'
 
 # Time units
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6登入'
+    password: '&f密碼'
+    button: '&a登入'
+  register:
+    title: '&6註冊'
+    password: '&f密碼'
+    confirm_password: '&f確認密碼'
+    email: '&f電子郵件'
+    confirm_email: '&f確認電子郵件'
+    button: '&a註冊'
+  two_factor:
+    title: '&6雙重驗證'
+    code: '&f2FA代碼'
+    button: '&a驗證'
+  button:
+    cancel: '&c取消'
+
 time:
     second: '秒'
     seconds: '秒'

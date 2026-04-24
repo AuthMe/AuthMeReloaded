@@ -132,6 +132,26 @@ verification:
     code_expired: '&3Вашият код е изтекъл. Изпълнете друга чувствителна команда за да генерирате нов код!'
     email_needed: '&3За да потвърдите Вашата самоличност е необходимо да добавите имейл адрес към Вашият акаунт!!'
 
+# Dialog UI
+dialog:
+  login:
+    title: '&6Вход'
+    password: '&fПарола'
+    button: '&aВход'
+  register:
+    title: '&6Регистрация'
+    password: '&fПарола'
+    confirm_password: '&fПотвърди паролата'
+    email: '&fИмейл'
+    confirm_email: '&fПотвърди имейла'
+    button: '&aРегистриране'
+  two_factor:
+    title: '&6Двуфакторна автентикация'
+    code: '&f2FA код'
+    button: '&aПотвърди'
+  button:
+    cancel: '&cОтказ'
+
 # Time units
 time:
     second: 'секунда'

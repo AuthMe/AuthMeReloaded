@@ -233,6 +233,45 @@ public enum MessageKey {
     /** Invalid code! */
     TWO_FACTOR_INVALID_CODE("two_factor.invalid_code"),
 
+    /** Login dialog title. */
+    DIALOG_LOGIN_TITLE("dialog.login.title"),
+
+    /** Login dialog password field label. */
+    DIALOG_LOGIN_PASSWORD("dialog.login.password"),
+
+    /** Login dialog submit button label. */
+    DIALOG_LOGIN_BUTTON("dialog.login.button"),
+
+    /** Register dialog title. */
+    DIALOG_REGISTER_TITLE("dialog.register.title"),
+
+    /** Register dialog password field label. */
+    DIALOG_REGISTER_PASSWORD("dialog.register.password"),
+
+    /** Register dialog password confirmation field label. */
+    DIALOG_REGISTER_CONFIRM_PASSWORD("dialog.register.confirm_password"),
+
+    /** Register dialog email field label. */
+    DIALOG_REGISTER_EMAIL("dialog.register.email"),
+
+    /** Register dialog email confirmation field label. */
+    DIALOG_REGISTER_CONFIRM_EMAIL("dialog.register.confirm_email"),
+
+    /** Register dialog submit button label. */
+    DIALOG_REGISTER_BUTTON("dialog.register.button"),
+
+    /** Two-factor dialog title. */
+    DIALOG_TWO_FACTOR_TITLE("dialog.two_factor.title"),
+
+    /** Two-factor dialog code field label. */
+    DIALOG_TWO_FACTOR_CODE("dialog.two_factor.code"),
+
+    /** Two-factor dialog submit button label. */
+    DIALOG_TWO_FACTOR_BUTTON("dialog.two_factor.button"),
+
+    /** Generic dialog cancel button label. */
+    DIALOG_CANCEL_BUTTON("dialog.button.cancel"),
+
     /** You are not the owner of this account. Please choose another name! */
     NOT_OWNER_ERROR("on_join_validation.not_owner_error"),
 

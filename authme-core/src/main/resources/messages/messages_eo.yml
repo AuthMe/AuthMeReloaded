@@ -133,6 +133,27 @@ verification:
     # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 # Time units
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6Ensaluti'
+    password: '&fPasvorto'
+    button: '&aEnsaluti'
+  register:
+    title: '&6Registriĝo'
+    password: '&fPasvorto'
+    confirm_password: '&fKonfirmi pasvorton'
+    email: '&fRetpoŝto'
+    confirm_email: '&fKonfirmi retpoŝton'
+    button: '&aRegistriĝi'
+  two_factor:
+    title: '&6Du-ŝtupa aŭtentigo'
+    code: '&f2FA-kodo'
+    button: '&aKonfirmi'
+  button:
+    cancel: '&cNuligi'
+
 time:
     second: 'sekundo'
     seconds: 'sekundoj'

@@ -23,25 +23,29 @@ public interface DialogAdapter {
      * Shows the login dialog to the given player.
      *
      * @param player the player to show the dialog to
+     * @param dialog the resolved dialog text and UX options
      */
-    default void showLoginDialog(Player player) {
+    default void showLoginDialog(Player player, DialogWindowSpec dialog) {
     }
 
     /**
      * Shows the two-factor authentication dialog to the given player.
      *
      * @param player the player to show the dialog to
+     * @param dialog the resolved dialog text and UX options
      */
-    default void showTotpDialog(Player player) {
+    default void showTotpDialog(Player player, DialogWindowSpec dialog) {
     }
 
     /**
      * Shows the register dialog to the given player.
      *
-     * @param player    the player to show the dialog to
-     * @param type      the registration type (password or email)
+     * @param player the player to show the dialog to
+     * @param type the registration type (password or email)
      * @param secondArg the secondary argument type for registration
+     * @param dialog the resolved dialog text and UX options
      */
-    default void showRegisterDialog(Player player, RegistrationType type, RegisterSecondaryArgument secondArg) {
+    default void showRegisterDialog(Player player, RegistrationType type,
+                                    RegisterSecondaryArgument secondArg, DialogWindowSpec dialog) {
     }
 }

@@ -133,6 +133,27 @@ verification:
     email_needed: '&3Щоб підтвердити свою особу, вам потрібно зв’язати електронну адресу зі своїм акаунтом!!'
 
 # Time units
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6Вхід'
+    password: '&fПароль'
+    button: '&aУвійти'
+  register:
+    title: '&6Реєстрація'
+    password: '&fПароль'
+    confirm_password: '&fПідтвердьте пароль'
+    email: '&fЕлектронна пошта'
+    confirm_email: '&fПідтвердьте електронну пошту'
+    button: '&aЗареєструватися'
+  two_factor:
+    title: '&6Двофакторна автентифікація'
+    code: '&fКод 2FA'
+    button: '&aПеревірити'
+  button:
+    cancel: '&cСкасувати'
+
 time:
     second: 'секунда'
     seconds: 'секунд'

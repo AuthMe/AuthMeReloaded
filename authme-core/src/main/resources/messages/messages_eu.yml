@@ -133,6 +133,27 @@ verification:
     email_needed: '&3Zure identitatea berresteko beharrezkoa da zure kontuan posta elektronikoa konfiguratuta izatea!!'
 
 # Time units
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6Saioa hasi'
+    password: '&fPasahitza'
+    button: '&aSaioa hasi'
+  register:
+    title: '&6Erregistroa'
+    password: '&fPasahitza'
+    confirm_password: '&fPasahitza baieztatu'
+    email: '&fHelbide elektronikoa'
+    confirm_email: '&fHelbide elektronikoa baieztatu'
+    button: '&aErregistratu'
+  two_factor:
+    title: '&6Bi faktoreko autentifikazioa'
+    code: '&f2FA kodea'
+    button: '&aEgiaztatu'
+  button:
+    cancel: '&cUtzi'
+
 time:
     second: 'segundu'
     seconds: 'segundu'

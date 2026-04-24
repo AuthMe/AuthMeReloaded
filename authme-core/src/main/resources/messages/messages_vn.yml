@@ -133,6 +133,27 @@ verification:
     email_needed: '&3Để xác định danh tính của bạn, bạn cần kết nối tài khoản này với 1 email!'
 
 # Time units
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6Đăng nhập'
+    password: '&fMật khẩu'
+    button: '&aĐăng nhập'
+  register:
+    title: '&6Đăng ký'
+    password: '&fMật khẩu'
+    confirm_password: '&fXác nhận mật khẩu'
+    email: '&fEmail'
+    confirm_email: '&fXác nhận email'
+    button: '&aĐăng ký'
+  two_factor:
+    title: '&6Xác thực hai yếu tố'
+    code: '&fMã 2FA'
+    button: '&aXác minh'
+  button:
+    cancel: '&cHủy'
+
 time:
     second: 'giây'
     seconds: 'giây'

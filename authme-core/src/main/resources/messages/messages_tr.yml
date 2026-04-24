@@ -133,6 +133,27 @@ verification:
     email_needed: '&3Kimliginizi dogrulamak icin hesabiniza bir email adresi baglamis olmaniz gerekir!!'
 
 # Time units
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6Giriş'
+    password: '&fŞifre'
+    button: '&aGiriş yap'
+  register:
+    title: '&6Kayıt'
+    password: '&fŞifre'
+    confirm_password: '&fŞifreyi onayla'
+    email: '&fE-posta'
+    confirm_email: '&fE-postayı onayla'
+    button: '&aKaydol'
+  two_factor:
+    title: '&6İki faktörlü kimlik doğrulama'
+    code: '&f2FA kodu'
+    button: '&aDoğrula'
+  button:
+    cancel: '&cİptal'
+
 time:
     second: 'saniye'
     seconds: 'saniye'

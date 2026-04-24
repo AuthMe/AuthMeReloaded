@@ -41,6 +41,12 @@ import java.util.concurrent.TimeUnit;
 public class FoliaPlatformAdapterTest {
 
     private final FoliaPlatformAdapter adapter = new FoliaPlatformAdapter();
+    private final DialogWindowSpec dialog = new DialogWindowSpec("Title",
+        List.of(new DialogInputSpec("password", "Password", 100)),
+        "Submit",
+        "Cancel",
+        false,
+        false);
 
     @Test
     public void getPlatformNameReturnsExpectedValue() {
@@ -82,9 +88,9 @@ public class FoliaPlatformAdapterTest {
         // when / then - FoliaDialogHelper uses API calls that require a running server.
         // Use mockStatic to verify delegation without invoking the full Paper server stack.
         try (MockedStatic<PaperDialogHelper> helperMock = mockStatic(PaperDialogHelper.class)) {
-            adapter.showLoginDialog(player);
+            adapter.showLoginDialog(player, dialog);
 
-            helperMock.verify(() -> PaperDialogHelper.showLoginDialog(player));
+            helperMock.verify(() -> PaperDialogHelper.showLoginDialog(player, dialog));
         }
     }
 
@@ -95,12 +101,13 @@ public class FoliaPlatformAdapterTest {
 
         // when / then
         try (MockedStatic<PaperDialogHelper> helperMock = mockStatic(PaperDialogHelper.class)) {
-            adapter.showRegisterDialog(player, RegistrationType.EMAIL, RegisterSecondaryArgument.CONFIRMATION);
+            adapter.showRegisterDialog(player, RegistrationType.EMAIL, RegisterSecondaryArgument.CONFIRMATION, dialog);
 
             helperMock.verify(() -> PaperDialogHelper.showRegisterDialog(
                 eq(player),
                 eq(RegistrationType.EMAIL),
-                eq(RegisterSecondaryArgument.CONFIRMATION)));
+                eq(RegisterSecondaryArgument.CONFIRMATION),
+                eq(dialog)));
         }
     }
 

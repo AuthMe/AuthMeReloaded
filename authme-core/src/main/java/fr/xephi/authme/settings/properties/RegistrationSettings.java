@@ -121,6 +121,19 @@ public final class RegistrationSettings implements SettingsHolder {
     public static final Property<Boolean> USE_PREJOIN_DIALOG_UI =
         newProperty("settings.registration.usePreJoinDialogUi", true);
 
+    @Comment({
+        "Show a cancel button in Paper/Folia pre-join dialogs.",
+        "If disabled, players must submit the dialog or disconnect instead."})
+    public static final Property<Boolean> PRE_JOIN_DIALOG_SHOW_CANCEL_BUTTON =
+        newProperty("settings.registration.preJoinDialog.showCancelButton", true);
+
+    @Comment({
+        "Allow closing Paper/Folia pre-join dialogs with Escape.",
+        "If disabled, the dialog stays open until it is submitted,",
+        "cancelled, or the timeout disconnects the player."})
+    public static final Property<Boolean> PRE_JOIN_DIALOG_ALLOW_CLOSE_WITH_ESCAPE =
+        newProperty("settings.registration.preJoinDialog.allowCloseWithEscape", false);
+
 
     private RegistrationSettings() {
     }

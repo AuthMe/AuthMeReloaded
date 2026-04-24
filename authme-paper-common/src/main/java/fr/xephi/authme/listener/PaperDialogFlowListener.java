@@ -14,6 +14,7 @@ import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.DialogWindowService;
 import fr.xephi.authme.service.PreJoinDialogService;
 import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.ValidationService;
@@ -73,6 +74,9 @@ public class PaperDialogFlowListener implements Listener {
     private PreJoinDialogService preJoinDialogService;
 
     @Inject
+    private DialogWindowService dialogWindowService;
+
+    @Inject
     private SessionService sessionService;
 
     @Inject
@@ -109,9 +113,11 @@ public class PaperDialogFlowListener implements Listener {
         if (auth != null) {
             handleBlockingLoginDialog(connection, playerId, playerName);
         } else if (commonService.getProperty(RegistrationSettings.FORCE)) {
+            RegistrationType registrationType = commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE);
+            RegisterSecondaryArgument secondArg =
+                commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT);
             handleBlockingRegisterDialog(connection, playerId, PaperDialogHelper.createPreJoinRegisterDialog(
-                commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE),
-                commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT)));
+                dialogWindowService.createPreJoinRegisterDialog(playerName, registrationType, secondArg)));
         }
     }
 
@@ -162,7 +168,8 @@ public class PaperDialogFlowListener implements Listener {
             messages.retrieveSingle(playerName, MessageKey.LOGIN_TIMEOUT_ERROR), timeoutSeconds, TimeUnit.SECONDS);
         pendingLoginResponses.put(playerId, loginResponse);
 
-        connection.getAudience().showDialog(PaperDialogHelper.createPreJoinLoginDialog());
+        connection.getAudience().showDialog(
+            PaperDialogHelper.createPreJoinLoginDialog(dialogWindowService.createPreJoinLoginDialog(playerName)));
         String kickMessage = loginResponse.join();
         pendingLoginResponses.remove(playerId);
         connection.getAudience().closeDialog();

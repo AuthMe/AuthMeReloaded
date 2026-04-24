@@ -133,6 +133,27 @@ verification:
     email_needed: '&3为了验证您的身份，您需要将一个电子邮件地址与您的帐户绑定！！'
 
 # Time units
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6登录'
+    password: '&f密码'
+    button: '&a登录'
+  register:
+    title: '&6注册'
+    password: '&f密码'
+    confirm_password: '&f确认密码'
+    email: '&f电子邮件'
+    confirm_email: '&f确认电子邮件'
+    button: '&a注册'
+  two_factor:
+    title: '&6双重身份验证'
+    code: '&f2FA代码'
+    button: '&a验证'
+  button:
+    cancel: '&c取消'
+
 time:
     second: '秒'
     seconds: '秒'

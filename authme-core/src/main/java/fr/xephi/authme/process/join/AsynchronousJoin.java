@@ -20,6 +20,7 @@ import fr.xephi.authme.process.register.executors.PasswordRegisterParams;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.DialogWindowService;
 import fr.xephi.authme.service.PreJoinDialogService;
 import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.SessionService;
@@ -98,6 +99,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     @Inject
     private DialogAdapter dialogAdapter;
+
+    @Inject
+    private DialogWindowService dialogWindowService;
 
     @Inject
     private PreJoinDialogService preJoinDialogService;
@@ -253,11 +257,14 @@ public class AsynchronousJoin implements AsynchronousProcess {
         }
 
         if (isAuthAvailable) {
-            dialogAdapter.showLoginDialog(player);
+            dialogAdapter.showLoginDialog(player, dialogWindowService.createLoginDialog(player));
         } else {
+            RegistrationType registrationType = service.getProperty(RegistrationSettings.REGISTRATION_TYPE);
+            RegisterSecondaryArgument secondArg = service.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT);
             dialogAdapter.showRegisterDialog(player,
-                service.getProperty(RegistrationSettings.REGISTRATION_TYPE),
-                service.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT));
+                registrationType,
+                secondArg,
+                dialogWindowService.createRegisterDialog(player, registrationType, secondArg));
         }
     }
 

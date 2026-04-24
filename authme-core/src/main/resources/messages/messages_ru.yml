@@ -128,6 +128,27 @@ verification:
     email_needed: '&3Чтобы подтвердить вашу личность, необходимо привязать электронную почту к учётной записи!!'
 
 # Time units
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6Вход'
+    password: '&fПароль'
+    button: '&aВойти'
+  register:
+    title: '&6Регистрация'
+    password: '&fПароль'
+    confirm_password: '&fПодтвердите пароль'
+    email: '&fЭлектронная почта'
+    confirm_email: '&fПодтвердите электронную почту'
+    button: '&aЗарегистрироваться'
+  two_factor:
+    title: '&6Двухфакторная аутентификация'
+    code: '&fКод 2FA'
+    button: '&aПроверить'
+  button:
+    cancel: '&cОтмена'
+
 time:
     second: 'с.'
     seconds: 'с.'

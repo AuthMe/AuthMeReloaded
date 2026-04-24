@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Thu Apr 23 19:32:20 CEST 2026. See authme-tools/src/test/java/tools/docs/config/config.tpl.md -->
+<!-- File auto-generated on Fri Apr 24 19:09:21 CEST 2026. See authme-tools/src/test/java/tools/docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder,
@@ -328,6 +328,14 @@ settings:
         # Independent from useDialogUi; you may enable either or both options.
         # On non-Paper/Folia platforms this option has no effect.
         usePreJoinDialogUi: true
+        preJoinDialog:
+            # Show a cancel button in Paper/Folia pre-join dialogs.
+            # If disabled, players must submit the dialog or disconnect instead.
+            showCancelButton: true
+            # Allow closing Paper/Folia pre-join dialogs with Escape.
+            # If disabled, the dialog stays open until it is submitted,
+            # cancelled, or the timeout disconnects the player.
+            allowCloseWithEscape: false
     # Enable to display the welcome message (welcome.txt) after a login
     # You can use colors in this welcome.txt + some replaced strings:
     # {PLAYER}: player name, {ONLINE}: display number of online players,
@@ -606,4 +614,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Thu Apr 23 19:32:20 CEST 2026
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Fri Apr 24 19:09:21 CEST 2026

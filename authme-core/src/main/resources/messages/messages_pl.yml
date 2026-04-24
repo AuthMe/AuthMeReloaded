@@ -133,6 +133,27 @@ verification:
     email_needed: '&3Aby zweryfikować swoją tożsamość, musisz połączyć adres e-mail z kontem!'
 
 # Time units
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6Logowanie'
+    password: '&fHasło'
+    button: '&aZaloguj się'
+  register:
+    title: '&6Rejestracja'
+    password: '&fHasło'
+    confirm_password: '&fPotwierdź hasło'
+    email: '&fE-mail'
+    confirm_email: '&fPotwierdź e-mail'
+    button: '&aZarejestruj się'
+  two_factor:
+    title: '&6Uwierzytelnianie dwuskładnikowe'
+    code: '&fKod 2FA'
+    button: '&aZweryfikuj'
+  button:
+    cancel: '&cAnuluj'
+
 time:
     second: 'sekundy'
     seconds: 'sekund'

@@ -145,6 +145,27 @@ two_factor:
   invalid_code: 'Cod invalid!'
 
 # Time units
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6Autentificare'
+    password: '&fParolă'
+    button: '&aAutentificare'
+  register:
+    title: '&6Înregistrare'
+    password: '&fParolă'
+    confirm_password: '&fConfirmă parola'
+    email: '&fE-mail'
+    confirm_email: '&fConfirmă e-mailul'
+    button: '&aÎnregistrează-te'
+  two_factor:
+    title: '&6Autentificare cu doi factori'
+    code: '&fCod 2FA'
+    button: '&aVerifică'
+  button:
+    cancel: '&cAnulează'
+
 time:
   second: 'secunda'
   seconds: 'secunde'

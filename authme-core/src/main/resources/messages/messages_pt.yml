@@ -133,6 +133,27 @@ verification:
     email_needed: '&3Para confirmar a sua identidade necessita de associar um endereço de e-mail!!'
 
 # Time units
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6Iniciar sessão'
+    password: '&fPalavra-passe'
+    button: '&aIniciar sessão'
+  register:
+    title: '&6Registo'
+    password: '&fPalavra-passe'
+    confirm_password: '&fConfirmar palavra-passe'
+    email: '&fE-mail'
+    confirm_email: '&fConfirmar e-mail'
+    button: '&aRegistar'
+  two_factor:
+    title: '&6Autenticação de dois fatores'
+    code: '&fCódigo 2FA'
+    button: '&aVerificar'
+  button:
+    cancel: '&cCancelar'
+
 time:
     second: 'segundo'
     seconds: 'segundos'

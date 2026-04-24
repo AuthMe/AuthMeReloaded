@@ -34,6 +34,12 @@ import static org.mockito.Mockito.verify;
 public class PaperPlatformAdapterTest {
 
     private final PaperPlatformAdapter adapter = new PaperPlatformAdapter();
+    private final DialogWindowSpec dialog = new DialogWindowSpec("Title",
+        List.of(new DialogInputSpec("password", "Password", 100)),
+        "Submit",
+        "Cancel",
+        false,
+        false);
 
     @Test
     public void getPlatformNameReturnsExpectedValue() {
@@ -75,9 +81,9 @@ public class PaperPlatformAdapterTest {
         // when / then - PaperDialogHelper uses Paper API calls that require a running server.
         // Use mockStatic to verify delegation without invoking the full Paper server stack.
         try (MockedStatic<PaperDialogHelper> helperMock = mockStatic(PaperDialogHelper.class)) {
-            adapter.showLoginDialog(player);
+            adapter.showLoginDialog(player, dialog);
 
-            helperMock.verify(() -> PaperDialogHelper.showLoginDialog(player));
+            helperMock.verify(() -> PaperDialogHelper.showLoginDialog(player, dialog));
         }
     }
 
@@ -88,9 +94,9 @@ public class PaperPlatformAdapterTest {
 
         // when / then
         try (MockedStatic<PaperDialogHelper> helperMock = mockStatic(PaperDialogHelper.class)) {
-            adapter.showTotpDialog(player);
+            adapter.showTotpDialog(player, dialog);
 
-            helperMock.verify(() -> PaperDialogHelper.showTotpDialog(player));
+            helperMock.verify(() -> PaperDialogHelper.showTotpDialog(player, dialog));
         }
     }
 
@@ -101,12 +107,13 @@ public class PaperPlatformAdapterTest {
 
         // when / then
         try (MockedStatic<PaperDialogHelper> helperMock = mockStatic(PaperDialogHelper.class)) {
-            adapter.showRegisterDialog(player, RegistrationType.EMAIL, RegisterSecondaryArgument.CONFIRMATION);
+            adapter.showRegisterDialog(player, RegistrationType.EMAIL, RegisterSecondaryArgument.CONFIRMATION, dialog);
 
             helperMock.verify(() -> PaperDialogHelper.showRegisterDialog(
                 eq(player),
                 eq(RegistrationType.EMAIL),
-                eq(RegisterSecondaryArgument.CONFIRMATION)));
+                eq(RegisterSecondaryArgument.CONFIRMATION),
+                eq(dialog)));
         }
     }
 
