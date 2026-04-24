@@ -29,6 +29,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
+import org.bukkit.Bukkit;
+
 import javax.inject.Inject;
 import java.net.InetSocketAddress;
 import java.util.Locale;
@@ -281,6 +283,9 @@ public class PaperDialogFlowListener implements Listener {
         }
     }
 
+    // MC 1.21.4 (protocol 769) introduced the dialog / custom-click packets required for pre-join dialogs
+    private static final int DIALOG_MIN_PROTOCOL = 769;
+
     private boolean shouldSkipDialogs(String normalizedName, PlayerConfigurationConnection connection) {
         if (playerCache.isAuthenticated(normalizedName) || proxySessionManager.shouldResumeSession(normalizedName)) {
             return true;
@@ -288,6 +293,25 @@ public class PaperDialogFlowListener implements Listener {
 
         InetSocketAddress clientAddress = connection.getClientAddress();
         String ipAddress = clientAddress == null ? null : clientAddress.getAddress().getHostAddress();
-        return sessionService.hasValidSession(normalizedName, ipAddress);
+        if (sessionService.hasValidSession(normalizedName, ipAddress)) {
+            return true;
+        }
+
+        return !isClientDialogCapable(connection.getProfile().getId());
+    }
+
+    private static boolean isClientDialogCapable(UUID playerId) {
+        try {
+            if (Bukkit.getPluginManager().getPlugin("ViaVersion") == null) {
+                return true;
+            }
+            Class<?> viaApiClass = Class.forName("com.viaversion.viaversion.api.ViaAPI");
+            Class<?> viaClass = Class.forName("com.viaversion.viaversion.api.Via");
+            Object api = viaClass.getMethod("getAPI").invoke(null);
+            int version = (int) viaApiClass.getMethod("getPlayerVersion", UUID.class).invoke(api, playerId);
+            return version >= DIALOG_MIN_PROTOCOL;
+        } catch (Exception ignored) {
+            return true;
+        }
     }
 }
