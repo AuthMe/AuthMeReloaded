@@ -283,8 +283,8 @@ public class PaperDialogFlowListener implements Listener {
         }
     }
 
-    // MC 1.21.4 (protocol 769) introduced the dialog / custom-click packets required for pre-join dialogs
-    private static final int DIALOG_MIN_PROTOCOL = 769;
+    // MC 1.21.6 (protocol 771) introduced the dialog / custom-click packets required for pre-join dialogs
+    private static final int DIALOG_MIN_PROTOCOL = 771;
 
     private boolean shouldSkipDialogs(String normalizedName, PlayerConfigurationConnection connection) {
         if (playerCache.isAuthenticated(normalizedName) || proxySessionManager.shouldResumeSession(normalizedName)) {
