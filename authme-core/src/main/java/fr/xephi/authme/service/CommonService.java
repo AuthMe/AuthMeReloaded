@@ -72,6 +72,18 @@ public class CommonService {
     }
 
     /**
+     * Retrieves a message in one piece with replacements applied.
+     *
+     * @param sender the command sender
+     * @param key the message key
+     * @param replacements the replacements to apply to the message
+     * @return the message
+     */
+    public String retrieveSingleMessage(CommandSender sender, MessageKey key, String... replacements) {
+        return messages.retrieveSingle(sender, key, replacements);
+    }
+
+    /**
      * Checks whether the player has the given permission.
      *
      * @param player the player
