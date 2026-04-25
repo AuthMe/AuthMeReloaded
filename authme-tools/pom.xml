@@ -195,6 +195,9 @@
             <activation>
                 <jdk>[21,)</jdk>
             </activation>
+            <properties>
+                <module.java.version>21</module.java.version>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>fr.xephi</groupId>
