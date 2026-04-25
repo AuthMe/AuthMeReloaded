@@ -67,7 +67,7 @@
         <!-- Environment properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <revision>6.0.0-SNAPSHOT</revision>
+        <revision>6.0.0-R1</revision>
         <module.java.version>17</module.java.version>
         <maven.minimumVersion>3.8.8</maven.minimumVersion>
 
