@@ -23,6 +23,7 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.CancellableTask;
+import fr.xephi.authme.service.DialogStateService;
 import fr.xephi.authme.service.DialogWindowService;
 import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
@@ -92,6 +93,8 @@ public class AsynchronousLoginTest {
     private DialogAdapter dialogAdapter;
     @Mock
     private DialogWindowService dialogWindowService;
+    @Mock
+    private DialogStateService dialogStateService;
 
     @BeforeAll
     public static void initLogger() {

@@ -20,6 +20,7 @@ import fr.xephi.authme.process.register.executors.PasswordRegisterParams;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.DialogStateService;
 import fr.xephi.authme.service.DialogWindowService;
 import fr.xephi.authme.service.PreJoinDialogService;
 import fr.xephi.authme.service.PluginHookService;
@@ -102,6 +103,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     @Inject
     private DialogWindowService dialogWindowService;
+
+    @Inject
+    private DialogStateService dialogStateService;
 
     @Inject
     private PreJoinDialogService preJoinDialogService;
@@ -266,6 +270,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 secondArg,
                 dialogWindowService.createRegisterDialog(player, registrationType, secondArg));
         }
+        dialogStateService.markDialogOpen(player);
     }
 
     private void processPendingRegistration(Player player, PreJoinDialogService.PendingRegistration pendingRegistration) {

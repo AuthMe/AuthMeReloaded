@@ -58,6 +58,13 @@ public abstract class AbstractPaperPlatformAdapter extends AbstractSpigotPlatfor
     }
 
     @Override
+    public void closeDialog(Player player) {
+        if (DIALOG_AVAILABLE) {
+            PaperDialogHelper.closeDialog(player);
+        }
+    }
+
+    @Override
     public void registerCommands(AuthMe plugin, CommandHandler commandHandler, Collection<CommandDescription> commands) {
         new PaperBrigadierCommandRegistrar(commandHandler::processCommand).registerCommands(plugin, commands);
     }

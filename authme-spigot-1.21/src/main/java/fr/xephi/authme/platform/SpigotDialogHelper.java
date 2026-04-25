@@ -55,6 +55,10 @@ final class SpigotDialogHelper {
                 new RunCommandAction(createRegisterTemplate(type, secondArg)))));
     }
 
+    static void closeDialog(Player player) {
+        player.clearDialog();
+    }
+
     private static List<DialogInput> createInputs(DialogWindowSpec dialog) {
         List<DialogInput> inputs = new ArrayList<>();
         for (DialogInputSpec input : dialog.inputs()) {

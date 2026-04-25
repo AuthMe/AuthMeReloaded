@@ -25,6 +25,10 @@ public final class PaperDialogHelper {
     private PaperDialogHelper() {
     }
 
+    static void closeDialog(Player player) {
+        player.closeDialog();
+    }
+
     static void showLoginDialog(Player player, DialogWindowSpec dialog) {
         player.showDialog(createInGameCommandDialog(dialog, "login $(password)"));
     }

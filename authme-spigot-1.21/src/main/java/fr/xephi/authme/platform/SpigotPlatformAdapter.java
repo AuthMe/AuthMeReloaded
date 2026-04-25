@@ -83,4 +83,11 @@ public class SpigotPlatformAdapter extends AbstractSpigotPlatformAdapter {
                                    RegisterSecondaryArgument secondArg, DialogWindowSpec dialog) {
         SpigotDialogHelper.showRegisterDialog(player, type, secondArg, dialog);
     }
+
+    @Override
+    public void closeDialog(Player player) {
+        if (DIALOG_AVAILABLE) {
+            SpigotDialogHelper.closeDialog(player);
+        }
+    }
 }

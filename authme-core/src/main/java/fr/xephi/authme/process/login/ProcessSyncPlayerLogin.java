@@ -8,7 +8,9 @@ import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
+import fr.xephi.authme.platform.DialogAdapter;
 import fr.xephi.authme.process.SynchronousProcess;
+import fr.xephi.authme.service.DialogStateService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.JoinMessageService;
@@ -27,6 +29,12 @@ import java.util.Locale;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 
 public class ProcessSyncPlayerLogin implements SynchronousProcess {
+
+    @Inject
+    private DialogAdapter dialogAdapter;
+
+    @Inject
+    private DialogStateService dialogStateService;
 
     @Inject
     private BungeeSender bungeeSender;
@@ -94,6 +102,10 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
 
     private void processPlayerLogin(Player player, boolean isFirstLogin, List<String> authsWithSameIp,
                                     boolean proxyInitiated) {
+        if (dialogStateService.clearDialogOpen(player)) {
+            dialogAdapter.closeDialog(player);
+        }
+
         final String name = player.getName().toLowerCase(Locale.ROOT);
         final LimboPlayer limbo = limboService.getLimboPlayer(name);
 

@@ -24,6 +24,7 @@ import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.DialogStateService;
 import fr.xephi.authme.service.DialogWindowService;
 import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
@@ -93,6 +94,9 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
     @Inject
     private DialogWindowService dialogWindowService;
+
+    @Inject
+    private DialogStateService dialogStateService;
 
     AsynchronousLogin() {
     }
@@ -280,6 +284,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
                 return;
             }
             dialogAdapter.showTotpDialog(player, dialogWindowService.createTotpDialog(player));
+            dialogStateService.markDialogOpen(player);
         }, 1L);
     }
 

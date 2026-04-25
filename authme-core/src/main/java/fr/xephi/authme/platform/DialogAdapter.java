@@ -48,4 +48,13 @@ public interface DialogAdapter {
     default void showRegisterDialog(Player player, RegistrationType type,
                                     RegisterSecondaryArgument secondArg, DialogWindowSpec dialog) {
     }
+
+    /**
+     * Closes any open dialog for the given player (e.g. after a force-login via the API).
+     * Has no effect if no dialog is currently open or if dialogs are not supported on this platform.
+     *
+     * @param player the player whose dialog should be closed
+     */
+    default void closeDialog(Player player) {
+    }
 }

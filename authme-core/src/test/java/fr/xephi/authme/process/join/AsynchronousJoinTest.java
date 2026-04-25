@@ -13,6 +13,7 @@ import fr.xephi.authme.process.register.AsyncRegister;
 import fr.xephi.authme.service.PreJoinDialogService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.DialogStateService;
 import fr.xephi.authme.service.DialogWindowService;
 import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.SessionService;
@@ -87,6 +88,8 @@ public class AsynchronousJoinTest {
     private DialogAdapter dialogAdapter;
     @Mock
     private DialogWindowService dialogWindowService;
+    @Mock
+    private DialogStateService dialogStateService;
     @Mock
     private PreJoinDialogService preJoinDialogService;
 
