@@ -75,10 +75,12 @@ public class PlayerAuth {
     }
 
     public void setQuitLocation(Location location) {
-        x = location.getBlockX();
-        y = location.getBlockY();
-        z = location.getBlockZ();
+        x = location.getX();
+        y = location.getY();
+        z = location.getZ();
         world = location.getWorld().getName();
+        yaw = location.getYaw();
+        pitch = location.getPitch();
     }
 
     public double getQuitLocX() {
