@@ -85,6 +85,12 @@ public final class BungeeProxyBridge implements Listener {
         }
     }
 
+    void registerChannels() {
+        proxyServer.registerChannel(AUTHME_CHANNEL);
+        logger.info("Registered AuthMe BungeeCord bridge channel");
+        broadcastProxyStartedHandshake();
+    }
+
     void broadcastProxyStartedHandshake() {
         byte[] payload = createProxyStartedMessage();
         int notified = 0;
@@ -251,6 +257,7 @@ public final class BungeeProxyBridge implements Listener {
     }
 
     void shutdown() {
+        proxyServer.unregisterChannel(AUTHME_CHANNEL);
         retryScheduler.shutdownNow();
     }
 

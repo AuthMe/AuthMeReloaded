@@ -13,7 +13,7 @@ public final class AuthMeBungeePlugin extends AbstractAuthMeBungeePlugin {
         getProxy().getPluginManager().registerListener(this, proxyBridge);
         getProxy().getPluginManager().registerCommand(this, new BungeeReloadCommand(configManager, proxyBridge));
         proxyBridge.logConfigurationDetails();
-        proxyBridge.broadcastProxyStartedHandshake();
+        proxyBridge.registerChannels();
     }
 
     @Override
