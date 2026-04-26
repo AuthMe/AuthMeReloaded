@@ -144,6 +144,27 @@ two_factor:
   removed_success: 'Successfully removed two-factor auth from your account'
   invalid_code: 'Хаталы код!'
 
+# Dialog UI
+dialog:
+  login:
+    title: '&6Керү'
+    password: '&fСерсүз'
+    button: '&aКерү'
+  register:
+    title: '&6Теркәлү'
+    password: '&fСерсүз'
+    confirm_password: '&fСерсүзне раслау'
+    email: '&fЭлектрон почтасы'
+    confirm_email: '&fЭлектрон почтасын раслау'
+    button: '&aТеркәлү'
+  two_factor:
+    title: '&6Two-Factor Authentication'
+    code: '&f2FA коды'
+    button: '&aРаслау'
+  button:
+    cancel: '&cБаш тарту'
+
+
 # Time units
 time:
   second: 'секунд'
