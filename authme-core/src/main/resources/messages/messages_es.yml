@@ -1,8 +1,8 @@
-# This file must be in ANSI if win, or UTF-8 if linux.
-# List of global tags:
-# %nl% - Goes to new line.
-# %username% - Replaces the username of the player receiving the message.
-# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
+# Este archivo debe ser ANSI en Windows, o UTF-8 en Linux.
+# Lista de placeholders globales:
+# %nl% - Comienza una nueva línea.
+# %username% - Muestra el nombre del usuario que recibe el mensaje.
+# %displayname% - Muestra el nombre (y colores) del usuario que recibe el mensaje.
 
 # Registration
 registration:
@@ -41,14 +41,14 @@ error:
     max_registration: '&fHas excedido la cantidad máxima de registros para tu cuenta'
     logged_in: '&c¡Ya has iniciado sesión!'
     kick_for_vip: '&c¡Un jugador VIP ha ingresado al servidor lleno!'
-    # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
+    kick_unresolved_hostname: '&cHa ocurrido un error: ¡host del jugador no resuelto!'
     tempban_max_logins: '&cHas sido expulsado temporalmente por intentar iniciar sesión demasiadas veces.'
 
 # AntiBot
 antibot:
     kick_antibot: '¡El modo de protección AntiBot está habilitado! Tienes que esperar varios minutos antes de entrar en el servidor.'
-    auto_enabled: '[AuthMe] AntiBotMod activado automáticamente debido a conexiones masivas!'
-    auto_disabled: '[AuthMe] AntiBotMod desactivado automáticamente después de %m minutos. Esperamos que haya terminado'
+    auto_enabled: '[AuthMe] ¡AntiBotMod activado automáticamente debido a conexiones masivas!'
+    auto_disabled: '[AuthMe] AntiBotMod desactivado automáticamente después de %m minutos. Esperamos que haya terminado.'
 
 # Unregister
 unregister:
@@ -80,24 +80,24 @@ on_join_validation:
     country_banned: '¡Tu país ha sido baneado de este servidor!'
     not_owner_error: 'No eres el propietario de esta cuenta. ¡Por favor, elije otro nombre!'
     invalid_name_case: 'Solo puedes unirte mediante el nombre de usuario %valid, no %invalid.'
-    quick_command: 'Has usado el comando demasiado rápido! Porfavor, entra al servidor de nuevo y espera un poco antes de usar cualquier comando.'
+    quick_command: '¡Has usado el comando demasiado rápido! Porfavor, entra al servidor de nuevo y espera un poco antes de usar cualquier comando.'
 
 # Email
 email:
     add_email_request: '&cPor favor agrega tu e-mail con: /email add tuEmail confirmarEmail'
     usage_email_add: '&fUso: /email add <email> <confirmaEmail> '
     usage_email_change: '&fUso: /email change <anteriorEmail> <nuevoEmail> '
-    new_email_invalid: '[AuthMe] Nuevo email inválido!'
-    old_email_invalid: '[AuthMe] Email anterior inválido!'
-    invalid: '[AuthMe] Email inválido'
-    added: '[AuthMe] Email agregado !'
-    add_not_allowed: '&cNo se permite añadir un Email'
-    request_confirmation: '[AuthMe] Confirma tu Email !'
-    changed: '[AuthMe] Email cambiado !'
-    change_not_allowed: '&cNo se permite el cambio de Email'
-    email_show: '&2Tu dirección de E-Mail actual es: &f%email'
+    new_email_invalid: '[AuthMe] ¡Nuevo email inválido!'
+    old_email_invalid: '[AuthMe] ¡Email anterior inválido!'
+    invalid: '[AuthMe] ¡Email inválido!'
+    added: '[AuthMe] ¡Email agregado!'
+    add_not_allowed: '&cNo se permite añadir un email.'
+    request_confirmation: '[AuthMe] ¡Confirma tu email!'
+    changed: '[AuthMe] ¡Email cambiado!'
+    change_not_allowed: '&cNo se permite el cambio de email'
+    email_show: '&2Tu dirección de email actual es: &f%email'
     no_email_for_account: '&2No tienes ningun E-Mail asociado en esta cuenta.'
-    already_used: '&4La dirección Email ya está siendo usada'
+    already_used: '&4La dirección email ya está siendo usada.'
     incomplete_settings: 'Error: no todos los ajustes necesarios se han configurado para poder enviar correos. Por favor, contacta con un administrador.'
     send_failure: 'No se ha podido enviar el correo electrónico. Por favor, contacta con un administrador.'
     change_password_expired: 'No puedes cambiar la contraseña utilizando este comando.'
@@ -106,8 +106,8 @@ email:
 # Password recovery by email
 recovery:
     forgot_password_hint: '&c¿Olvidaste tu contraseña? Por favor usa /email recovery <tuEmail>'
-    command_usage: '&fUso: /email recovery <Email>'
-    email_sent: '[AuthMe] Correo de recuperación enviado !'
+    command_usage: '&fUso: /email recovery <email>'
+    email_sent: '[AuthMe] ¡Correo de recuperación enviado!'
     code:
         code_sent: 'El código de recuperación para recuperar tu contraseña se ha enviado a tu correo.'
         incorrect: '¡El código de recuperación no es correcto! Usa "/email recovery [email]" para generar uno nuevo'
@@ -128,9 +128,9 @@ verification:
     code_required: '&3¡Este comando es privado y requiere una verificación por correo electrónico! Revisa tu bandeja de entrada y sigue las instrucciones del correo electrónico.'
     command_usage: '&cUso: /verification <código>'
     incorrect_code: '&cCódigo incorrecto, por favor escribe "/verification <código>" en el chat, utilizando el código que has recibido por correo electrónico.'
-    success: '&2Tu identidad ha sido verificada! Ahora puedes ejecutar todos los comandos dentro de la sesión actual.'
+    success: '&2¡Tu identidad ha sido verificada! Ahora puedes ejecutar todos los comandos dentro de la sesión actual.'
     already_verified: '&2¡Ya puedes ejecutar todos los comandos de seguridad dentro de la sesión actual!'
-    code_expired: '&3Tu código ha expirado! Ejecuta otra vez el comando de seguridad para obtener un nuevo código!'
+    code_expired: '&3¡Tu código ha expirado! Ejecuta otra vez el comando de seguridad para obtener un nuevo código.'
     email_needed: '&3¡Para verificar tu identidad necesitas añadir tu correo electrónico a tu cuenta!'
 
 # Time units
