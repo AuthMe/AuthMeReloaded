@@ -144,6 +144,26 @@ two_factor:
   removed_success: 'Successfully removed two-factor auth from your account'
   invalid_code: 'Invalid code!'
 
+# Dialog UI
+dialog:
+  login:
+    title: '&6Login'
+    password: '&fPassword'
+    button: '&aLogin'
+  register:
+    title: '&6Register'
+    password: '&fPassword'
+    confirm_password: '&fConfirm Password'
+    email: '&fEmail'
+    confirm_email: '&fConfirm Email'
+    button: '&aRegister'
+  two_factor:
+    title: '&6Two-Factor Authentication'
+    code: '&f2FA Code'
+    button: '&aVerify'
+  button:
+    cancel: '&cCancel'
+
 # Time units
 time:
   second: 'second'

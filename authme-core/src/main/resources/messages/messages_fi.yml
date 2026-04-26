@@ -133,6 +133,27 @@ verification:
     # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 # Time units
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6Kirjautuminen'
+    password: '&fSalasana'
+    button: '&aKirjaudu sisään'
+  register:
+    title: '&6Rekisteröinti'
+    password: '&fSalasana'
+    confirm_password: '&fVahvista salasana'
+    email: '&fSähköposti'
+    confirm_email: '&fVahvista sähköposti'
+    button: '&aRekisteröidy'
+  two_factor:
+    title: '&6Kaksivaiheinen tunnistautuminen'
+    code: '&f2FA-koodi'
+    button: '&aVahvista'
+  button:
+    cancel: '&cPeruuta'
+
 time:
     # TODO second: 'second'
     # TODO seconds: 'seconds'

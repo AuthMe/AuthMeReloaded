@@ -26,6 +26,12 @@ import static org.mockito.Mockito.verify;
 public class SpigotPlatformAdapterTest {
 
     private final SpigotPlatformAdapter adapter = new SpigotPlatformAdapter();
+    private final DialogWindowSpec dialog = new DialogWindowSpec("Title",
+        List.of(new DialogInputSpec("password", "Password", 100)),
+        "Submit",
+        "Cancel",
+        false,
+        false);
 
     @Test
     public void getPlatformNameReturnsExpectedValue() {
@@ -63,7 +69,7 @@ public class SpigotPlatformAdapterTest {
         Player player = mock(Player.class);
 
         // when
-        adapter.showLoginDialog(player);
+        adapter.showLoginDialog(player, dialog);
 
         // then
         verify(player).showDialog(any(MultiActionDialog.class));
@@ -75,7 +81,7 @@ public class SpigotPlatformAdapterTest {
         Player player = mock(Player.class);
 
         // when
-        adapter.showTotpDialog(player);
+        adapter.showTotpDialog(player, dialog);
 
         // then
         verify(player).showDialog(any(MultiActionDialog.class));
@@ -87,7 +93,7 @@ public class SpigotPlatformAdapterTest {
         Player player = mock(Player.class);
 
         // when
-        adapter.showRegisterDialog(player, RegistrationType.PASSWORD, RegisterSecondaryArgument.NONE);
+        adapter.showRegisterDialog(player, RegistrationType.PASSWORD, RegisterSecondaryArgument.NONE, dialog);
 
         // then
         verify(player).showDialog(any(MultiActionDialog.class));

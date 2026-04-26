@@ -133,6 +133,27 @@ verification:
     email_needed: '&3A személyazonosságának igazolásához email címet kell csatolnia fiókjához!'
 
 # Time units
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6Bejelentkezés'
+    password: '&fJelszó'
+    button: '&aBejelentkezés'
+  register:
+    title: '&6Regisztráció'
+    password: '&fJelszó'
+    confirm_password: '&fJelszó megerősítése'
+    email: '&fE-mail cím'
+    confirm_email: '&fE-mail cím megerősítése'
+    button: '&aRegisztráció'
+  two_factor:
+    title: '&6Kétlépcsős hitelesítés'
+    code: '&f2FA-kód'
+    button: '&aEllenőrzés'
+  button:
+    cancel: '&cMégse'
+
 time:
     second: 'másodperc'
     seconds: 'másodperc'

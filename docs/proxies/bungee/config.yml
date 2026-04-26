@@ -1,0 +1,43 @@
+# AUTO-GENERATED FILE! Do not edit this directly
+# File auto-generated on Fri Apr 24 16:05:06 CEST 2026. See authme-tools/src/test/java/tools/docs/proxies/bungee/config.tpl.yml
+#
+# Reference configuration for the native AuthMe Bungee proxy plugin.
+# The live file is created in plugins/AuthMeBungee/config.yml.
+
+# List of servers in the network where AuthMe is installed
+authServers: 
+- lobby
+# Treat every backend as an auth-aware server
+allServersAreAuthServers: false
+commands:
+    # Allows or not commands to be performed if user is not logged in
+    requireAuth: true
+    # List of commands allowed to be performed without being authenticated
+    whitelist: 
+    - /login
+    - /register
+    - /l
+    - /reg
+    - /email
+    - /captcha
+    - /2fa
+    - /totp
+    - /log
+# Allows or not user to talk in chat if they are not logged in
+chatRequiresAuth: true
+serverSwitch:
+    # Kick all players who switch servers without being authenticated
+    requiresAuth: true
+    # Message shown when an unauthenticated player is blocked from switching servers
+    kickMessage: Authentication required.
+# Enable perform.login forwarding when an authenticated player joins an auth server
+autoLogin: false
+# If enabled, logged-out users will be sent to the unloggedUserServer backend
+sendOnLogout: false
+# If sendOnLogout is enabled, logged-out users will be sent to this backend
+unloggedUserServer: ''
+# Shared secret used to sign perform.login messages sent to backend servers.
+# Generated automatically on first start — copy this value to the Hooks.proxySharedSecret
+# setting of every backend server running AuthMe.
+proxySharedSecret: ''
+

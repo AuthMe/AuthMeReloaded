@@ -136,6 +136,27 @@ verification:
     email_needed: '&cAfin de vérifier votre identité, vous devez avoir un email lié à votre compte.%nl%&cPour cela, faites "/email add <Email> <ConfirmerEmail>"'
 
 # Unités de temps
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6Connexion'
+    password: '&fMot de passe'
+    button: '&aSe connecter'
+  register:
+    title: '&6Inscription'
+    password: '&fMot de passe'
+    confirm_password: '&fConfirmer le mot de passe'
+    email: '&fE-mail'
+    confirm_email: '&fConfirmer l''e-mail'
+    button: '&aS''inscrire'
+  two_factor:
+    title: '&6Authentification à deux facteurs'
+    code: '&fCode 2FA'
+    button: '&aVérifier'
+  button:
+    cancel: '&cAnnuler'
+
 time:
     second: 'seconde'
     seconds: 'secondes'

@@ -9,6 +9,7 @@ import io.papermc.paper.registry.data.dialog.action.DialogAction;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import io.papermc.paper.registry.data.dialog.type.DialogType;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -19,126 +20,96 @@ import java.util.List;
  */
 public final class PaperDialogHelper {
 
+    private static final LegacyComponentSerializer LEGACY_SERIALIZER = LegacyComponentSerializer.legacySection();
+
     private PaperDialogHelper() {
     }
 
-    static void showLoginDialog(Player player) {
-        player.showDialog(createInGameLoginDialog());
+    static void closeDialog(Player player) {
+        player.closeDialog();
     }
 
-    static void showTotpDialog(Player player) {
-        player.showDialog(createInGameTotpDialog());
+    static void showLoginDialog(Player player, DialogWindowSpec dialog) {
+        player.showDialog(createInGameCommandDialog(dialog, "login $(password)"));
     }
 
-    static void showRegisterDialog(Player player, RegistrationType type, RegisterSecondaryArgument secondArg) {
-        player.showDialog(createInGameRegisterDialog(type, secondArg));
+    static void showTotpDialog(Player player, DialogWindowSpec dialog) {
+        player.showDialog(createInGameCommandDialog(dialog, "2fa code $(code)"));
     }
 
-    public static Dialog createPreJoinLoginDialog() {
-        DialogBase base = DialogBase.builder(Component.text("Login"))
-            .inputs(List.of(createPasswordInput()))
-            .canCloseWithEscape(false)
+    static void showRegisterDialog(Player player, RegistrationType type, RegisterSecondaryArgument secondArg,
+                                   DialogWindowSpec dialog) {
+        player.showDialog(createInGameCommandDialog(dialog, createRegisterTemplate(type, secondArg)));
+    }
+
+    public static Dialog createPreJoinLoginDialog(DialogWindowSpec dialog) {
+        DialogBase base = DialogBase.builder(legacyComponent(dialog.title()))
+            .inputs(createInputs(dialog))
+            .canCloseWithEscape(dialog.canCloseWithEscape())
             .afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
             .build();
 
-        ActionButton loginButton = ActionButton.builder(Component.text("Login"))
+        ActionButton loginButton = ActionButton.builder(legacyComponent(dialog.primaryButtonLabel()))
             .action(DialogAction.customClick(PaperDialogActionKeys.PRE_JOIN_LOGIN_SUBMIT, null))
             .build();
-        ActionButton cancelButton = ActionButton.builder(Component.text("Cancel"))
-            .action(DialogAction.customClick(PaperDialogActionKeys.PRE_JOIN_LOGIN_CANCEL, null))
-            .build();
 
         return Dialog.create(factory -> factory.empty()
             .base(base)
-            .type(DialogType.multiAction(List.of(loginButton, cancelButton)).build()));
+            .type(DialogType.multiAction(createPreJoinButtons(dialog,
+                loginButton,
+                PaperDialogActionKeys.PRE_JOIN_LOGIN_CANCEL)).build()));
     }
 
-    public static Dialog createPreJoinRegisterDialog(RegistrationType type, RegisterSecondaryArgument secondArg) {
-        DialogBase base = DialogBase.builder(Component.text("Register"))
-            .inputs(createRegisterInputs(type, secondArg))
-            .canCloseWithEscape(false)
+    public static Dialog createPreJoinRegisterDialog(DialogWindowSpec dialog) {
+        DialogBase base = DialogBase.builder(legacyComponent(dialog.title()))
+            .inputs(createInputs(dialog))
+            .canCloseWithEscape(dialog.canCloseWithEscape())
             .afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
             .build();
 
-        ActionButton registerButton = ActionButton.builder(Component.text("Register"))
+        ActionButton registerButton = ActionButton.builder(legacyComponent(dialog.primaryButtonLabel()))
             .action(DialogAction.customClick(PaperDialogActionKeys.PRE_JOIN_REGISTER_SUBMIT, null))
             .build();
-        ActionButton cancelButton = ActionButton.builder(Component.text("Cancel"))
-            .action(DialogAction.customClick(PaperDialogActionKeys.PRE_JOIN_REGISTER_CANCEL, null))
-            .build();
 
         return Dialog.create(factory -> factory.empty()
             .base(base)
-            .type(DialogType.multiAction(List.of(registerButton, cancelButton)).build()));
+            .type(DialogType.multiAction(createPreJoinButtons(dialog,
+                registerButton,
+                PaperDialogActionKeys.PRE_JOIN_REGISTER_CANCEL)).build()));
     }
 
-    private static Dialog createInGameLoginDialog() {
-        DialogBase base = DialogBase.builder(Component.text("Login"))
-            .inputs(List.of(createPasswordInput()))
+    private static Dialog createInGameCommandDialog(DialogWindowSpec dialog, String commandTemplate) {
+        DialogBase base = DialogBase.builder(legacyComponent(dialog.title()))
+            .inputs(createInputs(dialog))
             .afterAction(DialogBase.DialogAfterAction.CLOSE)
             .build();
 
-        ActionButton loginButton = ActionButton.builder(Component.text("Login"))
-            .action(DialogAction.commandTemplate("login $(password)"))
+        ActionButton primaryButton = ActionButton.builder(legacyComponent(dialog.primaryButtonLabel()))
+            .action(DialogAction.commandTemplate(commandTemplate))
             .build();
 
         return Dialog.create(factory -> factory.empty()
             .base(base)
-            .type(DialogType.multiAction(List.of(loginButton)).build()));
+            .type(DialogType.multiAction(List.of(primaryButton)).build()));
     }
 
-    private static Dialog createInGameTotpDialog() {
-        DialogBase base = DialogBase.builder(Component.text("Two-Factor Authentication"))
-            .inputs(List.of(DialogInput.text("code", Component.text("2FA Code")).maxLength(16).build()))
-            .afterAction(DialogBase.DialogAfterAction.CLOSE)
-            .build();
-
-        ActionButton submitButton = ActionButton.builder(Component.text("Verify"))
-            .action(DialogAction.commandTemplate("2fa code $(code)"))
-            .build();
-
-        return Dialog.create(factory -> factory.empty()
-            .base(base)
-            .type(DialogType.multiAction(List.of(submitButton)).build()));
+    private static List<ActionButton> createPreJoinButtons(DialogWindowSpec dialog,
+                                                           ActionButton primaryButton,
+                                                           net.kyori.adventure.key.Key cancelActionKey) {
+        List<ActionButton> buttons = new ArrayList<>();
+        buttons.add(primaryButton);
+        if (dialog.showSecondaryButton()) {
+            buttons.add(ActionButton.builder(legacyComponent(dialog.secondaryButtonLabel()))
+                .action(DialogAction.customClick(cancelActionKey, null))
+                .build());
+        }
+        return buttons;
     }
 
-    private static Dialog createInGameRegisterDialog(RegistrationType type, RegisterSecondaryArgument secondArg) {
-        String template = createRegisterTemplate(type, secondArg);
-        DialogBase base = DialogBase.builder(Component.text("Register"))
-            .inputs(createRegisterInputs(type, secondArg))
-            .afterAction(DialogBase.DialogAfterAction.CLOSE)
-            .build();
-
-        ActionButton registerButton = ActionButton.builder(Component.text("Register"))
-            .action(DialogAction.commandTemplate(template))
-            .build();
-
-        return Dialog.create(factory -> factory.empty()
-            .base(base)
-            .type(DialogType.multiAction(List.of(registerButton)).build()));
-    }
-
-    private static DialogInput createPasswordInput() {
-        return DialogInput.text("password", Component.text("Password"))
-            .maxLength(100)
-            .build();
-    }
-
-    private static List<DialogInput> createRegisterInputs(RegistrationType type, RegisterSecondaryArgument secondArg) {
+    private static List<DialogInput> createInputs(DialogWindowSpec dialog) {
         List<DialogInput> inputs = new ArrayList<>();
-        if (type == RegistrationType.EMAIL) {
-            inputs.add(DialogInput.text("email", Component.text("Email")).maxLength(100).build());
-            if (secondArg == RegisterSecondaryArgument.CONFIRMATION) {
-                inputs.add(DialogInput.text("confirm", Component.text("Confirm Email")).maxLength(100).build());
-            }
-        } else {
-            inputs.add(createPasswordInput());
-            if (secondArg == RegisterSecondaryArgument.CONFIRMATION) {
-                inputs.add(DialogInput.text("confirm", Component.text("Confirm Password")).maxLength(100).build());
-            } else if (secondArg == RegisterSecondaryArgument.EMAIL_MANDATORY
-                || secondArg == RegisterSecondaryArgument.EMAIL_OPTIONAL) {
-                inputs.add(DialogInput.text("email", Component.text("Email")).maxLength(100).build());
-            }
+        for (DialogInputSpec input : dialog.inputs()) {
+            inputs.add(DialogInput.text(input.id(), legacyComponent(input.label())).maxLength(input.maxLength()).build());
         }
         return inputs;
     }
@@ -159,5 +130,9 @@ public final class PaperDialogHelper {
             return "register $(password) $(email)";
         }
         return "register $(password)";
+    }
+
+    private static Component legacyComponent(String text) {
+        return LEGACY_SERIALIZER.deserialize(text);
     }
 }

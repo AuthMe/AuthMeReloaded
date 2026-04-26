@@ -6,11 +6,15 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.platform.DialogAdapter;
+import fr.xephi.authme.platform.DialogInputSpec;
+import fr.xephi.authme.platform.DialogWindowSpec;
 import fr.xephi.authme.process.login.AsynchronousLogin;
 import fr.xephi.authme.process.register.AsyncRegister;
 import fr.xephi.authme.service.PreJoinDialogService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.DialogStateService;
+import fr.xephi.authme.service.DialogWindowService;
 import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.ValidationService;
@@ -83,6 +87,10 @@ public class AsynchronousJoinTest {
     @Mock
     private DialogAdapter dialogAdapter;
     @Mock
+    private DialogWindowService dialogWindowService;
+    @Mock
+    private DialogStateService dialogStateService;
+    @Mock
     private PreJoinDialogService preJoinDialogService;
 
     @BeforeAll
@@ -105,6 +113,7 @@ public class AsynchronousJoinTest {
         given(playerCache.isAuthenticated("Bobby")).willReturn(false);
         given(service.getProperty(RegistrationSettings.USE_DIALOG_UI)).willReturn(true);
         given(dialogAdapter.isDialogSupported()).willReturn(true);
+        given(dialogWindowService.createLoginDialog(player)).willReturn(createDialogSpec("Login", "Login"));
 
         // when
         asynchronousJoin.processJoin(player);
@@ -112,7 +121,7 @@ public class AsynchronousJoinTest {
         // then
         verify(limboService).createLimboPlayer(player, true);
         verify(bukkitService).runTaskLater(eq(player), any(Runnable.class), eq(1L));
-        verify(dialogAdapter).showLoginDialog(player);
+        verify(dialogAdapter).showLoginDialog(eq(player), any(DialogWindowSpec.class));
     }
 
     @Test
@@ -127,7 +136,7 @@ public class AsynchronousJoinTest {
 
         // then
         verify(limboService).createLimboPlayer(player, true);
-        verify(dialogAdapter, never()).showLoginDialog(player);
+        verify(dialogAdapter, never()).showLoginDialog(eq(player), any(DialogWindowSpec.class));
     }
 
     @Test
@@ -139,6 +148,7 @@ public class AsynchronousJoinTest {
         given(playerCache.isAuthenticated("Bobby")).willReturn(false, true);
         given(service.getProperty(RegistrationSettings.USE_DIALOG_UI)).willReturn(true);
         given(dialogAdapter.isDialogSupported()).willReturn(true);
+        given(dialogWindowService.createLoginDialog(player)).willReturn(createDialogSpec("Login", "Login"));
 
         AtomicReference<Runnable> delayedTask = new AtomicReference<>();
         doAnswer(invocation -> {
@@ -152,7 +162,7 @@ public class AsynchronousJoinTest {
 
         // then
         verify(limboService).createLimboPlayer(player, true);
-        verify(dialogAdapter, never()).showLoginDialog(player);
+        verify(dialogAdapter, never()).showLoginDialog(eq(player), any(DialogWindowSpec.class));
     }
 
     @Test
@@ -170,7 +180,7 @@ public class AsynchronousJoinTest {
         verify(commandManager).runCommandsOnSessionLogin(player);
         verify(asynchronousLogin).forceLogin(player);
         verify(limboService, never()).createLimboPlayer(player, true);
-        verify(dialogAdapter, never()).showLoginDialog(player);
+        verify(dialogAdapter, never()).showLoginDialog(eq(player), any(DialogWindowSpec.class));
     }
 
     @Test
@@ -190,7 +200,7 @@ public class AsynchronousJoinTest {
         // then
         verify(limboService).createLimboPlayer(player, true);
         verify(asynchronousLogin).login(player, "hunter2");
-        verify(dialogAdapter, never()).showLoginDialog(player);
+        verify(dialogAdapter, never()).showLoginDialog(eq(player), any(DialogWindowSpec.class));
     }
 
     @Test
@@ -210,7 +220,7 @@ public class AsynchronousJoinTest {
 
         // then
         verify(limboService).createLimboPlayer(player, true);
-        verify(dialogAdapter, never()).showLoginDialog(player);
+        verify(dialogAdapter, never()).showLoginDialog(eq(player), any(DialogWindowSpec.class));
     }
 
     private void setUpRegisteredJoin(Player player) {
@@ -235,5 +245,14 @@ public class AsynchronousJoinTest {
         given(player.isOnline()).willReturn(true);
         TestHelper.mockIpAddressToPlayer(player, "127.0.0.1");
         return player;
+    }
+
+    private static DialogWindowSpec createDialogSpec(String title, String buttonLabel) {
+        return new DialogWindowSpec(title,
+            java.util.List.of(new DialogInputSpec("password", "Password", 100)),
+            buttonLabel,
+            "Cancel",
+            false,
+            false);
     }
 }

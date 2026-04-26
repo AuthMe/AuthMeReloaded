@@ -52,6 +52,10 @@ public class SyncProcessManager {
         runTask(player, () -> processSyncPlayerLogin.processPlayerLogin(player, isFirstLogin, authsWithSameIp));
     }
 
+    public void processSyncPlayerLoginFromProxy(Player player, boolean isFirstLogin, List<String> authsWithSameIp) {
+        runTask(player, () -> processSyncPlayerLogin.processPlayerLoginFromProxy(player, isFirstLogin, authsWithSameIp));
+    }
+
     public void processSyncPlayerQuit(Player player, boolean wasLoggedIn) {
         runTask(player, () -> processSyncPlayerQuit.processSyncQuit(player, wasLoggedIn));
     }

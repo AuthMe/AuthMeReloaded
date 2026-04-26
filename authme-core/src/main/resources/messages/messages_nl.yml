@@ -133,6 +133,27 @@ verification:
     email_needed: '&3Om je identiteit vast te stellen moet je een e-mailadres verbinden aan je account!!'
 
 # Time units
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6Inloggen'
+    password: '&fWachtwoord'
+    button: '&aInloggen'
+  register:
+    title: '&6Registratie'
+    password: '&fWachtwoord'
+    confirm_password: '&fWachtwoord bevestigen'
+    email: '&fE-mailadres'
+    confirm_email: '&fE-mailadres bevestigen'
+    button: '&aRegistreren'
+  two_factor:
+    title: '&6Twee-factor-authenticatie'
+    code: '&f2FA-code'
+    button: '&aVerifiëren'
+  button:
+    cancel: '&cAnnuleren'
+
 time:
     second: 'seconde'
     seconds: 'seconden'

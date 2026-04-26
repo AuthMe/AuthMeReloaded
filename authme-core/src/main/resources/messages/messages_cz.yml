@@ -133,6 +133,27 @@ verification:
     email_needed: '&3Pro ověření tvé identity potřebujeme, abys ke svému účtu přidal svůj email.'
 
 # Time units
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6Přihlášení'
+    password: '&fHeslo'
+    button: '&aPřihlásit se'
+  register:
+    title: '&6Registrace'
+    password: '&fHeslo'
+    confirm_password: '&fPotvrdit heslo'
+    email: '&fE-mail'
+    confirm_email: '&fPotvrdit e-mail'
+    button: '&aRegistrovat'
+  two_factor:
+    title: '&6Dvoufaktorové ověření'
+    code: '&fKód 2FA'
+    button: '&aOvěřit'
+  button:
+    cancel: '&cZrušit'
+
 time:
     second: 'sekundy'
     seconds: 'sekund'

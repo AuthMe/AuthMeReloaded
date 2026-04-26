@@ -42,18 +42,26 @@ public abstract class AbstractPaperPlatformAdapter extends AbstractSpigotPlatfor
     }
 
     @Override
-    public void showLoginDialog(Player player) {
-        PaperDialogHelper.showLoginDialog(player);
+    public void showLoginDialog(Player player, DialogWindowSpec dialog) {
+        PaperDialogHelper.showLoginDialog(player, dialog);
     }
 
     @Override
-    public void showTotpDialog(Player player) {
-        PaperDialogHelper.showTotpDialog(player);
+    public void showTotpDialog(Player player, DialogWindowSpec dialog) {
+        PaperDialogHelper.showTotpDialog(player, dialog);
     }
 
     @Override
-    public void showRegisterDialog(Player player, RegistrationType type, RegisterSecondaryArgument secondArg) {
-        PaperDialogHelper.showRegisterDialog(player, type, secondArg);
+    public void showRegisterDialog(Player player, RegistrationType type,
+                                   RegisterSecondaryArgument secondArg, DialogWindowSpec dialog) {
+        PaperDialogHelper.showRegisterDialog(player, type, secondArg, dialog);
+    }
+
+    @Override
+    public void closeDialog(Player player) {
+        if (DIALOG_AVAILABLE) {
+            PaperDialogHelper.closeDialog(player);
+        }
     }
 
     @Override

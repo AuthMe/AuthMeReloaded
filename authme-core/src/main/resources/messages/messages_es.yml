@@ -134,6 +134,27 @@ verification:
     email_needed: '&3¡Para verificar tu identidad necesitas añadir tu correo electrónico a tu cuenta!'
 
 # Time units
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6Inicio de sesión'
+    password: '&fContraseña'
+    button: '&aIniciar sesión'
+  register:
+    title: '&6Registro'
+    password: '&fContraseña'
+    confirm_password: '&fConfirmar contraseña'
+    email: '&fCorreo electrónico'
+    confirm_email: '&fConfirmar correo electrónico'
+    button: '&aRegistrarse'
+  two_factor:
+    title: '&6Autenticación de dos factores'
+    code: '&fCódigo 2FA'
+    button: '&aVerificar'
+  button:
+    cancel: '&cCancelar'
+
 time:
     second: 'segundo'
     seconds: 'segundos'

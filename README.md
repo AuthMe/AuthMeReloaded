@@ -53,6 +53,7 @@ You can also create your own translation file and, if you want, you can share it
   <li>Custom MySQL tables/columns names (useful with forum databases)</li>
   <li><strong>Cached database queries!</strong></li>
   <li><strong>Fully compatible with Citizens2, CombatTag, CombatTagPlus!</strong></li>
+  <li><strong>Velocity proxy bridge for inter-server authentication.</strong></li>
   <li>Compatible with Minecraft mods like <strong>BuildCraft or RedstoneCraft</strong></li>
   <li>Graphical login/register dialogs, with optional Paper/Folia pre-join dialogs</li>
   <li>Restricted users (associate a username with an IP)</li>
@@ -123,8 +124,8 @@ AuthMe can display graphical login/register dialogs instead of chat-based prompt
 ## Requirements
 
 ##### Compiling requirements:
->- JDK 17+ for `authme-core` and `authme-spigot-legacy`
->- JDK 21+ for the full multi-module build (`authme-spigot-1.21`, `authme-paper-common`, `authme-paper`, `authme-folia`)
+>- JDK 17+ for `authme-core`, `authme-tools`, and `authme-spigot-legacy`
+>- JDK 21+ for the full multi-module build (`authme-bungee`, `authme-spigot-1.21`, `authme-paper-common`, `authme-paper`, `authme-folia`, `authme-velocity`)
 >- Maven (3.8.8+)
 >- Git/GitHub (Optional)
 
@@ -139,6 +140,8 @@ AuthMe can display graphical login/register dialogs instead of chat-based prompt
 >- Use the jar matching your server platform/version
 >- Java 17+ for `AuthMe-*-Spigot-Legacy.jar` (Spigot 1.16.x – 1.19.x)
 >- Java 21+ for:
+>  - `AuthMe-*-Bungee.jar` (BungeeCord / Waterfall-compatible 1.19 API)
+>  - `AuthMe-*-Velocity.jar` (Velocity 3.4+ proxy bridge)
 >  - `AuthMe-*-Spigot-1.21.jar` (Spigot 1.20.x – 1.21.x)
 >  - `AuthMe-*-Paper.jar` (Paper 1.21+)
 >  - `AuthMe-*-Folia.jar` (Folia 1.21+)

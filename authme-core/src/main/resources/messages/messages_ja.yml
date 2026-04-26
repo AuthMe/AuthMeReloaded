@@ -145,6 +145,27 @@ two_factor:
   invalid_code: '無効なコードです！'
 
 # Time units
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6ログイン'
+    password: '&fパスワード'
+    button: '&aログイン'
+  register:
+    title: '&6登録'
+    password: '&fパスワード'
+    confirm_password: '&fパスワードを確認'
+    email: '&fメールアドレス'
+    confirm_email: '&fメールアドレスを確認'
+    button: '&a登録する'
+  two_factor:
+    title: '&62要素認証'
+    code: '&f2FAコード'
+    button: '&a確認'
+  button:
+    cancel: '&cキャンセル'
+
 time:
   second: '秒'
   seconds: '秒'

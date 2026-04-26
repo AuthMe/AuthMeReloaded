@@ -6,10 +6,12 @@ This page documents the main build, test, and tooling commands used in this repo
 
 - JDK 17+ for `authme-core`, `authme-tools`, and `authme-spigot-legacy`
 - JDK 21+ for the full multi-module build, including:
+  - `authme-bungee`
   - `authme-spigot-1.21`
   - `authme-paper-common`
   - `authme-paper`
   - `authme-folia`
+  - `authme-velocity`
 - Maven 3.8.8+
 
 ## Build commands
@@ -27,6 +29,8 @@ mvn clean package -DskipTests
 mvn clean package -P skipLongHashTests
 
 # Build one deliverable with its dependencies
+mvn clean package -pl authme-bungee -am
+mvn clean package -pl authme-velocity -am
 mvn clean package -pl authme-paper-common -am
 mvn clean package -pl authme-paper -am
 mvn clean package -pl authme-folia -am
@@ -45,6 +49,12 @@ launches Maven, so it stays aligned with the active Java 21+ module set.
 ```bash
 # Run tests in authme-core
 mvn test -pl authme-core
+
+# Run tests in authme-bungee
+mvn test -pl authme-bungee -am
+
+# Run tests in authme-velocity
+mvn test -pl authme-velocity -am
 
 # Run tests in Paper-derived modules
 mvn test -am -pl authme-paper-common,authme-paper,authme-folia
@@ -87,6 +97,8 @@ mvn -q -pl authme-tools -am -P run-tools process-test-classes \
 - `docs/hash_algorithms.md`
 - `docs/permission_nodes.md`
 - `docs/translations.md`
+- `docs/proxies/bungee/config.yml`
+- `docs/proxies/velocity/config.yml`
 - `authme-core/src/main/resources/commands.yml`
 - `authme-core/src/main/resources/plugin.yml`
 - `authme-core/src/test/resources/plugin.yml`

@@ -133,6 +133,27 @@ verification:
     # TODO email_needed: '&3To verify your identity you need to link an email address with your account!!'
 
 # Time units
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6Masuk'
+    password: '&fKata sandi'
+    button: '&aMasuk'
+  register:
+    title: '&6Pendaftaran'
+    password: '&fKata sandi'
+    confirm_password: '&fKonfirmasi kata sandi'
+    email: '&fEmail'
+    confirm_email: '&fKonfirmasi email'
+    button: '&aDaftar'
+  two_factor:
+    title: '&6Autentikasi dua faktor'
+    code: '&fKode 2FA'
+    button: '&aVerifikasi'
+  button:
+    cancel: '&cBatal'
+
 time:
     second: 'detik'
     seconds: 'detik'
