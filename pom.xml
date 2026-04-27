@@ -106,7 +106,7 @@
             ${settings.localRepository}/org/mockito/mockito-core/${dependencies.mockito.version}/mockito-core-${dependencies.mockito.version}.jar
         </dependencies.mockito.javaagent>
         <dependencies.velocity.version>3.4.0</dependencies.velocity.version>
-        <dependencies.bungeecord.version>1.19-R0.1-SNAPSHOT</dependencies.bungeecord.version>
+        <dependencies.bungeecord.version>1.21-R0.4</dependencies.bungeecord.version>
         <!-- Spigot -->
         <dependencies.spigot.version>1.16.5-R0.1-SNAPSHOT</dependencies.spigot.version>
         <dependencies.log4j-core.version>2.8.1</dependencies.log4j-core.version> <!-- version bundled 1.16.5 -->
