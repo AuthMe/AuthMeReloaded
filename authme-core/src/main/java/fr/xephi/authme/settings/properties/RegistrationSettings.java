@@ -134,6 +134,12 @@ public final class RegistrationSettings implements SettingsHolder {
     public static final Property<Boolean> PRE_JOIN_DIALOG_ALLOW_CLOSE_WITH_ESCAPE =
         newProperty("settings.registration.preJoinDialog.allowCloseWithEscape", false);
 
+    @Comment({
+        "Kick players who cancel the Paper/Folia pre-join register dialog.",
+        "When false, cancelling lets the player join and shows a post-join register dialog instead."})
+    public static final Property<Boolean> PRE_JOIN_REGISTER_CANCEL_KICKS =
+        newProperty("settings.registration.preJoinDialog.registerCancelKicks", false);
+
 
     private RegistrationSettings() {
     }

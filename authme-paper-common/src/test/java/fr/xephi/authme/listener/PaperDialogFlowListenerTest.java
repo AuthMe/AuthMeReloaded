@@ -3,6 +3,8 @@ package fr.xephi.authme.listener;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import fr.xephi.authme.data.ProxySessionManager;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.platform.PaperDialogActionKeys;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
@@ -69,11 +71,11 @@ public class PaperDialogFlowListenerTest {
             .willReturn(RegisterSecondaryArgument.CONFIRMATION);
 
         UUID playerId = UUID.randomUUID();
-        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        CompletableFuture<String> future = new CompletableFuture<>();
         Field pendingField = PaperDialogFlowListener.class.getDeclaredField("pendingRegisterResponses");
         pendingField.setAccessible(true);
-        ConcurrentMap<UUID, CompletableFuture<Boolean>> pendingRegisterResponses =
-            (ConcurrentMap<UUID, CompletableFuture<Boolean>>) pendingField.get(listener);
+        ConcurrentMap<UUID, CompletableFuture<String>> pendingRegisterResponses =
+            (ConcurrentMap<UUID, CompletableFuture<String>>) pendingField.get(listener);
         pendingRegisterResponses.put(playerId, future);
 
         PlayerProfile profile = mock(PlayerProfile.class);
@@ -94,7 +96,7 @@ public class PaperDialogFlowListenerTest {
         listener.onPlayerCustomClick(event);
 
         assertThat(future.isDone(), is(true));
-        assertThat(future.getNow(true), is(false));
+        assertThat(future.getNow("sentinel"), is((String) null));
         verify(preJoinDialogService, never()).storePendingPasswordRegistration(
             org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any());
     }
@@ -103,13 +105,16 @@ public class PaperDialogFlowListenerTest {
     @SuppressWarnings("unchecked")
     public void shouldFallbackToPostJoinDialogWhenPreJoinRegisterIsCancelled() throws Exception {
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        CommonService commonService = mock(CommonService.class);
+        setField(listener, "commonService", commonService);
+        given(commonService.getProperty(RegistrationSettings.PRE_JOIN_REGISTER_CANCEL_KICKS)).willReturn(false);
 
         UUID playerId = UUID.randomUUID();
-        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        CompletableFuture<String> future = new CompletableFuture<>();
         Field pendingField = PaperDialogFlowListener.class.getDeclaredField("pendingRegisterResponses");
         pendingField.setAccessible(true);
-        ConcurrentMap<UUID, CompletableFuture<Boolean>> pendingRegisterResponses =
-            (ConcurrentMap<UUID, CompletableFuture<Boolean>>) pendingField.get(listener);
+        ConcurrentMap<UUID, CompletableFuture<String>> pendingRegisterResponses =
+            (ConcurrentMap<UUID, CompletableFuture<String>>) pendingField.get(listener);
         pendingRegisterResponses.put(playerId, future);
 
         PlayerProfile profile = mock(PlayerProfile.class);
@@ -126,7 +131,43 @@ public class PaperDialogFlowListenerTest {
         listener.onPlayerCustomClick(event);
 
         assertThat(future.isDone(), is(true));
-        assertThat(future.getNow(true), is(false));
+        assertThat(future.getNow("sentinel"), is((String) null));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldKickWhenPreJoinRegisterIsCancelledAndSettingEnabled() throws Exception {
+        PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        CommonService commonService = mock(CommonService.class);
+        Messages messages = mock(Messages.class);
+        setField(listener, "commonService", commonService);
+        setField(listener, "messages", messages);
+        given(commonService.getProperty(RegistrationSettings.PRE_JOIN_REGISTER_CANCEL_KICKS)).willReturn(true);
+        given(messages.retrieveSingle("Bobby", MessageKey.LOGIN_TIMEOUT_ERROR)).willReturn("Timed out!");
+
+        UUID playerId = UUID.randomUUID();
+        CompletableFuture<String> future = new CompletableFuture<>();
+        Field pendingField = PaperDialogFlowListener.class.getDeclaredField("pendingRegisterResponses");
+        pendingField.setAccessible(true);
+        ConcurrentMap<UUID, CompletableFuture<String>> pendingRegisterResponses =
+            (ConcurrentMap<UUID, CompletableFuture<String>>) pendingField.get(listener);
+        pendingRegisterResponses.put(playerId, future);
+
+        PlayerProfile profile = mock(PlayerProfile.class);
+        given(profile.getId()).willReturn(playerId);
+        given(profile.getName()).willReturn("Bobby");
+
+        PlayerConfigurationConnection connection = mock(PlayerConfigurationConnection.class);
+        given(connection.getProfile()).willReturn(profile);
+
+        PlayerCustomClickEvent event = mock(PlayerCustomClickEvent.class);
+        given(event.getCommonConnection()).willReturn(connection);
+        given(event.getIdentifier()).willReturn(PaperDialogActionKeys.PRE_JOIN_REGISTER_CANCEL);
+
+        listener.onPlayerCustomClick(event);
+
+        assertThat(future.isDone(), is(true));
+        assertThat(future.getNow(null), is("Timed out!"));
     }
 
     @Test
