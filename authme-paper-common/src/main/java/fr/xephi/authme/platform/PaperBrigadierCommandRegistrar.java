@@ -1,10 +1,12 @@
 package fr.xephi.authme.platform;
 
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.tree.CommandNode;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
@@ -82,22 +84,41 @@ final class PaperBrigadierCommandRegistrar {
 
     private void addArgumentChain(ArgumentBuilder<CommandSourceStack, ?> parent,
                                   List<CommandArgumentDescription> arguments) {
-        ArgumentBuilder<CommandSourceStack, ?> currentParent = parent;
-        for (int index = 0; index < arguments.size(); ++index) {
+        if (arguments.isEmpty()) {
+            return;
+        }
+        // Build from innermost argument outward: then(ArgumentBuilder) calls build() immediately
+        // in standard Brigadier, so intermediate nodes must have their children set before building.
+        CommandNode<CommandSourceStack> innerChain = null;
+        for (int index = arguments.size() - 1; index >= 0; --index) {
             CommandArgumentDescription argument = arguments.get(index);
             boolean isLastArgument = index == arguments.size() - 1;
-            RequiredArgumentBuilder<CommandSourceStack, String> argumentBuilder =
+            RequiredArgumentBuilder<CommandSourceStack, String> argBuilder =
                 RequiredArgumentBuilder.<CommandSourceStack, String>argument(argument.getName(),
-                    isLastArgument ? StringArgumentType.greedyString() : StringArgumentType.word())
+                    isLastArgument ? StringArgumentType.greedyString() : anyWord())
                     .executes(this::executeInput);
-            currentParent.then(argumentBuilder);
-            currentParent = argumentBuilder;
+            if (innerChain != null) {
+                argBuilder.then(innerChain);
+            }
+            innerChain = argBuilder.build();
         }
+        parent.then(innerChain);
     }
 
     private RequiredArgumentBuilder<CommandSourceStack, String> createFallbackArgument(String name) {
         return RequiredArgumentBuilder.<CommandSourceStack, String>argument(name, StringArgumentType.greedyString())
             .executes(this::executeInput);
+    }
+
+    /** Reads any non-whitespace characters — unlike {@code word()}, accepts {@code @}, {@code #}, etc. */
+    private static ArgumentType<String> anyWord() {
+        return reader -> {
+            int start = reader.getCursor();
+            while (reader.canRead() && reader.peek() != ' ') {
+                reader.skip();
+            }
+            return reader.getString().substring(start, reader.getCursor());
+        };
     }
 
     private int executeInput(CommandContext<CommandSourceStack> context) {

@@ -101,6 +101,13 @@ public class PaperBrigadierCommandRegistrarTest {
     }
 
     @Test
+    public void shouldHandleAtSignInNonLastArgument() throws Exception {
+        dispatcher.execute("authme register test@gmail.com myPassword", sourceStack);
+
+        assertThat(executedCommands, contains(List.of("authme", "register", "test@gmail.com", "myPassword")));
+    }
+
+    @Test
     public void shouldRegisterChildAliasesInBrigadierTree() {
         assertThat(dispatcher.getCompletionSuggestions(dispatcher.parse("authme ", sourceStack)).join()
             .getList().stream().map(suggestion -> suggestion.getText()).toList(), hasItem("reg"));
