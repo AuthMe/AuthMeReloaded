@@ -12,6 +12,7 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PasswordRecoveryService;
 import fr.xephi.authme.service.RecoveryCodeService;
+import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 
@@ -46,6 +47,9 @@ public class RecoverEmailCommand extends PlayerCommand {
     @Inject
     private BukkitService bukkitService;
 
+    @Inject
+    private ValidationService validationService;
+
     @Override
     protected void runCommand(Player player, List<String> arguments) {
         final String playerMail = arguments.get(0);
@@ -58,6 +62,10 @@ public class RecoverEmailCommand extends PlayerCommand {
         }
         if (playerCache.isAuthenticated(playerName)) {
             commonService.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
+            return;
+        }
+        if (!validationService.validateEmail(playerMail)) {
+            commonService.send(player, MessageKey.INVALID_EMAIL);
             return;
         }
 
