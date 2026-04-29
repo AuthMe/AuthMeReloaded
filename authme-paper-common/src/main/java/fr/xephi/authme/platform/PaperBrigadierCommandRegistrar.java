@@ -6,6 +6,8 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.tree.CommandNode;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandArgumentDescription;
@@ -13,6 +15,7 @@ import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandUtils;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.command.brigadier.argument.CustomArgumentType;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.command.CommandSender;
 
@@ -110,15 +113,31 @@ final class PaperBrigadierCommandRegistrar {
             .executes(this::executeInput);
     }
 
-    /** Reads any non-whitespace characters — unlike {@code word()}, accepts {@code @}, {@code #}, etc. */
+    /**
+     * Returns a Paper-compatible argument type that reads any non-whitespace characters —
+     * unlike {@code word()}, accepts {@code @}, {@code #}, etc. Wrapped in {@link CustomArgumentType}
+     * so Paper's Brigadier bridge does not reject it as an unknown raw argument type.
+     */
     private static ArgumentType<String> anyWord() {
-        return reader -> {
+        return AnyWordArgumentType.INSTANCE;
+    }
+
+    private static final class AnyWordArgumentType implements CustomArgumentType<String, String> {
+        static final AnyWordArgumentType INSTANCE = new AnyWordArgumentType();
+
+        @Override
+        public String parse(StringReader reader) throws CommandSyntaxException {
             int start = reader.getCursor();
             while (reader.canRead() && reader.peek() != ' ') {
                 reader.skip();
             }
             return reader.getString().substring(start, reader.getCursor());
-        };
+        }
+
+        @Override
+        public ArgumentType<String> getNativeType() {
+            return StringArgumentType.word();
+        }
     }
 
     private int executeInput(CommandContext<CommandSourceStack> context) {
