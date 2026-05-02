@@ -6,6 +6,7 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.PreJoinDialogService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,9 @@ class ForceLoginCommandTest {
 
     @Mock
     private Messages messages;
+
+    @Mock
+    private PreJoinDialogService preJoinDialogService;
 
     @Test
     void shouldRejectOfflinePlayer() {
@@ -129,6 +133,40 @@ class ForceLoginCommandTest {
         verify(bukkitService).getPlayerExact(senderName);
         verify(management).forceLogin(player);
         verify(messages).send(eq(sender), eq(MessageKey.FORCE_LOGIN_SUCCESS), eq(senderName));
+    }
+
+    @Test
+    void shouldForceLoginPlayerBlockedInPreJoinDialog() {
+        // given
+        String playerName = "Connor";
+        given(bukkitService.getPlayerExact(playerName)).willReturn(null);
+        given(preJoinDialogService.approvePreJoinForceLogin("connor")).willReturn(true);
+        CommandSender sender = mock(CommandSender.class);
+
+        // when
+        command.executeCommand(sender, Collections.singletonList(playerName));
+
+        // then
+        verify(preJoinDialogService).approvePreJoinForceLogin("connor");
+        verify(messages).send(eq(sender), eq(MessageKey.FORCE_LOGIN_SUCCESS), eq(playerName));
+        verifyNoInteractions(management);
+    }
+
+    @Test
+    void shouldSendOfflineMessageWhenPlayerNotFoundAndNoPreJoinDialog() {
+        // given
+        String playerName = "NotConnecting";
+        given(bukkitService.getPlayerExact(playerName)).willReturn(null);
+        given(preJoinDialogService.approvePreJoinForceLogin("notconnecting")).willReturn(false);
+        CommandSender sender = mock(CommandSender.class);
+
+        // when
+        command.executeCommand(sender, Collections.singletonList(playerName));
+
+        // then
+        verify(preJoinDialogService).approvePreJoinForceLogin("notconnecting");
+        verify(messages).send(sender, MessageKey.FORCE_LOGIN_PLAYER_OFFLINE);
+        verifyNoInteractions(management);
     }
 
     private static Player mockPlayer(boolean isOnline) {

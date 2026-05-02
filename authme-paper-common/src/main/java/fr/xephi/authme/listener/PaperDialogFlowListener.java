@@ -170,11 +170,13 @@ public class PaperDialogFlowListener implements Listener {
         loginResponse.completeOnTimeout(
             messages.retrieveSingle(playerName, MessageKey.LOGIN_TIMEOUT_ERROR), timeoutSeconds, TimeUnit.SECONDS);
         pendingLoginResponses.put(playerId, loginResponse);
+        preJoinDialogService.registerPreJoinFuture(playerName.toLowerCase(java.util.Locale.ROOT), playerId, loginResponse);
 
         connection.getAudience().showDialog(
             PaperDialogHelper.createPreJoinLoginDialog(dialogWindowService.createPreJoinLoginDialog(playerName)));
         String kickMessage = loginResponse.join();
         pendingLoginResponses.remove(playerId);
+        preJoinDialogService.unregisterPreJoinFuture(playerId);
         connection.getAudience().closeDialog();
 
         if (kickMessage != null) {

@@ -223,6 +223,25 @@ public class AsynchronousJoinTest {
     }
 
     @Test
+    public void shouldForceLoginPlayerApprovedViaPreJoinDialog() {
+        // given
+        Player player = mockPlayer("Bobby");
+        setUpRegisteredJoin(player);
+        java.util.UUID playerId = java.util.UUID.randomUUID();
+        given(player.getUniqueId()).willReturn(playerId);
+        given(preJoinDialogService.consumePendingForceLogin(playerId)).willReturn(true);
+
+        // when
+        asynchronousJoin.processJoin(player);
+
+        // then
+        verify(limboService).createLimboPlayer(player, true);
+        verify(asynchronousLogin).forceLogin(player);
+        verify(asynchronousLogin, never()).login(eq(player), any());
+        verify(dialogAdapter, never()).showLoginDialog(eq(player), any());
+    }
+
+    @Test
     public void shouldSkipPostJoinDialogWhenPreJoinDialogWasDeferred() {
         // given
         Player player = mockPlayer("Bobby");

@@ -126,6 +126,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
         PreJoinDialogService.PendingRegistration pendingRegistration =
             preJoinDialogService.consumePendingRegistration(playerId);
         boolean shouldSkipPostJoinDialog = preJoinDialogService.consumeSkipPostJoinDialog(playerId);
+        boolean pendingForceLogin = preJoinDialogService.consumePendingForceLogin(playerId);
 
         if (!validationService.fulfillsNameRestrictions(player)) {
             handlePlayerWithUnmetNameRestriction(player, ip);
@@ -200,7 +201,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             return;
         }
 
-        processJoinSync(player, isAuthAvailable, pendingLoginPassword, pendingRegistration, shouldSkipPostJoinDialog);
+        processJoinSync(player, isAuthAvailable, pendingLoginPassword, pendingRegistration, shouldSkipPostJoinDialog, pendingForceLogin);
     }
 
     private void handlePlayerWithUnmetNameRestriction(Player player, String ip) {
@@ -220,7 +221,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
      */
     private void processJoinSync(Player player, boolean isAuthAvailable, String pendingLoginPassword,
                                  PreJoinDialogService.PendingRegistration pendingRegistration,
-                                 boolean shouldSkipPostJoinDialog) {
+                                 boolean shouldSkipPostJoinDialog, boolean pendingForceLogin) {
         int registrationTimeout = service.getProperty(
             isAuthAvailable ? RestrictionSettings.LOGIN_TIMEOUT : RestrictionSettings.REGISTER_TIMEOUT
         ) * TICKS_PER_SECOND;
@@ -244,6 +245,10 @@ public class AsynchronousJoin implements AsynchronousProcess {
             }
             if (pendingLoginPassword != null) {
                 bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.login(player, pendingLoginPassword));
+                return;
+            }
+            if (pendingForceLogin) {
+                bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
                 return;
             }
             if (!shouldSkipPostJoinDialog
