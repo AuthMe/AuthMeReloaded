@@ -7,6 +7,8 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.listener.packetevents.PacketEventsListenerRegistry;
 import fr.xephi.authme.service.CancellableTask;
+import fr.xephi.authme.service.PendingPremiumCache;
+import fr.xephi.authme.service.PremiumLoginVerifier;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -130,6 +132,30 @@ public abstract class AbstractSpigotPlatformAdapter implements PlatformAdapter {
     public void unregisterTabCompleteBlock() {
         if (packetInterceptionAdapter != null) {
             packetInterceptionAdapter.unregisterTabCompleteBlock();
+        }
+    }
+
+    @Override
+    public void registerPremiumVerification(DataSource dataSource, PremiumLoginVerifier verifier,
+                                            PendingPremiumCache pendingPremiumCache) {
+        getOrCreatePacketInterceptionAdapter()
+            .registerPremiumVerification(dataSource, verifier, pendingPremiumCache);
+    }
+
+    @Override
+    public void unregisterPremiumVerification() {
+        if (packetInterceptionAdapter != null) {
+            packetInterceptionAdapter.unregisterPremiumVerification();
+        }
+    }
+
+    @Override
+    public boolean isProxyForwardingEnabled() {
+        try {
+            return Bukkit.getServer().spigot().getConfig()
+                .getBoolean("settings.bungeecord", false);
+        } catch (Exception ignored) {
+            return false;
         }
     }
 

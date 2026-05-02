@@ -49,6 +49,10 @@ import fr.xephi.authme.command.executable.totp.TotpBaseCommand;
 import fr.xephi.authme.command.executable.totp.TotpCodeCommand;
 import fr.xephi.authme.command.executable.unregister.UnregisterCommand;
 import fr.xephi.authme.command.executable.verification.VerificationCommand;
+import fr.xephi.authme.command.executable.authme.SetFreemiumAdminCommand;
+import fr.xephi.authme.command.executable.authme.SetPremiumAdminCommand;
+import fr.xephi.authme.command.executable.premium.PremiumCommand;
+import fr.xephi.authme.command.executable.premium.FreemiumCommand;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.DebugSectionPermissions;
 import fr.xephi.authme.permission.PlayerPermission;
@@ -169,8 +173,29 @@ public class CommandInitializer {
             .executableCommand(VerificationCommand.class)
             .register();
 
+        // Register the /premium command
+        CommandDescription premiumBase = CommandDescription.builder()
+            .parent(null)
+            .labels("premium")
+            .description("Enable premium mode")
+            .detailedDescription("Enables premium mode: skip authentication with a verified Mojang account.")
+            .permission(PlayerPermission.USE_PREMIUM)
+            .executableCommand(PremiumCommand.class)
+            .register();
+
+        // Register the /freemium command
+        CommandDescription freemiumBase = CommandDescription.builder()
+            .parent(null)
+            .labels("freemium")
+            .description("Disable premium mode")
+            .detailedDescription("Disables premium mode and restores password-based authentication.")
+            .permission(PlayerPermission.USE_FREEMIUM)
+            .executableCommand(FreemiumCommand.class)
+            .register();
+
         List<CommandDescription> baseCommands = ImmutableList.of(authMeBase, emailBase, loginBase, logoutBase,
-            registerBase, unregisterBase, changePasswordBase, totpBase, captchaBase, verificationBase);
+            registerBase, unregisterBase, changePasswordBase, totpBase, captchaBase, verificationBase,
+            premiumBase, freemiumBase);
 
         setHelpOnAllBases(baseCommands);
         commands = baseCommands;
@@ -466,6 +491,26 @@ public class CommandInitializer {
             .detailedDescription("Shows the last players that have logged in.")
             .permission(AdminPermission.SEE_RECENT_PLAYERS)
             .executableCommand(RecentPlayersCommand.class)
+            .register();
+
+        CommandDescription.builder()
+            .parent(authmeBase)
+            .labels("premium", "setpremium")
+            .description("Enable premium for a player")
+            .detailedDescription("Enables premium mode for the specified player.")
+            .withArgument("player", "Player name", MANDATORY)
+            .permission(AdminPermission.SET_PREMIUM)
+            .executableCommand(SetPremiumAdminCommand.class)
+            .register();
+
+        CommandDescription.builder()
+            .parent(authmeBase)
+            .labels("freemium", "setfreemium")
+            .description("Disable premium for a player")
+            .detailedDescription("Disables premium mode for the specified player.")
+            .withArgument("player", "Player name", MANDATORY)
+            .permission(AdminPermission.SET_FREEMIUM)
+            .executableCommand(SetFreemiumAdminCommand.class)
             .register();
 
         CommandDescription.builder()

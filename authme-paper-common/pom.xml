@@ -61,5 +61,10 @@
             <artifactId>hamcrest</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>ch.jalu</groupId>
+            <artifactId>datasourcecolumns</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

@@ -216,3 +216,25 @@ admin:
         first_set_fail: '&cSetFirstSpawn 失敗，請重試。'
         not_defined: '&c出生失敗，請嘗試定義出生點。'
         first_not_defined: '&c第一出生失敗，請嘗試定義第一出生點。'
+
+# 正版模式
+premium:
+  feature_disabled: '&c此伺服器未啟用正版模式。'
+  account_not_found: '&c找不到與您使用者名稱對應的正版 Minecraft 帳號。'
+  already_enabled: '&e您的帳號已啟用正版模式。'
+  enable_success: '&2正版模式已啟用！登入時將不再需要進行身份驗證。'
+  not_enabled: '&e您的帳號未啟用正版模式。'
+  disable_success: '&2正版模式已停用。您將需要重新進行身份驗證。'
+  error: '&c驗證您的正版狀態時發生錯誤。請稍後再試。'
+  admin:
+    not_registered: '&c%name 未註冊。'
+    already_enabled: '&e%name 的正版模式已啟用。'
+    account_not_found: '&c找不到 %name 的 Mojang 帳號。'
+    enable_success: '&2%name 的正版模式已啟用。'
+    not_enabled: '&e%name 的正版模式未啟用。'
+    disable_success: '&2%name 的正版模式已停用。'
+    impostor_kicked: '&e以 %name 身份連線的玩家 UUID 不符，已被踢出。'
+    kick_reason: '&c您帳號的正版設定已被管理員更改。請重新連線。'
+    pending: '&e正在等待 %name 的正版驗證。他們必須重新連線以確認 Mojang 帳號的所有權。'
+  pending_kick: '&e已請求正版驗證。請重新連線以確認您的 Mojang 帳號所有權。'
+  pending_fail: '&c正版驗證失敗。請使用密碼登入。'

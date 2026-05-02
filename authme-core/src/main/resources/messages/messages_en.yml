@@ -212,3 +212,25 @@ admin:
     first_set_fail: '&cSetFirstSpawn has failed, please retry.'
     not_defined: '&cSpawn has failed, please try to define the spawn.'
     first_not_defined: '&cFirst spawn has failed, please try to define the first spawn.'
+
+# Premium mode
+premium:
+  feature_disabled: '&cPremium mode is not enabled on this server.'
+  account_not_found: '&cNo Mojang account found for your username.'
+  already_enabled: '&ePremium mode is already enabled for your account.'
+  enable_success: '&2Premium mode enabled! You will no longer need to authenticate on login.'
+  not_enabled: '&ePremium mode is not enabled for your account.'
+  disable_success: '&2Premium mode disabled. You will need to authenticate again.'
+  error: '&cAn error occurred while verifying your premium status. Please try again later.'
+  admin:
+    not_registered: '&c%name is not registered.'
+    already_enabled: '&ePremium mode is already enabled for %name.'
+    account_not_found: '&cNo Mojang account found for %name.'
+    enable_success: '&2Premium mode enabled for %name.'
+    not_enabled: '&ePremium mode is not enabled for %name.'
+    disable_success: '&2Premium mode disabled for %name.'
+    impostor_kicked: '&eA player online as %name had a mismatched UUID and has been kicked.'
+    kick_reason: '&cPremium settings for your account have been changed by an admin. Please reconnect.'
+    pending: '&ePremium verification pending for %name. They must reconnect to confirm ownership of the Mojang account.'
+  pending_kick: '&ePremium verification requested. Please reconnect to confirm ownership of your Mojang account.'
+  pending_fail: '&cPremium verification failed. Please log in with your password.'

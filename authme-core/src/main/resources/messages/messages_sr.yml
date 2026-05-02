@@ -214,3 +214,25 @@ admin:
         first_set_fail: '&cSetFirstSpawn has failed, please retry.'
         not_defined: '&cSpawn has failed, please try to define the spawn.'
         first_not_defined: '&cFirst spawn has failed, please try to define the first spawn.'
+
+# Премиум режим
+premium:
+  feature_disabled: '&cПремиум режим није омогућен на овом серверу.'
+  account_not_found: '&cНије пронађен Minecraft премиум налог за ваше корисничко име.'
+  already_enabled: '&eПремиум режим је већ омогућен за ваш налог.'
+  enable_success: '&2Премиум режим омогућен! Више нећете морати да се аутентификујете при пријави.'
+  not_enabled: '&eПремиум режим није омогућен за ваш налог.'
+  disable_success: '&2Премиум режим онемогућен. Морате поново да се аутентификујете.'
+  error: '&cДошло је до грешке при провери вашег премиум статуса. Покушајте поново касније.'
+  admin:
+    not_registered: '&c%name није регистрован.'
+    already_enabled: '&eПремиум режим је већ омогућен за %name.'
+    account_not_found: '&cMojang налог за %name није пронађен.'
+    enable_success: '&2Премиум режим омогућен за %name.'
+    not_enabled: '&eПремиум режим није омогућен за %name.'
+    disable_success: '&2Премиум режим онемогућен за %name.'
+    impostor_kicked: '&eИграч повезан као %name имао је неподударајући UUID и избачен је.'
+    kick_reason: '&cПремиум подешавања вашег налога је променио администратор. Поново се повежите.'
+    pending: '&eПремиум верификација чека за %name. Морају се поново повезати да потврде власништво над Mojang налогом.'
+  pending_kick: '&eЗатражена је премиум верификација. Поново се повежите да потврдите власништво над вашим Mojang налогом.'
+  pending_fail: '&cПремиум верификација није успела. Молимо пријавите се лозинком.'

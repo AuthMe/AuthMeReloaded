@@ -213,3 +213,25 @@ admin:
     first_set_fail: '&cSetFirstSpawn が失敗しました。再試行してください。'
     not_defined: '&cスポーンに失敗しました。スポーンを定義してください。'
     first_not_defined: '&c最初のスポーンに失敗しました。最初のスポーンを定義してください。'
+
+# プレミアムモード
+premium:
+  feature_disabled: '&cプレミアムモードはこのサーバーで有効になっていません。'
+  account_not_found: '&cあなたのユーザー名に対応するMinecraftプレミアムアカウントが見つかりませんでした。'
+  already_enabled: '&eプレミアムモードはすでにあなたのアカウントで有効です。'
+  enable_success: '&2プレミアムモードが有効になりました！ログイン時に認証する必要はなくなります。'
+  not_enabled: '&eプレミアムモードはあなたのアカウントで有効になっていません。'
+  disable_success: '&2プレミアムモードが無効になりました。再度認証が必要になります。'
+  error: '&cプレミアムステータスの確認中にエラーが発生しました。後でもう一度お試しください。'
+  admin:
+    not_registered: '&c%name は登録されていません。'
+    already_enabled: '&eプレミアムモードはすでに %name で有効です。'
+    account_not_found: '&c%name のMojangアカウントが見つかりませんでした。'
+    enable_success: '&2%name のプレミアムモードが有効になりました。'
+    not_enabled: '&eプレミアムモードは %name で有効になっていません。'
+    disable_success: '&2%name のプレミアムモードが無効になりました。'
+    impostor_kicked: '&e%name として接続していたプレイヤーのUUIDが一致せず、キックされました。'
+    kick_reason: '&cあなたのアカウントのプレミアム設定が管理者によって変更されました。再接続してください。'
+    pending: '&e%name のプレミアム確認が保留中です。Mojang アカウントの所有権を確認するために再接続する必要があります。'
+  pending_kick: '&eプレミアム確認が要求されました。Mojang アカウントの所有権を確認するために再接続してください。'
+  pending_fail: '&cプレミアム確認に失敗しました。パスワードでログインしてください。'
