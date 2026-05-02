@@ -129,14 +129,19 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
 
     private void performLogin(String name) {
         logger.debug("Received perform.login request for " + name);
+        // Always queue in the proxy session manager so processJoin can consume it even when
+        // the player is already online (PlayerJoinEvent fires before ServerSwitchEvent on the
+        // proxy, so processJoin may run before perform.login arrives at this backend).
+        proxySessionManager.processProxySessionMessage(name);
         Player player = bukkitService.getPlayerExact(name);
         if (player != null && player.isOnline()) {
+            // Player is already online: also drive the login directly in case processJoin
+            // has already run past the proxy-session check and created a limbo player.
             management.forceLoginFromProxy(player);
             logger.debug("Sending auto-login ACK for " + player.getName());
             bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.PERFORM_LOGIN_ACK);
             logger.info(player.getName() + " has been automatically logged in via proxy request.");
         } else {
-            proxySessionManager.processProxySessionMessage(name);
             logger.info(name + " is not yet online; queued for auto-login when they connect.");
         }
     }

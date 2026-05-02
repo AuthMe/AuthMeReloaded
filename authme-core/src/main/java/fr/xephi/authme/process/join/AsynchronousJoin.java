@@ -176,7 +176,10 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 // Run commands
                 bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player,
                     () -> commandManager.runCommandsOnSessionLogin(player));
-                bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
+                // Use forceLoginFromProxy (quiet=true, no BungeeCord redirect) so that if
+                // BungeeReceiver.performLogin() concurrently already completed the login, this
+                // call is a no-op rather than sending an "already logged in" error.
+                bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLoginFromProxy(player));
                 logger.info("The user " + player.getName() + " has been automatically logged in, "
                     + "as present in autologin queue.");
                 return;
