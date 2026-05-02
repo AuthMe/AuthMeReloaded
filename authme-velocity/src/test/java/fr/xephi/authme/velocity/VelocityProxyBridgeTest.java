@@ -36,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -188,7 +189,7 @@ class VelocityProxyBridgeTest {
         VelocityProxyBridge bridge = new VelocityProxyBridge(
             proxyServer, logger, new VelocityProxyConfiguration(Set.of("lobby"), false, true,
                 "Authentication required.", true, true, "limbo", true,
-                Set.of("/login", "/register"), true, ""),
+                Set.of("/login", "/register"), true, "", ""),
             new VelocityAuthenticationStore());
         bridge.onPluginMessage(pluginMessageEvent);
 
@@ -432,7 +433,7 @@ class VelocityProxyBridgeTest {
     void shouldNotBlockCommandIfCommandsRequireAuthIsDisabled() {
         VelocityProxyConfiguration config = new VelocityProxyConfiguration(
             Set.of("lobby"), false, true, "Authentication required.", false, false, "",
-            false, Set.of("/login"), true, "");
+            false, Set.of("/login"), true, "", "");
 
         VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, config, new VelocityAuthenticationStore());
         bridge.onCommandExecute(commandEvent);
@@ -504,7 +505,7 @@ class VelocityProxyBridgeTest {
     void shouldNotBlockChatIfChatRequiresAuthIsDisabled() {
         VelocityProxyConfiguration config = new VelocityProxyConfiguration(
             Set.of("lobby"), false, true, "Authentication required.", false, false, "",
-            true, Set.of("/login"), false, "");
+            true, Set.of("/login"), false, "", "");
 
         VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, config, new VelocityAuthenticationStore());
         bridge.onPlayerChat(chatEvent);
@@ -512,11 +513,61 @@ class VelocityProxyBridgeTest {
         verify(chatEvent, never()).setResult(any());
     }
 
+    @Test
+    void shouldUpdatePremiumSetAfterReceivingAllChunks() {
+        given(pluginMessageEvent.getResult()).willReturn(PluginMessageEvent.ForwardResult.forward());
+        given(pluginMessageEvent.getIdentifier()).willReturn(VelocityProxyBridge.AUTHME_CHANNEL);
+        given(pluginMessageEvent.getSource()).willReturn(sourceConnection);
+        given(sourceConnection.getServer()).willReturn(authServer);
+        given(authServer.getServerInfo()).willReturn(authServerInfo);
+        given(authServerInfo.getName()).willReturn("lobby");
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+
+        given(pluginMessageEvent.getData()).willReturn(createChunkPayload(0, false, "alice,bob"));
+        bridge.onPluginMessage(pluginMessageEvent);
+        given(pluginMessageEvent.getData()).willReturn(createChunkPayload(1, true, "charlie"));
+        bridge.onPluginMessage(pluginMessageEvent);
+
+        com.velocitypowered.api.event.connection.PreLoginEvent preLoginEvent =
+            mock(com.velocitypowered.api.event.connection.PreLoginEvent.class);
+        given(preLoginEvent.getUsername()).willReturn("alice");
+        bridge.onPreLogin(preLoginEvent);
+        verify(preLoginEvent).setResult(any());
+    }
+
+    @Test
+    void shouldNotUpdatePremiumSetOnPartialChunkOnly() {
+        given(pluginMessageEvent.getResult()).willReturn(PluginMessageEvent.ForwardResult.forward());
+        given(pluginMessageEvent.getIdentifier()).willReturn(VelocityProxyBridge.AUTHME_CHANNEL);
+        given(pluginMessageEvent.getSource()).willReturn(sourceConnection);
+        given(sourceConnection.getServer()).willReturn(authServer);
+        given(authServer.getServerInfo()).willReturn(authServerInfo);
+        given(authServerInfo.getName()).willReturn("lobby");
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+
+        // Only first chunk (not last) — set must not be updated yet
+        given(pluginMessageEvent.getData()).willReturn(createChunkPayload(0, false, "alice,bob"));
+        bridge.onPluginMessage(pluginMessageEvent);
+
+        com.velocitypowered.api.event.connection.PreLoginEvent preLoginEvent =
+            mock(com.velocitypowered.api.event.connection.PreLoginEvent.class);
+        given(preLoginEvent.getUsername()).willReturn("alice");
+        bridge.onPreLogin(preLoginEvent);
+        verify(preLoginEvent, never()).setResult(any());
+    }
+
+    private static byte[] createChunkPayload(int seq, boolean last, String csv) {
+        ByteArrayDataOutput output = ByteStreams.newDataOutput();
+        output.writeUTF("premium.list.chunk");
+        output.writeUTF(seq + ":" + (last ? "1" : "0") + ":" + csv);
+        return output.toByteArray();
+    }
+
     private static VelocityProxyConfiguration createConfiguration() {
         return new VelocityProxyConfiguration(Set.of("lobby"), false, true,
             "Authentication required.", true, false, "", true,
             Set.of("/login", "/register", "/l", "/reg", "/email", "/captcha", "/2fa", "/totp", "/log"),
-            true, "test-secret");
+            true, "", "test-secret");
     }
 
     private static byte[] createAuthMePayload(String typeId, String playerName) {

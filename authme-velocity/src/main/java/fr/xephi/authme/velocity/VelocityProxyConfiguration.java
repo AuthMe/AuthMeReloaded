@@ -23,6 +23,7 @@ final class VelocityProxyConfiguration {
     private final boolean commandsRequireAuth;
     private final Set<String> commandWhitelist;
     private final boolean chatRequiresAuth;
+    private final String loginServer;
     private final String sharedSecret;
 
     VelocityProxyConfiguration(Set<String> authServers, boolean allServersAreAuthServers,
@@ -30,7 +31,7 @@ final class VelocityProxyConfiguration {
                                boolean autoLoginEnabled, boolean sendOnLogoutEnabled,
                                String sendOnLogoutTarget, boolean commandsRequireAuth,
                                Set<String> commandWhitelist, boolean chatRequiresAuth,
-                               String sharedSecret) {
+                               String loginServer, String sharedSecret) {
         this.authServers = authServers;
         this.allServersAreAuthServers = allServersAreAuthServers;
         this.serverSwitchRequiresAuth = serverSwitchRequiresAuth;
@@ -41,6 +42,7 @@ final class VelocityProxyConfiguration {
         this.commandsRequireAuth = commandsRequireAuth;
         this.commandWhitelist = commandWhitelist;
         this.chatRequiresAuth = chatRequiresAuth;
+        this.loginServer = normalizeServerName(loginServer);
         this.sharedSecret = sharedSecret;
     }
 
@@ -56,6 +58,7 @@ final class VelocityProxyConfiguration {
             settingsManager.getProperty(VelocityConfigProperties.COMMANDS_REQUIRE_AUTH),
             normalizeCommandAliases(settingsManager.getProperty(VelocityConfigProperties.COMMANDS_WHITELIST)),
             settingsManager.getProperty(VelocityConfigProperties.CHAT_REQUIRES_AUTH),
+            settingsManager.getProperty(VelocityConfigProperties.LOGIN_SERVER),
             settingsManager.getProperty(VelocityConfigProperties.PROXY_SHARED_SECRET));
     }
 
@@ -93,6 +96,10 @@ final class VelocityProxyConfiguration {
 
     boolean chatRequiresAuth() {
         return chatRequiresAuth;
+    }
+
+    String loginServer() {
+        return loginServer;
     }
 
     String sharedSecret() {

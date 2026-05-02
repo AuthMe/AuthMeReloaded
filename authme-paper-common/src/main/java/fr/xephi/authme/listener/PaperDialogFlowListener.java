@@ -16,8 +16,10 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.DialogWindowService;
 import fr.xephi.authme.service.PreJoinDialogService;
+import fr.xephi.authme.service.PremiumLoginVerifier;
 import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.settings.properties.PremiumSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import io.papermc.paper.connection.PlayerConfigurationConnection;
@@ -82,6 +84,9 @@ public class PaperDialogFlowListener implements Listener {
     @Inject
     private ProxySessionManager proxySessionManager;
 
+    @Inject
+    private PremiumLoginVerifier premiumLoginVerifier;
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerConfigure(AsyncPlayerConnectionConfigureEvent event) {
         if (!commonService.getProperty(RegistrationSettings.USE_PREJOIN_DIALOG_UI)) {
@@ -111,6 +116,10 @@ public class PaperDialogFlowListener implements Listener {
 
         PlayerAuth auth = dataSource.getAuth(normalizedName);
         if (auth != null) {
+            if (shouldSkipPreJoinDialogForPremium(auth, playerName, playerId)) {
+                preJoinDialogService.markSkipPostJoinDialog(playerId);
+                return;
+            }
             handleBlockingLoginDialog(connection, playerId, playerName);
         } else if (commonService.getProperty(RegistrationSettings.FORCE)) {
             RegistrationType registrationType = commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE);
@@ -294,6 +303,26 @@ public class PaperDialogFlowListener implements Listener {
         if (registerResponse != null) {
             registerResponse.complete(kickMessage);
         }
+    }
+
+    private boolean shouldSkipPreJoinDialogForPremium(PlayerAuth auth, String playerName, UUID playerId) {
+        if (!commonService.getProperty(PremiumSettings.ENABLE_PREMIUM) || !auth.isPremium()) {
+            return false;
+        }
+        if (playerId != null && playerId.version() == 4) {
+            // UUID v4: Mojang UUID already in the profile (online-mode or proxy forwarded it).
+            return playerId.equals(auth.getPremiumUuid());
+        }
+        // UUID v3 (offline): check if PacketEvents has already completed verification.
+        UUID verifiedUuid = premiumLoginVerifier.getVerifiedUuid(playerName);
+        if (verifiedUuid != null) {
+            return verifiedUuid.equals(auth.getPremiumUuid());
+        }
+        // UUID is still offline at the configure phase but the player is enrolled as premium.
+        // Proxy UUID forwarding may not have been applied yet — skip the blocking pre-join dialog
+        // and let AsynchronousJoin.canBypassWithPremium() do the definitive check once the player
+        // has fully joined and player.getUniqueId() reflects the proxy-forwarded Mojang UUID.
+        return true;
     }
 
     // MC 1.21.6 (protocol 771) introduced the dialog / custom-click packets required for pre-join dialogs

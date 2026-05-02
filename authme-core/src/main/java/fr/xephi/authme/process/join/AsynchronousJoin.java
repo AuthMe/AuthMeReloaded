@@ -2,6 +2,7 @@ package fr.xephi.authme.process.join;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.ProxySessionManager;
+import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
@@ -22,7 +23,10 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.DialogStateService;
 import fr.xephi.authme.service.DialogWindowService;
+import fr.xephi.authme.service.PendingPremiumCache;
 import fr.xephi.authme.service.PreJoinDialogService;
+import fr.xephi.authme.service.PremiumLoginVerifier;
+import fr.xephi.authme.service.PremiumService;
 import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.ValidationService;
@@ -31,6 +35,7 @@ import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.WelcomeMessageConfiguration;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.settings.properties.PremiumSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.InternetProtocolUtils;
@@ -110,6 +115,15 @@ public class AsynchronousJoin implements AsynchronousProcess {
     @Inject
     private PreJoinDialogService preJoinDialogService;
 
+    @Inject
+    private PremiumLoginVerifier premiumLoginVerifier;
+
+    @Inject
+    private PendingPremiumCache pendingPremiumCache;
+
+    @Inject
+    private PremiumService premiumService;
+
     AsynchronousJoin() {
     }
 
@@ -164,13 +178,16 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 }
             }
 
-            // Session logic
-            if (sessionService.canResumeSession(player)) {
-                service.send(player, MessageKey.SESSION_RECONNECTION);
-                // Run commands
-                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player,
-                    () -> commandManager.runCommandsOnSessionLogin(player));
-                bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
+            // Premium players are always verified by Mojang — skip the session mechanism entirely,
+            // which would send a misleading SESSION_RECONNECTION message and run session commands.
+            if (canBypassWithPremium(player)) {
+                // Premium bypass: player has a verified Mojang UUID matching the connecting player's UUID
+                if (bungeeSender.isEnabled()) {
+                    // Proxy handles routing; do not attempt backend-side BungeeCord redirect
+                    bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLoginFromProxy(player));
+                } else {
+                    bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
+                }
                 return;
             } else if (proxySessionManager.shouldResumeSession(name)) {
                 service.send(player, MessageKey.SESSION_RECONNECTION);
@@ -183,6 +200,13 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLoginFromProxy(player));
                 logger.info("The user " + player.getName() + " has been automatically logged in, "
                     + "as present in autologin queue.");
+                return;
+            } else if (sessionService.canResumeSession(player)) {
+                service.send(player, MessageKey.SESSION_RECONNECTION);
+                // Run commands
+                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player,
+                    () -> commandManager.runCommandsOnSessionLogin(player));
+                bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
                 return;
             }
         } else if (!service.getProperty(RegistrationSettings.FORCE) && pendingRegistration == null) {
@@ -198,6 +222,13 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 bukkitService.scheduleSyncDelayedTask(player, () ->
                     bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.LOGIN), 5L);
             }
+            return;
+        }
+
+        // Guard: a proxy-initiated forceLoginFromProxy() may have already authenticated the player
+        // (if the perform.login message arrived and was processed before this async task completes).
+        // Scheduling a limbo in that case would freeze the player permanently.
+        if (playerCache.isAuthenticated(name)) {
             return;
         }
 
@@ -227,6 +258,10 @@ public class AsynchronousJoin implements AsynchronousProcess {
         ) * TICKS_PER_SECOND;
 
         bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player, () -> {
+            // Guard: proxy login may have completed between when this task was scheduled and now
+            if (playerCache.isAuthenticated(player.getName())) {
+                return;
+            }
             limboService.createLimboPlayer(player, isAuthAvailable);
 
             player.setNoDamageTicks(registrationTimeout);
@@ -311,6 +346,56 @@ public class AsynchronousJoin implements AsynchronousProcess {
             return false;
         }
         return true;
+    }
+
+    private boolean canBypassWithPremium(Player player) {
+        if (!service.getProperty(PremiumSettings.ENABLE_PREMIUM)) {
+            return false;
+        }
+        String name = player.getName();
+        PlayerAuth auth = database.getAuth(name.toLowerCase(Locale.ROOT));
+        if (auth == null) {
+            return false;
+        }
+
+        if (!auth.isPremium()) {
+            // Check for a pending premium verification (player ran /premium and was asked to reconnect).
+            UUID pendingUuid = pendingPremiumCache.getPendingUuid(name);
+            if (pendingUuid == null) {
+                return false;
+            }
+            UUID playerId = player.getUniqueId();
+            UUID confirmedUuid;
+            if (playerId.version() == 4) {
+                // Proxy already performed Mojang authentication — UUID v4 is the confirmed Mojang UUID.
+                confirmedUuid = playerId.equals(pendingUuid) ? playerId : null;
+            } else {
+                // No proxy: require cryptographic session verification via PacketEvents.
+                UUID verified = premiumLoginVerifier.getVerifiedUuid(name);
+                confirmedUuid = (verified != null && verified.equals(pendingUuid)) ? verified : null;
+            }
+
+            pendingPremiumCache.removePending(name);
+
+            if (confirmedUuid != null) {
+                premiumService.finalizePendingPremium(player, confirmedUuid);
+                return true;
+            } else {
+                bungeeSender.sendPremiumUnset(name);
+                service.send(player, MessageKey.PREMIUM_PENDING_FAIL);
+                return false;
+            }
+        }
+
+        UUID playerId = player.getUniqueId();
+        if (playerId.version() == 4) {
+            // UUID v4 = Mojang online UUID (online-mode server or proxy forwarding): compare directly.
+            // Security relies on the backend port being firewalled to only accept proxy connections.
+            return playerId.equals(auth.getPremiumUuid());
+        }
+        // UUID v3 = Bukkit offline UUID: require cryptographic session verification via PacketEvents.
+        UUID verifiedUuid = premiumLoginVerifier.getVerifiedUuid(name);
+        return verifiedUuid != null && verifiedUuid.equals(auth.getPremiumUuid());
     }
 
     private int countOnlinePlayersByIp(String ip) {

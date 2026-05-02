@@ -4,9 +4,12 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.data.ProxySessionManager;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.HashUtils;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.PendingPremiumCache;
+import fr.xephi.authme.service.PremiumService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import org.bukkit.Server;
@@ -47,6 +50,15 @@ class BungeeReceiverTest {
     private BungeeSender bungeeSender;
 
     @Mock
+    private DataSource dataSource;
+
+    @Mock
+    private PendingPremiumCache pendingPremiumCache;
+
+    @Mock
+    private PremiumService premiumService;
+
+    @Mock
     private Settings settings;
 
     @Mock
@@ -66,7 +78,7 @@ class BungeeReceiverTest {
         given(settings.getProperty(HooksSettings.BUNGEECORD)).willReturn(true);
         given(messenger.isIncomingChannelRegistered(plugin, "authme:main")).willReturn(false);
 
-        new BungeeReceiver(plugin, bukkitService, proxySessionManager, management, bungeeSender, settings);
+        new BungeeReceiver(plugin, bukkitService, proxySessionManager, management, bungeeSender, dataSource, pendingPremiumCache, premiumService, settings);
 
         verify(messenger).registerIncomingPluginChannel(eq(plugin), eq("authme:main"), any(BungeeReceiver.class));
     }
@@ -77,7 +89,7 @@ class BungeeReceiverTest {
         given(messenger.isIncomingChannelRegistered(plugin, "authme:main")).willReturn(false, true);
 
         BungeeReceiver bungeeReceiver =
-            new BungeeReceiver(plugin, bukkitService, proxySessionManager, management, bungeeSender, settings);
+            new BungeeReceiver(plugin, bukkitService, proxySessionManager, management, bungeeSender, dataSource, pendingPremiumCache, premiumService, settings);
         bungeeReceiver.reload(settings);
 
         verify(messenger).registerIncomingPluginChannel(plugin, "authme:main", bungeeReceiver);
@@ -101,7 +113,7 @@ class BungeeReceiverTest {
         given(bukkitService.getPlayerExact(playerName)).willReturn(player);
 
         BungeeReceiver receiver =
-            new BungeeReceiver(plugin, bukkitService, proxySessionManager, management, bungeeSender, settings);
+            new BungeeReceiver(plugin, bukkitService, proxySessionManager, management, bungeeSender, dataSource, pendingPremiumCache, premiumService, settings);
 
         byte[] payload = buildPerformLoginPayload(playerName, timestamp, hmac);
 
@@ -128,7 +140,7 @@ class BungeeReceiverTest {
         given(bukkitService.getPlayerExact(playerName)).willReturn(null);
 
         BungeeReceiver receiver =
-            new BungeeReceiver(plugin, bukkitService, proxySessionManager, management, bungeeSender, settings);
+            new BungeeReceiver(plugin, bukkitService, proxySessionManager, management, bungeeSender, dataSource, pendingPremiumCache, premiumService, settings);
 
         Player carrier = mock(Player.class);
         byte[] payload = buildPerformLoginPayload(playerName, timestamp, hmac);

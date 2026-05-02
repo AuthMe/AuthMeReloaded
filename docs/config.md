@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Tue Apr 28 23:00:57 CEST 2026. See authme-tools/src/test/java/tools/docs/config/config.tpl.md -->
+<!-- File auto-generated on Sat May 02 03:44:30 CEST 2026. See authme-tools/src/test/java/tools/docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder,
@@ -78,6 +78,9 @@ DataSource:
     mySQLlastlocPitch: pitch
     # Column for storing players uuids (optional)
     mySQLPlayerUUID: ''
+    # Column for storing the Mojang UUID of premium players
+    # (null if premium mode is off for this player)
+    mySQLColumnPremiumUUID: premium_uuid
     # Overrides the size of the DB Connection Pool, default = 10
     poolSize: 10
     # The maximum lifetime of a connection in the pool, default = 1800 seconds
@@ -369,6 +372,15 @@ settings:
     # Do we need to prevent people to login with another case?
     # If Xephi is registered, then Xephi can login, but not XEPHI/xephi/XePhI
     preventOtherCase: true
+    # Enable premium mode: players with an official Minecraft account
+    # can skip password authentication.
+    # Verification method is chosen automatically:
+    #   - online-mode=true: Bukkit already has the Mojang UUID; no PacketEvents needed.
+    #   - offline-mode + proxy: set Hooks.bungeecord=true; UUID is forwarded by proxy.
+    #   - offline-mode, no proxy: PacketEvents required for cryptographic verification.
+    #     Without PacketEvents, premium auto-login is disabled (fail closed).
+    # Players must use /premium to opt in.
+    enablePremium: false
 GroupOptions:
     # Enables switching a player to defined permission groups before they log in.
     # See below for a detailed explanation.
@@ -621,4 +633,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue Apr 28 23:00:57 CEST 2026
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat May 02 03:44:30 CEST 2026

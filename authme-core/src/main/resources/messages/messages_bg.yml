@@ -213,3 +213,25 @@ admin:
         first_set_fail: '&cSetFirstSpawn has failed, please retry.'
         not_defined: '&cSpawn has failed, please try to define the spawn.'
         first_not_defined: '&cFirst spawn has failed, please try to define the first spawn.'
+
+# Режим Premium
+premium:
+    feature_disabled: '&cРежимът Premium не е активиран на този сървър.'
+    account_not_found: '&cНе е намерен премиум Minecraft акаунт за вашето потребителско име.'
+    already_enabled: '&eРежимът Premium вече е активиран за вашия акаунт.'
+    enable_success: '&2Режимът Premium е активиран! Вече няма да е необходимо да се удостоверявате при влизане.'
+    not_enabled: '&eРежимът Premium не е активиран за вашия акаунт.'
+    disable_success: '&2Режимът Premium е деактивиран. Ще трябва отново да се удостоверявате.'
+    error: '&cВъзникна грешка при проверката на вашия Premium статус. Моля, опитайте отново по-късно.'
+    admin:
+        not_registered: '&c%name не е регистриран.'
+        already_enabled: '&eРежимът Premium вече е активиран за %name.'
+        account_not_found: '&cНе е намерен Mojang акаунт за %name.'
+        enable_success: '&2Режимът Premium е активиран за %name.'
+        not_enabled: '&eРежимът Premium не е активиран за %name.'
+        disable_success: '&2Режимът Premium е деактивиран за %name.'
+        impostor_kicked: '&eИграч, влязъл като %name, е имал несъответстващ UUID и е бил изхвърлен.'
+        kick_reason: '&cПремиум настройките на вашия акаунт бяха променени от администратор. Моля, свържете се отново.'
+        pending: '&eПремиум верификацията е в изчакване за %name. Те трябва да се свържат отново, за да потвърдят собствеността на акаунта в Mojang.'
+    pending_kick: '&eПоискана е премиум верификация. Моля, свържете се отново, за да потвърдите собствеността на вашия акаунт в Mojang.'
+    pending_fail: '&cПремиум верификацията не бе успешна. Моля, влезте с вашата парола.'

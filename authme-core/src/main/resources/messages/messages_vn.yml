@@ -215,3 +215,25 @@ admin:
         not_defined: '&cSpawn has failed, please try to define the spawn.'
         first_not_defined: '&cFirst spawn has failed, please try to define the first spawn.'
 
+# Chế độ premium
+premium:
+  feature_disabled: '&cChế độ premium không được bật trên máy chủ này.'
+  account_not_found: '&cKhông tìm thấy tài khoản Minecraft premium nào cho tên người dùng của bạn.'
+  already_enabled: '&eChế độ premium đã được bật cho tài khoản của bạn.'
+  enable_success: '&2Chế độ premium đã được bật! Bạn sẽ không cần xác thực khi đăng nhập nữa.'
+  not_enabled: '&eChế độ premium chưa được bật cho tài khoản của bạn.'
+  disable_success: '&2Chế độ premium đã bị tắt. Bạn sẽ cần xác thực lại.'
+  error: '&cĐã xảy ra lỗi khi xác minh trạng thái premium của bạn. Vui lòng thử lại sau.'
+  admin:
+    not_registered: '&c%name chưa đăng ký.'
+    already_enabled: '&eChế độ premium đã được bật cho %name.'
+    account_not_found: '&cKhông tìm thấy tài khoản Mojang cho %name.'
+    enable_success: '&2Chế độ premium đã được bật cho %name.'
+    not_enabled: '&eChế độ premium chưa được bật cho %name.'
+    disable_success: '&2Chế độ premium đã bị tắt cho %name.'
+    impostor_kicked: '&eMột người chơi kết nối với tên %name có UUID không khớp và đã bị đuổi.'
+    kick_reason: '&cCài đặt premium tài khoản của bạn đã được thay đổi bởi quản trị viên. Vui lòng kết nối lại.'
+    pending: '&eĐang chờ xác minh premium cho %name. Họ phải kết nối lại để xác nhận quyền sở hữu tài khoản Mojang.'
+  pending_kick: '&eĐã yêu cầu xác minh premium. Vui lòng kết nối lại để xác nhận quyền sở hữu tài khoản Mojang của bạn.'
+  pending_fail: '&cXác minh premium thất bại. Vui lòng đăng nhập bằng mật khẩu của bạn.'
+

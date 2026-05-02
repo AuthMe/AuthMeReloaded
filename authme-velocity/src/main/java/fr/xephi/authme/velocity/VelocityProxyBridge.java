@@ -5,7 +5,9 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.velocitypowered.api.event.command.CommandExecuteEvent;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
+import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
+import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
@@ -21,6 +23,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.slf4j.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -41,6 +45,11 @@ final class VelocityProxyBridge {
     private static final String PERFORM_LOGIN_MESSAGE = "perform.login";
     private static final String PERFORM_LOGIN_ACK_MESSAGE = "perform.login.ack";
     private static final String PROXY_STARTED_MESSAGE = "proxy.started";
+    private static final String PREMIUM_SET_MESSAGE = "premium.set";
+    private static final String PREMIUM_UNSET_MESSAGE = "premium.unset";
+    private static final String PREMIUM_LIST_MESSAGE = "premium.list";
+    private static final String PREMIUM_LIST_CHUNK_MESSAGE = "premium.list.chunk";
+    private static final String PREMIUM_PENDING_SET_MESSAGE = "premium.pending.set";
     private static final String PROXY_IDENTITY = "velocity";
     private static final int MAX_RETRIES = 3;
 
@@ -50,6 +59,12 @@ final class VelocityProxyBridge {
     private final VelocityAuthenticationStore authenticationStore;
     private final Map<String, AtomicInteger> pendingAutoLogins = new ConcurrentHashMap<>();
     private final Set<String> notifiedAuthServers = ConcurrentHashMap.newKeySet();
+    private volatile Set<String> premiumUsernames = ConcurrentHashMap.newKeySet();
+    private List<String> premiumListBuffer = new ArrayList<>();
+    // Players with a pending premium verification (ran /premium but not yet confirmed via reconnect)
+    private volatile Set<String> pendingPremiumUsernames = ConcurrentHashMap.newKeySet();
+    // Players whose Mojang UUID was confirmed by the proxy during the login phase (LoginSuccess with UUID v4)
+    private final Set<String> proxyVerifiedPremium = ConcurrentHashMap.newKeySet();
     private final ScheduledExecutorService retryScheduler = Executors.newSingleThreadScheduledExecutor(r -> {
         Thread t = new Thread(r, "authme-velocity-retry");
         t.setDaemon(true);
@@ -62,6 +77,39 @@ final class VelocityProxyBridge {
         this.logger = logger;
         this.configuration = configuration;
         this.authenticationStore = authenticationStore;
+    }
+
+    private void markProxyVerifiedPremium(String normalizedName) {
+        if (proxyVerifiedPremium.add(normalizedName)) {
+            logger.info("Proxy-verified premium: '{}' authenticated online-mode with Mojang", normalizedName);
+        }
+    }
+
+    /**
+     * Records the player as proxy-verified premium when the proxy finished the Mojang authentication
+     * phase in online mode. Called from {@code AuthMeVelocityPlugin#onLogin(LoginEvent)}.
+     */
+    void onLogin(LoginEvent event) {
+        Player player = event.getPlayer();
+        if (!player.isOnlineMode()) {
+            return;
+        }
+        markProxyVerifiedPremium(normalizeName(player.getUsername()));
+    }
+
+    /**
+     * Fallback hook on {@link PostLoginEvent}: if the player has a UUID v4 (Mojang-issued), they
+     * are recorded as proxy-verified premium even if the {@link LoginEvent} listener missed them.
+     *
+     * <p>This is a secondary signal only — the primary gate is the backend's UUID comparison
+     * ({@code verifiedUuid.equals(auth.getPremiumUuid())}), so a fake v4 UUID injected by a
+     * third-party plugin would still be rejected there unless it matches the stored premium UUID.</p>
+     */
+    void onPostLogin(PostLoginEvent event) {
+        Player player = event.getPlayer();
+        if (player.getUniqueId() != null && player.getUniqueId().version() == 4) {
+            markProxyVerifiedPremium(normalizeName(player.getUsername()));
+        }
     }
 
     void reload(VelocityProxyConfiguration configuration) {
@@ -155,6 +203,7 @@ final class VelocityProxyBridge {
                 logger.info("Player {} authenticated on auth server '{}'", parsedMessage.playerName(), serverName);
                 authenticationStore.markAuthenticated(parsedMessage.playerName());
                 sendAutoLoginIfAlreadySwitched(parsedMessage.playerName(), serverConnection.getServer());
+                redirectToLoginServer(parsedMessage.playerName());
             } else if (pendingAutoLogins.containsKey(parsedMessage.playerName())) {
                 // Implicit ACK: login from non-auth server confirms perform.login was processed
                 logger.info("Auto-login confirmed for {} via login from server '{}'",
@@ -172,6 +221,52 @@ final class VelocityProxyBridge {
             logger.info("Auto-login ACK received for {} from server '{}'",
                 parsedMessage.playerName(), serverName);
             cancelPendingLogin(parsedMessage.playerName());
+        } else if (PREMIUM_SET_MESSAGE.equals(parsedMessage.typeId())) {
+            premiumUsernames.add(parsedMessage.playerName());
+            pendingPremiumUsernames.remove(parsedMessage.playerName());
+            logger.debug("Premium enabled for '{}' (proxy cache updated)", parsedMessage.playerName());
+        } else if (PREMIUM_UNSET_MESSAGE.equals(parsedMessage.typeId())) {
+            premiumUsernames.remove(parsedMessage.playerName());
+            pendingPremiumUsernames.remove(parsedMessage.playerName());
+            logger.debug("Premium disabled for '{}' (proxy cache updated)", parsedMessage.playerName());
+        } else if (PREMIUM_PENDING_SET_MESSAGE.equals(parsedMessage.typeId())) {
+            pendingPremiumUsernames.add(parsedMessage.playerName());
+            logger.debug("Pending premium verification started for '{}'", parsedMessage.playerName());
+        } else if (PREMIUM_LIST_MESSAGE.equals(parsedMessage.typeId())) {
+            Set<String> newPremiumSet = ConcurrentHashMap.newKeySet();
+            if (!parsedMessage.playerName().isEmpty()) {
+                for (String name : parsedMessage.playerName().split(",")) {
+                    if (!name.isEmpty()) {
+                        newPremiumSet.add(name.trim());
+                    }
+                }
+            }
+            premiumUsernames = newPremiumSet;
+            logger.info("Premium list received from backend: {} premium player(s)", premiumUsernames.size());
+        } else if (PREMIUM_LIST_CHUNK_MESSAGE.equals(parsedMessage.typeId())) {
+            String[] parts = parsedMessage.playerName().split(":", 3);
+            if (parts.length < 3) {
+                logger.warn("Malformed premium.list.chunk payload: {}", parsedMessage.playerName());
+                return;
+            }
+            if ("0".equals(parts[0])) {
+                premiumListBuffer = new ArrayList<>();
+            }
+            String csv = parts[2];
+            if (!csv.isEmpty()) {
+                for (String name : csv.split(",")) {
+                    if (!name.isEmpty()) {
+                        premiumListBuffer.add(name.trim());
+                    }
+                }
+            }
+            if ("1".equals(parts[1])) {
+                Set<String> newPremiumSet = ConcurrentHashMap.newKeySet();
+                newPremiumSet.addAll(premiumListBuffer);
+                premiumUsernames = newPremiumSet;
+                premiumListBuffer = new ArrayList<>();
+                logger.info("Premium list received from backend: {} premium player(s)", premiumUsernames.size());
+            }
         }
     }
 
@@ -202,9 +297,19 @@ final class VelocityProxyBridge {
 
         String normalizedName = normalizeName(playerName);
 
-        if (!authenticationStore.isAuthenticated(normalizedName)) {
-            logger.debug("Skipping auto-login for {} — not marked as authenticated on the proxy", normalizedName);
+        // Pending players have passed Mojang auth at the proxy, but we must NOT send PERFORM_LOGIN
+        // for them: the backend needs to run canBypassWithPremium() to finalize (persist) the premium
+        // UUID. Only confirmed premium players (premiumUsernames) trigger the auto-login bypass.
+        boolean isPremiumJoin = connectingToAuthServer
+            && proxyVerifiedPremium.contains(normalizedName)
+            && !pendingPremiumUsernames.contains(normalizedName);
+        if (!authenticationStore.isAuthenticated(normalizedName) && !isPremiumJoin) {
+            logger.debug("Skipping auto-login for {} — not authenticated or proxy-verified premium", normalizedName);
             return;
+        }
+        if (isPremiumJoin) {
+            logger.debug("Proxy-verified premium player {} joining auth server — sending perform.login immediately",
+                normalizedName);
         }
 
         Optional<ServerConnection> currentServer = event.getPlayer().getCurrentServer();
@@ -290,6 +395,14 @@ final class VelocityProxyBridge {
         event.setResult(PlayerChatEvent.ChatResult.denied());
     }
 
+    void onPreLogin(com.velocitypowered.api.event.connection.PreLoginEvent event) {
+        String normalizedName = normalizeName(event.getUsername());
+        if (premiumUsernames.contains(normalizedName) || pendingPremiumUsernames.contains(normalizedName)) {
+            event.setResult(com.velocitypowered.api.event.connection.PreLoginEvent.PreLoginComponentResult.forceOnlineMode());
+            logger.debug("Forcing online-mode for premium player '{}'", normalizedName);
+        }
+    }
+
     void onDisconnect(DisconnectEvent event) {
         String normalizedName = normalizeName(event.getPlayer().getUsername());
         if (pendingAutoLogins.containsKey(normalizedName)) {
@@ -300,6 +413,8 @@ final class VelocityProxyBridge {
             logger.debug("Clearing auth state for {} (player disconnected)", normalizedName);
         }
         authenticationStore.clear(event.getPlayer());
+        proxyVerifiedPremium.remove(normalizedName);
+        pendingPremiumUsernames.remove(normalizedName);
     }
 
     void shutdown() {
@@ -399,11 +514,20 @@ final class VelocityProxyBridge {
         try {
             String typeId = input.readUTF();
             if (!LOGIN_MESSAGE.equals(typeId) && !LOGOUT_MESSAGE.equals(typeId)
-                    && !PERFORM_LOGIN_ACK_MESSAGE.equals(typeId)) {
+                    && !PERFORM_LOGIN_ACK_MESSAGE.equals(typeId)
+                    && !PREMIUM_SET_MESSAGE.equals(typeId)
+                    && !PREMIUM_UNSET_MESSAGE.equals(typeId)
+                    && !PREMIUM_LIST_MESSAGE.equals(typeId)
+                    && !PREMIUM_LIST_CHUNK_MESSAGE.equals(typeId)
+                    && !PREMIUM_PENDING_SET_MESSAGE.equals(typeId)) {
                 logger.debug("Ignoring unknown authme:main message type '{}'", typeId);
                 return ParsedMessage.ignored();
             }
-            return new ParsedMessage(typeId, normalizeName(input.readUTF()));
+            // premium.list and premium.list.chunk carry non-player-name data; read as-is
+            String argument = input.readUTF();
+            return new ParsedMessage(typeId,
+                (PREMIUM_LIST_MESSAGE.equals(typeId) || PREMIUM_LIST_CHUNK_MESSAGE.equals(typeId))
+                    ? argument : normalizeName(argument));
         } catch (IllegalStateException e) {
             logger.warn("Received malformed AuthMe plugin message on the authme:main channel");
             return ParsedMessage.ignored();
@@ -419,6 +543,26 @@ final class VelocityProxyBridge {
         output.writeLong(timestamp);
         output.writeUTF(hmac);
         return output.toByteArray();
+    }
+
+    private void redirectToLoginServer(String normalizedPlayerName) {
+        if (configuration.loginServer().isEmpty()) {
+            return;
+        }
+        Optional<Player> playerOpt = proxyServer.getPlayer(normalizedPlayerName);
+        if (playerOpt.isEmpty()) {
+            logger.debug("Cannot redirect {} to loginServer: player no longer on proxy", normalizedPlayerName);
+            return;
+        }
+        Optional<RegisteredServer> targetServer = proxyServer.getServer(configuration.loginServer());
+        if (targetServer.isEmpty()) {
+            logger.warn("loginServer '{}' is not registered on the proxy; cannot redirect {}",
+                configuration.loginServer(), normalizedPlayerName);
+            return;
+        }
+        logger.info("Redirecting {} to login server '{}' after authentication",
+            normalizedPlayerName, configuration.loginServer());
+        playerOpt.get().createConnectionRequest(targetServer.get()).fireAndForget();
     }
 
     private void redirectLoggedOutPlayer(String normalizedPlayerName) {

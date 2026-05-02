@@ -13,6 +13,7 @@ import fr.xephi.authme.process.register.AsyncRegister;
 import fr.xephi.authme.service.PreJoinDialogService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.PremiumLoginVerifier;
 import fr.xephi.authme.service.DialogStateService;
 import fr.xephi.authme.service.DialogWindowService;
 import fr.xephi.authme.service.PluginHookService;
@@ -22,6 +23,7 @@ import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.settings.WelcomeMessageConfiguration;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.settings.properties.PremiumSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.entity.Player;
@@ -92,6 +94,8 @@ public class AsynchronousJoinTest {
     private DialogStateService dialogStateService;
     @Mock
     private PreJoinDialogService preJoinDialogService;
+    @Mock
+    private PremiumLoginVerifier premiumLoginVerifier;
 
     @BeforeAll
     public static void initLogger() {
@@ -103,6 +107,7 @@ public class AsynchronousJoinTest {
         setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
         setBukkitServiceToRunTaskOptionallyAsync(bukkitService);
         setBukkitServiceToRunTaskLater(bukkitService);
+        given(service.getProperty(PremiumSettings.ENABLE_PREMIUM)).willReturn(false);
     }
 
     @Test
@@ -126,7 +131,7 @@ public class AsynchronousJoinTest {
 
     @Test
     public void shouldNotShowLoginDialogForAlreadyAuthenticatedPlayer() {
-        // given
+        // given — player is already authenticated when the sync limbo task fires
         Player player = mockPlayer("Bobby");
         setUpRegisteredJoin(player);
         given(playerCache.isAuthenticated("Bobby")).willReturn(true);
@@ -134,18 +139,23 @@ public class AsynchronousJoinTest {
         // when
         asynchronousJoin.processJoin(player);
 
-        // then
-        verify(limboService).createLimboPlayer(player, true);
+        // then — sync guard detects authenticated state; limbo and dialog are both skipped
+        verify(limboService, never()).createLimboPlayer(eq(player), eq(true));
         verify(dialogAdapter, never()).showLoginDialog(eq(player), any(DialogWindowSpec.class));
     }
 
     @Test
     public void shouldNotShowDelayedDialogIfPlayerGetsAuthenticatedBeforeTaskRuns() {
-        // given
+        // given — player is NOT yet authenticated when the sync guard and dialog-condition run,
+        // but IS authenticated by the time the 1-tick delayed task executes.
+        // Stub sequence (all calls use "Bobby" = player.getName(), not lowercased):
+        //   call 1 → sync guard                 → false (continues to createLimboPlayer)
+        //   call 2 → !isAuthenticated() in cond  → false (condition passes, schedules delayed task)
+        //   call 3 → inside showPostJoinDialog   → true  (dialog suppressed)
         Player player = mockPlayer("Bobby");
         setUpRegisteredJoin(player);
         given(player.isOnline()).willReturn(true);
-        given(playerCache.isAuthenticated("Bobby")).willReturn(false, true);
+        given(playerCache.isAuthenticated("Bobby")).willReturn(false, false, true);
         given(service.getProperty(RegistrationSettings.USE_DIALOG_UI)).willReturn(true);
         given(dialogAdapter.isDialogSupported()).willReturn(true);
         given(dialogWindowService.createLoginDialog(player)).willReturn(createDialogSpec("Login", "Login"));
@@ -160,7 +170,8 @@ public class AsynchronousJoinTest {
         asynchronousJoin.processJoin(player);
         delayedTask.get().run();
 
-        // then
+        // then — limbo was created (player was not authenticated when guard ran),
+        // but dialog was suppressed because player became authenticated before delayed task ran
         verify(limboService).createLimboPlayer(player, true);
         verify(dialogAdapter, never()).showLoginDialog(eq(player), any(DialogWindowSpec.class));
     }
