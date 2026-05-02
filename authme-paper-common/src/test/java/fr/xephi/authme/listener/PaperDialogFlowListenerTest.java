@@ -8,9 +8,15 @@ import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.platform.PaperDialogActionKeys;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
+import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.DialogWindowService;
 import fr.xephi.authme.service.PreJoinDialogService;
+import fr.xephi.authme.service.PremiumLoginVerifier;
 import fr.xephi.authme.service.SessionService;
+import fr.xephi.authme.settings.properties.PremiumSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import io.papermc.paper.connection.PlayerConfigurationConnection;
@@ -286,6 +292,170 @@ public class PaperDialogFlowListenerTest {
         verify(preJoinDialogService).clear(playerId);
         verifyNoInteractions(audience);
         verifyNoInteractions(sessionService);
+    }
+
+    @Test
+    public void shouldSkipPreJoinDialogsForVerifiedPremiumPlayer() throws Exception {
+        PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        CommonService commonService = mock(CommonService.class);
+        PlayerCache playerCache = mock(PlayerCache.class);
+        DataSource dataSource = mock(DataSource.class);
+        PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
+        SessionService sessionService = mock(SessionService.class);
+        ProxySessionManager proxySessionManager = mock(ProxySessionManager.class);
+        PremiumLoginVerifier premiumLoginVerifier = mock(PremiumLoginVerifier.class);
+        setField(listener, "commonService", commonService);
+        setField(listener, "playerCache", playerCache);
+        setField(listener, "dataSource", dataSource);
+        setField(listener, "preJoinDialogService", preJoinDialogService);
+        setField(listener, "sessionService", sessionService);
+        setField(listener, "proxySessionManager", proxySessionManager);
+        setField(listener, "premiumLoginVerifier", premiumLoginVerifier);
+
+        UUID premiumUuid = UUID.randomUUID();
+        // Offline (v3) UUID simulates an offline-mode backend without proxy
+        UUID playerId = UUID.nameUUIDFromBytes("bobby".getBytes());
+        PlayerAuth auth = PlayerAuth.builder()
+            .name("bobby")
+            .password(new HashedPassword("hash"))
+            .premiumUuid(premiumUuid)
+            .build();
+
+        given(commonService.getProperty(RegistrationSettings.USE_PREJOIN_DIALOG_UI)).willReturn(true);
+        given(commonService.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(Set.of());
+        given(commonService.getProperty(PremiumSettings.ENABLE_PREMIUM)).willReturn(true);
+        given(playerCache.isAuthenticated("bobby")).willReturn(false);
+        given(proxySessionManager.shouldResumeSession("bobby")).willReturn(false);
+        given(sessionService.hasValidSession("bobby", null)).willReturn(false);
+        given(dataSource.getAuth("bobby")).willReturn(auth);
+        given(premiumLoginVerifier.getVerifiedUuid("Bobby")).willReturn(premiumUuid);
+
+        PlayerProfile profile = mock(PlayerProfile.class);
+        given(profile.getId()).willReturn(playerId);
+        given(profile.getName()).willReturn("Bobby");
+
+        Audience audience = mock(Audience.class);
+        PlayerConfigurationConnection connection = mock(PlayerConfigurationConnection.class);
+        given(connection.getProfile()).willReturn(profile);
+        given(connection.getAudience()).willReturn(audience);
+
+        AsyncPlayerConnectionConfigureEvent event = mock(AsyncPlayerConnectionConfigureEvent.class);
+        given(event.getConnection()).willReturn(connection);
+
+        listener.onPlayerConfigure(event);
+
+        verify(preJoinDialogService).markSkipPostJoinDialog(playerId);
+        verifyNoInteractions(audience);
+    }
+
+    @Test
+    public void shouldNotSkipPreJoinDialogsForUnverifiedPremiumPlayer() throws Exception {
+        PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        CommonService commonService = mock(CommonService.class);
+        PlayerCache playerCache = mock(PlayerCache.class);
+        DataSource dataSource = mock(DataSource.class);
+        PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
+        SessionService sessionService = mock(SessionService.class);
+        ProxySessionManager proxySessionManager = mock(ProxySessionManager.class);
+        PremiumLoginVerifier premiumLoginVerifier = mock(PremiumLoginVerifier.class);
+        setField(listener, "commonService", commonService);
+        setField(listener, "playerCache", playerCache);
+        setField(listener, "dataSource", dataSource);
+        setField(listener, "preJoinDialogService", preJoinDialogService);
+        setField(listener, "sessionService", sessionService);
+        setField(listener, "proxySessionManager", proxySessionManager);
+        setField(listener, "premiumLoginVerifier", premiumLoginVerifier);
+
+        UUID premiumUuid = UUID.randomUUID();
+        UUID playerId = UUID.randomUUID();
+        PlayerAuth auth = PlayerAuth.builder()
+            .name("bobby")
+            .password(new HashedPassword("hash"))
+            .premiumUuid(premiumUuid)
+            .build();
+
+        given(commonService.getProperty(PremiumSettings.ENABLE_PREMIUM)).willReturn(true);
+        given(dataSource.getAuth("bobby")).willReturn(auth);
+        given(premiumLoginVerifier.getVerifiedUuid("Bobby")).willReturn(null);  // not yet verified
+
+        // UUID v4 that doesn't match stored premium UUID → must return false (impostor or wrong account)
+        assertThat(invokeShouldSkipPreJoinDialogForPremium(listener, auth, "Bobby", playerId), is(false));
+        verify(preJoinDialogService, never()).markSkipPostJoinDialog(playerId);
+    }
+
+    @Test
+    public void shouldSkipPreJoinDialogForPremiumPlayerWithOfflineUuidInProxyMode() throws Exception {
+        // When the PlayerProfile at the configuration phase still has an offline UUID (v3) because
+        // proxy forwarding hasn't been applied yet, the pre-join dialog must be skipped and the
+        // final UUID check deferred to AsynchronousJoin.
+        PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        CommonService commonService = mock(CommonService.class);
+        PremiumLoginVerifier premiumLoginVerifier = mock(PremiumLoginVerifier.class);
+        setField(listener, "commonService", commonService);
+        setField(listener, "premiumLoginVerifier", premiumLoginVerifier);
+
+        UUID premiumUuid = UUID.fromString("12345678-1234-4234-b234-123456789abc"); // v4
+        // UUID v3 = offline player UUID (NameBasedGenerator → md5 variant, version 3)
+        UUID offlineUuid = UUID.fromString("7b6d7e2a-0000-3000-8000-000000000001"); // v3
+        PlayerAuth auth = PlayerAuth.builder()
+            .name("bobby")
+            .password(new HashedPassword("hash"))
+            .premiumUuid(premiumUuid)
+            .build();
+
+        given(commonService.getProperty(PremiumSettings.ENABLE_PREMIUM)).willReturn(true);
+        given(premiumLoginVerifier.getVerifiedUuid("Bobby")).willReturn(null); // PacketEvents not active
+
+        assertThat(invokeShouldSkipPreJoinDialogForPremium(listener, auth, "Bobby", offlineUuid), is(true));
+    }
+
+    @Test
+    public void shouldSkipPreJoinDialogForPremiumPlayerWithMatchingMojangUuidInProxyMode() throws Exception {
+        // When the proxy has already forwarded the Mojang UUID (v4) into the PlayerProfile,
+        // we can verify directly at the pre-join phase.
+        PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        CommonService commonService = mock(CommonService.class);
+        setField(listener, "commonService", commonService);
+
+        UUID premiumUuid = UUID.randomUUID(); // v4 random
+        PlayerAuth auth = PlayerAuth.builder()
+            .name("bobby")
+            .password(new HashedPassword("hash"))
+            .premiumUuid(premiumUuid)
+            .build();
+
+        given(commonService.getProperty(PremiumSettings.ENABLE_PREMIUM)).willReturn(true);
+
+        // Profile already has the Mojang UUID (v4) — verify returns true
+        assertThat(invokeShouldSkipPreJoinDialogForPremium(listener, auth, "Bobby", premiumUuid), is(true));
+    }
+
+    @Test
+    public void shouldNotSkipPreJoinDialogForImpostorWithMismatchedMojangUuidInProxyMode() throws Exception {
+        // An impostor with a different Mojang UUID (v4) must NOT bypass the dialog.
+        PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        CommonService commonService = mock(CommonService.class);
+        setField(listener, "commonService", commonService);
+
+        UUID storedPremiumUuid = UUID.randomUUID(); // v4 — the legitimate player's UUID
+        UUID impostorUuid = UUID.randomUUID();      // v4 — a different Mojang account
+        PlayerAuth auth = PlayerAuth.builder()
+            .name("bobby")
+            .password(new HashedPassword("hash"))
+            .premiumUuid(storedPremiumUuid)
+            .build();
+
+        given(commonService.getProperty(PremiumSettings.ENABLE_PREMIUM)).willReturn(true);
+
+        assertThat(invokeShouldSkipPreJoinDialogForPremium(listener, auth, "Bobby", impostorUuid), is(false));
+    }
+
+    private static boolean invokeShouldSkipPreJoinDialogForPremium(PaperDialogFlowListener listener,
+            PlayerAuth auth, String playerName, UUID playerId) throws ReflectiveOperationException {
+        var method = PaperDialogFlowListener.class
+            .getDeclaredMethod("shouldSkipPreJoinDialogForPremium", PlayerAuth.class, String.class, UUID.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(listener, auth, playerName, playerId);
     }
 
     private static void setField(Object target, String fieldName, Object value) throws ReflectiveOperationException {

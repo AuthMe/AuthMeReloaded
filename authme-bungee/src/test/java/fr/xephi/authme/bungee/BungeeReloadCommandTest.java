@@ -28,7 +28,7 @@ class BungeeReloadCommandTest {
     void shouldReloadConfigAndProxyBridge() {
         BungeeProxyConfiguration configuration = new BungeeProxyConfiguration(
             Set.of("lobby"), false, true, Set.of("/login"), true, true,
-            "Authentication required.", true, false, "", "");
+            "Authentication required.", true, false, "", "", "");
         given(configManager.reload()).willReturn(configuration);
 
         BungeeReloadCommand command = new BungeeReloadCommand(configManager, proxyBridge);

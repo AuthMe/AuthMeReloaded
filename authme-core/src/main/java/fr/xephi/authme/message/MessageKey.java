@@ -450,7 +450,61 @@ public enum MessageKey {
     SPAWN_NOT_DEFINED("admin.spawn.not_defined"),
 
     /** First spawn has failed, please try to define the first spawn. */
-    FIRST_SPAWN_NOT_DEFINED("admin.spawn.first_not_defined");
+    FIRST_SPAWN_NOT_DEFINED("admin.spawn.first_not_defined"),
+
+    /** Premium mode is not enabled on this server. */
+    PREMIUM_FEATURE_DISABLED("premium.feature_disabled"),
+
+    /** No premium Minecraft account found for your username. */
+    PREMIUM_ACCOUNT_NOT_FOUND("premium.account_not_found"),
+
+    /** Premium mode is already enabled for your account. */
+    PREMIUM_ALREADY_ENABLED("premium.already_enabled"),
+
+    /** Premium mode enabled! You will no longer need to authenticate. */
+    PREMIUM_ENABLE_SUCCESS("premium.enable_success"),
+
+    /** Premium mode is not enabled for your account. */
+    PREMIUM_NOT_ENABLED("premium.not_enabled"),
+
+    /** Premium mode disabled. You will need to authenticate again. */
+    PREMIUM_DISABLE_SUCCESS("premium.disable_success"),
+
+    /** An error occurred while verifying your premium status. */
+    PREMIUM_ERROR("premium.error"),
+
+    /** %name is not registered. */
+    PREMIUM_ADMIN_NOT_REGISTERED("premium.admin.not_registered", "%name"),
+
+    /** Premium mode is already enabled for %name. */
+    PREMIUM_ADMIN_ALREADY_ENABLED("premium.admin.already_enabled", "%name"),
+
+    /** No Mojang account found for %name. */
+    PREMIUM_ADMIN_ACCOUNT_NOT_FOUND("premium.admin.account_not_found", "%name"),
+
+    /** Premium mode enabled for %name. */
+    PREMIUM_ADMIN_ENABLE_SUCCESS("premium.admin.enable_success", "%name"),
+
+    /** Premium mode is not enabled for %name. */
+    PREMIUM_ADMIN_NOT_ENABLED("premium.admin.not_enabled", "%name"),
+
+    /** Premium mode disabled for %name. Player was online and has been kicked. */
+    PREMIUM_ADMIN_DISABLE_SUCCESS("premium.admin.disable_success", "%name"),
+
+    /** An impostor was online as %name and has been kicked. */
+    PREMIUM_ADMIN_IMPOSTOR_KICKED("premium.admin.impostor_kicked", "%name"),
+
+    /** Kicked by admin: premium settings changed. */
+    PREMIUM_ADMIN_KICK_REASON("premium.admin.kick_reason"),
+
+    /** Kicked to verify premium ownership; player must reconnect. */
+    PREMIUM_PENDING_KICK("premium.pending_kick"),
+
+    /** Premium verification failed on reconnect; player must use a password. */
+    PREMIUM_PENDING_FAIL("premium.pending_fail"),
+
+    /** Admin notification: verification is pending, player must reconnect to confirm. */
+    PREMIUM_ADMIN_PENDING("premium.admin.pending", "%name");
 
 
     private String key;

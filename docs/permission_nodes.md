@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Thu Apr 23 19:32:21 CEST 2026. See authme-tools/src/test/java/tools/docs/permissions/permission_nodes.tpl.md -->
+<!-- File auto-generated on Sat May 02 03:44:31 CEST 2026. See authme-tools/src/test/java/tools/docs/permissions/permission_nodes.tpl.md -->
 
 ## AuthMe Permission Nodes
 The following are the permission nodes that are currently supported by the latest dev builds.
@@ -28,6 +28,8 @@ and Paper 1.21 builds.
 - **authme.admin.seeotheraccounts** – Permission to see the other accounts of the players that log in.
 - **authme.admin.seerecent** – Administrator command to see the last recently logged in players.
 - **authme.admin.setfirstspawn** – Administrator command to set the first AuthMe spawn.
+- **authme.admin.setfreemium** – Administrator command to disable premium mode for a player.
+- **authme.admin.setpremium** – Administrator command to enable premium mode for a player.
 - **authme.admin.setspawn** – Administrator command to set the AuthMe spawn.
 - **authme.admin.spawn** – Administrator command to teleport to the AuthMe spawn.
 - **authme.admin.switchantibot** – Administrator command to toggle the AntiBot protection status.
@@ -62,8 +64,10 @@ and Paper 1.21 builds.
 - **authme.player.email.change** – Command permission to change the email address.
 - **authme.player.email.recover** – Command permission to recover an account using its email address.
 - **authme.player.email.see** – Command permission to see the own email address.
+- **authme.player.freemium** – Permission to disable premium mode.
 - **authme.player.login** – Command permission to login.
 - **authme.player.logout** – Command permission to logout.
+- **authme.player.premium** – Permission to enable premium mode (skip authentication using a verified Mojang account).
 - **authme.player.protection.quickcommandsprotection** – Permission that enables on join quick commands checks for the player.
 - **authme.player.register** – Command permission to register.
 - **authme.player.security.verificationcode** – Permission to use the email verification codes feature.
@@ -76,4 +80,4 @@ and Paper 1.21 builds.
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Thu Apr 23 19:32:21 CEST 2026
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat May 02 03:44:31 CEST 2026

@@ -214,3 +214,25 @@ admin:
         first_set_fail: '&cSetFirstSpawn başarısız oldu, lütfen tekrar deneyin.'
         not_defined: '&cDoğma başarısız oldu, lütfen doğma noktasını tanımlamayı deneyin.'
         first_not_defined: '&cİlk doğma başarısız oldu, lütfen ilk doğma noktasını tanımlamayı deneyin.'
+
+# Premium modu
+premium:
+  feature_disabled: '&cPremium modu bu sunucuda etkin değil.'
+  account_not_found: '&cKullanıcı adınız için premium Minecraft hesabı bulunamadı.'
+  already_enabled: '&ePremium modu hesabınız için zaten etkin.'
+  enable_success: '&2Premium modu etkinleştirildi! Artık giriş yaparken kimlik doğrulamanız gerekmeyecek.'
+  not_enabled: '&ePremium modu hesabınız için etkin değil.'
+  disable_success: '&2Premium modu devre dışı bırakıldı. Tekrar kimlik doğrulamanız gerekecek.'
+  error: '&cPremium durumunuz doğrulanırken bir hata oluştu. Lütfen daha sonra tekrar deneyin.'
+  admin:
+    not_registered: '&c%name kayıtlı değil.'
+    already_enabled: '&ePremium modu %name için zaten etkin.'
+    account_not_found: '&c%name için Mojang hesabı bulunamadı.'
+    enable_success: '&2%name için premium modu etkinleştirildi.'
+    not_enabled: '&ePremium modu %name için etkin değil.'
+    disable_success: '&2%name için premium modu devre dışı bırakıldı.'
+    impostor_kicked: '&e%name olarak bağlanan oyuncunun UUID''si uyuşmuyordu ve sunucudan atıldı.'
+    kick_reason: '&cHesabınızın premium ayarları bir yönetici tarafından değiştirildi. Lütfen yeniden bağlanın.'
+    pending: '&e%name için premium doğrulama bekleniyor. Mojang hesabının sahipliğini onaylamak için yeniden bağlanmaları gerekiyor.'
+  pending_kick: '&ePremium doğrulama istendi. Mojang hesabınızın sahipliğini onaylamak için lütfen yeniden bağlanın.'
+  pending_fail: '&cPremium doğrulama başarısız oldu. Lütfen şifrenizle giriş yapın.'

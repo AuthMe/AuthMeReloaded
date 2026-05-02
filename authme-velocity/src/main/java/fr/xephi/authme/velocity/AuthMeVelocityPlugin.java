@@ -5,7 +5,10 @@ import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.command.CommandExecuteEvent;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
+import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
+import com.velocitypowered.api.event.connection.PostLoginEvent;
+import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
@@ -29,14 +32,12 @@ public final class AuthMeVelocityPlugin extends AbstractAuthMeVelocityPlugin {
 
     private final ProxyServer server;
     private VelocityConfigManager configManager;
-    private final Logger logger;
     private final VelocityProxyBridge proxyBridge;
 
     @Inject
     public AuthMeVelocityPlugin(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
         super(server, logger, dataDirectory);
         this.server = server;
-        this.logger = logger;
         this.proxyBridge = createProxyBridge(server, logger, dataDirectory);
     }
 
@@ -79,6 +80,21 @@ public final class AuthMeVelocityPlugin extends AbstractAuthMeVelocityPlugin {
     @Subscribe
     public void onPlayerChat(PlayerChatEvent event) {
         proxyBridge.onPlayerChat(event);
+    }
+
+    @Subscribe
+    public void onPreLogin(PreLoginEvent event) {
+        proxyBridge.onPreLogin(event);
+    }
+
+    @Subscribe
+    public void onLogin(LoginEvent event) {
+        proxyBridge.onLogin(event);
+    }
+
+    @Subscribe
+    public void onPostLogin(PostLoginEvent event) {
+        proxyBridge.onPostLogin(event);
     }
 
     @Subscribe

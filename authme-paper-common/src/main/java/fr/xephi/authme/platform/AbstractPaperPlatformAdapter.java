@@ -74,11 +74,35 @@ public abstract class AbstractPaperPlatformAdapter extends AbstractSpigotPlatfor
         return EventRegistrationAdapter.getCommonListeners();
     }
 
+    @Override
+    public boolean isProxyForwardingEnabled() {
+        if (super.isProxyForwardingEnabled()) {
+            return true;
+        }
+        return isPaperVelocityForwardingEnabled();
+    }
+
     private static boolean hasDialogApi() {
         try {
             Class.forName("io.papermc.paper.dialog.Dialog", false, AbstractPaperPlatformAdapter.class.getClassLoader());
             return true;
         } catch (ClassNotFoundException ignored) {
+            return false;
+        }
+    }
+
+    private static boolean isPaperVelocityForwardingEnabled() {
+        try {
+            // io.papermc.paper.configuration.GlobalConfiguration is Paper 1.18+
+            Class<?> cfg = Class.forName(
+                "io.papermc.paper.configuration.GlobalConfiguration",
+                false, AbstractPaperPlatformAdapter.class.getClassLoader());
+            Object instance = cfg.getMethod("get").invoke(null);
+            Object proxies = cfg.getField("proxies").get(instance);
+            Object velocity = proxies.getClass().getField("velocity").get(proxies);
+            Object enabled = velocity.getClass().getField("enabled").get(velocity);
+            return Boolean.TRUE.equals(enabled);
+        } catch (Exception ignored) {
             return false;
         }
     }

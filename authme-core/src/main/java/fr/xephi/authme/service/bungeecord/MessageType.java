@@ -7,7 +7,12 @@ public enum MessageType {
     LOGOUT("logout", true),
     PERFORM_LOGIN("perform.login", false),
     PERFORM_LOGIN_ACK("perform.login.ack", false),
-    PROXY_STARTED("proxy.started", false);
+    PROXY_STARTED("proxy.started", false),
+    PREMIUM_SET("premium.set", false),
+    PREMIUM_UNSET("premium.unset", false),
+    PREMIUM_LIST("premium.list", false),
+    PREMIUM_LIST_CHUNK("premium.list.chunk", false),
+    PREMIUM_PENDING_SET("premium.pending.set", false);
 
     private final String id;
     private final boolean broadcast;

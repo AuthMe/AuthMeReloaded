@@ -83,7 +83,17 @@ public enum PlayerPermission implements PermissionNode {
     /**
      * Permission to disable two-factor authentication.
      */
-    DISABLE_TWO_FACTOR_AUTH("authme.player.totpremove");
+    DISABLE_TWO_FACTOR_AUTH("authme.player.totpremove"),
+
+    /**
+     * Permission to enable premium mode (skip authentication using a verified Mojang account).
+     */
+    USE_PREMIUM("authme.player.premium"),
+
+    /**
+     * Permission to disable premium mode.
+     */
+    USE_FREEMIUM("authme.player.freemium");
 
     /**
      * The permission node.

@@ -138,7 +138,17 @@ public enum AdminPermission implements PermissionNode {
     /**
      * Allows to use the backup command.
      */
-    BACKUP("authme.admin.backup");
+    BACKUP("authme.admin.backup"),
+
+    /**
+     * Administrator command to enable premium mode for a player.
+     */
+    SET_PREMIUM("authme.admin.setpremium"),
+
+    /**
+     * Administrator command to disable premium mode for a player.
+     */
+    SET_FREEMIUM("authme.admin.setfreemium");
 
     /**
      * The permission node.
