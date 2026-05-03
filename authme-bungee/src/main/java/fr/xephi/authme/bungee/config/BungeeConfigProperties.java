@@ -53,6 +53,13 @@ public final class BungeeConfigProperties implements SettingsHolder {
         newProperty("unloggedUserServer", "");
 
     @Comment({
+        "Server to redirect players to after successful authentication on an auth server.",
+        "Leave empty to disable proxy-side login redirect (backend handles it via BUNGEECORD_SERVER)."
+    })
+    public static final Property<String> LOGIN_SERVER =
+        newProperty("loginServer", "");
+
+    @Comment({
         "Shared secret used to sign perform.login messages sent to backend servers.",
         "Generated automatically on first start — copy this value to the Hooks.proxySharedSecret",
         "setting of every backend server running AuthMe."

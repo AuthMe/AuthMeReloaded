@@ -1,56 +1,56 @@
-# AuthMe Reloaded | Tradução pt-br
+﻿# AuthMe Reloaded | TraduÃ§Ã£o pt-br
 # Por Eufranio, GabrielDev (DeathRush) e RenanYudi
 #
 # Lista de tags globais:
 # %nl% - Pula uma linha
-# %username% - Substitui pelo nome do jogador que está recebendo a mensagem
-# %displayname% - Substitui pelo nickname (e cores) do jogador que está recebendo a mensagem
+# %username% - Substitui pelo nome do jogador que estÃ¡ recebendo a mensagem
+# %displayname% - Substitui pelo nickname (e cores) do jogador que estÃ¡ recebendo a mensagem
 
 # Registro
 registration:
     register_request: '&3Por favor, registre-se com o comando "/register <senha> <senha>"'
     command_usage: '&cUse: /register <senha> <senha>'
-    reg_only: '&4Somente usuários registrados podem entrar no servidor! Por favor visite www.seusite.com para se registrar!'
+    reg_only: '&4Somente usuÃ¡rios registrados podem entrar no servidor! Por favor visite www.seusite.com para se registrar!'
     success: '&2Registrado com sucesso!'
-    kicked_admin_registered: 'Um administrador registrou você. Por favor, faça login novamente'
-    disabled: '&cRegistrar-se está desativado neste servidor!'
-    name_taken: '&cVocê já registrou este nome de usuário!'
+    kicked_admin_registered: 'Um administrador registrou vocÃª. Por favor, faÃ§a login novamente'
+    disabled: '&cRegistrar-se estÃ¡ desativado neste servidor!'
+    name_taken: '&cVocÃª jÃ¡ registrou este nome de usuÃ¡rio!'
 
 # Erros de senha ao registrar-se
 password:
-    match_error: '&cAs senhas não coincidem, tente novamente!'
-    name_in_password: '&Você não pode usar o seu nome como senha. Por favor, escolha outra senha...'
-    unsafe_password: '&cA senha escolhida não é segura. Por favor, escolha outra senha...'
-    forbidden_characters: '&Sua senha contém caracteres inválidos. Caracteres permitidos: %valid_chars'
-    wrong_length: '&cSua senha é muito curta ou muito longa! Por favor, escolha outra senha...'
+    match_error: '&cAs senhas nÃ£o coincidem, tente novamente!'
+    name_in_password: '&VocÃª nÃ£o pode usar o seu nome como senha. Por favor, escolha outra senha...'
+    unsafe_password: '&cA senha escolhida nÃ£o Ã© segura. Por favor, escolha outra senha...'
+    forbidden_characters: '&Sua senha contÃ©m caracteres invÃ¡lidos. Caracteres permitidos: %valid_chars'
+    wrong_length: '&cSua senha Ã© muito curta ou muito longa! Por favor, escolha outra senha...'
 
 # Login
 login:
     command_usage: '&cUse: /login <senha>'
     wrong_password: '&cSenha incorreta!'
     success: '&2Login realizado com sucesso!'
-    login_request: '&cPor favor, faça login com o comando "/login <senha>"'
+    login_request: '&cPor favor, faÃ§a login com o comando "/login <senha>"'
     timeout_error: '&4Tempo limite excedido.'
 
 # Erros
 error:
-    unregistered_user: '&cEste usuário não está registrado!'
-    denied_command: '&cPara utilizar este comando é necessário estar logado!'
-    denied_chat: '&cPara utilizar o chat é necessário estar logado!'
-    not_logged_in: '&cVocê não está logado!'
-    tempban_max_logins: '&cVocê foi temporariamente banido por tentar fazer login muitas vezes.'
-    max_registration: '&cVocê excedeu o número máximo de registros (%reg_count/%max_acc %reg_names) para o seu IP!'
-    no_permission: '&4Você não tem permissão para executar esta ação!'
+    unregistered_user: '&cEste usuÃ¡rio nÃ£o estÃ¡ registrado!'
+    denied_command: '&cPara utilizar este comando Ã© necessÃ¡rio estar logado!'
+    denied_chat: '&cPara utilizar o chat Ã© necessÃ¡rio estar logado!'
+    not_logged_in: '&cVocÃª nÃ£o estÃ¡ logado!'
+    tempban_max_logins: '&cVocÃª foi temporariamente banido por tentar fazer login muitas vezes.'
+    max_registration: '&cVocÃª excedeu o nÃºmero mÃ¡ximo de registros (%reg_count/%max_acc %reg_names) para o seu IP!'
+    no_permission: '&4VocÃª nÃ£o tem permissÃ£o para executar esta aÃ§Ã£o!'
     unexpected_error: '&4Ocorreu um erro inesperado. Por favor contate um administrador!'
     kick_for_vip: '&3Um jogador VIP juntou-se ao servidor enquanto ele estava cheio!'
-    logged_in: '&cVocê já está logado!'
-    kick_unresolved_hostname: '&cErro: hostname do jogador não resolvido!'
+    logged_in: '&cVocÃª jÃ¡ estÃ¡ logado!'
+    kick_unresolved_hostname: '&cErro: hostname do jogador nÃ£o resolvido!'
 
 # AntiBot
 antibot:
-    kick_antibot: 'O modo de proteção AntiBot está ativo, espere alguns minutos antes de entrar no servidor!'
-    auto_enabled: '&4O AntiBot foi ativado devido ao grande número de conexões!'
-    auto_disabled: '&2AntiBot desativado após %m minutos!'
+    kick_antibot: 'O modo de proteÃ§Ã£o AntiBot estÃ¡ ativo, espere alguns minutos antes de entrar no servidor!'
+    auto_enabled: '&4O AntiBot foi ativado devido ao grande nÃºmero de conexÃµes!'
+    auto_disabled: '&2AntiBot desativado apÃ³s %m minutos!'
 
 # Deletar conta
 unregister:
@@ -59,94 +59,94 @@ unregister:
 
 # Outras mensagens
 misc:
-    accounts_owned_self: 'Você tem %count contas:'
+    accounts_owned_self: 'VocÃª tem %count contas:'
     accounts_owned_other: 'O jogador %name tem %count contas:'
-    account_not_activated: '&cA sua conta ainda não está ativada. Por favor, verifique seus e-mails!'
+    account_not_activated: '&cA sua conta ainda nÃ£o estÃ¡ ativada. Por favor, verifique seus e-mails!'
     password_changed: '&2Senha alterada com sucesso!'
     logout: '&2Desconectado com sucesso!'
-    reload: '&2A configuração e o banco de dados foram recarregados corretamente!'
+    reload: '&2A configuraÃ§Ã£o e o banco de dados foram recarregados corretamente!'
     usage_change_password: '&cUse: /changepassword <senhaVelha> <senhaNova>'
 
-# Mensagens de sessão
+# Mensagens de sessÃ£o
 session:
-    valid_session: '&2Você deslogou recentemente, então sua sessão foi retomada!'
-    invalid_session: '&fO seu IP foi alterado e sua sessão expirou!'
+    valid_session: '&2VocÃª deslogou recentemente, entÃ£o sua sessÃ£o foi retomada!'
+    invalid_session: '&fO seu IP foi alterado e sua sessÃ£o expirou!'
 
 # Mensagens de erro ao entrar
 on_join_validation:
-    name_length: '&4Seu nome de usuário ou é muito curto ou é muito longo!'
-    characters_in_name: '&4Seu nome de usuário contém caracteres inválidos. Caracteres permitidos: %valid_chars'
-    country_banned: '&4O seu país está banido deste servidor!'
-    not_owner_error: 'Você não é o proprietário da conta. Por favor, escolha outro nome!'
-    kick_full_server: '&4O servidor está cheio, tente novamente mais tarde!'
-    same_nick_online: '&4Alguém com o mesmo nome de usuário já está jogando no servidor!'
-    invalid_name_case: 'Você deve entrar usando o nome de usuário %valid, não %invalid.'
-    same_ip_online: 'Um jogador com o mesmo IP já está no servidor!'
-    quick_command: 'Você usou o comando muito rápido! Por favor, entre no servidor e aguarde antes de usar um comando novamente.'
+    name_length: '&4Seu nome de usuÃ¡rio ou Ã© muito curto ou Ã© muito longo!'
+    characters_in_name: '&4Seu nome de usuÃ¡rio contÃ©m caracteres invÃ¡lidos. Caracteres permitidos: %valid_chars'
+    country_banned: '&4O seu paÃ­s estÃ¡ banido deste servidor!'
+    not_owner_error: 'VocÃª nÃ£o Ã© o proprietÃ¡rio da conta. Por favor, escolha outro nome!'
+    kick_full_server: '&4O servidor estÃ¡ cheio, tente novamente mais tarde!'
+    same_nick_online: '&4AlguÃ©m com o mesmo nome de usuÃ¡rio jÃ¡ estÃ¡ jogando no servidor!'
+    invalid_name_case: 'VocÃª deve entrar usando o nome de usuÃ¡rio %valid, nÃ£o %invalid.'
+    same_ip_online: 'Um jogador com o mesmo IP jÃ¡ estÃ¡ no servidor!'
+    quick_command: 'VocÃª usou o comando muito rÃ¡pido! Por favor, entre no servidor e aguarde antes de usar um comando novamente.'
 
 # E-mail
 email:
     usage_email_add: '&cUse: /email add <email> <email>'
     usage_email_change: '&cUse: /email change <emailAntigo> <novoEmail>'
-    new_email_invalid: '&cE-mail novo inválido, tente novamente!'
-    old_email_invalid: '&cE-mail antigo inválido, tente novamente!'
-    invalid: '&E-mail inválido, tente novamente!'
+    new_email_invalid: '&cE-mail novo invÃ¡lido, tente novamente!'
+    old_email_invalid: '&cE-mail antigo invÃ¡lido, tente novamente!'
+    invalid: '&E-mail invÃ¡lido, tente novamente!'
     added: '&2E-mail adicionado com sucesso!'
-    request_confirmation: '&cPor favor, confirme o seu endereço de e-mail!'
+    request_confirmation: '&cPor favor, confirme o seu endereÃ§o de e-mail!'
     changed: '&2E-mail alterado com sucesso!'
-    email_show: '&2O seu endereço de e-mail atual é: &f%email'
-    incomplete_settings: 'Erro: Nem todas as configurações necessárias estão definidas para o envio de e-mails. Entre em contato com um administrador.'
-    already_used: '&4O endereço de e-mail já está sendo usado'
-    send_failure: '&cO e-mail não pôde ser enviado, reporte isso a um administrador!'
-    no_email_for_account: '&2Você atualmente não têm endereço de e-mail associado a esta conta.'
+    email_show: '&2O seu endereÃ§o de e-mail atual Ã©: &f%email'
+    incomplete_settings: 'Erro: Nem todas as configuraÃ§Ãµes necessÃ¡rias estÃ£o definidas para o envio de e-mails. Entre em contato com um administrador.'
+    already_used: '&4O endereÃ§o de e-mail jÃ¡ estÃ¡ sendo usado'
+    send_failure: '&cO e-mail nÃ£o pÃ´de ser enviado, reporte isso a um administrador!'
+    no_email_for_account: '&2VocÃª atualmente nÃ£o tÃªm endereÃ§o de e-mail associado a esta conta.'
     add_email_request: '&3Por favor, adicione seu e-mail para a sua conta com o comando "/email add <seuEmail> <seuEmail>"'
-    change_password_expired: 'Você não pode mais usar esse comando de recuperação de senha!'
-    email_cooldown_error: '&cUm e-mail já foi enviado, espere %time antes de enviar novamente!'
-    add_not_allowed: '&cAdicionar um e-mail não é permitido.'
-    change_not_allowed: '&cAlterar o e-mail não é permitido.'
+    change_password_expired: 'VocÃª nÃ£o pode mais usar esse comando de recuperaÃ§Ã£o de senha!'
+    email_cooldown_error: '&cUm e-mail jÃ¡ foi enviado, espere %time antes de enviar novamente!'
+    add_not_allowed: '&cAdicionar um e-mail nÃ£o Ã© permitido.'
+    change_not_allowed: '&cAlterar o e-mail nÃ£o Ã© permitido.'
 
-# Recuperação de senha por e-mail
+# RecuperaÃ§Ã£o de senha por e-mail
 recovery:
     forgot_password_hint: '&3Esqueceu a sua senha? Use o comando "/email recovery <seuEmail>"'
     command_usage: '&cUse: /email recovery <Email>'
-    email_sent: '&2E-mail de recuperação enviado! Por favor, verifique sua caixa de entrada!'
+    email_sent: '&2E-mail de recuperaÃ§Ã£o enviado! Por favor, verifique sua caixa de entrada!'
     code:
-        code_sent: 'Um código de recuperação para a redefinição de senha foi enviado ao seu e-mail.'
-        incorrect: 'Código de recuperação inválido! Você tem %count tentativas restantes.'
-        tries_exceeded: 'Você excedeu o limite de tentativas de usar o código de recuperação! Use "/email recovery [email]" para gerar um novo.'
-        correct: 'Código de recuperação aceito!'
+        code_sent: 'Um cÃ³digo de recuperaÃ§Ã£o para a redefiniÃ§Ã£o de senha foi enviado ao seu e-mail.'
+        incorrect: 'CÃ³digo de recuperaÃ§Ã£o invÃ¡lido! VocÃª tem %count tentativas restantes.'
+        tries_exceeded: 'VocÃª excedeu o limite de tentativas de usar o cÃ³digo de recuperaÃ§Ã£o! Use "/email recovery [email]" para gerar um novo.'
+        correct: 'CÃ³digo de recuperaÃ§Ã£o aceito!'
         change_password: 'Por favor, use o comando /email setpassword <nova senha> para alterar sua senha!'
 
 # Captcha
 captcha:
-    usage_captcha: '&3Para iniciar sessão você tem que resolver um captcha, utilize o comando "/captcha %captcha_code"'
+    usage_captcha: '&3Para iniciar sessÃ£o vocÃª tem que resolver um captcha, utilize o comando "/captcha %captcha_code"'
     wrong_captcha: '&cCaptcha incorreto. Por favor, escreva "/captcha %captcha_code" no chat!'
     valid_captcha: '&2Captcha correto!'
-    captcha_for_registration: 'Para se registrar você tem que resolver um código captcha, utilize o comando "/captcha %captcha_code"'
-    register_captcha_valid: '&2Captcha correto! Agora você pode se registrar usando /register <senha> <senha>!'
+    captcha_for_registration: 'Para se registrar vocÃª tem que resolver um cÃ³digo captcha, utilize o comando "/captcha %captcha_code"'
+    register_captcha_valid: '&2Captcha correto! Agora vocÃª pode se registrar usando /register <senha> <senha>!'
 
-# Código de verificação
+# CÃ³digo de verificaÃ§Ã£o
 verification:
-    code_required: '&3Esse comando é sensível e precisa de uma verificação via e-mail! Verifique sua caixa de entrada e siga as instruções do e-mail.'
-    command_usage: '&cUse: /verification <código>'
-    incorrect_code: '&cCódigo incorreto, utilize "/verification <código>" com o código que você recebeu por e-mail!'
-    success: '&2Sua identidade foi verificada, agora você pode usar todos os comandos durante esta sessão.'
-    already_verified: '&2Você já pode executar comandos sensíveis durante esta sessão!'
-    code_expired: '&3O seu código expirou! Execute outro comando sensível para gerar um outro código.'
-    email_needed: '&3Para verificar sua identidade, você precisa vincular um e-mail à sua conta!'
+    code_required: '&3Esse comando Ã© sensÃ­vel e precisa de uma verificaÃ§Ã£o via e-mail! Verifique sua caixa de entrada e siga as instruÃ§Ãµes do e-mail.'
+    command_usage: '&cUse: /verification <cÃ³digo>'
+    incorrect_code: '&cCÃ³digo incorreto, utilize "/verification <cÃ³digo>" com o cÃ³digo que vocÃª recebeu por e-mail!'
+    success: '&2Sua identidade foi verificada, agora vocÃª pode usar todos os comandos durante esta sessÃ£o.'
+    already_verified: '&2VocÃª jÃ¡ pode executar comandos sensÃ­veis durante esta sessÃ£o!'
+    code_expired: '&3O seu cÃ³digo expirou! Execute outro comando sensÃ­vel para gerar um outro cÃ³digo.'
+    email_needed: '&3Para verificar sua identidade, vocÃª precisa vincular um e-mail Ã  sua conta!'
 
-# Verificação em duas etapas
+# VerificaÃ§Ã£o em duas etapas
 two_factor:
-    code_created: '&2O seu código secreto é %code. Você pode verificá-lo aqui %url'
-    confirmation_required: 'Confirme seu código com /2fa confirm <código>'
-    code_required: 'Registre o seu código de verificação em duas etapas com /2fa code <código>'
-    already_enabled: 'A verificação em duas etapas já está ativada nesta conta!'
-    enable_error_no_code: 'Nenhuma chave de verificação foi gerada ou ela expirou. Por favor, use /2fa add'
-    enable_success: 'Verificação em duas etapas ativada com sucesso para esta conta!'
-    enable_error_wrong_code: 'Código incorreto ou expirado! Por favor, use /2fa add'
-    not_enabled_error: 'A verificação em duas etapas não está ativada nesta conta. Use /2fa add'
-    removed_success: 'Verificação em duas etapas desativada com sucesso!'
-    invalid_code: 'Código inválido!'
+    code_created: '&2O seu cÃ³digo secreto Ã© %code. VocÃª pode verificÃ¡-lo aqui %url'
+    confirmation_required: 'Confirme seu cÃ³digo com /2fa confirm <cÃ³digo>'
+    code_required: 'Registre o seu cÃ³digo de verificaÃ§Ã£o em duas etapas com /2fa code <cÃ³digo>'
+    already_enabled: 'A verificaÃ§Ã£o em duas etapas jÃ¡ estÃ¡ ativada nesta conta!'
+    enable_error_no_code: 'Nenhuma chave de verificaÃ§Ã£o foi gerada ou ela expirou. Por favor, use /2fa add'
+    enable_success: 'VerificaÃ§Ã£o em duas etapas ativada com sucesso para esta conta!'
+    enable_error_wrong_code: 'CÃ³digo incorreto ou expirado! Por favor, use /2fa add'
+    not_enabled_error: 'A verificaÃ§Ã£o em duas etapas nÃ£o estÃ¡ ativada nesta conta. Use /2fa add'
+    removed_success: 'VerificaÃ§Ã£o em duas etapas desativada com sucesso!'
+    invalid_code: 'CÃ³digo invÃ¡lido!'
 
 # Unidades de tempo
 
@@ -164,8 +164,8 @@ dialog:
     confirm_email: '&fConfirmar e-mail'
     button: '&aRegistrar'
   two_factor:
-    title: '&6Autenticação de dois fatores'
-    code: '&fCódigo 2FA'
+    title: '&6AutenticaÃ§Ã£o de dois fatores'
+    code: '&fCÃ³digo 2FA'
     button: '&aVerificar'
   button:
     cancel: '&cCancelar'
@@ -180,14 +180,14 @@ time:
     day: 'dia'
     days: 'dias'
 
-# Mensagens de validação de comandos
+# Mensagens de validaÃ§Ã£o de comandos
 command:
-    player_only: '&cEste comando é apenas para jogadores.'
+    player_only: '&cEste comando Ã© apenas para jogadores.'
     player_only_alternative: '&cApenas para jogadores! Por favor, use %alternative em vez disso.'
     failed_to_parse: '&4Falha ao interpretar o comando do AuthMe!'
     unknown: '&4Comando desconhecido!'
     incorrect_arguments: '&4Argumentos de comando incorretos!'
-    did_you_mean: '&eVocê quis dizer &6%cmd&e?'
+    did_you_mean: '&eVocÃª quis dizer &6%cmd&e?'
     see_help: '&eUse o comando &6/%cmd&e para ver a ajuda.'
     detailed_help: '&6Ajuda detalhada: &f/%cmd'
 
@@ -195,20 +195,20 @@ command:
 admin:
     force_login:
         player_offline: '&cO jogador precisa estar online!'
-        forbidden: '&cVocê não pode forçar o login do jogador %name!'
-        success: '&2Login forçado para %name realizado!'
+        forbidden: '&cVocÃª nÃ£o pode forÃ§ar o login do jogador %name!'
+        success: '&2Login forÃ§ado para %name realizado!'
     accounts:
-        ip_not_found: '&cEsse IP não existe no banco de dados.'
-        single_account: '&2%name é um jogador com conta única.'
-        no_last_ip: '&cNenhum último endereço IP conhecido para o jogador.'
+        ip_not_found: '&cEsse IP nÃ£o existe no banco de dados.'
+        single_account: '&2%name Ã© um jogador com conta Ãºnica.'
+        no_last_ip: '&cNenhum Ãºltimo endereÃ§o IP conhecido para o jogador.'
     email_show: '&2E-mail de %name: %email'
     antibot:
         status: '&2Status do AntiBot: %status'
-        override_enabled: '&2Substituição Manual do AntiBot: habilitada!'
-        override_disabled: '&2Substituição Manual do AntiBot: desabilitada!'
-        invalid_mode: '&cModo de AntiBot inválido!'
+        override_enabled: '&2SubstituiÃ§Ã£o Manual do AntiBot: habilitada!'
+        override_disabled: '&2SubstituiÃ§Ã£o Manual do AntiBot: desabilitada!'
+        invalid_mode: '&cModo de AntiBot invÃ¡lido!'
     reload:
-        db_type_change: '&eNota: não é possível alterar o tipo de banco de dados durante /authme reload.'
+        db_type_change: '&eNota: nÃ£o Ã© possÃ­vel alterar o tipo de banco de dados durante /authme reload.'
         error: '&cOcorreu um erro durante o recarregamento do AuthMe.'
     spawn:
         set_success: '&2Novo ponto de spawn definido corretamente.'
@@ -217,3 +217,25 @@ admin:
         first_set_fail: '&cSetFirstSpawn falhou, por favor tente novamente.'
         not_defined: '&cSpawn falhou, por favor tente definir o spawn.'
         first_not_defined: '&cPrimeiro spawn falhou, por favor tente definir o primeiro spawn.'
+
+# Modo premium
+premium:
+    feature_disabled: '&cO modo premium nÃ£o estÃ¡ ativado neste servidor.'
+    account_not_found: '&cNenhuma conta Minecraft premium encontrada para o seu nome de usuÃ¡rio.'
+    already_enabled: '&eO modo premium jÃ¡ estÃ¡ ativado para a sua conta.'
+    enable_success: '&2Modo premium ativado! VocÃª nÃ£o precisarÃ¡ mais se autenticar ao entrar.'
+    not_enabled: '&eO modo premium nÃ£o estÃ¡ ativado para a sua conta.'
+    disable_success: '&2Modo premium desativado. VocÃª precisarÃ¡ se autenticar novamente.'
+    error: '&cOcorreu um erro ao verificar o seu status premium. Por favor, tente novamente mais tarde.'
+    admin:
+        not_registered: '&c%name nÃ£o estÃ¡ registrado.'
+        already_enabled: '&eO modo premium jÃ¡ estÃ¡ ativado para %name.'
+        account_not_found: '&cNenhuma conta Mojang encontrada para %name.'
+        enable_success: '&2Modo premium ativado para %name.'
+        not_enabled: '&eO modo premium nÃ£o estÃ¡ ativado para %name.'
+        disable_success: '&2Modo premium desativado para %name.'
+        impostor_kicked: '&eUm jogador conectado como %name tinha um UUID diferente e foi expulso.'
+        kick_reason: '&cAs configuraÃ§Ãµes premium da sua conta foram alteradas por um administrador. Por favor, reconecte-se.'
+        pending: '&eVerificaÃ§Ã£o premium pendente para %name. Eles precisam se reconectar para confirmar a propriedade da conta Mojang.'
+    pending_kick: '&eVerificaÃ§Ã£o premium solicitada. Por favor, reconecte-se para confirmar a propriedade da sua conta Mojang.'
+    pending_fail: '&cA verificaÃ§Ã£o premium falhou. Por favor, faÃ§a login com sua senha.'

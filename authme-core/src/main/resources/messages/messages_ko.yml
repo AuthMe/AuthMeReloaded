@@ -216,3 +216,25 @@ admin:
         first_set_fail: '&cSetFirstSpawn에 실패했습니다. 다시 시도해 주세요.'
         not_defined: '&c스폰에 실패했습니다. 스폰 포인트를 정의해 보세요.'
         first_not_defined: '&c첫 번째 스폰에 실패했습니다. 첫 번째 스폰 포인트를 정의해 보세요.'
+
+# 프리미엄 모드
+premium:
+  feature_disabled: '&c프리미엄 모드가 이 서버에서 활성화되어 있지 않습니다.'
+  account_not_found: '&c귀하의 사용자 이름에 대한 프리미엄 마인크래프트 계정을 찾을 수 없습니다.'
+  already_enabled: '&e프리미엄 모드가 이미 귀하의 계정에 활성화되어 있습니다.'
+  enable_success: '&2프리미엄 모드가 활성화되었습니다! 로그인 시 더 이상 인증할 필요가 없습니다.'
+  not_enabled: '&e프리미엄 모드가 귀하의 계정에 활성화되어 있지 않습니다.'
+  disable_success: '&2프리미엄 모드가 비활성화되었습니다. 다시 인증해야 합니다.'
+  error: '&c프리미엄 상태 확인 중 오류가 발생했습니다. 나중에 다시 시도해 주세요.'
+  admin:
+    not_registered: '&c%name 은(는) 등록되어 있지 않습니다.'
+    already_enabled: '&e프리미엄 모드가 이미 %name 에 활성화되어 있습니다.'
+    account_not_found: '&c%name 에 대한 Mojang 계정을 찾을 수 없습니다.'
+    enable_success: '&2%name 의 프리미엄 모드가 활성화되었습니다.'
+    not_enabled: '&e프리미엄 모드가 %name 에 활성화되어 있지 않습니다.'
+    disable_success: '&2%name 의 프리미엄 모드가 비활성화되었습니다.'
+    impostor_kicked: '&e%name 으로 접속한 플레이어의 UUID가 일치하지 않아 추방되었습니다.'
+    kick_reason: '&c귀하 계정의 프리미엄 설정이 관리자에 의해 변경되었습니다. 다시 접속해 주세요.'
+    pending: '&e%name 에 대한 프리미엄 인증이 대기 중입니다. Mojang 계정 소유권을 확인하려면 다시 접속해야 합니다.'
+  pending_kick: '&e프리미엄 인증이 요청되었습니다. Mojang 계정 소유권을 확인하려면 다시 접속해 주세요.'
+  pending_fail: '&c프리미엄 인증에 실패했습니다. 비밀번호로 로그인해 주세요.'

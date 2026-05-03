@@ -53,6 +53,11 @@ public final class AuthMeColumns {
         auth -> ( auth.getUuid() == null ? null : auth.getUuid().toString()),
         OPTIONAL);
 
+    public static final PlayerAuthColumn<String> PREMIUM_UUID = createString(
+        DatabaseSettings.MYSQL_COL_PREMIUM_UUID,
+        auth -> auth.getPremiumUuid() == null ? null : auth.getPremiumUuid().toString(),
+        OPTIONAL);
+
     // --------
     // Location columns
     // --------

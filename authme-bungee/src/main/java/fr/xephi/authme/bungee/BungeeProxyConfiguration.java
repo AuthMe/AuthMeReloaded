@@ -21,6 +21,7 @@ final class BungeeProxyConfiguration {
     private final boolean autoLoginEnabled;
     private final boolean sendOnLogoutEnabled;
     private final String sendOnLogoutTarget;
+    private final String loginServer;
     private final String sharedSecret;
 
     BungeeProxyConfiguration(Set<String> authServers, boolean allServersAreAuthServers,
@@ -28,7 +29,7 @@ final class BungeeProxyConfiguration {
                              boolean chatRequiresAuth, boolean serverSwitchRequiresAuth,
                              String serverSwitchKickMessage, boolean autoLoginEnabled,
                              boolean sendOnLogoutEnabled, String sendOnLogoutTarget,
-                             String sharedSecret) {
+                             String loginServer, String sharedSecret) {
         this.authServers = authServers;
         this.allServersAreAuthServers = allServersAreAuthServers;
         this.commandsRequireAuth = commandsRequireAuth;
@@ -39,6 +40,7 @@ final class BungeeProxyConfiguration {
         this.autoLoginEnabled = autoLoginEnabled;
         this.sendOnLogoutEnabled = sendOnLogoutEnabled;
         this.sendOnLogoutTarget = normalizeServerName(sendOnLogoutTarget);
+        this.loginServer = normalizeServerName(loginServer);
         this.sharedSecret = sharedSecret;
     }
 
@@ -54,6 +56,7 @@ final class BungeeProxyConfiguration {
             settingsManager.getProperty(BungeeConfigProperties.AUTOLOGIN),
             settingsManager.getProperty(BungeeConfigProperties.ENABLE_SEND_ON_LOGOUT),
             settingsManager.getProperty(BungeeConfigProperties.SEND_ON_LOGOUT_TARGET),
+            settingsManager.getProperty(BungeeConfigProperties.LOGIN_SERVER),
             settingsManager.getProperty(BungeeConfigProperties.PROXY_SHARED_SECRET));
     }
 
@@ -91,6 +94,10 @@ final class BungeeProxyConfiguration {
 
     String sendOnLogoutTarget() {
         return sendOnLogoutTarget;
+    }
+
+    String loginServer() {
+        return loginServer;
     }
 
     String sharedSecret() {

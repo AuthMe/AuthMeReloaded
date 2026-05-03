@@ -214,3 +214,25 @@ admin:
         first_set_fail: '&cSetFirstSpawn has failed, please retry.'
         not_defined: '&cSpawn has failed, please try to define the spawn.'
         first_not_defined: '&cFirst spawn has failed, please try to define the first spawn.'
+
+# Modo premium
+premium:
+  feature_disabled: '&cO modo premium non está activado neste servidor.'
+  account_not_found: '&cNon se atopou ningunha conta Minecraft premium para o teu nome de usuario.'
+  already_enabled: '&eO modo premium xa está activado para a túa conta.'
+  enable_success: '&2Modo premium activado! Xa non necesitarás autenticarte ao iniciar sesión.'
+  not_enabled: '&eO modo premium non está activado para a túa conta.'
+  disable_success: '&2Modo premium desactivado. Necesitarás autenticarte de novo.'
+  error: '&cOcorreu un erro ao verificar o teu estado premium. Por favor, téntao de novo máis tarde.'
+  admin:
+    not_registered: '&c%name non está rexistrado.'
+    already_enabled: '&eO modo premium xa está activado para %name.'
+    account_not_found: '&cNon se atopou ningunha conta de Mojang para %name.'
+    enable_success: '&2Modo premium activado para %name.'
+    not_enabled: '&eO modo premium non está activado para %name.'
+    disable_success: '&2Modo premium desactivado para %name.'
+    impostor_kicked: '&eUn xogador conectado como %name tiña un UUID diferente e foi expulsado.'
+    kick_reason: '&cA configuración premium da túa conta foi modificada por un administrador. Por favor, vólvete conectar.'
+    pending: '&eVerificación premium pendente para %name. Deben volver a conectarse para confirmar a propiedade da conta de Mojang.'
+  pending_kick: '&eVerificación premium solicitada. Por favor, vólvete conectar para confirmar a propiedade da túa conta de Mojang.'
+  pending_fail: '&cA verificación premium fallou. Por favor, inicia sesión co teu contrasinal.'

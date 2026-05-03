@@ -10,8 +10,11 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.ChatEvent;
+import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PluginMessageEvent;
+import net.md_5.bungee.api.event.PostLoginEvent;
+import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -37,6 +40,10 @@ public final class BungeeProxyBridge implements Listener {
     private static final String PERFORM_LOGIN_MESSAGE = "perform.login";
     private static final String PERFORM_LOGIN_ACK_MESSAGE = "perform.login.ack";
     private static final String PROXY_STARTED_MESSAGE = "proxy.started";
+    private static final String PREMIUM_SET_MESSAGE = "premium.set";
+    private static final String PREMIUM_UNSET_MESSAGE = "premium.unset";
+    private static final String PREMIUM_LIST_MESSAGE = "premium.list";
+    private static final String PREMIUM_PENDING_SET_MESSAGE = "premium.pending.set";
     private static final String PROXY_IDENTITY = "bungee";
     private static final int MAX_RETRIES = 3;
 
@@ -46,6 +53,11 @@ public final class BungeeProxyBridge implements Listener {
     private final BungeeAuthenticationStore authenticationStore;
     private final Map<String, AtomicInteger> pendingAutoLogins = new ConcurrentHashMap<>();
     private final Set<String> notifiedAuthServers = ConcurrentHashMap.newKeySet();
+    private volatile Set<String> premiumUsernames = ConcurrentHashMap.newKeySet();
+    // Players with a pending premium verification (ran /premium but not yet confirmed via reconnect)
+    private volatile Set<String> pendingPremiumUsernames = ConcurrentHashMap.newKeySet();
+    // Players whose Mojang UUID was confirmed by the proxy during the login phase (LoginSuccess with UUID v4)
+    private final Set<String> proxyVerifiedPremium = ConcurrentHashMap.newKeySet();
     private final ScheduledExecutorService retryScheduler = Executors.newSingleThreadScheduledExecutor(r -> {
         Thread t = new Thread(r, "authme-bungee-retry");
         t.setDaemon(true);
@@ -58,6 +70,11 @@ public final class BungeeProxyBridge implements Listener {
         this.logger = logger;
         this.configuration = configuration;
         this.authenticationStore = authenticationStore;
+    }
+
+    private void markProxyVerifiedPremium(String normalizedName) {
+        proxyVerifiedPremium.add(normalizedName);
+        logger.info("Proxy-verified premium: '" + normalizedName + "' authenticated online-mode with Mojang");
     }
 
     void reload(BungeeProxyConfiguration configuration) {
@@ -145,6 +162,7 @@ public final class BungeeProxyBridge implements Listener {
                     + server.getInfo().getName() + "'");
                 authenticationStore.markAuthenticated(parsedMessage.playerName());
                 sendAutoLoginIfAlreadySwitched(parsedMessage.playerName(), server.getInfo());
+                redirectToLoginServer(parsedMessage.playerName());
             } else if (pendingAutoLogins.containsKey(parsedMessage.playerName())) {
                 // Implicit ACK: login from non-auth server confirms perform.login was processed
                 logger.info("Auto-login confirmed for " + parsedMessage.playerName()
@@ -158,6 +176,28 @@ public final class BungeeProxyBridge implements Listener {
             logger.info("Auto-login ACK received for " + parsedMessage.playerName()
                 + " from server '" + server.getInfo().getName() + "'");
             cancelPendingLogin(parsedMessage.playerName());
+        } else if (PREMIUM_SET_MESSAGE.equals(parsedMessage.typeId())) {
+            premiumUsernames.add(parsedMessage.playerName());
+            pendingPremiumUsernames.remove(parsedMessage.playerName());
+            logger.fine(() -> "Premium enabled for '" + parsedMessage.playerName() + "' (proxy cache updated)");
+        } else if (PREMIUM_UNSET_MESSAGE.equals(parsedMessage.typeId())) {
+            premiumUsernames.remove(parsedMessage.playerName());
+            pendingPremiumUsernames.remove(parsedMessage.playerName());
+            logger.fine(() -> "Premium disabled for '" + parsedMessage.playerName() + "' (proxy cache updated)");
+        } else if (PREMIUM_PENDING_SET_MESSAGE.equals(parsedMessage.typeId())) {
+            pendingPremiumUsernames.add(parsedMessage.playerName());
+            logger.fine(() -> "Pending premium verification started for '" + parsedMessage.playerName() + "'");
+        } else if (PREMIUM_LIST_MESSAGE.equals(parsedMessage.typeId())) {
+            Set<String> newPremiumSet = ConcurrentHashMap.newKeySet();
+            if (!parsedMessage.playerName().isEmpty()) {
+                for (String name : parsedMessage.playerName().split(",")) {
+                    if (!name.isEmpty()) {
+                        newPremiumSet.add(name.trim());
+                    }
+                }
+            }
+            premiumUsernames = newPremiumSet;
+            logger.info("Premium list received from backend: " + premiumUsernames.size() + " premium player(s)");
         }
     }
 
@@ -173,7 +213,7 @@ public final class BungeeProxyBridge implements Listener {
             return;
         }
 
-        if (currentServer == null || !authenticationStore.isAuthenticated(player)) {
+        if (currentServer == null) {
             return;
         }
 
@@ -184,6 +224,21 @@ public final class BungeeProxyBridge implements Listener {
         }
 
         String normalizedName = normalizeName(player.getName());
+
+        // Pending players have passed Mojang auth at the proxy, but we must NOT send PERFORM_LOGIN
+        // for them: the backend needs to run canBypassWithPremium() to finalize (persist) the premium
+        // UUID. Only confirmed premium players (premiumUsernames) trigger the auto-login bypass.
+        boolean isPremiumJoin = connectingToAuthServer
+            && proxyVerifiedPremium.contains(normalizedName)
+            && !pendingPremiumUsernames.contains(normalizedName);
+        if (!authenticationStore.isAuthenticated(player) && !isPremiumJoin) {
+            return;
+        }
+        if (isPremiumJoin) {
+            logger.fine("Proxy-verified premium player " + normalizedName
+                + " joining auth server — sending perform.login immediately");
+        }
+
         String serverName = currentServer.getInfo().getName();
         logger.info("Sending auto-login request to server '" + serverName + "' for player " + normalizedName);
         currentServer.getInfo().sendData(AUTHME_CHANNEL, createPerformLoginMessage(normalizedName), false);
@@ -254,6 +309,53 @@ public final class BungeeProxyBridge implements Listener {
         }
         cancelPendingLogin(normalizedName);
         authenticationStore.clear(event.getPlayer());
+        proxyVerifiedPremium.remove(normalizedName);
+        pendingPremiumUsernames.remove(normalizedName);
+    }
+
+    @EventHandler
+    public void onPreLogin(PreLoginEvent event) {
+        String normalizedName = normalizeName(event.getConnection().getName());
+        if (premiumUsernames.contains(normalizedName) || pendingPremiumUsernames.contains(normalizedName)) {
+            event.getConnection().setOnlineMode(true);
+            logger.fine("Forcing online-mode for premium player '" + normalizedName + "'");
+        }
+    }
+
+    /**
+     * Fires after the proxy has finished the Mojang authentication phase for a connecting player.
+     * If the connection ended up in online mode (real Mojang account verified at the proxy), the
+     * player is recorded as proxy-verified premium so the auto-login bypass on the auth server
+     * will fire on {@link ServerSwitchEvent}.
+     */
+    @EventHandler
+    public void onLogin(LoginEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+        if (!event.getConnection().isOnlineMode()) {
+            return;
+        }
+        String normalizedName = normalizeName(event.getConnection().getName());
+        markProxyVerifiedPremium(normalizedName);
+    }
+
+    /**
+     * Fallback: if for any reason the {@link LoginEvent} hook did not flag the player (e.g. the
+     * proxy is in global online mode and {@code isOnlineMode()} on PendingConnection is reported
+     * after {@code LoginEvent}), {@link PostLoginEvent} still gives us the verified UUID from the
+     * proxy. A version-4 UUID means Mojang verified the identity.
+     */
+    @EventHandler
+    public void onPostLogin(PostLoginEvent event) {
+        ProxiedPlayer player = event.getPlayer();
+        if (player.getUniqueId() != null && player.getUniqueId().version() == 4) {
+            String normalizedName = normalizeName(player.getName());
+            if (proxyVerifiedPremium.add(normalizedName)) {
+                logger.info("Proxy-verified premium (PostLogin fallback): '" + normalizedName
+                    + "' has a Mojang UUID");
+            }
+        }
     }
 
     void shutdown() {
@@ -350,14 +452,41 @@ public final class BungeeProxyBridge implements Listener {
         try {
             String typeId = input.readUTF();
             if (!LOGIN_MESSAGE.equals(typeId) && !LOGOUT_MESSAGE.equals(typeId)
-                    && !PERFORM_LOGIN_ACK_MESSAGE.equals(typeId)) {
+                    && !PERFORM_LOGIN_ACK_MESSAGE.equals(typeId)
+                    && !PREMIUM_SET_MESSAGE.equals(typeId)
+                    && !PREMIUM_UNSET_MESSAGE.equals(typeId)
+                    && !PREMIUM_LIST_MESSAGE.equals(typeId)
+                    && !PREMIUM_PENDING_SET_MESSAGE.equals(typeId)) {
                 return ParsedPluginMessage.ignored();
             }
-            return new ParsedPluginMessage(typeId, normalizeName(input.readUTF()));
+            // premium.list carries a CSV in the second field, not a player name; read as-is
+            String argument = input.readUTF();
+            return new ParsedPluginMessage(typeId,
+                PREMIUM_LIST_MESSAGE.equals(typeId) ? argument : normalizeName(argument));
         } catch (IllegalStateException e) {
             logger.warning("Received malformed AuthMe plugin message on the authme:main channel");
             return ParsedPluginMessage.ignored();
         }
+    }
+
+    private void redirectToLoginServer(String normalizedPlayerName) {
+        if (configuration.loginServer().isEmpty()) {
+            return;
+        }
+        ProxiedPlayer player = proxyServer.getPlayer(normalizedPlayerName);
+        if (player == null) {
+            logger.fine("Cannot redirect " + normalizedPlayerName + " to loginServer: player no longer on proxy");
+            return;
+        }
+        ServerInfo targetServer = proxyServer.getServerInfo(configuration.loginServer());
+        if (targetServer == null) {
+            logger.warning("loginServer '" + configuration.loginServer()
+                + "' is not registered on the proxy; cannot redirect " + normalizedPlayerName);
+            return;
+        }
+        logger.info("Redirecting " + normalizedPlayerName + " to login server '"
+            + configuration.loginServer() + "' after authentication");
+        player.connect(targetServer);
     }
 
     private void redirectLoggedOutPlayer(String normalizedPlayerName) {

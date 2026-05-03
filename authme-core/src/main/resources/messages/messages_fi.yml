@@ -214,3 +214,25 @@ admin:
         first_set_fail: '&cSetFirstSpawn epäonnistui, yritä uudelleen.'
         not_defined: '&cSpawn epäonnistui, yritä määrittää spawnauspiste.'
         first_not_defined: '&cEnsimmäinen spawn epäonnistui, yritä määrittää ensimmäinen spawnauspiste.'
+
+# Premium-tila
+premium:
+  feature_disabled: '&cPremium-tila ei ole käytössä tällä palvelimella.'
+  account_not_found: '&cKäyttäjänimellesi ei löytynyt yhtään Minecraft-premium-tiliä.'
+  already_enabled: '&ePremium-tila on jo käytössä tilillesi.'
+  enable_success: '&2Premium-tila aktivoitu! Sinun ei enää tarvitse kirjautua sisään.'
+  not_enabled: '&ePremium-tila ei ole käytössä tilillesi.'
+  disable_success: '&2Premium-tila poistettu käytöstä. Sinun täytyy kirjautua uudelleen.'
+  error: '&cPremium-tilasi tarkistamisessa tapahtui virhe. Yritä myöhemmin uudelleen.'
+  admin:
+    not_registered: '&c%name ei ole rekisteröitynyt.'
+    already_enabled: '&ePremium-tila on jo käytössä käyttäjälle %name.'
+    account_not_found: '&cMojang-tiliä ei löytynyt käyttäjälle %name.'
+    enable_success: '&2Premium-tila aktivoitu käyttäjälle %name.'
+    not_enabled: '&ePremium-tila ei ole käytössä käyttäjälle %name.'
+    disable_success: '&2Premium-tila poistettu käytöstä käyttäjälle %name.'
+    impostor_kicked: '&ePelaajalla, joka oli yhteydessä nimellä %name, oli eri UUID ja hänet potkittiin.'
+    kick_reason: '&cTilisi premium-asetuksia on muutettu ylläpitäjän toimesta. Yhdistä uudelleen.'
+    pending: '&ePremium-varmennus odottaa käyttäjälle %name. Heidän on yhdistettävä uudelleen vahvistaakseen Mojang-tilin omistajuuden.'
+  pending_kick: '&ePremium-varmennus pyydetty. Yhdistä uudelleen vahvistaaksesi Mojang-tilisi omistajuuden.'
+  pending_fail: '&cPremium-varmennus epäonnistui. Kirjaudu sisään salasanallasi.'

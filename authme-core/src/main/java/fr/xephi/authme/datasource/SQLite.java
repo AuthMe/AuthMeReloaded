@@ -25,6 +25,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import fr.xephi.authme.util.UuidUtils;
+
+import java.util.UUID;
+
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.getNullableLong;
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
 
@@ -192,6 +196,11 @@ public class SQLite extends AbstractSqlDataSource {
             if (!col.PLAYER_UUID.isEmpty() && isColumnMissing(md, col.PLAYER_UUID)) {
                 st.executeUpdate("ALTER TABLE " + tableName
                     + " ADD COLUMN " + col.PLAYER_UUID + " VARCHAR(36)");
+            }
+
+            if (!col.PREMIUM_UUID.isEmpty() && isColumnMissing(md, col.PREMIUM_UUID)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.PREMIUM_UUID + " VARCHAR(36)");
             }
         }
         logger.info("SQLite Setup finished");
@@ -369,6 +378,8 @@ public class SQLite extends AbstractSqlDataSource {
 
     private PlayerAuth buildAuthFromResultSet(ResultSet row) throws SQLException {
         String salt = !col.SALT.isEmpty() ? row.getString(col.SALT) : null;
+        UUID premiumUuid = col.PREMIUM_UUID.isEmpty()
+            ? null : UuidUtils.parseUuidSafely(row.getString(col.PREMIUM_UUID));
 
         return PlayerAuth.builder()
             .name(row.getString(col.NAME))
@@ -386,6 +397,7 @@ public class SQLite extends AbstractSqlDataSource {
             .locWorld(row.getString(col.LASTLOC_WORLD))
             .locYaw(row.getFloat(col.LASTLOC_YAW))
             .locPitch(row.getFloat(col.LASTLOC_PITCH))
+            .premiumUuid(premiumUuid)
             .build();
     }
 

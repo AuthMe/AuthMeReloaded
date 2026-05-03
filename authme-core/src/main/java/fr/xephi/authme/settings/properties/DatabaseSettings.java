@@ -138,6 +138,11 @@ public final class DatabaseSettings implements SettingsHolder {
     public static final Property<String> MYSQL_COL_PLAYER_UUID =
         newProperty( "DataSource.mySQLPlayerUUID", "" );
 
+    @Comment({"Column for storing the Mojang UUID of premium players",
+        "(null if premium mode is off for this player)"})
+    public static final Property<String> MYSQL_COL_PREMIUM_UUID =
+        newProperty("DataSource.mySQLColumnPremiumUUID", "premiumUUID");
+
     @Comment("Column for storing players groups")
     public static final Property<String> MYSQL_COL_GROUP =
         newProperty("ExternalBoardOptions.mySQLColumnGroup", "");

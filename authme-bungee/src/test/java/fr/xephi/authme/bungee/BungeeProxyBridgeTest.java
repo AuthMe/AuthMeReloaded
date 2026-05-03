@@ -155,7 +155,7 @@ class BungeeProxyBridgeTest {
         BungeeProxyBridge bridge = new BungeeProxyBridge(
             proxyServer, logger, new BungeeProxyConfiguration(
                 Set.of("lobby"), false, true, Set.of("/login"), true, true,
-                "Authentication required.", true, true, "limbo", ""),
+                "Authentication required.", true, true, "limbo", "", ""),
             new BungeeAuthenticationStore());
         bridge.onPluginMessage(pluginMessageEvent);
 
@@ -441,7 +441,7 @@ class BungeeProxyBridgeTest {
     private static BungeeProxyConfiguration createConfiguration() {
         return new BungeeProxyConfiguration(
             Set.of("lobby"), false, true, Set.of("/login", "/register", "/l", "/reg", "/email", "/captcha", "/2fa", "/totp", "/log"),
-            true, true, "Authentication required.", true, false, "", "test-secret");
+            true, true, "Authentication required.", true, false, "", "", "test-secret");
     }
 
     private static byte[] createAuthMePayload(String typeId, String playerName) {

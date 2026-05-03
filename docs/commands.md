@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Thu Apr 23 19:32:20 CEST 2026. See authme-tools/src/test/java/tools/docs/commands/commands.tpl.md -->
+<!-- File auto-generated on Sat May 02 03:44:30 CEST 2026. See authme-tools/src/test/java/tools/docs/commands/commands.tpl.md -->
 
 ## AuthMe Commands
 You can use the following commands to use the features of AuthMe. Mandatory arguments are marked with `< >`
@@ -59,6 +59,10 @@ The command tree is shared across the current Spigot Legacy, Spigot 1.21, and Pa
   <br />Requires `authme.admin.updatemessages`
 - **/authme recent**: Shows the last players that have logged in.
   <br />Requires `authme.admin.seerecent`
+- **/authme premium** &lt;player>: Enables premium mode for the specified player.
+  <br />Requires `authme.admin.setpremium`
+- **/authme freemium** &lt;player>: Disables premium mode for the specified player.
+  <br />Requires `authme.admin.setfreemium`
 - **/authme debug** [child] [arg] [arg]: Allows various operations for debugging.
   <br />Requires `authme.debug.command`
 - **/authme help** [query]: View detailed help for /authme commands.
@@ -106,8 +110,14 @@ The command tree is shared across the current Spigot Legacy, Spigot 1.21, and Pa
 - **/verification** &lt;code>: Command to complete the verification process for AuthMeReloaded.
   <br />Requires `authme.player.security.verificationcode`
 - **/verification help** [query]: View detailed help for /verification commands.
+- **/premium**: Enables premium mode: skip authentication with a verified Mojang account.
+  <br />Requires `authme.player.premium`
+- **/premium help** [query]: View detailed help for /premium commands.
+- **/freemium**: Disables premium mode and restores password-based authentication.
+  <br />Requires `authme.player.freemium`
+- **/freemium help** [query]: View detailed help for /freemium commands.
 
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Thu Apr 23 19:32:20 CEST 2026
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat May 02 03:44:30 CEST 2026

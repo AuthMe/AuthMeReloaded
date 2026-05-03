@@ -214,3 +214,25 @@ admin:
         first_set_fail: '&cSetFirstSpawn has failed, please retry.'
         not_defined: '&cSpawn has failed, please try to define the spawn.'
         first_not_defined: '&cFirst spawn has failed, please try to define the first spawn.'
+
+# Premium modua
+premium:
+  feature_disabled: '&cPremium modua ez dago gaitu zerbitzari honetan.'
+  account_not_found: '&cEz da aurkitu zure erabiltzaile-izenerako Minecraft premium konturik.'
+  already_enabled: '&ePremium modua dagoeneko gaituta dago zure kontuan.'
+  enable_success: '&2Premium modua gaituta! Ez duzu gehiago autentifikatu beharko saioa hasterakoan.'
+  not_enabled: '&ePremium modua ez dago gaituta zure kontuan.'
+  disable_success: '&2Premium modua desgaitu da. Berriro autentifikatu beharko duzu.'
+  error: '&cErrore bat gertatu da zure premium egoera egiaztatzean. Mesedez, saiatu berriro geroago.'
+  admin:
+    not_registered: '&c%name ez dago erregistratuta.'
+    already_enabled: '&ePremium modua dagoeneko gaituta dago %name erabiltzailearentzat.'
+    account_not_found: '&cEz da aurkitu %name-rentzako Mojang konturik.'
+    enable_success: '&2Premium modua gaituta %name erabiltzailearentzat.'
+    not_enabled: '&ePremium modua ez dago gaituta %name erabiltzailearentzat.'
+    disable_success: '&2Premium modua desgaituta %name erabiltzailearentzat.'
+    impostor_kicked: '&e%name bezala konektatuta zegoen jokalari batek UUID desberdina zuen eta kanporatu da.'
+    kick_reason: '&cZure kontuaren premium ezarpenak administratzaileak aldatu ditu. Mesedez, berriro konektatu.'
+    pending: '&ePremium egiaztapena zain dago %name erabiltzailearentzat. Berr konektatu behar dute Mojang kontuaren jabetza baieztatzeko.'
+  pending_kick: '&ePremium egiaztapena eskatuta. Berr konektatu zaitez zure Mojang kontuaren jabetza baieztatzeko.'
+  pending_fail: '&cPremium egiaztapenak huts egin du. Mesedez, saioa hasi zure pasahitzarekin.'

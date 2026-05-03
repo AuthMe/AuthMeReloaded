@@ -214,3 +214,25 @@ admin:
         first_set_fail: '&cSetFirstSpawn nie powiódł się, spróbuj ponownie.'
         not_defined: '&cSpawn nie powiódł się, spróbuj zdefiniować spawn.'
         first_not_defined: '&cPierwszy spawn nie powiódł się, spróbuj zdefiniować pierwszy spawn.'
+
+# Tryb premium
+premium:
+  feature_disabled: '&cTryb premium nie jest włączony na tym serwerze.'
+  account_not_found: '&cNie znaleziono konta Minecraft premium dla Twojej nazwy użytkownika.'
+  already_enabled: '&eTryb premium jest już włączony dla Twojego konta.'
+  enable_success: '&2Tryb premium włączony! Nie będziesz już musiał się uwierzytelniać przy logowaniu.'
+  not_enabled: '&eTryb premium nie jest włączony dla Twojego konta.'
+  disable_success: '&2Tryb premium wyłączony. Będziesz musiał się ponownie uwierzytelniać.'
+  error: '&cWystąpił błąd podczas weryfikacji Twojego statusu premium. Spróbuj ponownie później.'
+  admin:
+    not_registered: '&c%name nie jest zarejestrowany.'
+    already_enabled: '&eTryb premium jest już włączony dla %name.'
+    account_not_found: '&cNie znaleziono konta Mojang dla %name.'
+    enable_success: '&2Tryb premium włączony dla %name.'
+    not_enabled: '&eTryb premium nie jest włączony dla %name.'
+    disable_success: '&2Tryb premium wyłączony dla %name.'
+    impostor_kicked: '&eGracz połączony jako %name miał inny UUID i został wyrzucony.'
+    kick_reason: '&cUstawienia premium Twojego konta zostały zmienione przez administratora. Połącz się ponownie.'
+    pending: '&eWeryfikacja premium oczekuje dla %name. Muszą się ponownie połączyć, aby potwierdzić właściciela konta Mojang.'
+  pending_kick: '&eZażądano weryfikacji premium. Połącz się ponownie, aby potwierdzić właściciela swojego konta Mojang.'
+  pending_fail: '&cWeryfikacja premium nie powiodła się. Zaloguj się za pomocą hasła.'

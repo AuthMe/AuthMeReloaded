@@ -213,3 +213,25 @@ admin:
     first_set_fail: '&cSetFirstSpawn a eșuat, te rugăm să reîncerci.'
     not_defined: '&cSpawn-ul a eșuat, te rugăm să încearcă să definești spawn-ul.'
     first_not_defined: '&cPrimul spawn a eșuat, te rugăm să încearcă să definești primul spawn.'
+
+# Modul premium
+premium:
+  feature_disabled: '&cModul premium nu este activat pe acest server.'
+  account_not_found: '&cNu a fost găsit niciun cont Minecraft premium pentru numele tău de utilizator.'
+  already_enabled: '&eModul premium este deja activat pentru contul tău.'
+  enable_success: '&2Modul premium activat! Nu va mai trebui să te autentifici la conectare.'
+  not_enabled: '&eModul premium nu este activat pentru contul tău.'
+  disable_success: '&2Modul premium dezactivat. Va trebui să te autentifici din nou.'
+  error: '&cA apărut o eroare la verificarea statusului tău premium. Te rugăm să încerci din nou mai târziu.'
+  admin:
+    not_registered: '&c%name nu este înregistrat.'
+    already_enabled: '&eModul premium este deja activat pentru %name.'
+    account_not_found: '&cNu a fost găsit niciun cont Mojang pentru %name.'
+    enable_success: '&2Modul premium activat pentru %name.'
+    not_enabled: '&eModul premium nu este activat pentru %name.'
+    disable_success: '&2Modul premium dezactivat pentru %name.'
+    impostor_kicked: '&eUn jucător conectat ca %name a avut un UUID diferit și a fost dat afară.'
+    kick_reason: '&cSetările premium ale contului tău au fost modificate de un administrator. Te rugăm să te reconectezi.'
+    pending: '&eVerificarea premium este în așteptare pentru %name. Trebuie să se reconecteze pentru a confirma proprietatea contului Mojang.'
+  pending_kick: '&eVerificare premium solicitată. Te rugăm să te reconectezi pentru a confirma proprietatea contului tău Mojang.'
+  pending_fail: '&cVerificarea premium a eșuat. Te rugăm să te conectezi cu parola ta.'

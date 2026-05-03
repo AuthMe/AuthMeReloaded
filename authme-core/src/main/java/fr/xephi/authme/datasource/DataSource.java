@@ -262,6 +262,23 @@ public interface DataSource extends Reloadable {
     }
 
     /**
+     * Updates the premium UUID of the given PlayerAuth object.
+     * Set {@link PlayerAuth#getPremiumUuid()} to the Mojang UUID to enable premium mode,
+     * or to null to disable it.
+     *
+     * @param auth the PlayerAuth whose premium UUID should be updated
+     * @return True upon success, false upon failure
+     */
+    boolean updatePremiumUuid(PlayerAuth auth);
+
+    /**
+     * Returns a list of all lowercase player names that have premium mode enabled.
+     *
+     * @return list of premium player names (lowercase)
+     */
+    List<String> getPremiumUsernames();
+
+    /**
      * Reload the data source.
      */
     @Override

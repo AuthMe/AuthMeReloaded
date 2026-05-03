@@ -45,7 +45,7 @@ class CommandInitializerTest {
         // It obviously doesn't make sense to test much of the concrete data
         // that is being initialized; we just want to guarantee with this test
         // that data is indeed being initialized and we take a few "probes"
-        assertThat(commands, hasSize(10));
+        assertThat(commands, hasSize(12));
         assertThat(commandsIncludeLabel(commands, "authme"), equalTo(true));
         assertThat(commandsIncludeLabel(commands, "register"), equalTo(true));
         assertThat(commandsIncludeLabel(commands, "help"), equalTo(false));

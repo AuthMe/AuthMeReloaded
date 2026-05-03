@@ -214,3 +214,25 @@ admin:
         first_set_fail: '&cSetFirstSpawn is mislukt, probeer het opnieuw.'
         not_defined: '&cSpawn mislukt, probeer het spawnpunt te definiëren.'
         first_not_defined: '&cEerste spawn mislukt, probeer het eerste spawnpunt te definiëren.'
+
+# Premium modus
+premium:
+  feature_disabled: '&cDe premium modus is niet ingeschakeld op deze server.'
+  account_not_found: '&cGeen premium Minecraft-account gevonden voor jouw gebruikersnaam.'
+  already_enabled: '&eDe premium modus is al ingeschakeld voor jouw account.'
+  enable_success: '&2Premium modus ingeschakeld! Je hoeft je niet meer te authenticeren bij het inloggen.'
+  not_enabled: '&eDe premium modus is niet ingeschakeld voor jouw account.'
+  disable_success: '&2Premium modus uitgeschakeld. Je moet je opnieuw authenticeren.'
+  error: '&cEr is een fout opgetreden bij het controleren van jouw premium status. Probeer het later opnieuw.'
+  admin:
+    not_registered: '&c%name is niet geregistreerd.'
+    already_enabled: '&eDe premium modus is al ingeschakeld voor %name.'
+    account_not_found: '&cGeen Mojang-account gevonden voor %name.'
+    enable_success: '&2Premium modus ingeschakeld voor %name.'
+    not_enabled: '&eDe premium modus is niet ingeschakeld voor %name.'
+    disable_success: '&2Premium modus uitgeschakeld voor %name.'
+    impostor_kicked: '&eEen speler die verbonden was als %name had een afwijkende UUID en is gekickt.'
+    kick_reason: '&cDe premium instellingen van jouw account zijn gewijzigd door een beheerder. Verbind opnieuw.'
+    pending: '&ePremium verificatie in behandeling voor %name. Ze moeten opnieuw verbinden om het eigenaarschap van het Mojang-account te bevestigen.'
+  pending_kick: '&ePremium verificatie aangevraagd. Verbind opnieuw om het eigenaarschap van jouw Mojang-account te bevestigen.'
+  pending_fail: '&cPremium verificatie mislukt. Log in met jouw wachtwoord.'

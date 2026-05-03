@@ -8,7 +8,11 @@ import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.platform.PacketInterceptionAdapter;
 import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.PendingPremiumCache;
+import fr.xephi.authme.service.PremiumLoginVerifier;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.settings.properties.PremiumSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -22,21 +26,29 @@ public class PacketEventsService implements SettingsDependent {
 
     private boolean protectInvBeforeLogin;
     private boolean denyTabCompleteBeforeLogin;
+    private boolean enablePremium;
+    private boolean bungeecordEnabled;
     private boolean inventoryProtectionRegistered;
     private boolean tabCompleteBlockRegistered;
+    private boolean premiumVerificationRegistered;
 
     private final BukkitService bukkitService;
     private final PlayerCache playerCache;
     private final DataSource dataSource;
     private final PacketInterceptionAdapter packetInterceptionAdapter;
+    private final PremiumLoginVerifier premiumLoginVerifier;
+    private final PendingPremiumCache pendingPremiumCache;
 
     @Inject
     PacketEventsService(Settings settings, BukkitService bukkitService, PlayerCache playerCache,
-                        DataSource dataSource, PacketInterceptionAdapter packetInterceptionAdapter) {
+                        DataSource dataSource, PacketInterceptionAdapter packetInterceptionAdapter,
+                        PremiumLoginVerifier premiumLoginVerifier, PendingPremiumCache pendingPremiumCache) {
         this.bukkitService = bukkitService;
         this.playerCache = playerCache;
         this.dataSource = dataSource;
         this.packetInterceptionAdapter = packetInterceptionAdapter;
+        this.premiumLoginVerifier = premiumLoginVerifier;
+        this.pendingPremiumCache = pendingPremiumCache;
         reload(settings);
     }
 
@@ -44,12 +56,22 @@ public class PacketEventsService implements SettingsDependent {
      * Sets up the PacketEvents packet listeners.
      */
     public void setup() {
-        if (!Bukkit.getPluginManager().isPluginEnabled("packetevents")) {
+        boolean isProxyMode = bungeecordEnabled || packetInterceptionAdapter.isProxyForwardingEnabled();
+        boolean needsPremiumPacketVerification = enablePremium
+            && !Bukkit.getServer().getOnlineMode()
+            && !isProxyMode;
+
+        boolean packetEventsAvailable = Bukkit.getPluginManager().isPluginEnabled("packetevents");
+        if (!packetEventsAvailable) {
             if (protectInvBeforeLogin) {
                 logger.warning("WARNING! The protectInventory feature requires PacketEvents! Disabling it...");
             }
             if (denyTabCompleteBeforeLogin) {
                 logger.warning("WARNING! The denyTabComplete feature requires PacketEvents! Disabling it...");
+            }
+            if (needsPremiumPacketVerification) {
+                logger.warning("WARNING! Premium bypass requires the PacketEvents plugin for session "
+                    + "verification! Premium auto-login is disabled until PacketEvents is installed.");
             }
             return;
         }
@@ -80,6 +102,17 @@ public class PacketEventsService implements SettingsDependent {
             packetInterceptionAdapter.unregisterTabCompleteBlock();
             tabCompleteBlockRegistered = false;
         }
+
+        if (needsPremiumPacketVerification) {
+            if (!premiumVerificationRegistered) {
+                packetInterceptionAdapter.registerPremiumVerification(dataSource, premiumLoginVerifier,
+                    pendingPremiumCache);
+                premiumVerificationRegistered = true;
+            }
+        } else if (premiumVerificationRegistered) {
+            packetInterceptionAdapter.unregisterPremiumVerification();
+            premiumVerificationRegistered = false;
+        }
     }
 
     /**
@@ -93,6 +126,10 @@ public class PacketEventsService implements SettingsDependent {
         if (tabCompleteBlockRegistered) {
             packetInterceptionAdapter.unregisterTabCompleteBlock();
             tabCompleteBlockRegistered = false;
+        }
+        if (premiumVerificationRegistered) {
+            packetInterceptionAdapter.unregisterPremiumVerification();
+            premiumVerificationRegistered = false;
         }
     }
 
@@ -113,6 +150,8 @@ public class PacketEventsService implements SettingsDependent {
 
         this.protectInvBeforeLogin = settings.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN);
         this.denyTabCompleteBeforeLogin = settings.getProperty(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN);
+        this.enablePremium = settings.getProperty(PremiumSettings.ENABLE_PREMIUM);
+        this.bungeecordEnabled = settings.getProperty(HooksSettings.BUNGEECORD);
 
         // If inventory protection was on and is now disabled, restore inventories for online players
         if (oldProtectInventory && !protectInvBeforeLogin && inventoryProtectionRegistered) {

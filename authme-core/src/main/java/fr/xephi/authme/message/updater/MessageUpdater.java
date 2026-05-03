@@ -152,6 +152,7 @@ public class MessageUpdater {
             .put("dialog", "Dialog UI")
             .put("command", "Command validation messages")
             .put("admin", "Admin command messages")
+            .put("premium", "Premium mode")
             .build();
 
         Set<String> addedKeys = new HashSet<>();

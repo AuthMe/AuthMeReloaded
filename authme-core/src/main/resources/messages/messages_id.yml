@@ -214,3 +214,25 @@ admin:
         first_set_fail: '&cSetFirstSpawn gagal, coba lagi.'
         not_defined: '&cSpawn gagal, coba tentukan titik spawn.'
         first_not_defined: '&cSpawn pertama gagal, coba tentukan titik spawn pertama.'
+
+# Mode premium
+premium:
+  feature_disabled: '&cMode premium tidak diaktifkan di server ini.'
+  account_not_found: '&cTidak ditemukan akun Minecraft premium untuk nama pengguna Anda.'
+  already_enabled: '&eMode premium sudah diaktifkan untuk akun Anda.'
+  enable_success: '&2Mode premium diaktifkan! Anda tidak perlu lagi melakukan autentikasi saat login.'
+  not_enabled: '&eMode premium tidak diaktifkan untuk akun Anda.'
+  disable_success: '&2Mode premium dinonaktifkan. Anda perlu melakukan autentikasi kembali.'
+  error: '&cTerjadi kesalahan saat memverifikasi status premium Anda. Silakan coba lagi nanti.'
+  admin:
+    not_registered: '&c%name tidak terdaftar.'
+    already_enabled: '&eMode premium sudah diaktifkan untuk %name.'
+    account_not_found: '&cTidak ditemukan akun Mojang untuk %name.'
+    enable_success: '&2Mode premium diaktifkan untuk %name.'
+    not_enabled: '&eMode premium tidak diaktifkan untuk %name.'
+    disable_success: '&2Mode premium dinonaktifkan untuk %name.'
+    impostor_kicked: '&eSeorang pemain yang terhubung sebagai %name memiliki UUID yang tidak cocok dan telah dikeluarkan.'
+    kick_reason: '&cPengaturan premium akun Anda telah diubah oleh admin. Silakan sambungkan kembali.'
+    pending: '&eVerifikasi premium sedang menunggu untuk %name. Mereka harus terhubung kembali untuk mengonfirmasi kepemilikan akun Mojang.'
+  pending_kick: '&eVerifikasi premium diminta. Silakan terhubung kembali untuk mengonfirmasi kepemilikan akun Mojang Anda.'
+  pending_fail: '&cVerifikasi premium gagal. Silakan login dengan kata sandi Anda.'

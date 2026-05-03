@@ -214,3 +214,25 @@ admin:
         first_set_fail: '&cSetFirstSpawn selhal, prosím zkus to znovu.'
         not_defined: '&cSpawn selhal, prosím zkus definovat spawn.'
         first_not_defined: '&cPrvní spawn selhal, prosím zkus definovat první spawn.'
+
+# Prémiový režim
+premium:
+    feature_disabled: '&cPrémiový režim není na tomto serveru povolen.'
+    account_not_found: '&cPro toto uživatelské jméno nebyl nalezen žádný prémiový účet Minecraft.'
+    already_enabled: '&ePrémiový režim je pro váš účet již povolen.'
+    enable_success: '&2Prémiový režim byl aktivován! Při přihlašování se již nebudete muset ověřovat.'
+    not_enabled: '&ePrémiový režim není pro váš účet povolen.'
+    disable_success: '&2Prémiový režim byl deaktivován. Budete se muset znovu ověřit.'
+    error: '&cPři ověřování vašeho prémiového stavu došlo k chybě. Zkuste to prosím znovu.'
+    admin:
+        not_registered: '&c%name není zaregistrován.'
+        already_enabled: '&ePrémiový režim je pro %name již povolen.'
+        account_not_found: '&cPro %name nebyl nalezen žádný účet Mojang.'
+        enable_success: '&2Prémiový režim byl aktivován pro %name.'
+        not_enabled: '&ePrémiový režim není pro %name povolen.'
+        disable_success: '&2Prémiový režim byl deaktivován pro %name.'
+        impostor_kicked: '&eHráč připojený jako %name měl neshodující se UUID a byl vyhozen.'
+        kick_reason: '&cNastavení premium vašeho účtu bylo změněno administrátorem. Připojte se znovu.'
+        pending: '&ePrémiové ověření čeká na vyřízení pro %name. Musí se znovu připojit, aby potvrdili vlastnictví účtu Mojang.'
+    pending_kick: '&ePrémiové ověření bylo vyžádáno. Připojte se prosím znovu, abyste potvrdili vlastnictví svého účtu Mojang.'
+    pending_fail: '&cPrémiové ověření se nezdařilo. Přihlaste se prosím pomocí hesla.'

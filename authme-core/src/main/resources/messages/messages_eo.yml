@@ -214,3 +214,25 @@ admin:
         first_set_fail: '&cSetFirstSpawn has failed, please retry.'
         not_defined: '&cSpawn has failed, please try to define the spawn.'
         first_not_defined: '&cFirst spawn has failed, please try to define the first spawn.'
+
+# Superpaga reĝimo
+premium:
+    feature_disabled: '&cSuperpaga reĝimo ne estas aktivigita sur ĉi tiu servilo.'
+    account_not_found: '&cNeniu superpaga Minecraft-konto trovita por via uzantnomo.'
+    already_enabled: '&eSuperpaga reĝimo jam estas aktivigita por via konto.'
+    enable_success: '&2Superpaga reĝimo aktivigita! Vi ne plu bezonos aŭtentikigi dum ensaluto.'
+    not_enabled: '&eSuperpaga reĝimo ne estas aktivigita por via konto.'
+    disable_success: '&2Superpaga reĝimo malaktivigita. Vi devos denove aŭtentikigi.'
+    error: '&cEraro okazis dum kontrolado de via superpaga stato. Bonvolu reprovi poste.'
+    admin:
+        not_registered: '&c%name ne estas registrita.'
+        already_enabled: '&eSuperpaga reĝimo jam estas aktivigita por %name.'
+        account_not_found: '&cNeniu Mojang-konto trovita por %name.'
+        enable_success: '&2Superpaga reĝimo aktivigita por %name.'
+        not_enabled: '&eSuperpaga reĝimo ne estas aktivigita por %name.'
+        disable_success: '&2Superpaga reĝimo malaktivigita por %name.'
+        impostor_kicked: '&eLudanto konektita kiel %name havis malsaman UUID kaj estis forĵetita.'
+        kick_reason: '&cViaj superpagaj agordoj estis ŝanĝitaj de administranto. Bonvolu rekonekti.'
+        pending: '&eSuperpaga konfirmado estas ankoraŭ traktata por %name. Ili devas rekonekti por konfirmi proprieton de la Mojang-konto.'
+    pending_kick: '&eSuperpaga konfirmado estis petita. Bonvolu rekonekti por konfirmi proprieton de via Mojang-konto.'
+    pending_fail: '&cSuperpaga konfirmado malsukcesis. Bonvolu ensaluti per via pasvorto.'

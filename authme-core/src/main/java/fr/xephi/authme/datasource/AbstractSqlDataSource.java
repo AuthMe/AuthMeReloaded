@@ -16,6 +16,7 @@ import java.util.List;
 import static ch.jalu.datasourcecolumns.data.UpdateValues.with;
 import static ch.jalu.datasourcecolumns.predicate.StandardPredicates.eq;
 import static ch.jalu.datasourcecolumns.predicate.StandardPredicates.eqIgnoreCase;
+import static ch.jalu.datasourcecolumns.predicate.StandardPredicates.isNotNull;
 import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
 
 /**
@@ -151,6 +152,21 @@ public abstract class AbstractSqlDataSource implements DataSource {
     @Override
     public int getAccountsRegistered() {
         return columnsHandler.count(new AlwaysTruePredicate<>());
+    }
+
+    @Override
+    public boolean updatePremiumUuid(PlayerAuth auth) {
+        return columnsHandler.update(auth, AuthMeColumns.PREMIUM_UUID);
+    }
+
+    @Override
+    public List<String> getPremiumUsernames() {
+        try {
+            return columnsHandler.retrieve(isNotNull(AuthMeColumns.PREMIUM_UUID), AuthMeColumns.NAME);
+        } catch (SQLException e) {
+            logSqlException(e);
+            return Collections.emptyList();
+        }
     }
 
     @Override
