@@ -126,6 +126,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
         PreJoinDialogService.PendingRegistration pendingRegistration =
             preJoinDialogService.consumePendingRegistration(playerId);
         boolean shouldSkipPostJoinDialog = preJoinDialogService.consumeSkipPostJoinDialog(playerId);
+        boolean pendingForceLogin = preJoinDialogService.consumePendingForceLogin(playerId);
 
         if (!validationService.fulfillsNameRestrictions(player)) {
             handlePlayerWithUnmetNameRestriction(player, ip);
@@ -176,7 +177,10 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 // Run commands
                 bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player,
                     () -> commandManager.runCommandsOnSessionLogin(player));
-                bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
+                // Use forceLoginFromProxy (quiet=true, no BungeeCord redirect) so that if
+                // BungeeReceiver.performLogin() concurrently already completed the login, this
+                // call is a no-op rather than sending an "already logged in" error.
+                bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLoginFromProxy(player));
                 logger.info("The user " + player.getName() + " has been automatically logged in, "
                     + "as present in autologin queue.");
                 return;
@@ -197,7 +201,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             return;
         }
 
-        processJoinSync(player, isAuthAvailable, pendingLoginPassword, pendingRegistration, shouldSkipPostJoinDialog);
+        processJoinSync(player, isAuthAvailable, pendingLoginPassword, pendingRegistration, shouldSkipPostJoinDialog, pendingForceLogin);
     }
 
     private void handlePlayerWithUnmetNameRestriction(Player player, String ip) {
@@ -217,7 +221,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
      */
     private void processJoinSync(Player player, boolean isAuthAvailable, String pendingLoginPassword,
                                  PreJoinDialogService.PendingRegistration pendingRegistration,
-                                 boolean shouldSkipPostJoinDialog) {
+                                 boolean shouldSkipPostJoinDialog, boolean pendingForceLogin) {
         int registrationTimeout = service.getProperty(
             isAuthAvailable ? RestrictionSettings.LOGIN_TIMEOUT : RestrictionSettings.REGISTER_TIMEOUT
         ) * TICKS_PER_SECOND;
@@ -241,6 +245,10 @@ public class AsynchronousJoin implements AsynchronousProcess {
             }
             if (pendingLoginPassword != null) {
                 bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.login(player, pendingLoginPassword));
+                return;
+            }
+            if (pendingForceLogin) {
+                bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
                 return;
             }
             if (!shouldSkipPostJoinDialog

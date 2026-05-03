@@ -8,6 +8,7 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.ValidationService;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -20,6 +21,7 @@ import java.util.Collections;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -43,6 +45,9 @@ public class AddEmailCommandTest {
     @Mock
     private Messages messages;
 
+    @Mock
+    private ValidationService validationService;
+
     @Test
     public void shouldRejectNonPlayerSender() {
         // given
@@ -59,7 +64,8 @@ public class AddEmailCommandTest {
     public void shouldForwardData() {
         // given
         Player sender = mock(Player.class);
-        String email = "mail@example";
+        String email = "mail@example.com";
+        given(validationService.validateEmail(email)).willReturn(true);
 
         // when
         command.executeCommand(sender, Arrays.asList(email, email));
@@ -69,10 +75,26 @@ public class AddEmailCommandTest {
     }
 
     @Test
+    public void shouldFailForInvalidEmailFormat() {
+        // given
+        Player sender = mock(Player.class);
+        String email = "notanemail";
+        given(validationService.validateEmail(email)).willReturn(false);
+
+        // when
+        command.executeCommand(sender, Arrays.asList(email, email));
+
+        // then
+        verifyNoInteractions(management);
+        verify(commandService).send(sender, MessageKey.INVALID_EMAIL);
+    }
+
+    @Test
     public void shouldFailForConfirmationMismatch() {
         // given
         Player sender = mock(Player.class);
         String email = "asdfasdf@example.com";
+        given(validationService.validateEmail(email)).willReturn(true);
 
         // when
         command.executeCommand(sender, Arrays.asList(email, "wrongConf"));

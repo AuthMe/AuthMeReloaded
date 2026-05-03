@@ -9,6 +9,7 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.ValidationService;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -47,6 +48,9 @@ public class ChangeEmailCommandTest {
     private VerificationCodeManager codeManager;
 
     @Mock
+    private ValidationService validationService;
+
+    @Mock
     private Messages messages;
 
 
@@ -83,13 +87,45 @@ public class ChangeEmailCommandTest {
         // given
         Player sender = initPlayerWithName("AmATest");
         given(codeManager.isVerificationRequired(sender)).willReturn(false);
+        given(validationService.validateEmail("old_mail@example.org")).willReturn(true);
+        given(validationService.validateEmail("new.mail@example.org")).willReturn(true);
 
         // when
-        command.executeCommand(sender, Arrays.asList("new.mail@example.org", "old_mail@example.org"));
+        command.executeCommand(sender, Arrays.asList("old_mail@example.org", "new.mail@example.org"));
 
         // then
-        verify(management).performChangeEmail(sender, "new.mail@example.org", "old_mail@example.org");
-        verify(codeManager).isVerificationRequired(sender);
+        verify(management).performChangeEmail(sender, "old_mail@example.org", "new.mail@example.org");
+    }
+
+    @Test
+    public void shouldFailForInvalidOldEmail() {
+        // given
+        Player sender = initPlayerWithName("AmATest");
+        given(codeManager.isVerificationRequired(sender)).willReturn(false);
+        given(validationService.validateEmail("notanemail")).willReturn(false);
+
+        // when
+        command.executeCommand(sender, Arrays.asList("notanemail", "new@example.org"));
+
+        // then
+        verifyNoInteractions(management);
+        verify(commonService).send(sender, MessageKey.INVALID_OLD_EMAIL);
+    }
+
+    @Test
+    public void shouldFailForInvalidNewEmail() {
+        // given
+        Player sender = initPlayerWithName("AmATest");
+        given(codeManager.isVerificationRequired(sender)).willReturn(false);
+        given(validationService.validateEmail("old@example.org")).willReturn(true);
+        given(validationService.validateEmail("notanemail")).willReturn(false);
+
+        // when
+        command.executeCommand(sender, Arrays.asList("old@example.org", "notanemail"));
+
+        // then
+        verifyNoInteractions(management);
+        verify(commonService).send(sender, MessageKey.INVALID_NEW_EMAIL);
     }
 
     @Test

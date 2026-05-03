@@ -184,6 +184,25 @@ public class AsynchronousJoinTest {
     }
 
     @Test
+    public void shouldAutoLoginFromProxySessionWithoutCreatingLimbo() {
+        // given
+        Player player = mockPlayer("Bobby");
+        setUpRegisteredJoin(player);
+        given(proxySessionManager.shouldResumeSession("bobby")).willReturn(true);
+
+        // when
+        asynchronousJoin.processJoin(player);
+
+        // then - uses forceLoginFromProxy (quiet, no redirect) so a concurrent BungeeReceiver
+        // login does not cause an "already logged in" error
+        verify(service).send(player, fr.xephi.authme.message.MessageKey.SESSION_RECONNECTION);
+        verify(commandManager).runCommandsOnSessionLogin(player);
+        verify(asynchronousLogin).forceLoginFromProxy(player);
+        verify(asynchronousLogin, never()).forceLogin(player);
+        verify(limboService, never()).createLimboPlayer(player, true);
+    }
+
+    @Test
     public void shouldProcessPendingPreJoinLoginInsteadOfShowingDialog() {
         // given
         Player player = mockPlayer("Bobby");
@@ -201,6 +220,25 @@ public class AsynchronousJoinTest {
         verify(limboService).createLimboPlayer(player, true);
         verify(asynchronousLogin).login(player, "hunter2");
         verify(dialogAdapter, never()).showLoginDialog(eq(player), any(DialogWindowSpec.class));
+    }
+
+    @Test
+    public void shouldForceLoginPlayerApprovedViaPreJoinDialog() {
+        // given
+        Player player = mockPlayer("Bobby");
+        setUpRegisteredJoin(player);
+        java.util.UUID playerId = java.util.UUID.randomUUID();
+        given(player.getUniqueId()).willReturn(playerId);
+        given(preJoinDialogService.consumePendingForceLogin(playerId)).willReturn(true);
+
+        // when
+        asynchronousJoin.processJoin(player);
+
+        // then
+        verify(limboService).createLimboPlayer(player, true);
+        verify(asynchronousLogin).forceLogin(player);
+        verify(asynchronousLogin, never()).login(eq(player), any());
+        verify(dialogAdapter, never()).showLoginDialog(eq(player), any());
     }
 
     @Test

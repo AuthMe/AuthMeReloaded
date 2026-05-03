@@ -16,9 +16,11 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PasswordRecoveryService;
 import fr.xephi.authme.service.RecoveryCodeService;
+import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
@@ -30,6 +32,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -71,6 +74,9 @@ public class RecoverEmailCommandTest {
     private BukkitService bukkitService;
 
     @Mock
+    private ValidationService validationService;
+
+    @Mock
     private Messages messages;
 
     @BeforeAll
@@ -81,6 +87,11 @@ public class RecoverEmailCommandTest {
     @BeforeInjecting
     public void initSettings() {
         given(commonService.getProperty(SecuritySettings.EMAIL_RECOVERY_COOLDOWN_SECONDS)).willReturn(40);
+    }
+
+    @BeforeEach
+    public void allowValidEmailsByDefault() {
+        lenient().when(validationService.validateEmail(anyString())).thenReturn(true);
     }
 
     @Test
@@ -113,6 +124,24 @@ public class RecoverEmailCommandTest {
         verify(emailService).hasAllInformation();
         verifyNoInteractions(dataSource);
         verify(commonService).send(sender, MessageKey.ALREADY_LOGGED_IN_ERROR);
+    }
+
+    @Test
+    public void shouldRejectInvalidEmailFormat() {
+        // given
+        String name = "SomePlayer";
+        Player sender = mock(Player.class);
+        given(sender.getName()).willReturn(name);
+        given(emailService.hasAllInformation()).willReturn(true);
+        given(playerCache.isAuthenticated(name)).willReturn(false);
+        given(validationService.validateEmail("notanemail")).willReturn(false);
+
+        // when
+        command.executeCommand(sender, Collections.singletonList("notanemail"));
+
+        // then
+        verifyNoInteractions(dataSource);
+        verify(commonService).send(sender, MessageKey.INVALID_EMAIL);
     }
 
     @Test

@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Fri Apr 24 19:09:21 CEST 2026. See authme-tools/src/test/java/tools/docs/config/config.tpl.md -->
+<!-- File auto-generated on Tue Apr 28 23:00:57 CEST 2026. See authme-tools/src/test/java/tools/docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder,
@@ -336,6 +336,9 @@ settings:
             # If disabled, the dialog stays open until it is submitted,
             # cancelled, or the timeout disconnects the player.
             allowCloseWithEscape: false
+            # Kick players who cancel the Paper/Folia pre-join register dialog.
+            # When false, cancelling lets the player join and shows a post-join register dialog instead.
+            registerCancelKicks: false
     # Enable to display the welcome message (welcome.txt) after a login
     # You can use colors in this welcome.txt + some replaced strings:
     # {PLAYER}: player name, {ONLINE}: display number of online players,
@@ -440,7 +443,7 @@ Hooks:
     sendPlayerTo: ''
     # Shared secret used to verify perform.login messages from the AuthMe proxy plugin.
     # Must match the proxySharedSecret value in your AuthMe Velocity or Bungee proxy config.
-    # Leave empty to disable verification (not recommended for production).
+    # All backend servers must have the same value set here.
     proxySharedSecret: ''
     # Do we need to disable Essentials SocialSpy on join?
     disableSocialSpy: false
@@ -618,4 +621,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Fri Apr 24 19:09:21 CEST 2026
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue Apr 28 23:00:57 CEST 2026
