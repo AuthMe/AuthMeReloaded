@@ -26,6 +26,7 @@ import org.mockito.Mockito;
 
 import java.net.InetSocketAddress;
 import java.util.Collections;
+import java.util.OptionalLong;
 import java.util.logging.Logger;
 
 import static com.google.common.collect.Sets.newHashSet;
@@ -56,6 +57,8 @@ public class ValidationServiceTest {
     private PermissionsManager permissionsManager;
     @Mock
     private GeoIpService geoIpService;
+    @Mock
+    private PwnedPasswordService pwnedPasswordService;
     @Captor
     private ArgumentCaptor<String> stringCaptor;
 
@@ -65,6 +68,7 @@ public class ValidationServiceTest {
         given(settings.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH)).willReturn(3);
         given(settings.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)).willReturn(20);
         given(settings.getProperty(SecuritySettings.UNSAFE_PASSWORDS)).willReturn(newHashSet("unsafe", "other-unsafe"));
+        given(settings.getProperty(SecuritySettings.ENABLE_PWNED_PASSWORD_CHECK)).willReturn(false);
         given(settings.getProperty(EmailSettings.MAX_REG_PER_EMAIL)).willReturn(3);
         given(settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(newHashSet("name01", "npc"));
         given(settings.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)).willReturn(false);
@@ -114,6 +118,48 @@ public class ValidationServiceTest {
 
         // then
         assertErrorEquals(error, MessageKey.PASSWORD_UNSAFE_ERROR);
+    }
+
+    @Test
+    public void shouldRejectPwnedPasswordOverThreshold() {
+        // given
+        given(settings.getProperty(SecuritySettings.ENABLE_PWNED_PASSWORD_CHECK)).willReturn(true);
+        given(settings.getProperty(SecuritySettings.PWNED_PASSWORD_CHECK_THRESHOLD)).willReturn(10);
+        given(pwnedPasswordService.getPwnedCount("safePass")).willReturn(OptionalLong.of(42));
+
+        // when
+        ValidationResult error = validationService.validatePassword("safePass", "some_user");
+
+        // then
+        assertErrorEquals(error, MessageKey.PASSWORD_PWNED_ERROR, "42");
+    }
+
+    @Test
+    public void shouldAcceptPwnedPasswordAtThreshold() {
+        // given
+        given(settings.getProperty(SecuritySettings.ENABLE_PWNED_PASSWORD_CHECK)).willReturn(true);
+        given(settings.getProperty(SecuritySettings.PWNED_PASSWORD_CHECK_THRESHOLD)).willReturn(10);
+        given(pwnedPasswordService.getPwnedCount("safePass")).willReturn(OptionalLong.of(10));
+
+        // when
+        ValidationResult error = validationService.validatePassword("safePass", "some_user");
+
+        // then
+        assertThat(error.hasError(), equalTo(false));
+    }
+
+    @Test
+    public void shouldAcceptPasswordWhenPwnedCheckIsUnavailable() {
+        // given
+        given(settings.getProperty(SecuritySettings.ENABLE_PWNED_PASSWORD_CHECK)).willReturn(true);
+        given(settings.getProperty(SecuritySettings.PWNED_PASSWORD_CHECK_THRESHOLD)).willReturn(10);
+        given(pwnedPasswordService.getPwnedCount("safePass")).willReturn(OptionalLong.empty());
+
+        // when
+        ValidationResult error = validationService.validatePassword("safePass", "some_user");
+
+        // then
+        assertThat(error.hasError(), equalTo(false));
     }
 
     @Test
@@ -423,5 +469,4 @@ public class ValidationServiceTest {
         assertThat(validationResult.getArgs(), equalTo(args));
     }
 }
-
 

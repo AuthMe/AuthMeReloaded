@@ -28,6 +28,7 @@ import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.OptionalLong;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -48,6 +49,8 @@ public class ValidationService implements Reloadable {
     private PermissionsManager permissionsManager;
     @Inject
     private GeoIpService geoIpService;
+    @Inject
+    private PwnedPasswordService pwnedPasswordService;
 
     private Pattern passwordRegex;
     private Multimap<String, String> restrictedNames;
@@ -82,6 +85,12 @@ public class ValidationService implements Reloadable {
             return new ValidationResult(MessageKey.INVALID_PASSWORD_LENGTH);
         } else if (settings.getProperty(SecuritySettings.UNSAFE_PASSWORDS).contains(passLow)) {
             return new ValidationResult(MessageKey.PASSWORD_UNSAFE_ERROR);
+        } else if (settings.getProperty(SecuritySettings.ENABLE_PWNED_PASSWORD_CHECK)) {
+            OptionalLong pwnedCount = pwnedPasswordService.getPwnedCount(password);
+            int threshold = settings.getProperty(SecuritySettings.PWNED_PASSWORD_CHECK_THRESHOLD);
+            if (pwnedCount.isPresent() && pwnedCount.getAsLong() > threshold) {
+                return new ValidationResult(MessageKey.PASSWORD_PWNED_ERROR, Long.toString(pwnedCount.getAsLong()));
+            }
         }
         return new ValidationResult();
     }
