@@ -126,7 +126,7 @@ verification:
   code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
   command_usage: '&cКуллану: /verification <код>'
   incorrect_code: '&cХаталы код; сез хаттан алынган кодны кулланып, чатта «/verification <код>» языгызчы'
-  success: '&2Сезнең identity расланды! You can now execute all commands within the current session!'
+  success: '&2Сезнең шәхес расланды! You can now execute all commands within the current session!'
   already_verified: '&2You can already execute every sensitive command within the current session!'
   code_expired: '&3Сезнең код тәмамланды! Execute another sensitive command to get a new code!'
   email_needed: '&3To verify your identity you need to link an email address with your account!!'
@@ -136,12 +136,12 @@ two_factor:
   code_created: '&2Сезнең серкод — %code. You can scan it from here %url'
   confirmation_required: '«/2fa confirm <код>» кулланып, кодыгызны раслагызчы'
   code_required: '«/2fa code <код>» кулланып, Please submit your two-factor authentication code'
-  already_enabled: 'Two-factor authentication is already enabled for your account!'
+  already_enabled: 'Сезнең аккаунт өчен ике-адымлы аутентификация кушылды инде!'
   enable_error_no_code: 'No 2fa key has been generated for you or it has expired. «/2fa add» үтәгезче'
-  enable_success: 'Successfully enabled two-factor authentication for your account'
+  enable_success: 'Сезнең аккаунт өчен ике-адымлы аутентификация кушылды'
   enable_error_wrong_code: 'Хаталы код яки код тәмамланды. «/2fa add» үтәгезче'
-  not_enabled_error: 'Two-factor authentication is not enabled for your account. «/2fa add» үтәгез'
-  removed_success: 'Successfully removed two-factor auth from your account'
+  not_enabled_error: 'Сезнең аккаунт өчен ике-адымлы аутентификация кушылмады. «/2fa add» үтәгез'
+  removed_success: 'Ике-адымлы аутентификацияне аккаутыгыздан бетерелде'
   invalid_code: 'Хаталы код!'
 
 # Dialog UI
@@ -158,12 +158,11 @@ dialog:
     confirm_email: '&fЭлектрон почтасын раслау'
     button: '&aТеркәлү'
   two_factor:
-    title: '&6Two-Factor Authentication'
-    code: '&f2FA коды'
+    title: '&6Ике-адымлы аутентификация'
+    code: '&fСеркод'
     button: '&aРаслау'
   button:
     cancel: '&cБаш тарту'
-
 
 # Time units
 time:
