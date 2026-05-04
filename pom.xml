@@ -900,7 +900,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.21.11-R0.1-SNAPSHOT</version>
+            <version>26.1.2.build.59-stable</version>
             <scope>provided</scope>
         </dependency>
 
