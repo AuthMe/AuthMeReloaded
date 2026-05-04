@@ -99,7 +99,7 @@ email:
 
 # Password recovery by email
 recovery:
-    forgot_password_hint: '&Забыли пароль? Используйте «/email recovery <эл. почта>».'
+    forgot_password_hint: '&3Забыли пароль? Используйте «/email recovery <эл. почта>».'
     command_usage: '&cИспользование: /email recovery <эл. почта>'
     email_sent: '&2Письмо с инструкциями для восстановления было отправлено на вашу электронную почту!'
     code:

@@ -301,10 +301,65 @@ class MessagesIntegrationTest {
         }
     }
 
+    @Test
+    void shouldUsePlayerLocaleForMessages() {
+        // given
+        Settings settings = mock(Settings.class);
+        given(settings.getProperty(PluginSettings.MESSAGES_LANGUAGE)).willReturn("en");
+        given(settings.getProperty(PluginSettings.PER_PLAYER_LOCALE)).willReturn(true);
+
+        MessagesFileHandler fileHandler = createMessagesFileHandlerForLanguage("en", settings);
+        Messages messagesWithLocale = new Messages(fileHandler, null, settings);
+
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn("TestPlayer");
+        given(player.getDisplayName()).willReturn("TestPlayer");
+        given(player.getLocale()).willReturn("ru_ru");
+
+        // when
+        String[] result = messagesWithLocale.retrieve(MessageKey.LOGIN_SUCCESS, player);
+
+        // then - should get Russian message, not English
+        assertThat(result, arrayWithSize(1));
+        assertThat(result[0], equalTo("§2Вы успешно вошли!")); // §2Вы успешно вошли!
+    }
+
+    @Test
+    void shouldFallBackToServerLanguageForUnknownLocale() {
+        // given
+        Settings settings = mock(Settings.class);
+        given(settings.getProperty(PluginSettings.MESSAGES_LANGUAGE)).willReturn("en");
+        given(settings.getProperty(PluginSettings.PER_PLAYER_LOCALE)).willReturn(true);
+
+        MessagesFileHandler fileHandler = createMessagesFileHandlerForLanguage("en", settings);
+        Messages messagesWithLocale = new Messages(fileHandler, null, settings);
+
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn("TestPlayer");
+        given(player.getDisplayName()).willReturn("TestPlayer");
+        given(player.getLocale()).willReturn("xx_xx"); // no such language
+
+        // when
+        String[] result = messagesWithLocale.retrieve(MessageKey.LOGIN_SUCCESS, player);
+
+        // then - should fall back to English
+        assertThat(result, arrayWithSize(1));
+        assertThat(result[0], equalTo("§2Successful login!"));
+    }
+
     private MessagesFileHandler createMessagesFileHandler() {
         Settings settings = mock(Settings.class);
         given(settings.getProperty(PluginSettings.MESSAGES_LANGUAGE)).willReturn("test");
 
+        MessagesFileHandler messagesFileHandler = new MessagesFileHandler();
+        ReflectionTestUtils.setField(AbstractMessageFileHandler.class, messagesFileHandler, "settings", settings);
+        ReflectionTestUtils.setField(AbstractMessageFileHandler.class, messagesFileHandler, "dataFolder", dataFolder);
+        ReflectionTestUtils.setField(MessagesFileHandler.class, messagesFileHandler, "messageUpdater", mock(MessageUpdater.class));
+        ReflectionTestUtils.invokePostConstructMethods(messagesFileHandler);
+        return messagesFileHandler;
+    }
+
+    private MessagesFileHandler createMessagesFileHandlerForLanguage(String language, Settings settings) {
         MessagesFileHandler messagesFileHandler = new MessagesFileHandler();
         ReflectionTestUtils.setField(AbstractMessageFileHandler.class, messagesFileHandler, "settings", settings);
         ReflectionTestUtils.setField(AbstractMessageFileHandler.class, messagesFileHandler, "dataFolder", dataFolder);
