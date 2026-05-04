@@ -1,0 +1,214 @@
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
+
+# Registration
+registration:
+  register_request: '&3Күрсәтелгән боерык кулланып, серверда теркәлегезче: /register <серсүз> <серсүзне кабатлау>'
+  command_usage: '&cКуллану: /register <серсүз> <серсүзне кабатлау>'
+  reg_only: '&4Теркәлгән кулланучылар гына серверга кушыла ала! Үзегезне теркәү өчен http://example.com сайтына барыгызчы!'
+  kicked_admin_registered: 'Әдмин сезне күптән түгел теркәде; кабат керегезче.'
+  success: '&2Теркәлде!'
+  disabled: '&cУендагы теркәлү сүнек!'
+  name_taken: '&cСез бу кулланучы исемен теркәдегез инде!'
+  
+# Password errors on registration
+password:
+  match_error: '&cСерсүзләр туры килмәде; аларны яңадан тикшерегез!'
+  name_in_password: '&cСез исемегезне серсүз буларак куллана алмыйсыз; башка серсүзне сайлагызчы...'
+  unsafe_password: '&cСайланган серсүз имин түгел; башка серсүзне сайлагызчы...'
+  forbidden_characters: '&4Сезнең серсүздә тыелган символлар бар. Рөхсәт ителгән символлар: %valid_chars'
+  wrong_length: '&cСезнең кулланучы исеме я бик кыска, яисә бик озак! Башка серсүзне кулланып, яңадан карагызчы!'
+
+# Login
+login:
+  command_usage: '&cКуллану: /login <серсүз>'
+  wrong_password: '&cХаталы серсүз!'
+  success: '&2Уңышлы керү!'
+  login_request: '&cКүрсәтелгән боерык кулланып, керегезче: /login <серсүз>'
+  timeout_error: '&4Керү вакыты бетте: сез сервердан чыгарылдыгыз; яңадан карагызчы!'
+
+# Errors
+error:
+  unregistered_user: '&cБу кулланучы теркәлмәде!'
+  denied_command: '&cШундый боерыкны куллану өчен сез керергә тиеш!'
+  denied_chat: '&cАралашу өчен сез керергә тиеш!'
+  not_logged_in: '&cСез кермәдегез!'
+  tempban_max_logins: '&cАртык күп тапкыр кереп булмау сәбәпле вакытлыча блокландыгыз.'
+  max_registration: '&cТоташуыгыз өчен сез теркәлү чик санын (%reg_count/%max_acc %reg_names) арттырдыгыз!'
+  no_permission: '&4Бу гамәлне эшләү өчен хокугыгыз юк!'
+  unexpected_error: '&4Көтелмәгән хата булды; әдмин белән бәйләнегезче!'
+  kick_for_vip: '&3Сервер тулганда VIP уенчысы серверга кушылды!'
+  logged_in: '&cСез кердегез инде!'
+  kick_unresolved_hostname: '&cХата булды: алынмаган уенчы төен исеме!'
+
+# AntiBot
+antibot:
+  kick_antibot: 'AntiBot саклау шарты кушылды! Серверга кушылганчы, сезгә аз минут көтәргә кирәк.'
+  auto_enabled: '&4[AntiBotService] Зур тоташу саны дип, AntiBot кушылды!'
+  auto_disabled: '&2[AntiBotService] AntiBot %m минуттан соң сүндерелде!'
+
+unregister:
+  success: '&cТеркәү баш тартылды!'
+  command_usage: '&cКуллану: /unregister <серсүз>'
+
+# Other messages
+misc:
+  accounts_owned_self: 'Сездә %count аккаунт бар:'
+  accounts_owned_other: '%name уенчыда %count аккаунт бар:'
+  account_not_activated: '&cСезнең аккаунт активлаштырылмады әле, электрон почтасын тикшерегезче!'
+  password_changed: '&2Серсүз үзгәртелде!'
+  logout: '&2Чыкты!'
+  reload: '&2Көйләү һәм мәгълүмат нигезе дөрес яңадан йөкләнде!'
+  usage_change_password: '&cКуллану: /changepassword <иске серсүз> <яңа серсүз>'
+
+# Session messages
+session:
+  invalid_session: '&cСезнең IP адресы үзгәртелде, һәм сезнең сессия мәгълүматы тәмамланды!'
+  valid_session: '&2Сессиягә яңадан тоташылу сәбәпле керде.'
+
+# Error messages when joining
+on_join_validation:
+  name_length: '&4Сезнең кулланучы исеме я бик кыска, яисә бик озак!'
+  characters_in_name: '&4Сезнең кулланучы исемендә тыелган символлар бар. Рөхсәт ителгән символлар: %valid_chars'
+  country_banned: '&4Сезнең ил бу серверда блокланды!'
+  not_owner_error: 'Сез бу аккаунт хуҗасы түгел. Башка исемне сайлагызчы!'
+  kick_full_server: '&4Сервер тулы; соңрак яңадан кабатлагыз!'
+  same_nick_online: '&4Шундый ук кулланучы исеме серверда уйный инде!'
+  invalid_name_case: 'Сез «%valid» кулланучы исеме кулланып кушылырга тиеш, %invalid түгел.'
+  same_ip_online: 'Шундый ук IP адреслы уенчы уенда инде!'
+  quick_command: 'Сез боерыкны артык тиз кулландыгыз! Серверга кушылыгызчы һәм теләгән боерыкны кулланганчы күбрәк көтегезче.'
+
+# Email
+email:
+  usage_email_add: '&cКуллану: /email add <электрон почтасы> <электрон почтасын раслау>'
+  usage_email_change: '&cКуллану: /email change <иске электрон почтасы> <яңа электрон почтасы>'
+  new_email_invalid: '&cХаталы яңа электрон почтасы; яңадан кабатлагыз!'
+  old_email_invalid: '&cХаталы иске электрон почтасы; яңадан кабатлагыз!'
+  invalid: '&cХаталы электрон почтасы; яңадан кабатлагыз!'
+  added: '&2Электрон почтасы аккаунтыгызга өстәлде!'
+  request_confirmation: '&cСезнең электрон почтасын раслагызчы!'
+  changed: '&2Электрон почтасы үзгәртелде!'
+  email_show: '&2Сезнең хәзерге электрон почтасы: &f%email'
+  incomplete_settings: 'Хата: хатларны җибәрү өчен барлык түгел таләп ителгән көйләүләр урнаштырылды. Әдмин белән бәйләнегезче.'
+  already_used: '&4Электрон почтасы кулланыла инде'
+  send_failure: 'Хатны җибәреп булмады. Әдмин белән бәйләнегезче.'
+  no_email_for_account: '&2Сездә бу аккаунт белән бәйләнгән электрон почтасы хәзер юк.'
+  add_email_request: '&3Күрсәтелгән боерыкны кулланып, сезнең электрон почтасын аккаунтыгызга өстәгезче: /email add <сезнең электрон почтасы> <электрон почтасын раслау>'
+  change_password_expired: 'Сез бу боерык кулланган серсүзегезне моннан ары үзгәртеп булмый.'
+  email_cooldown_error: '&cХат күптән түгел җибәрелде инде. Яңа хатны җибәрә алаганчы, сезгә %time вакытны көтәргә кирәк.'
+  add_not_allowed: '&cЭлектрон почтасын өстәү рөхсәт ителмәде.'
+  change_not_allowed: '&cЭлектрон почтасын үзгәртү рөхсәт ителмәде.'
+
+# Password recovery by email
+recovery:
+  forgot_password_hint: '&3Сезсүзегезне оныттыгызмы? Шундый боерыкны кулланыгызчы: /email recovery <сезнең электрон почтасы>'
+  command_usage: '&cКуллану: /email recovery <электрон почтасы>'
+  email_sent: '&2Тергезү хаты җибәрелде! Сезнең электрон почтасын тикшерегезче!'
+  code:
+    code_sent: 'Сезнең серсүзне ташлату өчен тергезү коды сезнең элетрон почтасына җибәрелде.'
+    incorrect: 'Тергезү коды дөрес түгел! Сездә %count тапкыр калды.'
+    tries_exceeded: 'Тергезү кодын кертү өчен сез тапкыр чик санын арттырдыгыз. Яңа хатны бирү өчен «/email recovery [электрон почтасы]» кулланыгыз.'
+    correct: 'Тергезү коды дөрес кертелде!'
+    change_password: 'Сезнең серсүзне шундук үзгәртү өчен «/email setpassword <яңа серсүз>» боерыгын кулланыгызчы.'
+
+# Captcha
+captcha:
+  usage_captcha: '&3Теркәлү өчен сезгә каптчаны чишәргә кирәк; күрсәтелгән боерыкны кулланыгызчы: /captcha %captcha_code'
+  wrong_captcha: '&cХаталы каптча, чатта «/captcha %captcha_code» языгызчы!'
+  valid_captcha: '&2Каптча чишенде!'
+  captcha_for_registration: 'Теркәлү өчен сезгә каптчаны чишәргә кирәк; күрсәтелгән боерыкны кулланыгызчы: /captcha %captcha_code'
+  register_captcha_valid: '&2Дөрес код! Сез хәзер «/register» кулланып теркәлә аласыз'
+
+# Verification code
+verification:
+  code_required: '&3Бу боерык сизгер һәм электрон почтасы буенча верификацияне таләп итә! Электрон почтасын тикшерегез һәм хатның күрсәтмаләрен тотыгыз.'
+  command_usage: '&cКуллану: /verification <код>'
+  incorrect_code: '&cХаталы код; сез хаттан алынган кодны кулланып, чатта «/verification <код>» языгызчы'
+  success: '&2Сезнең шәхес расланды! Сез барлык боерыкларны хәзер сессия дәвамында үтә аласыз!'
+  already_verified: '&2Сез һәр сизгер боерыкларны хәзер сессия дәвамында үтә аласыз инде!'
+  code_expired: '&3Сезнең код тәмамланды! Яңа кодны алу өчен башка сизгер боерыкны үтәгез!'
+  email_needed: '&3Шәхесегезне раслау өчен сезгә электрон почтасын аккаунтыгызга бәйләргә кирәк!!'
+
+# Two-factor authentication
+two_factor:
+  code_created: '&2Сезнең серкод — %code. Сез моннан, %url сылтамасыннан сканлый аласыз'
+  confirmation_required: '«/2fa confirm <код>» кулланып, кодыгызны раслагызчы'
+  code_required: '«/2fa code <код>» кулланып, кодыгызны кертегезче'
+  already_enabled: 'Сезнең аккаунт өчен ике-адымлы аутентификация кушылды инде!'
+  enable_error_no_code: 'Серачкычыгыз ясалмады яки ул тәмамланды. «/2fa add» үтәгезче'
+  enable_success: 'Сезнең аккаунт өчен ике-адымлы аутентификация кушылды'
+  enable_error_wrong_code: 'Хаталы код яки код тәмамланды. «/2fa add» үтәгезче'
+  not_enabled_error: 'Сезнең аккаунт өчен ике-адымлы аутентификация кушылмады. «/2fa add» үтәгез'
+  removed_success: 'Ике-адымлы аутентификацияне аккаутыгыздан бетерелде'
+  invalid_code: 'Хаталы код!'
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6Керү'
+    password: '&fСерсүз'
+    button: '&aКерү'
+  register:
+    title: '&6Теркәлү'
+    password: '&fСерсүз'
+    confirm_password: '&fСерсүзне раслау'
+    email: '&fЭлектрон почтасы'
+    confirm_email: '&fЭлектрон почтасын раслау'
+    button: '&aТеркәлү'
+  two_factor:
+    title: '&6Ике-адымлы аутентификация'
+    code: '&fСеркод'
+    button: '&aРаслау'
+  button:
+    cancel: '&cБаш тарту'
+
+# Time units
+time:
+  second: 'секунд'
+  seconds: 'секунд'
+  minute: 'минут'
+  minutes: 'минут'
+  hour: 'сәгать'
+  hours: 'сәгать'
+  day: 'көн'
+  days: 'көн'
+
+# Command validation messages
+command:
+  player_only: '&cУенчылар өчен генә бу боерык.'
+  player_only_alternative: '&cУенчы гына! %alternative кулланыгызчы.'
+  failed_to_parse: '&4AuthMe боерыгын танып булмады!'
+  unknown: '&4Билгесез боерык!'
+  incorrect_arguments: '&4Хаталы боерык агрументлары!'
+  did_you_mean: '&eСез «&6%cmd&e» боерыгын күздә тоттыгызмы?'
+  see_help: '&eЯрдәмне күрү өчен &6/%cmd&e боерыгын кулланыгыз.'
+  detailed_help: '&6Җентекле ярдәм: &f/%cmd'
+
+# Admin command messages
+admin:
+  force_login:
+    player_offline: '&cУенчы онлайн булырга тиеш!'
+    forbidden: '&cСез %name уенчыны мәжбүри кереп булмыйсыз!'
+    success: '&2%name өчен мәжбүри керү үтәлде!'
+  accounts:
+    ip_not_found: '&cIP адресы мәгълүмат нигезендә юк.'
+    single_account: '&2%name — берлек аккаунтлы уенчы.'
+    no_last_ip: '&cУенчының билгеле соңгы IP адресы табылмады.'
+  email_show: '&2%name электрон почтасы: %email'
+  antibot:
+    status: '&2AntiBot халәте: %status'
+    override_enabled: '&2AntiBot кул күчерүе: кушык!'
+    override_disabled: '&2AntiBot кул күчерүе: сүнек!'
+    invalid_mode: '&cХаталы AntiBot шарты!'
+  reload:
+    db_type_change: '&eЯзма: «/authme reload» эшләү сәбәпле мәгълүмат нигезен үзгәртеп булмый.'
+    error: '&cAuthMe яңадан йөкләнгәндә хата булды.'
+  spawn:
+    set_success: '&2Яңа чакыру ноктасы билгеләнде.'
+    set_fail: '&cЧакыру ноктасын урнаштырып булмады; янадан кабатлагызчы.'
+    first_set_success: '&2Яңа беренче чакыру ноктасы билгеләнде.'
+    first_set_fail: '&cБеренче чакыру ноктасын урнаштырып булмады; янадан кабатлагызчы.'
+    not_defined: '&cЧакырып булмады; чакыру ноктасын билгеләп карагызчы.'
+    first_not_defined: '&cБеренче чакырып булмады; беренче чакыру ноктасын билгеләп карагызчы.'
