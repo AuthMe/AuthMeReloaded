@@ -41,7 +41,7 @@ error:
   unexpected_error: '&4Көтелмәгән хата булды; әдмин белән бәйләнегезче!'
   kick_for_vip: '&3Сервер тулганда VIP уенчысы серверга кушылды!'
   logged_in: '&cСез кердегез инде!'
-  kick_unresolved_hostname: '&cХата булды: unresolved уенчы host исеме!'
+  kick_unresolved_hostname: '&cХата булды: алынмаган уенчы төен исеме!'
 
 # AntiBot
 antibot:
@@ -97,7 +97,7 @@ email:
   no_email_for_account: '&2Сездә бу аккаунт белән бәйләнгән электрон почтасы хәзер юк.'
   add_email_request: '&3Күрсәтелгән боерыкны кулланып, сезнең электрон почтасын аккаунтыгызга өстәгезче: /email add <сезнең электрон почтасы> <электрон почтасын раслау>'
   change_password_expired: 'Сез бу боерык кулланган серсүзегезне моннан ары үзгәртеп булмый.'
-  email_cooldown_error: '&cХат күптән түгел җибәрелде инде. You must wait %time before you can send a new one.'
+  email_cooldown_error: '&cХат күптән түгел җибәрелде инде. Яңа хатны җибәрә алаганчы, сезгә %time вакытны көтәргә кирәк.'
   add_not_allowed: '&cЭлектрон почтасын өстәү рөхсәт ителмәде.'
   change_not_allowed: '&cЭлектрон почтасын үзгәртү рөхсәт ителмәде.'
 
@@ -109,7 +109,7 @@ recovery:
   code:
     code_sent: 'Сезнең серсүзне ташлату өчен тергезү коды сезнең элетрон почтасына җибәрелде.'
     incorrect: 'Тергезү коды дөрес түгел! Сездә %count тапкыр калды.'
-    tries_exceeded: 'You have exceeded the maximum number attempts to еnter the recovery code. Яңа хатны бирү өчен «/email recovery [электрон почтасы]» кулланыгыз.'
+    tries_exceeded: 'Тергезү кодын кертү өчен сез тапкыр чик санын арттырдыгыз. Яңа хатны бирү өчен «/email recovery [электрон почтасы]» кулланыгыз.'
     correct: 'Тергезү коды дөрес кертелде!'
     change_password: 'Сезнең серсүзне шундук үзгәртү өчен «/email setpassword <яңа серсүз>» боерыгын кулланыгызчы.'
 
@@ -123,12 +123,12 @@ captcha:
 
 # Verification code
 verification:
-  code_required: '&3This command is sensitive and requires an email verification! Check your inbox and follow the email''s instructions.'
+  code_required: '&3Бу боерык сизгер һәм электрон почтасы буенча верификацияне таләп итә! Электрон почтасын тикшерегез һәм хатның күрсәтмаләрен тотыгыз.'
   command_usage: '&cКуллану: /verification <код>'
   incorrect_code: '&cХаталы код; сез хаттан алынган кодны кулланып, чатта «/verification <код>» языгызчы'
-  success: '&2Сезнең шәхес расланды! You can now execute all commands within the current session!'
-  already_verified: '&2You can already execute every sensitive command within the current session!'
-  code_expired: '&3Сезнең код тәмамланды! Execute another sensitive command to get a new code!'
+  success: '&2Сезнең шәхес расланды! Сез барлык боерыкларны хәзер сессия дәвамында үтә аласыз!'
+  already_verified: '&2Сез һәр сизгер боерыкларны хәзер сессия дәвамында үтә аласыз инде!'
+  code_expired: '&3Сезнең код тәмамланды! Яңа кодны алу өчен башка сизгер боерыкны үтәгез!'
   email_needed: '&3Шәхесегезне раслау өчен сезгә электрон почтасын аккаунтыгызга бәйләргә кирәк!!'
 
 # Two-factor authentication
