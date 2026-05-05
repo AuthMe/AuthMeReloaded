@@ -1,0 +1,236 @@
+# List of global tags:
+# %nl% - Goes to new line.
+# %username% - Replaces the username of the player receiving the message.
+# %displayname% - Replaces the nickname (and colors) of the player receiving the message.
+
+# Registration
+registration:
+  disabled: '&cRegistrierige sind deaktiviert'
+  name_taken: '&cDä Benutzername isch scho vergeh'
+  register_request: '&3Bitte registrier dich mit "/register <passwort> <passwortBestätige>"'
+  command_usage: '&cBruuch: /register <passwort> <passwortBestätigen>'
+  reg_only: '&4Nur für registrierti Spiller! Bitte bsuech http://example.com zum dich registriere.'
+  success: '&2Erfolgriich registriert!'
+  kicked_admin_registered: 'En Administrator hät dich scho registriert; log dich bitte nomal ii.'
+
+# Password errors on registration
+password:
+  match_error: '&cD''Passwörter stimmed nöd überii!'
+  name_in_password: '&cDu chasch din Name nöd als Passwort verwende!'
+  unsafe_password: '&cPasswort unsicher! Bitte wähl es anders.'
+  forbidden_characters: '&4Dis Passwort enthaltet unerlaubti Zeiche. Zuelässigi Zeiche: %valid_chars'
+  wrong_length: '&cDis Passwort isch z''churz oder z''lang!'
+
+# Login
+login:
+  command_usage: '&cBruuch: /login <passwort>'
+  wrong_password: '&cFalsches Passwort'
+  success: '&2Erfolgriichs Login!'
+  login_request: '&cBitte log dich ii mit "/login <passwort>"'
+  timeout_error: '&4Ziitüberschriitig bim Login'
+
+# Errors
+error:
+  denied_command: '&cZum dä Befehl z''bruuche muesch du authentifiziert sii!'
+  denied_chat: '&cDu muesch iigloggt sii zum chönne chatte!'
+  unregistered_user: '&cBenutzername nöd registriert!'
+  not_logged_in: '&cNöd iigloggt!'
+  no_permission: '&4Du häsch kei Recht zum die Aktion usz''füehre!'
+  unexpected_error: '&4En Fehler isch uftrete. Bitte kontaktier en Administrator.'
+  max_registration: '&cDu häsch die maximali Aazahl a Accounts erreicht (%reg_count/%max_acc %reg_names).'
+  logged_in: '&cScho iigloggt!'
+  kick_for_vip: '&3En VIP-Spiller isch in volle Server ine!'
+  # TODO kick_unresolved_hostname: '&cAn error occurred: unresolved player hostname!'
+  tempban_max_logins: '&cDu bisch wege z''vill fehlgschlagene Login-Versüech temporär bannt!'
+
+# AntiBot
+antibot:
+  kick_antibot: 'AntiBotMod isch aktiviert! Bitte wart einigi Minute bevor d''dich mit em Server verbindisch.'
+  auto_enabled: '&4[AntiBotService] AntiBotMod isch wege höcher Netzuslastig automatisch aktiviert worde!'
+  auto_disabled: '&2[AntiBotService] AntiBotMod isch nach %m Minute deaktiviert worde, hoffentlich isch d''Invasion verbi.'
+
+# Unregister
+unregister:
+  success: '&cBenutzerkonto erfolgriich glöscht!'
+  command_usage: '&cBruuch: /unregister <passwort>'
+
+# Other messages
+misc:
+  account_not_activated: '&cDin Account isch nonig aktiviert. Bitte prüef dini E-Mails!'
+  password_changed: '&2Passwort gänderet!'
+  logout: '&2Erfolgriich usgloggt'
+  reload: '&2Konfiguration und Datenbank sind erfolgriich neu glade worde.'
+  usage_change_password: '&cBruuch: /changepassword <altesPasswort> <neuesPasswort>'
+  accounts_owned_self: 'Du häsch %count Accounts:'
+  accounts_owned_other: 'Dä Spiller %name hät %count Accounts:'
+
+# Session messages
+session:
+  valid_session: '&2Erfolgriich iigloggt!'
+  invalid_session: '&cUngültigi Sitzig. Bitte start s''Spiel neu oder wart bis d''Sitzig abglofe isch.'
+
+# Error messages when joining
+on_join_validation:
+  same_ip_online: 'En Spiller mit de gliiche IP isch scho online!'
+  same_nick_online: '&4Öppert mit dem Namen spillt scho uf em Server!'
+  name_length: '&4Din Nickname isch z''churz oder z''lang.'
+  characters_in_name: '&4Din Nickname hät unerlaubti Zeiche. Zuelässigi Zeiche: %valid_chars'
+  kick_full_server: '&4Dä Server isch grad volle, Sorry!'
+  country_banned: '&4Dis Land isch gsperrt!'
+  not_owner_error: 'Du bisch nöd dä Bsitzer vo dem Account. Bitte wähl en andere Name!'
+  invalid_name_case: 'Din registrierti Benutzername isch &2%valid&f - nöd &4%invalid&f.'
+  quick_command: 'Du häsch en Befehl z''schnell bruucht! Bitte tritt em Server nomal bii und wart bevor du nomal en Befehl bruuchsch.'
+
+# Email
+email:
+  add_email_request: '&3Bitte hinterleg dini E-Mail-Adresse: /email add <deineEmail> <emailBestätigen>'
+  usage_email_add: '&cBruuch: /email add <email> <bestätigeEmail>'
+  usage_email_change: '&cBruuch: /email change <alteEmail> <neueEmail>'
+  new_email_invalid: '&cDi neu E-Mail-Adresse isch ungültig!'
+  old_email_invalid: '&cDi alt E-Mail-Adresse isch ungültig!'
+  invalid: '&cUngültigi E-Mail-Adresse!'
+  added: '&2E-Mail-Adresse hinzuegfüegt!'
+  add_not_allowed: '&cS''Hinzuefüege vonere E-Mail-Adresse isch nöd erlaubt!'
+  request_confirmation: '&cBitte bestätig dini E-Mail-Adresse!'
+  changed: '&2E-Mail-Adresse aktualisiert!'
+  change_not_allowed: '&cS''Bearbeite vonere E-Mail-Adresse isch nöd erlaubt!'
+  email_show: '&2Dini aktuelli E-Mail-Adresse isch: &f%email'
+  no_email_for_account: '&2Du häsch im Moment kei E-Mail-Adresse für din Account hinterleit.'
+  already_used: '&4Die E-Mail-Adresse wierd scho gnutzt.'
+  incomplete_settings: 'Fehler: Es sind nöd alli notwendigi Iistellige gmacht worde zum E-Mails schicke. Bitte kontaktier en Administrator.'
+  send_failure: 'S''Mail hät nöd chönne versendet werde. Bitte kontaktier en Administrator.'
+  change_password_expired: 'Mit dem Befehl chasch du dis Passwort nüme ändere.'
+  email_cooldown_error: '&cEs Mail isch erst grad versendet worde. Du muesch %time warte bevor du es neus chasch aafordere.'
+
+# Password recovery by email
+recovery:
+  forgot_password_hint: '&3Passwort vergesse? Bruuch "/email recovery <deineEmail>" für es neus Passwort'
+  command_usage: '&cBruuch: /email recovery <Email>'
+  email_sent: '&2Es Widerherstelligs-Mail isch verschickt worde!'
+  code:
+    code_sent: 'En Widerherstelligscode zum dis Passwort zruggsetze isch a dini E-Mail-Adresse verschickt worde.'
+    incorrect: 'Dä Widerherstelligscode stimmt nöd! Du häsch no %count Versüech. Bruuch /email recovery [email] zum en neue generiere.'
+    tries_exceeded: 'Du häsch di maximali Aazahl a Versüech für dä Widerherstelligscode überschritte. Bruuch "/email recovery [email]" zum en neue generiere.'
+    correct: 'Dä Widerherstelligscode wo''d iiggeh häsch isch richtig!'
+    change_password: 'Bruuch jetzt bitte dä Befehl /email setpassword <neus passwort> zum dis Passwort ändere.'
+
+# Captcha
+captcha:
+  usage_captcha: '&3Zum dich iilogge, tipp s''Captcha eso ii: /captcha %captcha_code'
+  wrong_captcha: '&cFalsches Captcha, bitte bruuch: /captcha %captcha_code'
+  valid_captcha: '&2S''Captcha isch korrekt!'
+  captcha_for_registration: 'Zum dich regstriere muesch du es Captcha löse, bruuch bitte dä Befehl: /captcha %captcha_code'
+  register_captcha_valid: '&2Captcha richtig! Du chasch dich jetzt registriere mit: /register'
+
+# Verification code
+verification:
+  code_required: '&3Dä Befehl isch sensibel und bruucht en E-Mail-Verifikation. Überprüef din Postiingang und folg de Aawiisige vom Mail.'
+  command_usage: '&cBruuch: /verification <code>'
+  incorrect_code: '&Falsche Code, bitte gib "/verification <code>" in Chat ii und bruuch dä Code wo''d per E-Mail übercho häsch.'
+  success: '&2Dini Identität isch verifiziert! Du chasch jetzt alli Befehl innerhalb vo de aktuelle Sitzig usfüehre!'
+  already_verified: '&2Du chasch scho jede sensibli Befehl i de aktuelle Sitzig usfüehre!'
+  code_expired: '&3Din Code isch abglofe! Füehr en wiitere sensible Befehl uus zum en neue Code übercho!'
+  email_needed: '&3Zum dini Identität überprüefe muesch du dini E-Mail-Adresse mit dim Konto verchnüpfe!'
+
+# Dialog UI
+dialog:
+  login:
+    title: '&6Aameldig'
+    password: '&fPasswort'
+    button: '&aAamelde'
+  register:
+    title: '&6Registrierig'
+    password: '&fPasswort'
+    confirm_password: '&fPasswort bestätige'
+    email: '&fE-Mail'
+    confirm_email: '&fE-Mail bestätige'
+    button: '&aRegistriere'
+  two_factor:
+    title: '&6Zwei-Faktor-Authentifizierig'
+    code: '&f2FA-Code'
+    button: '&aVerifiziere'
+  button:
+    cancel: '&cAbbreche'
+
+# Time units
+time:
+  second: 'Sekunde'
+  seconds: 'Sekunde'
+  minute: 'Minute'
+  minutes: 'Minute'
+  hour: 'Stunde'
+  hours: 'Stunde'
+  day: 'Tag'
+  days: 'Täg'
+
+# Two-factor authentication
+two_factor:
+  code_created: '&2Din gheime Code isch %code. Du chäsch ihn da abfräge: %url'
+  confirmation_required: 'Bitte bestätig din Code mit /2fa confirm <code>'
+  code_required: 'Bitte gib din Zwei-Faktor-Authentifizierigscode ii mit /2fa code <code>'
+  already_enabled: 'D''Zwei-Faktor-Authentifizierig isch für dis Konto scho aktiviert!'
+  enable_error_no_code: 'Es isch kein 2FA-Schlüssel für dich generiert worde oder er isch abglofe. Bitte bruuch /2fa add'
+  enable_success: 'Zwei-Faktor-Authentifizierig für dis Konto erfolgriich aktiviert'
+  enable_error_wrong_code: 'Code falsch oder abglofe. Bitte bruuch /2fa add'
+  not_enabled_error: 'D''Zwei-Faktor-Authentifizierig ist für dis Konto nöd aktiviert. Bruuch /2fa add'
+  removed_success: 'D''Zwei-Faktor-Authentifizierig isch erfolgreich von dim Konto entfernt worde'
+  invalid_code: 'Ungültige Code!'
+
+# Command validation messages
+command:
+  player_only: '&cDä Befehl isch nur für Spiller.'
+  player_only_alternative: '&cNur für Spiller! Bitte bruuch stattdesse %alternative.'
+  failed_to_parse: '&4AuthMe-Befehl hät nöd chönne verarbeitet werde!'
+  unknown: '&4Unbekannte Befehl!'
+  incorrect_arguments: '&4Falschi Befehlsargument!'
+  did_you_mean: '&eHäsch du &6%cmd&e gmeint?'
+  see_help: '&eBruuch dä Befehl &6/%cmd&e zum d''Hilf aazeige.'
+  detailed_help: '&6Detaillierti Hilf: &f/%cmd'
+
+# Admin command messages
+admin:
+  force_login:
+    player_offline: '&cDä Spiller muess online sii!'
+    forbidden: '&cDu chäsch dä Spiller %name nöd zwinge iiz''logge!'
+    success: '&2Zwangs-Login für %name duregfüehrt!'
+  accounts:
+    ip_not_found: '&cDie IP-Adresse git''s nöd i de Datebank.'
+    single_account: '&2%name hät nur ein Account.'
+    no_last_ip: '&cKei letschti IP-Adresse isch für dä Spiller bekannt.'
+  email_show: '&2E-Mail-Adresse vo %name: %email'
+  antibot:
+    status: '&2AntiBot-Status: %status'
+    override_enabled: '&2AntiBot Manuelle Override: aktiviert!'
+    override_disabled: '&2AntiBot Manuelle Override: deaktiviert!'
+    invalid_mode: '&cUngültige AntiBot-Modus!'
+  reload:
+    db_type_change: '&eHiwiis: Dä Datenbanktyp chan mit /authme reload nöd gänderet werde.'
+    error: '&cFehler bim Neulade vo AuthMe.'
+  spawn:
+    set_success: '&2Neue Spawnpunkt erfolgriich gsetzt.'
+    set_fail: '&cSetSpawn isch fehlgschlage, bitte probier''s nomal.'
+    first_set_success: '&2En neue erste Spawnpunkt isch erfolgriich gsetzt worde.'
+    first_set_fail: '&cSetFirstSpawn isch fehlgschlage, bitte probier''s nomal.'
+    not_defined: '&cSpawn isch fehlgschlage, bitte probier dä Spawn z''definiere.'
+    first_not_defined: '&cErsti Spawn isch fehlgschlage, bitte probier dä ersti Spawn z''definiere.'
+# Premium-Modus
+premium:
+  feature_disabled: '&cDä Premium-Modus isch auf dem Server nöd aktiviert.'
+  account_not_found: '&cKeis Premium-Minecraft-Konto isch für din Benutzername gfunde worde.'
+  already_enabled: '&eDä Premium-Modus isch für dis Konto scho aktiviert.'
+  enable_success: '&2Premium-Modus aktiviert! Du muesch dich bim Login nüme authentifiziere.'
+  not_enabled: '&eDä Premium-Modus isch für dis Konto nöd aktiviert.'
+  disable_success: '&2Premium-Modus deaktiviert. Du muesch dich wider authentifiziere.'
+  error: '&cBi de Überprüefig vo dim Premium-Status isch en Fehler uftrete. Bitte probier''s später nomal.'
+  admin:
+    not_registered: '&c%name isch nöd registriert.'
+    already_enabled: '&eDä Premium-Modus isch für %name scho aktiviert.'
+    account_not_found: '&cKeis Mojang-Konto für %name gfunde.'
+    enable_success: '&2Premium-Modus für %name aktiviert.'
+    not_enabled: '&eDä Premium-Modus isch für %name nöd aktiviert.'
+    disable_success: '&2Premium-Modus für %name deaktiviert.'
+    impostor_kicked: '&eEn Spiller wo als %name verbunde gsi isch hät en abwiichendi UUID gha und isch kickt worde.'
+    kick_reason: '&cD''Premium-Iistellige vo dim Konto sind vo eme Admin gänderet worde. Bitte verbind dich neu.'
+    pending: '&ePremium-Verifizierig uusstehend für %name. Er/sie muess sich nomal verbinde zum dä Bsitz vom Mojang-Konto z''bestätige.'
+  pending_kick: '&ePremium-Verifizierig aagforderet. Bitte verbinde dich nomal zum dä Bsitz vo dim Mojang-Konto z''bestätige.'
+  pending_fail: '&cPremium-Verifizierig fehlgschlage. Bitte meld dich mit dim Passwort aa.'
