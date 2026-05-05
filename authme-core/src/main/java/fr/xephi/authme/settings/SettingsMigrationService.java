@@ -92,6 +92,7 @@ public class SettingsMigrationService extends PlainMigrationService {
             | moveDeprecatedHashAlgorithmIntoLegacySection(reader, configurationData)
             | moveSaltColumnConfigWithOtherColumnConfigs(reader, configurationData)
             | migrateTimeoutToLoginAndRegisterTimeout(reader, configurationData)
+            | migrateDialogSettings(reader, configurationData)
             || hasDeprecatedProperties(reader);
     }
 
@@ -124,6 +125,35 @@ public class SettingsMigrationService extends PlainMigrationService {
         return changed;
     }
 
+    /**
+     * Moves flat dialog settings (added in earlier versions) into the unified
+     * {@code settings.registration.dialog.*} hierarchy.
+     *
+     * @param reader The property reader
+     * @param configData Configuration data
+     * @return True if the configuration has changed, false otherwise
+     */
+    private static boolean migrateDialogSettings(PropertyReader reader, ConfigurationData configData) {
+        return moveProperty(
+                newProperty("settings.registration.useDialogUi", true),
+                RegistrationSettings.USE_DIALOG_UI, reader, configData)
+            | moveProperty(
+                newProperty("settings.registration.usePreJoinDialogUi", true),
+                RegistrationSettings.USE_PREJOIN_DIALOG_UI, reader, configData)
+            | moveProperty(
+                newProperty("settings.registration.preJoinDialog.showCancelButton", true),
+                RegistrationSettings.PRE_JOIN_DIALOG_SHOW_CANCEL_BUTTON, reader, configData)
+            | moveProperty(
+                newProperty("settings.registration.preJoinDialog.allowCloseWithEscape", false),
+                RegistrationSettings.PRE_JOIN_DIALOG_ALLOW_CLOSE_WITH_ESCAPE, reader, configData)
+            | moveProperty(
+                newProperty("settings.registration.preJoinDialog.registerCancelKicks", false),
+                RegistrationSettings.PRE_JOIN_REGISTER_CANCEL_KICKS, reader, configData)
+            | moveProperty(
+                newProperty("settings.registration.preJoinDialog.loginCancelKicks", true),
+                RegistrationSettings.PRE_JOIN_LOGIN_CANCEL_KICKS, reader, configData);
+    }
+
     private static boolean hasDeprecatedProperties(PropertyReader reader) {
         String[] deprecatedProperties = {
             "Converter.Rakamak.newPasswordHash", "Hooks.chestshop", "Hooks.legacyChestshop", "Hooks.notifications",
@@ -134,7 +164,12 @@ public class SettingsMigrationService extends PlainMigrationService {
             "settings.forceRegisterCommands", "settings.forceRegisterCommandsAsConsole",
             "settings.sessions.sessionExpireOnIpChange", "settings.restrictions.otherAccountsCmd",
             "settings.restrictions.otherAccountsCmdThreshold, DataSource.mySQLDriverClassName",
-            "settings.restrictions.timeout"};
+            "settings.restrictions.timeout",
+            "settings.registration.useDialogUi", "settings.registration.usePreJoinDialogUi",
+            "settings.registration.preJoinDialog.showCancelButton",
+            "settings.registration.preJoinDialog.allowCloseWithEscape",
+            "settings.registration.preJoinDialog.registerCancelKicks",
+            "settings.registration.preJoinDialog.loginCancelKicks"};
         for (String deprecatedPath : deprecatedProperties) {
             if (reader.contains(deprecatedPath)) {
                 return true;

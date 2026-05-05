@@ -1,5 +1,6 @@
 package fr.xephi.authme.service;
 
+import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.platform.DialogWindowSpec;
@@ -36,14 +37,18 @@ public class DialogWindowServiceTest {
     @Mock
     private Messages messages;
 
+    @Mock
+    private EmailService emailService;
+
     @Test
-    public void shouldBuildPostJoinLoginDialogWithForgotPasswordButton() {
+    public void shouldBuildPostJoinLoginDialogWithForgotPasswordButtonWhenEmailServiceConfigured() {
         // given
         Player player = org.mockito.Mockito.mock(Player.class);
         given(commonService.retrieveSingleMessage(eq(player), any(MessageKey.class)))
             .willAnswer(invocation -> invocation.getArgument(1, MessageKey.class).getKey());
         given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_FORGOT_PASSWORD_BUTTON)).willReturn(true);
         given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_BODY)).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(true);
 
         // when
         DialogWindowSpec dialog = dialogWindowService.createLoginDialog(player);
@@ -60,15 +65,35 @@ public class DialogWindowServiceTest {
     }
 
     @Test
-    public void shouldBuildPostJoinLoginDialogWithoutForgotPasswordButtonWhenDisabled() {
+    public void shouldNotShowForgotPasswordButtonWhenEmailServiceNotConfigured() {
+        // given
+        Player player = org.mockito.Mockito.mock(Player.class);
+        given(commonService.retrieveSingleMessage(eq(player), any(MessageKey.class)))
+            .willAnswer(invocation -> invocation.getArgument(1, MessageKey.class).getKey());
+        given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_FORGOT_PASSWORD_BUTTON)).willReturn(true);
+        given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_BODY)).willReturn(false);
+        given(emailService.hasAllInformation()).willReturn(false);
+
+        // when — email service not configured: recovery must not appear regardless of the flag
+        DialogWindowSpec dialog = dialogWindowService.createLoginDialog(player);
+
+        // then
+        assertThat(dialog.showSecondaryButton(), is(false));
+        assertThat(dialog.secondaryButtonCommand(), is(nullValue()));
+        assertThat(dialog.inputs().stream().map(input -> input.id()).toList(), contains("password"));
+    }
+
+    @Test
+    public void shouldBuildPostJoinLoginDialogWithoutForgotPasswordButtonWhenDisabledByConfig() {
         // given
         Player player = org.mockito.Mockito.mock(Player.class);
         given(commonService.retrieveSingleMessage(eq(player), any(MessageKey.class)))
             .willAnswer(invocation -> invocation.getArgument(1, MessageKey.class).getKey());
         given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_FORGOT_PASSWORD_BUTTON)).willReturn(false);
         given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_BODY)).willReturn(false);
+        given(emailService.hasAllInformation()).willReturn(true);
 
-        // when
+        // when — disabled by config even when email service is available
         DialogWindowSpec dialog = dialogWindowService.createLoginDialog(player);
 
         // then
@@ -115,15 +140,17 @@ public class DialogWindowServiceTest {
     }
 
     @Test
-    public void shouldBuildPreJoinLoginDialogWithConfiguredToggles() {
+    public void shouldBuildPreJoinLoginDialogWithCancelButtonWhenEmailServiceNotConfigured() {
         // given
         given(messages.retrieveSingle(eq("Bobby"), any(MessageKey.class)))
             .willAnswer(invocation -> invocation.getArgument(1, MessageKey.class).getKey());
+        given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_FORGOT_PASSWORD_BUTTON)).willReturn(true);
         given(commonService.getProperty(RegistrationSettings.PRE_JOIN_DIALOG_SHOW_CANCEL_BUTTON)).willReturn(true);
         given(commonService.getProperty(RegistrationSettings.PRE_JOIN_DIALOG_ALLOW_CLOSE_WITH_ESCAPE)).willReturn(true);
         given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_BODY)).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(false);
 
-        // when
+        // when — email not configured: no recovery, cancel button shown instead
         DialogWindowSpec dialog = dialogWindowService.createPreJoinLoginDialog("Bobby");
 
         // then
@@ -134,5 +161,26 @@ public class DialogWindowServiceTest {
         assertThat(dialog.canCloseWithEscape(), is(true));
         assertThat(dialog.body(), is("dialog.login.body"));
         assertThat(dialog.inputs().stream().map(input -> input.id()).toList(), contains("password"));
+        assertThat(dialog.secondaryButtonCommand(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldBuildPreJoinLoginDialogWithRecoveryButtonWhenEmailServiceConfigured() {
+        // given
+        given(messages.retrieveSingle(eq("Bobby"), any(MessageKey.class)))
+            .willAnswer(invocation -> invocation.getArgument(1, MessageKey.class).getKey());
+        given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_FORGOT_PASSWORD_BUTTON)).willReturn(true);
+        given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_BODY)).willReturn(false);
+        given(emailService.hasAllInformation()).willReturn(true);
+
+        // when — email configured: recovery button shown, cancel suppressed, email field present
+        DialogWindowSpec dialog = dialogWindowService.createPreJoinLoginDialog("Bobby");
+
+        // then
+        assertThat(dialog.secondaryButtonLabel(), is("dialog.login.recovery_button"));
+        assertThat(dialog.showSecondaryButton(), is(true));
+        assertThat(dialog.canCloseWithEscape(), is(false));
+        assertThat(dialog.secondaryButtonCommand(), is("email recover $(email)"));
+        assertThat(dialog.inputs().stream().map(input -> input.id()).toList(), contains("password", "email"));
     }
 }

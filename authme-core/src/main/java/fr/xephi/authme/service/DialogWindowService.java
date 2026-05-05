@@ -1,5 +1,6 @@
 package fr.xephi.authme.service;
 
+import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.platform.DialogInputSpec;
@@ -28,39 +29,36 @@ public class DialogWindowService {
     @Inject
     private Messages messages;
 
+    @Inject
+    private EmailService emailService;
+
     DialogWindowService() {
     }
 
     public DialogWindowSpec createLoginDialog(Player player) {
-        boolean showRecovery = commonService.getProperty(RegistrationSettings.DIALOG_SHOW_FORGOT_PASSWORD_BUTTON);
+        boolean showRecovery = commonService.getProperty(RegistrationSettings.DIALOG_SHOW_FORGOT_PASSWORD_BUTTON)
+            && emailService.hasAllInformation();
         boolean showBody = commonService.getProperty(RegistrationSettings.DIALOG_SHOW_BODY);
-        Function<MessageKey, String> text = key -> getPostJoinMessage(player, key);
-
-        List<DialogInputSpec> inputs = new ArrayList<>();
-        inputs.add(new DialogInputSpec("password",
-            text.apply(MessageKey.DIALOG_LOGIN_PASSWORD),
-            DEFAULT_MAX_INPUT_LENGTH));
-        if (showRecovery) {
-            inputs.add(new DialogInputSpec("email",
-                text.apply(MessageKey.DIALOG_LOGIN_RECOVERY_EMAIL),
-                DEFAULT_MAX_INPUT_LENGTH));
-        }
-
-        return new DialogWindowSpec(
-            text.apply(MessageKey.DIALOG_LOGIN_TITLE),
-            inputs,
-            text.apply(MessageKey.DIALOG_LOGIN_BUTTON),
-            showRecovery ? text.apply(MessageKey.DIALOG_LOGIN_RECOVERY_BUTTON) : text.apply(MessageKey.DIALOG_CANCEL_BUTTON),
+        return createLoginDialogSpec(
+            key -> getPostJoinMessage(player, key),
             showRecovery,
             false,
-            showRecovery ? "email recover $(email)" : null,
-            showBody ? text.apply(MessageKey.DIALOG_LOGIN_BODY) : null);
+            false,
+            showBody);
     }
 
     public DialogWindowSpec createPreJoinLoginDialog(String playerName) {
-        return createLoginDialogSpec(key -> messages.retrieveSingle(playerName, key),
-            commonService.getProperty(RegistrationSettings.PRE_JOIN_DIALOG_SHOW_CANCEL_BUTTON),
-            commonService.getProperty(RegistrationSettings.PRE_JOIN_DIALOG_ALLOW_CLOSE_WITH_ESCAPE));
+        boolean showRecovery = commonService.getProperty(RegistrationSettings.DIALOG_SHOW_FORGOT_PASSWORD_BUTTON)
+            && emailService.hasAllInformation();
+        boolean showBody = commonService.getProperty(RegistrationSettings.DIALOG_SHOW_BODY);
+        // When recovery is shown it occupies the secondary button slot, so cancel button is suppressed.
+        // Escape is also disabled: the player must either submit, use recovery, or disconnect.
+        return createLoginDialogSpec(
+            key -> messages.retrieveSingle(playerName, key),
+            showRecovery,
+            !showRecovery && commonService.getProperty(RegistrationSettings.PRE_JOIN_DIALOG_SHOW_CANCEL_BUTTON),
+            !showRecovery && commonService.getProperty(RegistrationSettings.PRE_JOIN_DIALOG_ALLOW_CLOSE_WITH_ESCAPE),
+            showBody);
     }
 
     public DialogWindowSpec createTotpDialog(Player player) {
@@ -95,19 +93,33 @@ public class DialogWindowService {
     }
 
     private DialogWindowSpec createLoginDialogSpec(Function<MessageKey, String> textResolver,
-                                                   boolean showSecondaryButton,
-                                                   boolean canCloseWithEscape) {
-        boolean showBody = commonService.getProperty(RegistrationSettings.DIALOG_SHOW_BODY);
+                                                   boolean showRecovery,
+                                                   boolean showCancelButton,
+                                                   boolean canCloseWithEscape,
+                                                   boolean showBody) {
+        List<DialogInputSpec> inputs = new ArrayList<>();
+        inputs.add(new DialogInputSpec("password",
+            textResolver.apply(MessageKey.DIALOG_LOGIN_PASSWORD),
+            DEFAULT_MAX_INPUT_LENGTH));
+        if (showRecovery) {
+            inputs.add(new DialogInputSpec("email",
+                textResolver.apply(MessageKey.DIALOG_LOGIN_RECOVERY_EMAIL),
+                DEFAULT_MAX_INPUT_LENGTH));
+        }
+
+        boolean showSecondaryButton = showRecovery || showCancelButton;
+        String secondaryLabel = showRecovery
+            ? textResolver.apply(MessageKey.DIALOG_LOGIN_RECOVERY_BUTTON)
+            : textResolver.apply(MessageKey.DIALOG_CANCEL_BUTTON);
+
         return new DialogWindowSpec(
             textResolver.apply(MessageKey.DIALOG_LOGIN_TITLE),
-            List.of(new DialogInputSpec("password",
-                textResolver.apply(MessageKey.DIALOG_LOGIN_PASSWORD),
-                DEFAULT_MAX_INPUT_LENGTH)),
+            inputs,
             textResolver.apply(MessageKey.DIALOG_LOGIN_BUTTON),
-            textResolver.apply(MessageKey.DIALOG_CANCEL_BUTTON),
+            secondaryLabel,
             showSecondaryButton,
             canCloseWithEscape,
-            null,
+            showRecovery ? "email recover $(email)" : null,
             showBody ? textResolver.apply(MessageKey.DIALOG_LOGIN_BODY) : null);
     }
 

@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat May 02 03:44:30 CEST 2026. See authme-tools/src/test/java/tools/docs/config/config.tpl.md -->
+<!-- File auto-generated on Wed May 06 00:22:40 CEST 2026. See authme-tools/src/test/java/tools/docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder,
@@ -80,7 +80,7 @@ DataSource:
     mySQLPlayerUUID: ''
     # Column for storing the Mojang UUID of premium players
     # (null if premium mode is off for this player)
-    mySQLColumnPremiumUUID: premium_uuid
+    mySQLColumnPremiumUUID: premiumUUID
     # Overrides the size of the DB Connection Pool, default = 10
     poolSize: 10
     # The maximum lifetime of a connection in the pool, default = 1800 seconds
@@ -323,25 +323,37 @@ settings:
         forceKickAfterRegister: false
         # Does AuthMe need to enforce a /login after a successful registration?
         forceLoginAfterRegister: false
-        # Show a graphical dialog UI for post-join login/register instead of chat messages.
-        # Requires Minecraft 1.21.6+ on Spigot, or 1.21.11+ on Paper.
-        # On older server versions, this option is automatically ignored.
-        useDialogUi: true
-        # Show the login/register dialog during the Paper/Folia pre-join phase.
-        # Independent from useDialogUi; you may enable either or both options.
-        # On non-Paper/Folia platforms this option has no effect.
-        usePreJoinDialogUi: true
-        preJoinDialog:
-            # Show a cancel button in Paper/Folia pre-join dialogs.
-            # If disabled, players must submit the dialog or disconnect instead.
-            showCancelButton: true
-            # Allow closing Paper/Folia pre-join dialogs with Escape.
-            # If disabled, the dialog stays open until it is submitted,
-            # cancelled, or the timeout disconnects the player.
-            allowCloseWithEscape: false
-            # Kick players who cancel the Paper/Folia pre-join register dialog.
-            # When false, cancelling lets the player join and shows a post-join register dialog instead.
-            registerCancelKicks: false
+        dialog:
+            # Show a 'Forgot Password?' button in the post-join login dialog.
+            # When clicked, executes /email recover using the email entered in the recovery field.
+            # Requires an email provider to be configured to be useful.
+            showForgotPasswordButton: true
+            # Show a short description body in login, register, and two-factor dialogs.
+            # The body text helps players understand what the dialog is asking them to do.
+            showBody: true
+            preJoin:
+                # Show the login/register dialog during the Paper/Folia pre-join phase.
+                # Independent from postJoin.enable; you may enable either or both options.
+                # On non-Paper/Folia platforms this option has no effect.
+                enable: true
+                # Show a cancel button in Paper/Folia pre-join dialogs.
+                # If disabled, players must submit the dialog or disconnect instead.
+                showCancelButton: true
+                # Allow closing Paper/Folia pre-join dialogs with Escape.
+                # If disabled, the dialog stays open until it is submitted,
+                # cancelled, or the timeout disconnects the player.
+                allowCloseWithEscape: false
+                # Kick players who cancel the Paper/Folia pre-join register dialog.
+                # When false, cancelling lets the player join and shows a post-join register dialog instead.
+                registerCancelKicks: false
+                # Kick players who cancel the Paper/Folia pre-join login dialog.
+                # When false, cancelling lets the player join in limbo to use /email recover.
+                loginCancelKicks: true
+            postJoin:
+                # Show a graphical dialog UI for post-join login/register instead of chat messages.
+                # Requires Minecraft 1.21.6+ on Spigot, or 1.21.11+ on Paper.
+                # On older server versions, this option is automatically ignored.
+                enable: true
     # Enable to display the welcome message (welcome.txt) after a login
     # You can use colors in this welcome.txt + some replaced strings:
     # {PLAYER}: player name, {ONLINE}: display number of online players,
@@ -633,4 +645,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sat May 02 03:44:30 CEST 2026
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed May 06 00:22:40 CEST 2026

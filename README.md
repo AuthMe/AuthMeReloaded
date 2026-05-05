@@ -72,8 +72,8 @@ You can also create your own translation file and, if you want, you can share it
 #### Dialog UI
 AuthMe can display graphical login/register dialogs instead of chat-based prompts.
 
-- `settings.registration.useDialogUi` enables the **post-join** dialog flow.
-- `settings.registration.usePreJoinDialogUi` enables the **pre-join** dialog flow on **Paper/Folia**.
+- `settings.registration.dialog.postJoin.enable` enables the **post-join** dialog flow.
+- `settings.registration.dialog.preJoin.enable` enables the **pre-join** dialog flow on **Paper/Folia**.
 - Both options are independent: you can enable either one, both, or neither.
 - Pre-join dialogs currently require modern dialog-capable server versions such as **Paper/Folia 1.21.11+**.
 - Verified premium players skip the pre-join dialog entirely when premium bypass is enabled.

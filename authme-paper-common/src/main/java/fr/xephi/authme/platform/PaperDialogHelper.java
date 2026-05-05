@@ -9,6 +9,7 @@ import io.papermc.paper.registry.data.dialog.action.DialogAction;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import io.papermc.paper.registry.data.dialog.type.DialogType;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Player;
@@ -55,11 +56,14 @@ public final class PaperDialogHelper {
             .action(DialogAction.customClick(PaperDialogActionKeys.PRE_JOIN_LOGIN_SUBMIT, null))
             .build();
 
+        // Recovery button if the spec includes a secondary command, otherwise a plain cancel button
+        Key secondaryKey = dialog.secondaryButtonCommand() != null
+            ? PaperDialogActionKeys.PRE_JOIN_LOGIN_RECOVERY
+            : PaperDialogActionKeys.PRE_JOIN_LOGIN_CANCEL;
+
         return Dialog.create(factory -> factory.empty()
             .base(base)
-            .type(DialogType.multiAction(createPreJoinButtons(dialog,
-                loginButton,
-                PaperDialogActionKeys.PRE_JOIN_LOGIN_CANCEL)).build()));
+            .type(DialogType.multiAction(createPreJoinButtons(dialog, loginButton, secondaryKey)).build()));
     }
 
     public static Dialog createPreJoinRegisterDialog(DialogWindowSpec dialog) {

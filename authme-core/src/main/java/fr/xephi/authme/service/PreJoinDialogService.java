@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PreJoinDialogService {
 
     private final Map<UUID, String> pendingLoginPasswords = new ConcurrentHashMap<>();
+    private final Map<UUID, String> pendingRecoveryEmails = new ConcurrentHashMap<>();
     private final Map<UUID, PendingRegistration> pendingRegistrations = new ConcurrentHashMap<>();
     private final Set<UUID> skipPostJoinDialogs = ConcurrentHashMap.newKeySet();
 
@@ -30,6 +31,14 @@ public class PreJoinDialogService {
 
     public String consumePendingLoginPassword(UUID playerId) {
         return pendingLoginPasswords.remove(playerId);
+    }
+
+    public void storePendingRecoveryEmail(UUID playerId, String email) {
+        pendingRecoveryEmails.put(playerId, email);
+    }
+
+    public String consumePendingRecoveryEmail(UUID playerId) {
+        return pendingRecoveryEmails.remove(playerId);
     }
 
     public void storePendingPasswordRegistration(UUID playerId, String password, String email) {
@@ -110,6 +119,7 @@ public class PreJoinDialogService {
 
     public void clear(UUID playerId) {
         pendingLoginPasswords.remove(playerId);
+        pendingRecoveryEmails.remove(playerId);
         pendingRegistrations.remove(playerId);
         skipPostJoinDialogs.remove(playerId);
         pendingForceLogins.remove(playerId);

@@ -151,6 +151,11 @@ public class PaperDialogFlowListener implements Listener {
             return;
         }
 
+        if (PaperDialogActionKeys.PRE_JOIN_LOGIN_RECOVERY.equals(event.getIdentifier())) {
+            processPreJoinLoginRecovery(playerId, playerName, event.getDialogResponseView());
+            return;
+        }
+
         if (PaperDialogActionKeys.PRE_JOIN_LOGIN_SUBMIT.equals(event.getIdentifier())) {
             processPreJoinLogin(playerId, playerName, event.getDialogResponseView());
             return;
@@ -216,6 +221,15 @@ public class PaperDialogFlowListener implements Listener {
         } else {
             completeLoginResponse(playerId, messages.retrieveSingle(playerName, MessageKey.WRONG_PASSWORD));
         }
+    }
+
+    private void processPreJoinLoginRecovery(UUID playerId, String playerName, DialogResponseView dialogResponseView) {
+        String email = dialogResponseView == null ? null : dialogResponseView.getText("email");
+        if (email != null && !email.isBlank()) {
+            preJoinDialogService.storePendingRecoveryEmail(playerId, email);
+        }
+        // Let the player join; AsynchronousJoin will execute the recovery and kick on failure
+        completeLoginResponse(playerId, null);
     }
 
     private void handleBlockingRegisterDialog(PlayerConfigurationConnection connection, UUID playerId, String playerName, Dialog dialog) {

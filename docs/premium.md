@@ -83,7 +83,7 @@ new random verify token per connection. Mojang's `hasJoined` endpoint only retur
 response if the client called `/session/join` with the correct server-id hash derived from
 the shared AES key. An attacker who knows only the player's name cannot forge this exchange.
 
-**Pre-join dialogs (Paper/Folia):** if `settings.registration.usePreJoinDialogUi` is also
+**Pre-join dialogs (Paper/Folia):** if `settings.registration.dialog.preJoin.enable` is also
 enabled, the pre-join dialog is skipped entirely for verified premium players — no blocking
 UI shown, no password field displayed.
 

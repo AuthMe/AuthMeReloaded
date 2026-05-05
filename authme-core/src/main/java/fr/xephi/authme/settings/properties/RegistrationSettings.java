@@ -108,45 +108,6 @@ public final class RegistrationSettings implements SettingsHolder {
         newProperty("settings.preventOtherCase", true);
 
     @Comment({
-        "Show a graphical dialog UI for post-join login/register instead of chat messages.",
-        "Requires Minecraft 1.21.6+ on Spigot, or 1.21.11+ on Paper.",
-        "On older server versions, this option is automatically ignored."})
-    public static final Property<Boolean> USE_DIALOG_UI =
-        newProperty("settings.registration.useDialogUi", true);
-
-    @Comment({
-        "Show the login/register dialog during the Paper/Folia pre-join phase.",
-        "Independent from useDialogUi; you may enable either or both options.",
-        "On non-Paper/Folia platforms this option has no effect."})
-    public static final Property<Boolean> USE_PREJOIN_DIALOG_UI =
-        newProperty("settings.registration.usePreJoinDialogUi", true);
-
-    @Comment({
-        "Show a cancel button in Paper/Folia pre-join dialogs.",
-        "If disabled, players must submit the dialog or disconnect instead."})
-    public static final Property<Boolean> PRE_JOIN_DIALOG_SHOW_CANCEL_BUTTON =
-        newProperty("settings.registration.preJoinDialog.showCancelButton", true);
-
-    @Comment({
-        "Allow closing Paper/Folia pre-join dialogs with Escape.",
-        "If disabled, the dialog stays open until it is submitted,",
-        "cancelled, or the timeout disconnects the player."})
-    public static final Property<Boolean> PRE_JOIN_DIALOG_ALLOW_CLOSE_WITH_ESCAPE =
-        newProperty("settings.registration.preJoinDialog.allowCloseWithEscape", false);
-
-    @Comment({
-        "Kick players who cancel the Paper/Folia pre-join register dialog.",
-        "When false, cancelling lets the player join and shows a post-join register dialog instead."})
-    public static final Property<Boolean> PRE_JOIN_REGISTER_CANCEL_KICKS =
-        newProperty("settings.registration.preJoinDialog.registerCancelKicks", false);
-
-    @Comment({
-        "Kick players who cancel the Paper/Folia pre-join login dialog.",
-        "When false, cancelling lets the player join in limbo to use /email recover."})
-    public static final Property<Boolean> PRE_JOIN_LOGIN_CANCEL_KICKS =
-        newProperty("settings.registration.preJoinDialog.loginCancelKicks", true);
-
-    @Comment({
         "Show a 'Forgot Password?' button in the post-join login dialog.",
         "When clicked, executes /email recover using the email entered in the recovery field.",
         "Requires an email provider to be configured to be useful."})
@@ -158,6 +119,45 @@ public final class RegistrationSettings implements SettingsHolder {
         "The body text helps players understand what the dialog is asking them to do."})
     public static final Property<Boolean> DIALOG_SHOW_BODY =
         newProperty("settings.registration.dialog.showBody", true);
+
+    @Comment({
+        "Show the login/register dialog during the Paper/Folia pre-join phase.",
+        "Independent from postJoin.enable; you may enable either or both options.",
+        "On non-Paper/Folia platforms this option has no effect."})
+    public static final Property<Boolean> USE_PREJOIN_DIALOG_UI =
+        newProperty("settings.registration.dialog.preJoin.enable", true);
+
+    @Comment({
+        "Show a cancel button in Paper/Folia pre-join dialogs.",
+        "If disabled, players must submit the dialog or disconnect instead."})
+    public static final Property<Boolean> PRE_JOIN_DIALOG_SHOW_CANCEL_BUTTON =
+        newProperty("settings.registration.dialog.preJoin.showCancelButton", true);
+
+    @Comment({
+        "Allow closing Paper/Folia pre-join dialogs with Escape.",
+        "If disabled, the dialog stays open until it is submitted,",
+        "cancelled, or the timeout disconnects the player."})
+    public static final Property<Boolean> PRE_JOIN_DIALOG_ALLOW_CLOSE_WITH_ESCAPE =
+        newProperty("settings.registration.dialog.preJoin.allowCloseWithEscape", false);
+
+    @Comment({
+        "Kick players who cancel the Paper/Folia pre-join register dialog.",
+        "When false, cancelling lets the player join and shows a post-join register dialog instead."})
+    public static final Property<Boolean> PRE_JOIN_REGISTER_CANCEL_KICKS =
+        newProperty("settings.registration.dialog.preJoin.registerCancelKicks", false);
+
+    @Comment({
+        "Kick players who cancel the Paper/Folia pre-join login dialog.",
+        "When false, cancelling lets the player join in limbo to use /email recover."})
+    public static final Property<Boolean> PRE_JOIN_LOGIN_CANCEL_KICKS =
+        newProperty("settings.registration.dialog.preJoin.loginCancelKicks", true);
+
+    @Comment({
+        "Show a graphical dialog UI for post-join login/register instead of chat messages.",
+        "Requires Minecraft 1.21.6+ on Spigot, or 1.21.11+ on Paper.",
+        "On older server versions, this option is automatically ignored."})
+    public static final Property<Boolean> USE_DIALOG_UI =
+        newProperty("settings.registration.dialog.postJoin.enable", true);
 
 
     private RegistrationSettings() {

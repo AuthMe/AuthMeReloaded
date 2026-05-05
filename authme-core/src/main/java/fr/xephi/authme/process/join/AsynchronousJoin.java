@@ -33,6 +33,9 @@ import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.WelcomeMessageConfiguration;
+import fr.xephi.authme.mail.EmailService;
+import fr.xephi.authme.service.PasswordRecoveryService;
+import fr.xephi.authme.service.RecoveryCodeService;
 import fr.xephi.authme.settings.commandconfig.CommandManager;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PremiumSettings;
@@ -40,6 +43,7 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.InternetProtocolUtils;
 import fr.xephi.authme.util.PlayerUtils;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.GameMode;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -124,6 +128,15 @@ public class AsynchronousJoin implements AsynchronousProcess {
     @Inject
     private PremiumService premiumService;
 
+    @Inject
+    private EmailService emailService;
+
+    @Inject
+    private PasswordRecoveryService passwordRecoveryService;
+
+    @Inject
+    private RecoveryCodeService recoveryCodeService;
+
     AsynchronousJoin() {
     }
 
@@ -137,6 +150,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
         String ip = PlayerUtils.getPlayerIp(player);
         UUID playerId = player.getUniqueId();
         String pendingLoginPassword = preJoinDialogService.consumePendingLoginPassword(playerId);
+        String pendingRecoveryEmail = preJoinDialogService.consumePendingRecoveryEmail(playerId);
         PreJoinDialogService.PendingRegistration pendingRegistration =
             preJoinDialogService.consumePendingRegistration(playerId);
         boolean shouldSkipPostJoinDialog = preJoinDialogService.consumeSkipPostJoinDialog(playerId);
@@ -232,7 +246,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             return;
         }
 
-        processJoinSync(player, isAuthAvailable, pendingLoginPassword, pendingRegistration, shouldSkipPostJoinDialog, pendingForceLogin);
+        processJoinSync(player, isAuthAvailable, pendingLoginPassword, pendingRecoveryEmail, pendingRegistration, shouldSkipPostJoinDialog, pendingForceLogin);
     }
 
     private void handlePlayerWithUnmetNameRestriction(Player player, String ip) {
@@ -251,6 +265,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
      * @param isAuthAvailable true if the player is registered, false otherwise
      */
     private void processJoinSync(Player player, boolean isAuthAvailable, String pendingLoginPassword,
+                                 String pendingRecoveryEmail,
                                  PreJoinDialogService.PendingRegistration pendingRegistration,
                                  boolean shouldSkipPostJoinDialog, boolean pendingForceLogin) {
         int registrationTimeout = service.getProperty(
@@ -280,6 +295,10 @@ public class AsynchronousJoin implements AsynchronousProcess {
             }
             if (pendingLoginPassword != null) {
                 bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.login(player, pendingLoginPassword));
+                return;
+            }
+            if (pendingRecoveryEmail != null) {
+                bukkitService.runTaskOptionallyAsync(() -> processPendingEmailRecovery(player, pendingRecoveryEmail));
                 return;
             }
             if (pendingForceLogin) {
@@ -314,6 +333,40 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 dialogWindowService.createRegisterDialog(player, registrationType, secondArg));
         }
         dialogStateService.markDialogOpen(player);
+    }
+
+    private void processPendingEmailRecovery(Player player, String submittedEmail) {
+        String playerName = player.getName();
+        if (!emailService.hasAllInformation()) {
+            kickFromPreJoinRecovery(player, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
+            return;
+        }
+        if (!validationService.validateEmail(submittedEmail)) {
+            kickFromPreJoinRecovery(player, MessageKey.INVALID_EMAIL);
+            return;
+        }
+        ch.jalu.datasourcecolumns.data.DataSourceValue<String> emailResult =
+            database.getEmail(playerName.toLowerCase(Locale.ROOT));
+        if (!emailResult.rowExists()) {
+            kickFromPreJoinRecovery(player, MessageKey.USAGE_REGISTER);
+            return;
+        }
+        String registeredEmail = emailResult.getValue();
+        if (Utils.isEmailEmpty(registeredEmail) || !registeredEmail.equalsIgnoreCase(submittedEmail)) {
+            kickFromPreJoinRecovery(player, MessageKey.INVALID_EMAIL);
+            return;
+        }
+        if (recoveryCodeService.isRecoveryCodeNeeded()) {
+            passwordRecoveryService.createAndSendRecoveryCode(player, registeredEmail);
+        } else {
+            passwordRecoveryService.generateAndSendNewPassword(player, registeredEmail);
+        }
+        // Player stays in limbo to use the recovery code or new password
+    }
+
+    private void kickFromPreJoinRecovery(Player player, MessageKey messageKey) {
+        String kickMessage = service.retrieveSingleMessage(player, messageKey);
+        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player, () -> player.kickPlayer(kickMessage));
     }
 
     private void processPendingRegistration(Player player, PreJoinDialogService.PendingRegistration pendingRegistration) {
