@@ -7,9 +7,11 @@ import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandUtils;
 import fr.xephi.authme.command.FoundCommandResult;
 import fr.xephi.authme.initialization.Reloadable;
+import fr.xephi.authme.message.PlayerLocaleResolver;
 import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.settings.Settings;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -49,13 +51,15 @@ public class HelpProvider implements Reloadable {
 
     private final PermissionsManager permissionsManager;
     private final HelpMessagesService helpMessagesService;
+    private final Settings settings;
     /** int with bit flags set corresponding to the above constants for enabled sections. */
     private Integer enabledSections;
 
     @Inject
-    HelpProvider(PermissionsManager permissionsManager, HelpMessagesService helpMessagesService) {
+    HelpProvider(PermissionsManager permissionsManager, HelpMessagesService helpMessagesService, Settings settings) {
         this.permissionsManager = permissionsManager;
         this.helpMessagesService = helpMessagesService;
+        this.settings = settings;
     }
 
     /**
@@ -77,37 +81,38 @@ public class HelpProvider implements Reloadable {
             // Return directly if no options are enabled so we don't include the help header
             return lines;
         }
-        String header = helpMessagesService.getMessage(HelpMessage.HEADER);
+        String language = PlayerLocaleResolver.resolveLanguage(settings, sender);
+        String header = helpMessagesService.getMessage(HelpMessage.HEADER, language);
         if (!header.isEmpty()) {
             lines.add(ChatColor.GOLD + header);
         }
 
-        CommandDescription command = helpMessagesService.buildLocalizedDescription(result.getCommandDescription());
+        CommandDescription command = helpMessagesService.buildLocalizedDescription(result.getCommandDescription(), language);
         List<String> correctLabels = ImmutableList.copyOf(filterCorrectLabels(command, result.getLabels()));
 
         if (hasFlag(SHOW_COMMAND, options)) {
-            lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpSection.COMMAND) + ": "
+            lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpSection.COMMAND, language) + ": "
                 + CommandUtils.buildSyntax(command, correctLabels));
         }
         if (hasFlag(SHOW_DESCRIPTION, options)) {
-            lines.add(ChatColor.GOLD + helpMessagesService.getMessage(SHORT_DESCRIPTION) + ": "
+            lines.add(ChatColor.GOLD + helpMessagesService.getMessage(SHORT_DESCRIPTION, language) + ": "
                 + ChatColor.WHITE + command.getDescription());
         }
         if (hasFlag(SHOW_LONG_DESCRIPTION, options)) {
-            lines.add(ChatColor.GOLD + helpMessagesService.getMessage(DETAILED_DESCRIPTION) + ":");
+            lines.add(ChatColor.GOLD + helpMessagesService.getMessage(DETAILED_DESCRIPTION, language) + ":");
             lines.add(ChatColor.WHITE + " " + command.getDetailedDescription());
         }
         if (hasFlag(SHOW_ARGUMENTS, options)) {
-            addArgumentsInfo(command, lines);
+            addArgumentsInfo(command, lines, language);
         }
         if (hasFlag(SHOW_PERMISSIONS, options) && sender != null) {
-            addPermissionsInfo(command, sender, lines);
+            addPermissionsInfo(command, sender, lines, language);
         }
         if (hasFlag(SHOW_ALTERNATIVES, options)) {
-            addAlternativesInfo(command, correctLabels, lines);
+            addAlternativesInfo(command, correctLabels, lines, language);
         }
         if (hasFlag(SHOW_CHILDREN, options)) {
-            addChildrenInfo(command, correctLabels, lines);
+            addChildrenInfo(command, correctLabels, lines, language);
         }
 
         return lines;
@@ -165,14 +170,14 @@ public class HelpProvider implements Reloadable {
      * @param command the command to generate arguments info for
      * @param lines the output collection to add the info to
      */
-    private void addArgumentsInfo(CommandDescription command, List<String> lines) {
+    private void addArgumentsInfo(CommandDescription command, List<String> lines, String language) {
         if (command.getArguments().isEmpty()) {
             return;
         }
 
-        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpSection.ARGUMENTS) + ":");
+        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpSection.ARGUMENTS, language) + ":");
         StringBuilder argString = new StringBuilder();
-        String optionalText = " (" + helpMessagesService.getMessage(HelpMessage.OPTIONAL) + ")";
+        String optionalText = " (" + helpMessagesService.getMessage(HelpMessage.OPTIONAL, language) + ")";
         for (CommandArgumentDescription argument : command.getArguments()) {
             argString.setLength(0);
             argString.append(" ").append(ChatColor.YELLOW).append(ChatColor.ITALIC).append(argument.getName())
@@ -192,12 +197,13 @@ public class HelpProvider implements Reloadable {
      * @param correctLabels labels used to access the command (sanitized)
      * @param lines the output collection to add the info to
      */
-    private void addAlternativesInfo(CommandDescription command, List<String> correctLabels, List<String> lines) {
+    private void addAlternativesInfo(CommandDescription command, List<String> correctLabels, List<String> lines,
+                                     String language) {
         if (command.getLabels().size() <= 1) {
             return;
         }
 
-        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpSection.ALTERNATIVES) + ":");
+        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpSection.ALTERNATIVES, language) + ":");
 
         // Label with which the command was called -> don't show it as an alternative
         final String usedLabel;
@@ -227,45 +233,46 @@ public class HelpProvider implements Reloadable {
      * @param sender the command sender, used to evaluate permissions
      * @param lines the output collection to add the info to
      */
-    private void addPermissionsInfo(CommandDescription command, CommandSender sender, List<String> lines) {
+    private void addPermissionsInfo(CommandDescription command, CommandSender sender, List<String> lines,
+                                    String language) {
         PermissionNode permission = command.getPermission();
         if (permission == null) {
             return;
         }
-        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpSection.PERMISSIONS) + ":");
+        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpSection.PERMISSIONS, language) + ":");
 
         boolean hasPermission = permissionsManager.hasPermission(sender, permission);
         lines.add(String.format(" " + ChatColor.YELLOW + ChatColor.ITALIC + "%s" + ChatColor.GRAY + " (%s)",
-            permission.getNode(), getLocalPermissionText(hasPermission)));
+            permission.getNode(), getLocalPermissionText(hasPermission, language)));
 
         // Addendum to the line to specify whether the sender has permission or not when default is OP_ONLY
         final DefaultPermission defaultPermission = permission.getDefaultPermission();
         String addendum = "";
         if (DefaultPermission.OP_ONLY.equals(defaultPermission)) {
-            addendum = " (" + getLocalPermissionText(defaultPermission.evaluate(sender)) + ")";
+            addendum = " (" + getLocalPermissionText(defaultPermission.evaluate(sender), language) + ")";
         }
-        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpMessage.DEFAULT) + ": "
-            + ChatColor.GRAY + ChatColor.ITALIC + helpMessagesService.getMessage(defaultPermission) + addendum);
+        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpMessage.DEFAULT, language) + ": "
+            + ChatColor.GRAY + ChatColor.ITALIC + helpMessagesService.getMessage(defaultPermission, language) + addendum);
 
         // Evaluate if the sender has permission to the command
         ChatColor permissionColor;
         String permissionText;
         if (permissionsManager.hasPermission(sender, command.getPermission())) {
             permissionColor = ChatColor.GREEN;
-            permissionText = getLocalPermissionText(true);
+            permissionText = getLocalPermissionText(true, language);
         } else {
             permissionColor = ChatColor.DARK_RED;
-            permissionText = getLocalPermissionText(false);
+            permissionText = getLocalPermissionText(false, language);
         }
         lines.add(String.format(ChatColor.GOLD + " %s: %s" + ChatColor.ITALIC + "%s",
-            helpMessagesService.getMessage(HelpMessage.RESULT), permissionColor, permissionText));
+            helpMessagesService.getMessage(HelpMessage.RESULT, language), permissionColor, permissionText));
     }
 
-    private String getLocalPermissionText(boolean hasPermission) {
+    private String getLocalPermissionText(boolean hasPermission, String language) {
         if (hasPermission) {
-            return helpMessagesService.getMessage(HelpMessage.HAS_PERMISSION);
+            return helpMessagesService.getMessage(HelpMessage.HAS_PERMISSION, language);
         }
-        return helpMessagesService.getMessage(HelpMessage.NO_PERMISSION);
+        return helpMessagesService.getMessage(HelpMessage.NO_PERMISSION, language);
     }
 
     /**
@@ -275,16 +282,17 @@ public class HelpProvider implements Reloadable {
      * @param correctLabels the labels used to access the given command (sanitized)
      * @param lines the output collection to add the info to
      */
-    private void addChildrenInfo(CommandDescription command, List<String> correctLabels, List<String> lines) {
+    private void addChildrenInfo(CommandDescription command, List<String> correctLabels, List<String> lines,
+                                 String language) {
         if (command.getChildren().isEmpty()) {
             return;
         }
 
-        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpSection.CHILDREN) + ":");
+        lines.add(ChatColor.GOLD + helpMessagesService.getMessage(HelpSection.CHILDREN, language) + ":");
         String parentCommandPath = String.join(" ", correctLabels);
         for (CommandDescription child : command.getChildren()) {
             lines.add(" /" + parentCommandPath + " " + child.getLabels().get(0)
-                + ChatColor.GRAY + ChatColor.ITALIC + ": " + helpMessagesService.getDescription(child));
+                + ChatColor.GRAY + ChatColor.ITALIC + ": " + helpMessagesService.getDescription(child, language));
         }
     }
 
