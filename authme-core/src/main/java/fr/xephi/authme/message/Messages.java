@@ -6,7 +6,6 @@ import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.util.expiring.Duration;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -135,21 +134,9 @@ public class Messages {
      * @return The message from the file
      */
     private String retrieveMessage(MessageKey key, CommandSender sender) {
-        String message;
-        String displayName;
-        if (sender instanceof Player player) {
-            displayName = player.getDisplayName();
-            if (settings != null && settings.getProperty(PluginSettings.PER_PLAYER_LOCALE)) {
-                String language = PlayerLocaleResolver.toLanguageCode(player.getLocale());
-                message = messagesFileHandler.getMessage(key.getKey(), language);
-            } else {
-                message = messagesFileHandler.getMessage(key.getKey());
-            }
-        } else {
-            message = messagesFileHandler.getMessage(key.getKey());
-            displayName = sender.getName();
-        }
-
+        String language = PlayerLocaleResolver.resolveLanguage(settings, sender);
+        String message = messagesFileHandler.getMessage(key.getKey(), language);
+        String displayName = sender instanceof Player p ? p.getDisplayName() : sender.getName();
         return ChatColor.translateAlternateColorCodes('&', message)
                 .replace(NEWLINE_TAG, "\n")
                 .replace(USERNAME_TAG, sender.getName())

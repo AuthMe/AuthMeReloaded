@@ -100,6 +100,26 @@ public abstract class AbstractMessageFileHandler implements Reloadable {
     }
 
     /**
+     * Returns the message for the given key in the requested language only if it exists,
+     * falling back to the server-configured language. Returns {@code null} if not found in either.
+     *
+     * @param key the key to retrieve the message for
+     * @param language the AuthMe language code (e.g. {@code "fr"}), or {@code null} to use the server default
+     * @return the message, or {@code null} if not available
+     */
+    public String getMessageIfExists(String key, String language) {
+        if (language == null || language.equals(getLanguage())) {
+            return getMessageIfExists(key);
+        }
+        FileConfiguration config = languageCache.computeIfAbsent(language, this::loadLanguageConfiguration);
+        if (config == UNAVAILABLE) {
+            return getMessageIfExists(key);
+        }
+        String message = config.getString(key);
+        return message != null ? message : getMessageIfExists(key);
+    }
+
+    /**
      * Returns the message for the given key in the requested language, falling back to the
      * server-configured language if the requested language is unavailable or missing the key.
      *

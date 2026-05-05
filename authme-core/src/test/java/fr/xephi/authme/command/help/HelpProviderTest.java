@@ -7,6 +7,8 @@ import fr.xephi.authme.command.TestCommandsUtil;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.BeforeAll;
@@ -41,6 +43,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.lenient;
@@ -62,6 +66,8 @@ class HelpProviderTest {
     @Mock
     private HelpMessagesService helpMessagesService;
     @Mock
+    private Settings settings;
+    @Mock
     private CommandSender sender;
 
     @BeforeAll
@@ -72,7 +78,7 @@ class HelpProviderTest {
     @BeforeEach
     void initializeHelpProvider() {
         setDefaultHelpMessages(helpMessagesService);
-        helpProvider = new HelpProvider(permissionsManager, helpMessagesService);
+        helpProvider = new HelpProvider(permissionsManager, helpMessagesService, settings);
     }
 
     @Test
@@ -252,9 +258,9 @@ class HelpProviderTest {
         // given
         CommandDescription command = getCommandWithLabel(commands, "authme");
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
-        given(helpMessagesService.getDescription(getCommandWithLabel(commands, "authme", "login")))
+        given(helpMessagesService.getDescription(getCommandWithLabel(commands, "authme", "login"), null))
             .willReturn("Command for login [localized]");
-        given(helpMessagesService.getDescription(getCommandWithLabel(commands, "authme", "register")))
+        given(helpMessagesService.getDescription(getCommandWithLabel(commands, "authme", "register"), null))
             .willReturn("Registration command [localized]");
 
         // when
@@ -387,7 +393,7 @@ class HelpProviderTest {
     @Test
     void shouldSkipEmptyHeader() {
         // given
-        given(helpMessagesService.getMessage(HelpMessage.HEADER)).willReturn("");
+        given(helpMessagesService.getMessage(eq(HelpMessage.HEADER), isNull())).willReturn("");
         CommandDescription command = getCommandWithLabel(commands, "authme", "register");
         FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
 
@@ -446,20 +452,25 @@ class HelpProviderTest {
     private static void setDefaultHelpMessages(HelpMessagesService helpMessagesService) {
         lenient().when(helpMessagesService.buildLocalizedDescription(any(CommandDescription.class)))
             .thenAnswer(new ReturnsArgumentAt(0));
+        lenient().when(helpMessagesService.buildLocalizedDescription(any(CommandDescription.class), isNull()))
+            .thenAnswer(new ReturnsArgumentAt(0));
         for (HelpMessage key : HelpMessage.values()) {
             String text = key.name().replace("_", " ").toLowerCase(Locale.ROOT);
-            lenient().when(helpMessagesService.getMessage(key))
-                .thenReturn(text.substring(0, 1).toUpperCase(Locale.ROOT) + text.substring(1));
+            String returnValue = text.substring(0, 1).toUpperCase(Locale.ROOT) + text.substring(1);
+            lenient().when(helpMessagesService.getMessage(key)).thenReturn(returnValue);
+            lenient().when(helpMessagesService.getMessage(eq(key), isNull())).thenReturn(returnValue);
         }
         for (DefaultPermission permission : DefaultPermission.values()) {
             String text = permission.name().replace("_", " ").toLowerCase(Locale.ROOT);
-            lenient().when(helpMessagesService.getMessage(permission))
-                .thenReturn(text.substring(0, 1).toUpperCase(Locale.ROOT) + text.substring(1));
+            String returnValue = text.substring(0, 1).toUpperCase(Locale.ROOT) + text.substring(1);
+            lenient().when(helpMessagesService.getMessage(permission)).thenReturn(returnValue);
+            lenient().when(helpMessagesService.getMessage(eq(permission), isNull())).thenReturn(returnValue);
         }
         for (HelpSection section : HelpSection.values()) {
             String text = section.name().replace("_", " ").toLowerCase(Locale.ROOT);
-            lenient().when(helpMessagesService.getMessage(section))
-                .thenReturn(text.substring(0, 1).toUpperCase(Locale.ROOT) + text.substring(1));
+            String returnValue = text.substring(0, 1).toUpperCase(Locale.ROOT) + text.substring(1);
+            lenient().when(helpMessagesService.getMessage(section)).thenReturn(returnValue);
+            lenient().when(helpMessagesService.getMessage(eq(section), isNull())).thenReturn(returnValue);
         }
     }
 

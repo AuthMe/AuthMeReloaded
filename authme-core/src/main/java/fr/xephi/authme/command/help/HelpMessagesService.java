@@ -35,6 +35,18 @@ public class HelpMessagesService {
      * @return the localized description
      */
     public CommandDescription buildLocalizedDescription(CommandDescription command) {
+        return buildLocalizedDescription(command, null);
+    }
+
+    /**
+     * Creates a copy of the supplied command description with localized messages where present,
+     * using the specified language when available.
+     *
+     * @param command the command to build a localized version of
+     * @param language the AuthMe language code (e.g. {@code "fr"}), or {@code null} for server default
+     * @return the localized description
+     */
+    public CommandDescription buildLocalizedDescription(CommandDescription command, String language) {
         final String path = COMMAND_PREFIX + getCommandSubPath(command);
         if (!helpMessagesFileHandler.hasSection(path)) {
             // Messages file does not have a section for this command - return the provided command
@@ -42,8 +54,8 @@ public class HelpMessagesService {
         }
 
         CommandDescription.CommandBuilder builder = CommandDescription.builder()
-            .description(getText(path + DESCRIPTION_SUFFIX, command::getDescription))
-            .detailedDescription(getText(path + DETAILED_DESCRIPTION_SUFFIX, command::getDetailedDescription))
+            .description(getText(path + DESCRIPTION_SUFFIX, command::getDescription, language))
+            .detailedDescription(getText(path + DETAILED_DESCRIPTION_SUFFIX, command::getDetailedDescription, language))
             .executableCommand(command.getExecutableCommand())
             .parent(command.getParent())
             .labels(command.getLabels())
@@ -52,8 +64,8 @@ public class HelpMessagesService {
         int i = 1;
         for (CommandArgumentDescription argument : command.getArguments()) {
             String argPath = path + ".arg" + i;
-            String label = getText(argPath + ".label", argument::getName);
-            String description = getText(argPath + ".description", argument::getDescription);
+            String label = getText(argPath + ".label", argument::getName, language);
+            String description = getText(argPath + ".description", argument::getDescription, language);
             builder.withArgument(label, description, argument.isOptional());
             ++i;
         }
@@ -64,15 +76,28 @@ public class HelpMessagesService {
     }
 
     public String getDescription(CommandDescription command) {
-        return getText(COMMAND_PREFIX + getCommandSubPath(command) + DESCRIPTION_SUFFIX, command::getDescription);
+        return getDescription(command, null);
+    }
+
+    public String getDescription(CommandDescription command, String language) {
+        return getText(COMMAND_PREFIX + getCommandSubPath(command) + DESCRIPTION_SUFFIX,
+            command::getDescription, language);
     }
 
     public String getMessage(HelpMessage message) {
         return helpMessagesFileHandler.getMessage(message.getKey());
     }
 
+    public String getMessage(HelpMessage message, String language) {
+        return helpMessagesFileHandler.getMessage(message.getKey(), language);
+    }
+
     public String getMessage(HelpSection section) {
         return helpMessagesFileHandler.getMessage(section.getKey());
+    }
+
+    public String getMessage(HelpSection section, String language) {
+        return helpMessagesFileHandler.getMessage(section.getKey(), language);
     }
 
     public String getMessage(DefaultPermission defaultPermission) {
@@ -81,15 +106,18 @@ public class HelpMessagesService {
         return helpMessagesFileHandler.getMessage(path);
     }
 
+    public String getMessage(DefaultPermission defaultPermission, String language) {
+        String path = DEFAULT_PERMISSIONS_PATH + getDefaultPermissionsSubPath(defaultPermission);
+        return helpMessagesFileHandler.getMessage(path, language);
+    }
+
     public static String getDefaultPermissionsSubPath(DefaultPermission defaultPermission) {
         return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, defaultPermission.name());
     }
 
-    private String getText(String path, Supplier<String> defaultTextGetter) {
-        String message = helpMessagesFileHandler.getMessageIfExists(path);
-        return message == null
-            ? defaultTextGetter.get()
-            : message;
+    private String getText(String path, Supplier<String> defaultTextGetter, String language) {
+        String message = helpMessagesFileHandler.getMessageIfExists(path, language);
+        return message == null ? defaultTextGetter.get() : message;
     }
 
 

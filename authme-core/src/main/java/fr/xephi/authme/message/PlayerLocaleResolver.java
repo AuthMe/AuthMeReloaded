@@ -1,5 +1,10 @@
 package fr.xephi.authme.message;
 
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.PluginSettings;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
 import java.util.Map;
 
 /**
@@ -16,6 +21,23 @@ public final class PlayerLocaleResolver {
     );
 
     private PlayerLocaleResolver() {
+    }
+
+    /**
+     * Returns the AuthMe language code to use for the given sender, or {@code null} to use the server default.
+     * <p>
+     * Returns non-null only when the sender is a {@link Player} and per-player locale is enabled in settings.
+     *
+     * @param settings the plugin settings (may be {@code null}, treated as per-player locale disabled)
+     * @param sender   the command sender
+     * @return the player's language code, or {@code null} to fall back to the server-configured language
+     */
+    public static String resolveLanguage(Settings settings, CommandSender sender) {
+        if (settings != null && sender instanceof Player player
+                && settings.getProperty(PluginSettings.PER_PLAYER_LOCALE)) {
+            return toLanguageCode(player.getLocale());
+        }
+        return null;
     }
 
     /**
