@@ -1,5 +1,5 @@
 # AUTO-GENERATED FILE! Do not edit this directly
-# File auto-generated on Fri Apr 24 16:05:06 CEST 2026. See authme-tools/src/test/java/tools/docs/proxies/bungee/config.tpl.yml
+# File auto-generated on Sat May 02 03:44:31 CEST 2026. See authme-tools/src/test/java/tools/docs/proxies/bungee/config.tpl.yml
 #
 # Reference configuration for the native AuthMe Bungee proxy plugin.
 # The live file is created in plugins/AuthMeBungee/config.yml.
@@ -36,6 +36,9 @@ autoLogin: false
 sendOnLogout: false
 # If sendOnLogout is enabled, logged-out users will be sent to this backend
 unloggedUserServer: ''
+# Server to redirect players to after successful authentication on an auth server.
+# Leave empty to disable proxy-side login redirect (backend handles it via BUNGEECORD_SERVER).
+loginServer: ''
 # Shared secret used to sign perform.login messages sent to backend servers.
 # Generated automatically on first start — copy this value to the Hooks.proxySharedSecret
 # setting of every backend server running AuthMe.

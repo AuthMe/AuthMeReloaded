@@ -214,3 +214,25 @@ admin:
         first_set_fail: '&cSetFirstSpawn has failed, please retry.'
         not_defined: '&cSpawn has failed, please try to define the spawn.'
         first_not_defined: '&cFirst spawn has failed, please try to define the first spawn.'
+
+# Premijų režimas
+premium:
+  feature_disabled: '&cPremijų režimas neįjungtas šiame serveryje.'
+  account_not_found: '&cJūsų vartotojo vardui nerastas joks Minecraft premijų paskyros.'
+  already_enabled: '&ePremijų režimas jau įjungtas jūsų paskyroje.'
+  enable_success: '&2Premijų režimas įjungtas! Jums nebereikės autentifikuotis prisijungiant.'
+  not_enabled: '&ePremijų režimas neįjungtas jūsų paskyroje.'
+  disable_success: '&2Premijų režimas išjungtas. Turėsite vėl autentifikuotis.'
+  error: '&cTikrinant jūsų premijų būseną įvyko klaida. Bandykite vėliau.'
+  admin:
+    not_registered: '&c%name nėra užregistruotas.'
+    already_enabled: '&ePremijų režimas jau įjungtas %name.'
+    account_not_found: '&cMojang paskyra %name nerasta.'
+    enable_success: '&2Premijų režimas įjungtas %name.'
+    not_enabled: '&ePremijų režimas neįjungtas %name.'
+    disable_success: '&2Premijų režimas išjungtas %name.'
+    impostor_kicked: '&eŽaidėjas, prisijungęs kaip %name, turėjo nesutampantį UUID ir buvo išmestas.'
+    kick_reason: '&cJūsų paskyros premijų nustatymai buvo pakeisti administratoriaus. Prisijunkite iš naujo.'
+    pending: '&ePremijų patvirtinimas laukiamas %name. Jie turi prisijungti iš naujo, kad patvirtintų Mojang paskyros nuosavybę.'
+  pending_kick: '&ePremijų patvirtinimas paprašytas. Prisijunkite iš naujo, kad patvirtintumėte savo Mojang paskyros nuosavybę.'
+  pending_fail: '&cPremijų patvirtinimas nepavyko. Prisijunkite naudodami savo slaptažodį.'

@@ -40,7 +40,7 @@ libraries:
 commands:
   authme:
     description: AuthMe op commands
-    usage: /authme register|unregister|forcelogin|password|lastlogin|accounts|email|setemail|getip|totp|disabletotp|spawn|setspawn|firstspawn|setfirstspawn|purge|purgeplayer|backup|resetpos|purgebannedplayers|switchantibot|reload|version|converter|messages|recent|debug
+    usage: /authme register|unregister|forcelogin|password|lastlogin|accounts|email|setemail|getip|totp|disabletotp|spawn|setspawn|firstspawn|setfirstspawn|purge|purgeplayer|backup|resetpos|purgebannedplayers|switchantibot|reload|version|converter|messages|recent|premium|freemium|debug
   email:
     description: Add email or recover password
     usage: /email show|add|change|recover|code|setpassword
@@ -80,6 +80,12 @@ commands:
   verification:
     description: Verification command
     usage: /verification <code>
+  premium:
+    description: Enable premium mode
+    usage: /premium
+  freemium:
+    description: Disable premium mode
+    usage: /freemium
 permissions:
   authme.admin.*:
     description: Gives access to all admin commands
@@ -104,6 +110,8 @@ permissions:
       authme.admin.seeotheraccounts: true
       authme.admin.seerecent: true
       authme.admin.setfirstspawn: true
+      authme.admin.setfreemium: true
+      authme.admin.setpremium: true
       authme.admin.setspawn: true
       authme.admin.spawn: true
       authme.admin.switchantibot: true
@@ -170,6 +178,12 @@ permissions:
     default: op
   authme.admin.setfirstspawn:
     description: Administrator command to set the first AuthMe spawn.
+    default: op
+  authme.admin.setfreemium:
+    description: Administrator command to disable premium mode for a player.
+    default: op
+  authme.admin.setpremium:
+    description: Administrator command to enable premium mode for a player.
     default: op
   authme.admin.setspawn:
     description: Administrator command to set the AuthMe spawn.
@@ -271,8 +285,10 @@ permissions:
       authme.player.email.change: true
       authme.player.email.recover: true
       authme.player.email.see: true
+      authme.player.freemium: true
       authme.player.login: true
       authme.player.logout: true
+      authme.player.premium: true
       authme.player.protection.quickcommandsprotection: true
       authme.player.register: true
       authme.player.security.verificationcode: true
@@ -308,11 +324,18 @@ permissions:
   authme.player.email.see:
     description: Command permission to see the own email address.
     default: true
+  authme.player.freemium:
+    description: Permission to disable premium mode.
+    default: true
   authme.player.login:
     description: Command permission to login.
     default: true
   authme.player.logout:
     description: Command permission to logout.
+    default: true
+  authme.player.premium:
+    description: Permission to enable premium mode (skip authentication using a verified
+      Mojang account).
     default: true
   authme.player.protection.quickcommandsprotection:
     description: Permission that enables on join quick commands checks for the player.

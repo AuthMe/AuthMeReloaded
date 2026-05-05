@@ -293,6 +293,11 @@ public class MySQL extends AbstractSqlDataSource {
                 st.executeUpdate("ALTER TABLE " + tableName
                     + " ADD COLUMN " + col.PLAYER_UUID + " VARCHAR(36)");
             }
+
+            if (!col.PREMIUM_UUID.isEmpty() && isColumnMissing(md, col.PREMIUM_UUID)) {
+                st.executeUpdate("ALTER TABLE " + tableName
+                    + " ADD COLUMN " + col.PREMIUM_UUID + " VARCHAR(36)");
+            }
         }
         logger.info("MySQL setup finished");
     }
@@ -490,6 +495,8 @@ public class MySQL extends AbstractSqlDataSource {
         int group = col.GROUP.isEmpty() ? -1 : row.getInt(col.GROUP);
         UUID uuid = col.PLAYER_UUID.isEmpty()
             ? null : UuidUtils.parseUuidSafely(row.getString(col.PLAYER_UUID));
+        UUID premiumUuid = col.PREMIUM_UUID.isEmpty()
+            ? null : UuidUtils.parseUuidSafely(row.getString(col.PREMIUM_UUID));
         return PlayerAuth.builder()
             .name(row.getString(col.NAME))
             .realName(row.getString(col.REAL_NAME))
@@ -508,6 +515,7 @@ public class MySQL extends AbstractSqlDataSource {
             .locYaw(row.getFloat(col.LASTLOC_YAW))
             .locPitch(row.getFloat(col.LASTLOC_PITCH))
             .uuid(uuid)
+            .premiumUuid(premiumUuid)
             .build();
     }
 }

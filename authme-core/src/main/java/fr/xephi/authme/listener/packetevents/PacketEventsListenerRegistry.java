@@ -4,6 +4,9 @@ import com.github.retrooper.packetevents.PacketEvents;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.platform.PacketInterceptionAdapter;
+import fr.xephi.authme.service.BukkitService;
+import fr.xephi.authme.service.PendingPremiumCache;
+import fr.xephi.authme.service.PremiumLoginVerifier;
 import org.bukkit.entity.Player;
 
 /**
@@ -14,6 +17,7 @@ public final class PacketEventsListenerRegistry implements PacketInterceptionAda
 
     private InventoryPacketListener inventoryPacketListener;
     private TabCompletePacketListener tabCompletePacketListener;
+    private PremiumVerificationPacketListener premiumVerificationPacketListener;
 
     @Override
     public void registerInventoryProtection(PlayerCache playerCache, DataSource dataSource) {
@@ -51,6 +55,24 @@ public final class PacketEventsListenerRegistry implements PacketInterceptionAda
         if (tabCompletePacketListener != null) {
             PacketEvents.getAPI().getEventManager().unregisterListener(tabCompletePacketListener);
             tabCompletePacketListener = null;
+        }
+    }
+
+    @Override
+    public void registerPremiumVerification(DataSource dataSource, PremiumLoginVerifier verifier,
+                                            PendingPremiumCache pendingPremiumCache, BukkitService bukkitService) {
+        if (premiumVerificationPacketListener == null) {
+            premiumVerificationPacketListener =
+                new PremiumVerificationPacketListener(dataSource, verifier, pendingPremiumCache, bukkitService);
+        }
+        PacketEvents.getAPI().getEventManager().registerListener(premiumVerificationPacketListener);
+    }
+
+    @Override
+    public void unregisterPremiumVerification() {
+        if (premiumVerificationPacketListener != null) {
+            PacketEvents.getAPI().getEventManager().unregisterListener(premiumVerificationPacketListener);
+            premiumVerificationPacketListener = null;
         }
     }
 }

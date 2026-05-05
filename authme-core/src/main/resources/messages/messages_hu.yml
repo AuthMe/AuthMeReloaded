@@ -214,3 +214,25 @@ admin:
         first_set_fail: '&cA SetFirstSpawn sikertelen volt, kérjük próbáld újra.'
         not_defined: '&cA spawn sikertelen volt, kérjük próbáld meg meghatározni a spawnpontot.'
         first_not_defined: '&cAz első spawn sikertelen volt, kérjük próbáld meg meghatározni az első spawnpontot.'
+
+# Prémium mód
+premium:
+  feature_disabled: '&cA prémium mód nincs engedélyezve ezen a szerveren.'
+  account_not_found: '&cNem található prémium Minecraft-fiók a felhasználónevedhez.'
+  already_enabled: '&eA prémium mód már engedélyezve van a fiókodon.'
+  enable_success: '&2Prémium mód engedélyezve! Többé nem kell bejelentkezéskor hitelesítened magad.'
+  not_enabled: '&eA prémium mód nincs engedélyezve a fiókodon.'
+  disable_success: '&2Prémium mód letiltva. Újra hitelesítened kell magad.'
+  error: '&cHiba történt a prémium státuszod ellenőrzése során. Kérjük, próbáld meg később.'
+  admin:
+    not_registered: '&c%name nincs regisztrálva.'
+    already_enabled: '&eA prémium mód már engedélyezve van %name számára.'
+    account_not_found: '&cNem található Mojang-fiók %name számára.'
+    enable_success: '&2Prémium mód engedélyezve %name számára.'
+    not_enabled: '&eA prémium mód nincs engedélyezve %name számára.'
+    disable_success: '&2Prémium mód letiltva %name számára.'
+    impostor_kicked: '&eEgy %name nevén csatlakozó játékosnak eltérő UUID-ja volt, és kirúgták.'
+    kick_reason: '&cA fiókod prémium beállításait egy adminisztrátor módosította. Kérjük, csatlakozz újra.'
+    pending: '&ePrémium ellenőrzés folyamatban %name számára. Újra kell csatlakozniuk a Mojang-fiók tulajdonjogának megerősítéséhez.'
+  pending_kick: '&ePrémium ellenőrzés kérve. Kérjük, csatlakozz újra a Mojang-fiókod tulajdonjogának megerősítéséhez.'
+  pending_fail: '&cA prémium ellenőrzés sikertelen. Kérjük, jelentkezz be a jelszavaddal.'

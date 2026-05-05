@@ -4,11 +4,13 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PluginMessageEvent;
+import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import org.junit.jupiter.api.Test;
@@ -76,6 +78,9 @@ class BungeeProxyBridgeTest {
 
     @Mock
     private ServerConnectEvent serverConnectEvent;
+
+    @Mock
+    private PendingConnection pendingConnection;
 
     @Captor
     private ArgumentCaptor<byte[]> payloadCaptor;
@@ -155,7 +160,7 @@ class BungeeProxyBridgeTest {
         BungeeProxyBridge bridge = new BungeeProxyBridge(
             proxyServer, logger, new BungeeProxyConfiguration(
                 Set.of("lobby"), false, true, Set.of("/login"), true, true,
-                "Authentication required.", true, true, "limbo", ""),
+                "Authentication required.", true, true, "limbo", "", ""),
             new BungeeAuthenticationStore());
         bridge.onPluginMessage(pluginMessageEvent);
 
@@ -438,10 +443,54 @@ class BungeeProxyBridgeTest {
         assertPerformLoginPayload(payloadCaptor.getValue(), "alice", "test-secret");
     }
 
+    @Test
+    void shouldUpdatePremiumSetAfterReceivingAllChunks() {
+        given(pluginMessageEvent.isCancelled()).willReturn(false);
+        given(pluginMessageEvent.getTag()).willReturn(BungeeProxyBridge.AUTHME_CHANNEL);
+        given(pluginMessageEvent.getSender()).willReturn(sourceServer);
+        BungeeProxyBridge bridge = new BungeeProxyBridge(proxyServer, logger, createConfiguration(), new BungeeAuthenticationStore());
+
+        given(pluginMessageEvent.getData()).willReturn(createChunkPayload(0, false, "alice,bob"));
+        bridge.onPluginMessage(pluginMessageEvent);
+        given(pluginMessageEvent.getData()).willReturn(createChunkPayload(1, true, "charlie"));
+        bridge.onPluginMessage(pluginMessageEvent);
+
+        PreLoginEvent preLoginEvent = org.mockito.Mockito.mock(PreLoginEvent.class);
+        given(preLoginEvent.getConnection()).willReturn(pendingConnection);
+        given(pendingConnection.getName()).willReturn("Alice");
+        bridge.onPreLogin(preLoginEvent);
+        verify(pendingConnection).setOnlineMode(true);
+    }
+
+    @Test
+    void shouldNotUpdatePremiumSetOnPartialChunkOnly() {
+        given(pluginMessageEvent.isCancelled()).willReturn(false);
+        given(pluginMessageEvent.getTag()).willReturn(BungeeProxyBridge.AUTHME_CHANNEL);
+        given(pluginMessageEvent.getSender()).willReturn(sourceServer);
+        BungeeProxyBridge bridge = new BungeeProxyBridge(proxyServer, logger, createConfiguration(), new BungeeAuthenticationStore());
+
+        // Only first chunk (not last) — set must not be updated yet
+        given(pluginMessageEvent.getData()).willReturn(createChunkPayload(0, false, "alice,bob"));
+        bridge.onPluginMessage(pluginMessageEvent);
+
+        PreLoginEvent preLoginEvent = org.mockito.Mockito.mock(PreLoginEvent.class);
+        given(preLoginEvent.getConnection()).willReturn(pendingConnection);
+        given(pendingConnection.getName()).willReturn("Alice");
+        bridge.onPreLogin(preLoginEvent);
+        verify(pendingConnection, never()).setOnlineMode(true);
+    }
+
+    private static byte[] createChunkPayload(int seq, boolean last, String csv) {
+        ByteArrayDataOutput output = ByteStreams.newDataOutput();
+        output.writeUTF("premium.list.chunk");
+        output.writeUTF(seq + ":" + (last ? "1" : "0") + ":" + csv);
+        return output.toByteArray();
+    }
+
     private static BungeeProxyConfiguration createConfiguration() {
         return new BungeeProxyConfiguration(
             Set.of("lobby"), false, true, Set.of("/login", "/register", "/l", "/reg", "/email", "/captcha", "/2fa", "/totp", "/log"),
-            true, true, "Authentication required.", true, false, "", "test-secret");
+            true, true, "Authentication required.", true, false, "", "", "test-secret");
     }
 
     private static byte[] createAuthMePayload(String typeId, String playerName) {

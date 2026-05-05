@@ -184,6 +184,20 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
+    public boolean updatePremiumUuid(PlayerAuth auth) {
+        boolean result = source.updatePremiumUuid(auth);
+        if (result) {
+            cachedAuths.put(auth.getNickname(), Optional.of(auth));
+        }
+        return result;
+    }
+
+    @Override
+    public List<String> getPremiumUsernames() {
+        return source.getPremiumUsernames();
+    }
+
+    @Override
     public List<String> getAllAuthsByIp(String ip) {
         return source.getAllAuthsByIp(ip);
     }

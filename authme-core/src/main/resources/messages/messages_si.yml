@@ -214,3 +214,25 @@ admin:
         first_set_fail: '&cSetFirstSpawn has failed, please retry.'
         not_defined: '&cSpawn has failed, please try to define the spawn.'
         first_not_defined: '&cFirst spawn has failed, please try to define the first spawn.'
+
+# Premium način
+premium:
+  feature_disabled: '&cPremium način ni omogočen na tem strežniku.'
+  account_not_found: '&cZa vaše uporabniško ime ni bilo najdenega nobenega Minecraft premium računa.'
+  already_enabled: '&ePremium način je že omogočen za vaš račun.'
+  enable_success: '&2Premium način omogočen! Pri prijavi se vam ne bo več treba preverjati.'
+  not_enabled: '&ePremium način ni omogočen za vaš račun.'
+  disable_success: '&2Premium način onemogočen. Znova se boste morali preverjati.'
+  error: '&cPri preverjanju vašega premium statusa je prišlo do napake. Poskusite znova pozneje.'
+  admin:
+    not_registered: '&c%name ni registriran.'
+    already_enabled: '&ePremium način je že omogočen za %name.'
+    account_not_found: '&cZa %name ni bil najden noben račun Mojang.'
+    enable_success: '&2Premium način omogočen za %name.'
+    not_enabled: '&ePremium način ni omogočen za %name.'
+    disable_success: '&2Premium način onemogočen za %name.'
+    impostor_kicked: '&eIgralec, ki je bil povezan kot %name, je imel neujemajoč UUID in je bil izključen.'
+    kick_reason: '&cPremium nastavitve vašega računa je spremenil skrbnik. Prosimo, povežite se znova.'
+    pending: '&ePremium preverjanje je v teku za %name. Znova se morajo povezati, da potrdijo lastništvo računa Mojang.'
+  pending_kick: '&eZahtevano je premium preverjanje. Prosimo, povežite se znova, da potrdite lastništvo svojega računa Mojang.'
+  pending_fail: '&cPremium preverjanje ni uspelo. Prosimo, prijavite se z geslom.'

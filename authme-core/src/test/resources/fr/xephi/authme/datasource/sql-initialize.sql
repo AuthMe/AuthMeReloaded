@@ -19,7 +19,8 @@ CREATE TABLE authme (
     isLogged INT DEFAULT '0',
     realname VARCHAR(255) NOT NULL DEFAULT 'Player',
     salt varchar(255),
-    hasSession INT NOT NULL DEFAULT '0'
+    hasSession INT NOT NULL DEFAULT '0',
+    premiumUUID VARCHAR(36)
 );
 
 INSERT INTO authme (username, password, ip, lastlogin, x, y, z, world, yaw, pitch, email, isLogged, realname, salt, regdate, regip, totp)
