@@ -378,6 +378,8 @@ public class SQLite extends AbstractSqlDataSource {
 
     private PlayerAuth buildAuthFromResultSet(ResultSet row) throws SQLException {
         String salt = !col.SALT.isEmpty() ? row.getString(col.SALT) : null;
+        UUID uuid = col.PLAYER_UUID.isEmpty()
+            ? null : UuidUtils.parseUuidSafely(row.getString(col.PLAYER_UUID));
         UUID premiumUuid = col.PREMIUM_UUID.isEmpty()
             ? null : UuidUtils.parseUuidSafely(row.getString(col.PREMIUM_UUID));
 
@@ -397,6 +399,7 @@ public class SQLite extends AbstractSqlDataSource {
             .locWorld(row.getString(col.LASTLOC_WORLD))
             .locYaw(row.getFloat(col.LASTLOC_YAW))
             .locPitch(row.getFloat(col.LASTLOC_PITCH))
+            .uuid(uuid)
             .premiumUuid(premiumUuid)
             .build();
     }

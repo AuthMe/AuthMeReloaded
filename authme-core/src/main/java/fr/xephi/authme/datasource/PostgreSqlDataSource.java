@@ -457,6 +457,8 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
     private PlayerAuth buildAuthFromResultSet(ResultSet row) throws SQLException {
         String salt = col.SALT.isEmpty() ? null : row.getString(col.SALT);
         int group = col.GROUP.isEmpty() ? -1 : row.getInt(col.GROUP);
+        UUID uuid = col.PLAYER_UUID.isEmpty()
+            ? null : UuidUtils.parseUuidSafely(row.getString(col.PLAYER_UUID));
         UUID premiumUuid = col.PREMIUM_UUID.isEmpty()
             ? null : UuidUtils.parseUuidSafely(row.getString(col.PREMIUM_UUID));
         return PlayerAuth.builder()
@@ -476,6 +478,7 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
             .locZ(row.getDouble(col.LASTLOC_Z))
             .locYaw(row.getFloat(col.LASTLOC_YAW))
             .locPitch(row.getFloat(col.LASTLOC_PITCH))
+            .uuid(uuid)
             .premiumUuid(premiumUuid)
             .build();
     }

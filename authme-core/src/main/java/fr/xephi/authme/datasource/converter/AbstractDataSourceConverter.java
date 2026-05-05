@@ -66,6 +66,9 @@ public abstract class AbstractDataSourceConverter<S extends DataSource> implemen
                 destination.saveAuth(auth);
                 destination.updateSession(auth);
                 destination.updateQuitLoc(auth);
+                if (auth.getPremiumUuid() != null) {
+                    destination.updatePremiumUuid(auth);
+                }
             }
         }
 

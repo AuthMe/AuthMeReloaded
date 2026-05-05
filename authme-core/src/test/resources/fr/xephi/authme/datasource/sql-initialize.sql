@@ -20,10 +20,11 @@ CREATE TABLE authme (
     realname VARCHAR(255) NOT NULL DEFAULT 'Player',
     salt varchar(255),
     hasSession INT NOT NULL DEFAULT '0',
-    premiumUUID VARCHAR(36)
+    premiumUUID VARCHAR(36),
+    playerUUID VARCHAR(36)
 );
 
-INSERT INTO authme (username, password, ip, lastlogin, x, y, z, world, yaw, pitch, email, isLogged, realname, salt, regdate, regip, totp)
-VALUES ('bobby','$SHA$11aa0706173d7272$dbba966','123.45.67.89',1449136800,1.05,2.1,4.2,'world',-0.44,2.77,'your@email.com',0,'Bobby',NULL,1436778723,'127.0.4.22','JBSWY3DPEHPK3PXP');
+INSERT INTO authme (username, password, ip, lastlogin, x, y, z, world, yaw, pitch, email, isLogged, realname, salt, regdate, regip, totp, playerUUID)
+VALUES ('bobby','$SHA$11aa0706173d7272$dbba966','123.45.67.89',1449136800,1.05,2.1,4.2,'world',-0.44,2.77,'your@email.com',0,'Bobby',NULL,1436778723,'127.0.4.22','JBSWY3DPEHPK3PXP','a8674b3e-7c1a-4cfa-8f37-1c6e7d2b9f44');
 INSERT INTO authme (username, password, ip, lastlogin, x, y, z, world, yaw, pitch, email, isLogged, realname, salt, regdate)
 VALUES ('user','b28c32f624a4eb161d6adc9acb5bfc5b','34.56.78.90',1453242857,124.1,76.3,-127.8,'nether',0.23,4.88,'user@example.org',0,'user','f750ba32',0);

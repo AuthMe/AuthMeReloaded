@@ -18,8 +18,13 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import java.util.List;
+import java.util.UUID;
+
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -47,6 +52,7 @@ class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
         TestHelper.returnDefaultsForAllProperties(settings);
         set(DatabaseSettings.MYSQL_DATABASE, "sqlite-test");
         set(DatabaseSettings.MYSQL_TABLE, "authme");
+        set(DatabaseSettings.MYSQL_COL_PLAYER_UUID, "playerUUID");
         TestHelper.setupLogger();
 
         Path sqlInitFile = TestHelper.getJarPath(TestHelper.PROJECT_ROOT + "datasource/sql-initialize.sql");
@@ -109,6 +115,24 @@ class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
         // Save some player to verify database is operational
         sqLite.saveAuth(PlayerAuth.builder().name("Name").build());
         assertThat(sqLite.getAllAuths(), hasSize(1));
+    }
+
+    @Test
+    void shouldReadPlayerUuidFromGetAllAuths() {
+        // given
+        SQLite sqLite = new SQLite(settings, null, con);
+
+        // when
+        List<PlayerAuth> auths = sqLite.getAllAuths();
+
+        // then - bobby has playerUUID set in test data, user does not
+        PlayerAuth bobby = auths.stream().filter(a -> "bobby".equals(a.getNickname())).findFirst().orElse(null);
+        assertThat(bobby, notNullValue());
+        assertThat(bobby.getUuid(), equalTo(UUID.fromString("a8674b3e-7c1a-4cfa-8f37-1c6e7d2b9f44")));
+
+        PlayerAuth user = auths.stream().filter(a -> "user".equals(a.getNickname())).findFirst().orElse(null);
+        assertThat(user, notNullValue());
+        assertThat(user.getUuid(), equalTo(null));
     }
 
     @Override
