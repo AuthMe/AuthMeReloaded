@@ -5,6 +5,8 @@ import fr.xephi.authme.data.ProxySessionManager;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
+import fr.xephi.authme.platform.DialogInputSpec;
+import fr.xephi.authme.platform.DialogWindowSpec;
 import fr.xephi.authme.platform.PaperDialogActionKeys;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
@@ -16,6 +18,7 @@ import fr.xephi.authme.service.DialogWindowService;
 import fr.xephi.authme.service.PreJoinDialogService;
 import fr.xephi.authme.service.PremiumLoginVerifier;
 import fr.xephi.authme.service.SessionService;
+import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.properties.PremiumSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -23,6 +26,7 @@ import io.papermc.paper.connection.PlayerConfigurationConnection;
 import io.papermc.paper.dialog.DialogResponseView;
 import io.papermc.paper.event.connection.configuration.AsyncPlayerConnectionConfigureEvent;
 import io.papermc.paper.event.player.PlayerCustomClickEvent;
+import fr.xephi.authme.platform.PaperDialogHelper;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -32,6 +36,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -39,8 +44,10 @@ import java.util.concurrent.ConcurrentMap;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -59,22 +66,27 @@ public class PaperDialogFlowListenerTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldCompletePendingRegisterResponseForIncompleteSubmission() throws Exception {
+    public void shouldShowErrorDialogAndKeepFutureOpenForEmptyPasswordSubmission() throws Exception {
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
         CommonService commonService = mock(CommonService.class);
-        PlayerCache playerCache = mock(PlayerCache.class);
+        Messages messages = mock(Messages.class);
+        ValidationService validationService = mock(ValidationService.class);
+        DialogWindowService dialogWindowService = mock(DialogWindowService.class);
         PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
-        SessionService sessionService = mock(SessionService.class);
-        ProxySessionManager proxySessionManager = mock(ProxySessionManager.class);
         setField(listener, "commonService", commonService);
-        setField(listener, "playerCache", playerCache);
+        setField(listener, "messages", messages);
+        setField(listener, "validationService", validationService);
+        setField(listener, "dialogWindowService", dialogWindowService);
         setField(listener, "preJoinDialogService", preJoinDialogService);
-        setField(listener, "sessionService", sessionService);
-        setField(listener, "proxySessionManager", proxySessionManager);
 
         given(commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE)).willReturn(RegistrationType.PASSWORD);
         given(commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT))
             .willReturn(RegisterSecondaryArgument.CONFIRMATION);
+        given(messages.retrieveSingle("Bobby", MessageKey.INVALID_PASSWORD_LENGTH)).willReturn("Password too short!");
+        given(dialogWindowService.createPreJoinRegisterDialog("Bobby", RegistrationType.PASSWORD,
+            RegisterSecondaryArgument.CONFIRMATION)).willReturn(
+            new DialogWindowSpec("Register", List.of(new DialogInputSpec("password", "Password", 100)),
+                "Register", "Cancel", false, false, null));
 
         UUID playerId = UUID.randomUUID();
         CompletableFuture<String> future = new CompletableFuture<>();
@@ -88,8 +100,10 @@ public class PaperDialogFlowListenerTest {
         given(profile.getId()).willReturn(playerId);
         given(profile.getName()).willReturn("Bobby");
 
+        Audience audience = mock(Audience.class);
         PlayerConfigurationConnection connection = mock(PlayerConfigurationConnection.class);
         given(connection.getProfile()).willReturn(profile);
+        given(connection.getAudience()).willReturn(audience);
 
         DialogResponseView responseView = mock(DialogResponseView.class);
         given(responseView.getText("password")).willReturn("");
@@ -99,12 +113,17 @@ public class PaperDialogFlowListenerTest {
         given(event.getIdentifier()).willReturn(PaperDialogActionKeys.PRE_JOIN_REGISTER_SUBMIT);
         given(event.getDialogResponseView()).willReturn(responseView);
 
-        listener.onPlayerCustomClick(event);
+        // PaperDialogHelper.createPreJoinRegisterDialog() requires Paper registry internals;
+        // mock the static to avoid that dependency and focus on behavioral assertions.
+        try (var helperStatic = mockStatic(PaperDialogHelper.class)) {
+            helperStatic.when(() -> PaperDialogHelper.createPreJoinRegisterDialog(any())).thenReturn(null);
 
-        assertThat(future.isDone(), is(true));
-        assertThat(future.getNow("sentinel"), is((String) null));
-        verify(preJoinDialogService, never()).storePendingPasswordRegistration(
-            org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any());
+            listener.onPlayerCustomClick(event);
+
+            assertThat("future must stay open so the player can retry", future.isDone(), is(false));
+            verify(connection).getAudience();
+            verify(preJoinDialogService, never()).storePendingPasswordRegistration(any(), any(), any());
+        }
     }
 
     @Test

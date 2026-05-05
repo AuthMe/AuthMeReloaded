@@ -44,4 +44,10 @@ public record DialogWindowSpec(String title,
         this(title, inputs, primaryButtonLabel, secondaryButtonLabel,
             showSecondaryButton, canCloseWithEscape, secondaryButtonCommand, null);
     }
+
+    /** Returns a copy of this spec with the given body text (may be null). */
+    public DialogWindowSpec withBody(String newBody) {
+        return new DialogWindowSpec(title, inputs, primaryButtonLabel, secondaryButtonLabel,
+            showSecondaryButton, canCloseWithEscape, secondaryButtonCommand, newBody);
+    }
 }

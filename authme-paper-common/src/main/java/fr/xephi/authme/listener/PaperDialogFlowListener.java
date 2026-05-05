@@ -8,6 +8,7 @@ import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
+import fr.xephi.authme.platform.DialogWindowSpec;
 import fr.xephi.authme.platform.PaperDialogActionKeys;
 import fr.xephi.authme.platform.PaperDialogHelper;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
@@ -156,7 +157,7 @@ public class PaperDialogFlowListener implements Listener {
         }
 
         if (PaperDialogActionKeys.PRE_JOIN_REGISTER_SUBMIT.equals(event.getIdentifier())) {
-            storePendingRegistration(playerId, event.getDialogResponseView());
+            storePendingRegistration(connection, playerId, playerName, event.getDialogResponseView());
             return;
         }
 
@@ -234,7 +235,8 @@ public class PaperDialogFlowListener implements Listener {
         }
     }
 
-    private void storePendingRegistration(UUID playerId, DialogResponseView dialogResponseView) {
+    private void storePendingRegistration(PlayerConfigurationConnection connection, UUID playerId, String playerName,
+                                          DialogResponseView dialogResponseView) {
         if (dialogResponseView == null) {
             completeRegisterResponse(playerId, null);
             return;
@@ -245,12 +247,14 @@ public class PaperDialogFlowListener implements Listener {
         if (registrationType == RegistrationType.EMAIL) {
             String email = dialogResponseView.getText("email");
             String confirm = dialogResponseView.getText("confirm");
-            if (email == null || !validationService.validateEmail(email)) {
-                completeRegisterResponse(playerId, null);
+            if (email == null || email.isBlank() || !validationService.validateEmail(email)) {
+                showRegisterDialogWithError(connection, playerName,
+                    messages.retrieveSingle(playerName, MessageKey.INVALID_EMAIL));
                 return;
             }
             if (secondArg == RegisterSecondaryArgument.CONFIRMATION && !email.equals(confirm)) {
-                completeRegisterResponse(playerId, null);
+                showRegisterDialogWithError(connection, playerName,
+                    messages.retrieveSingle(playerName, MessageKey.PASSWORD_MATCH_ERROR));
                 return;
             }
             preJoinDialogService.storePendingEmailRegistration(playerId, email);
@@ -260,15 +264,25 @@ public class PaperDialogFlowListener implements Listener {
 
         String password = dialogResponseView.getText("password");
         if (password == null || password.isBlank()) {
-            completeRegisterResponse(playerId, null);
+            showRegisterDialogWithError(connection, playerName,
+                messages.retrieveSingle(playerName, MessageKey.INVALID_PASSWORD_LENGTH));
             return;
         }
         if (secondArg == RegisterSecondaryArgument.CONFIRMATION) {
             String confirm = dialogResponseView.getText("confirm");
             if (!password.equals(confirm)) {
-                completeRegisterResponse(playerId, null);
+                showRegisterDialogWithError(connection, playerName,
+                    messages.retrieveSingle(playerName, MessageKey.PASSWORD_MATCH_ERROR));
                 return;
             }
+        }
+        ValidationService.ValidationResult passwordResult = validationService.validatePassword(password, playerName);
+        if (passwordResult.hasError()) {
+            showRegisterDialogWithError(connection, playerName,
+                messages.retrieveSingle(playerName, passwordResult.getMessageKey(), passwordResult.getArgs()));
+            return;
+        }
+        if (secondArg == RegisterSecondaryArgument.CONFIRMATION) {
             preJoinDialogService.storePendingPasswordRegistration(playerId, password, null);
             completeRegisterResponse(playerId, null);
             return;
@@ -278,11 +292,13 @@ public class PaperDialogFlowListener implements Listener {
             || secondArg == RegisterSecondaryArgument.EMAIL_OPTIONAL) {
             String email = dialogResponseView.getText("email");
             if (secondArg == RegisterSecondaryArgument.EMAIL_MANDATORY && (email == null || email.isBlank())) {
-                completeRegisterResponse(playerId, null);
+                showRegisterDialogWithError(connection, playerName,
+                    messages.retrieveSingle(playerName, MessageKey.INVALID_EMAIL));
                 return;
             }
             if (email != null && !email.isBlank() && !validationService.validateEmail(email)) {
-                completeRegisterResponse(playerId, null);
+                showRegisterDialogWithError(connection, playerName,
+                    messages.retrieveSingle(playerName, MessageKey.INVALID_EMAIL));
                 return;
             }
             preJoinDialogService.storePendingPasswordRegistration(playerId, password, email);
@@ -292,6 +308,14 @@ public class PaperDialogFlowListener implements Listener {
 
         preJoinDialogService.storePendingPasswordRegistration(playerId, password, null);
         completeRegisterResponse(playerId, null);
+    }
+
+    private void showRegisterDialogWithError(PlayerConfigurationConnection connection, String playerName,
+                                             String errorMessage) {
+        RegistrationType registrationType = commonService.getProperty(RegistrationSettings.REGISTRATION_TYPE);
+        RegisterSecondaryArgument secondArg = commonService.getProperty(RegistrationSettings.REGISTER_SECOND_ARGUMENT);
+        DialogWindowSpec spec = dialogWindowService.createPreJoinRegisterDialog(playerName, registrationType, secondArg);
+        connection.getAudience().showDialog(PaperDialogHelper.createPreJoinRegisterDialog(spec.withBody(errorMessage)));
     }
 
     private void completeLoginResponse(UUID playerId, String kickMessage) {
