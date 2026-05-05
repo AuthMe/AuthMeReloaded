@@ -14,7 +14,8 @@ import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
-
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 import static fr.xephi.authme.util.Utils.MILLIS_PER_MINUTE;
@@ -68,8 +69,11 @@ public class TotpAuthenticator implements HasCleanup {
 
     public TotpGenerationResult generateTotpKey(Player player) {
         GoogleAuthenticatorKey credentials = authenticator.createCredentials();
-        String qrCodeUrl = GoogleAuthenticatorQRGenerator.getOtpAuthURL(
+        String otpAuthUrl = GoogleAuthenticatorQRGenerator.getOtpAuthTotpURL(
             settings.getProperty(PluginSettings.SERVER_NAME), player.getName(), credentials);
+        String qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?data="
+            + URLEncoder.encode(otpAuthUrl, StandardCharsets.UTF_8)
+            + "&size=200x200&ecc=M&margin=10";
         return new TotpGenerationResult(credentials.getKey(), qrCodeUrl);
     }
 
