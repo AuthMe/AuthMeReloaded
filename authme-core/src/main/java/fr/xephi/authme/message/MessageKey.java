@@ -242,8 +242,20 @@ public enum MessageKey {
     /** Login dialog submit button label. */
     DIALOG_LOGIN_BUTTON("dialog.login.button"),
 
+    /** Login dialog body text shown below the title. */
+    DIALOG_LOGIN_BODY("dialog.login.body"),
+
+    /** Login dialog recovery email field label. */
+    DIALOG_LOGIN_RECOVERY_EMAIL("dialog.login.recovery_email"),
+
+    /** Login dialog forgot-password button label. */
+    DIALOG_LOGIN_RECOVERY_BUTTON("dialog.login.recovery_button"),
+
     /** Register dialog title. */
     DIALOG_REGISTER_TITLE("dialog.register.title"),
+
+    /** Register dialog body text shown below the title. */
+    DIALOG_REGISTER_BODY("dialog.register.body"),
 
     /** Register dialog password field label. */
     DIALOG_REGISTER_PASSWORD("dialog.register.password"),
@@ -262,6 +274,9 @@ public enum MessageKey {
 
     /** Two-factor dialog title. */
     DIALOG_TWO_FACTOR_TITLE("dialog.two_factor.title"),
+
+    /** Two-factor dialog body text shown below the title. */
+    DIALOG_TWO_FACTOR_BODY("dialog.two_factor.body"),
 
     /** Two-factor dialog code field label. */
     DIALOG_TWO_FACTOR_CODE("dialog.two_factor.code"),

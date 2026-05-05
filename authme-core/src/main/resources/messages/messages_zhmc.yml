@@ -138,10 +138,14 @@ verification:
 dialog:
   login:
     title: '&6登入'
+    body: '&7請輸入您的密碼以繼續。'
     password: '&f密碼'
+    recovery_email: '&f恢復電郵（可選）'
+    recovery_button: '&e忘記密碼？'
     button: '&a登入'
   register:
     title: '&6註冊'
+    body: '&7建立帳戶以開始在此伺服器上遊玩。'
     password: '&f密碼'
     confirm_password: '&f確認密碼'
     email: '&f電郵'
@@ -149,6 +153,7 @@ dialog:
     button: '&a註冊'
   two_factor:
     title: '&6雙重驗證'
+    body: '&7打開您的驗證器應用程式並輸入6位數字代碼。'
     code: '&f2FA代碼'
     button: '&a驗證'
   button:

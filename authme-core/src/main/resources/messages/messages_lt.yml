@@ -138,10 +138,14 @@ verification:
 dialog:
   login:
     title: '&6Prisijungimas'
+    body: '&7Norėdami tęsti, įveskite savo slaptažodį.'
     password: '&fSlaptažodis'
+    recovery_email: '&fAtgavimo el. paštas (neprivaloma)'
+    recovery_button: '&ePamiršote slaptažodį?'
     button: '&aPrisijungti'
   register:
     title: '&6Registracija'
+    body: '&7Sukurkite paskyrą, kad galėtumėte žaisti šiame serveryje.'
     password: '&fSlaptažodis'
     confirm_password: '&fPatvirtinti slaptažodį'
     email: '&fEl. paštas'
@@ -149,6 +153,7 @@ dialog:
     button: '&aRegistruotis'
   two_factor:
     title: '&6Dviejų veiksnių autentifikavimas'
+    body: '&7Atidarykite autentifikavimo programėlę ir įveskite 6 skaitmenų kodą.'
     code: '&f2FA kodas'
     button: '&aPatvirtinti'
   button:

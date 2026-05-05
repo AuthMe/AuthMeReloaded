@@ -138,10 +138,14 @@ verification:
 dialog:
   login:
     title: '&6Prijava'
+    body: '&7Molimo unesite lozinku za nastavak.'
     password: '&fLozinka'
+    recovery_email: '&fEmail za oporavak (opcionalno)'
+    recovery_button: '&eZaboravili ste lozinku?'
     button: '&aPrijavi se'
   register:
     title: '&6Registracija'
+    body: '&7Kreirajte nalog da biste počeli da igrate na ovom serveru.'
     password: '&fLozinka'
     confirm_password: '&fPotvrdi lozinku'
     email: '&fE-pošta'
@@ -149,6 +153,7 @@ dialog:
     button: '&aRegistruj se'
   two_factor:
     title: '&6Dvofaktorska autentifikacija'
+    body: '&7Otvorite aplikaciju za autentifikaciju i unesite 6-cifreni kod.'
     code: '&f2FA kod'
     button: '&aPotvrdi'
   button:

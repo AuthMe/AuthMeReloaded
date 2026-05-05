@@ -39,7 +39,8 @@ public class PaperPlatformAdapterTest {
         "Submit",
         "Cancel",
         false,
-        false);
+        false,
+        null);
 
     @Test
     public void getPlatformNameReturnsExpectedValue() {

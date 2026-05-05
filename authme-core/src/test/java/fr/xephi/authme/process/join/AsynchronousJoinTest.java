@@ -302,6 +302,7 @@ public class AsynchronousJoinTest {
             buttonLabel,
             "Cancel",
             false,
-            false);
+            false,
+            null);
     }
 }

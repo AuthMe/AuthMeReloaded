@@ -138,10 +138,14 @@ verification:
 dialog:
   login:
     title: '&6Logowanie'
+    body: '&7Wprowadź swoje hasło, aby kontynuować.'
     password: '&fHasło'
+    recovery_email: '&fAdres e-mail do odzyskiwania (opcjonalny)'
+    recovery_button: '&eZapomniałeś hasła?'
     button: '&aZaloguj się'
   register:
     title: '&6Rejestracja'
+    body: '&7Utwórz konto, aby zacząć grać na tym serwerze.'
     password: '&fHasło'
     confirm_password: '&fPotwierdź hasło'
     email: '&fE-mail'
@@ -149,6 +153,7 @@ dialog:
     button: '&aZarejestruj się'
   two_factor:
     title: '&6Uwierzytelnianie dwuskładnikowe'
+    body: '&7Otwórz aplikację uwierzytelniającą i wprowadź 6-cyfrowy kod.'
     code: '&fKod 2FA'
     button: '&aZweryfikuj'
   button:

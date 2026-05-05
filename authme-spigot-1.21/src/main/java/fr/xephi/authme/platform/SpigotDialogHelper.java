@@ -7,6 +7,8 @@ import net.md_5.bungee.api.dialog.DialogBase;
 import net.md_5.bungee.api.dialog.MultiActionDialog;
 import net.md_5.bungee.api.dialog.action.ActionButton;
 import net.md_5.bungee.api.dialog.action.RunCommandAction;
+import net.md_5.bungee.api.dialog.body.DialogBody;
+import net.md_5.bungee.api.dialog.body.PlainMessageBody;
 import net.md_5.bungee.api.dialog.input.DialogInput;
 import net.md_5.bungee.api.dialog.input.TextInput;
 import org.bukkit.entity.Player;
@@ -29,15 +31,22 @@ final class SpigotDialogHelper {
     static void showLoginDialog(Player player, DialogWindowSpec dialog) {
         DialogBase base = new DialogBase(toTextComponent(dialog.title()))
             .inputs(createInputs(dialog))
+            .body(createBody(dialog))
             .afterAction(DialogBase.AfterAction.CLOSE);
 
-        player.showDialog(new MultiActionDialog(base,
-            new ActionButton(toTextComponent(dialog.primaryButtonLabel()), new RunCommandAction("login $(password)"))));
+        List<ActionButton> buttons = new ArrayList<>();
+        buttons.add(new ActionButton(toTextComponent(dialog.primaryButtonLabel()), new RunCommandAction("login $(password)")));
+        if (dialog.showSecondaryButton() && dialog.secondaryButtonCommand() != null) {
+            buttons.add(new ActionButton(toTextComponent(dialog.secondaryButtonLabel()),
+                new RunCommandAction(dialog.secondaryButtonCommand())));
+        }
+        player.showDialog(new MultiActionDialog(base, buttons.toArray(new ActionButton[0])));
     }
 
     static void showTotpDialog(Player player, DialogWindowSpec dialog) {
         DialogBase base = new DialogBase(toTextComponent(dialog.title()))
             .inputs(createInputs(dialog))
+            .body(createBody(dialog))
             .afterAction(DialogBase.AfterAction.CLOSE);
 
         player.showDialog(new MultiActionDialog(base,
@@ -48,6 +57,7 @@ final class SpigotDialogHelper {
                                    DialogWindowSpec dialog) {
         DialogBase base = new DialogBase(toTextComponent(dialog.title()))
             .inputs(createInputs(dialog))
+            .body(createBody(dialog))
             .afterAction(DialogBase.AfterAction.CLOSE);
 
         player.showDialog(new MultiActionDialog(base,
@@ -65,6 +75,13 @@ final class SpigotDialogHelper {
             inputs.add(new TextInput(input.id(), toTextComponent(input.label())).maxLength(input.maxLength()));
         }
         return inputs;
+    }
+
+    private static List<DialogBody> createBody(DialogWindowSpec dialog) {
+        if (dialog.body() == null) {
+            return List.of();
+        }
+        return List.<DialogBody>of(new PlainMessageBody(toTextComponent(dialog.body())));
     }
 
     private static String createRegisterTemplate(RegistrationType type, RegisterSecondaryArgument secondArg) {

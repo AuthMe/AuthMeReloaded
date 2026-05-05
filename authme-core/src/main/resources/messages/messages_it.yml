@@ -139,10 +139,14 @@ verification:
 dialog:
   login:
     title: '&6Accesso'
+    body: '&7Inserisci la tua password per continuare.'
     password: '&fPassword'
+    recovery_email: '&fEmail di recupero (facoltativo)'
+    recovery_button: '&eHai dimenticato la password?'
     button: '&aAccedi'
   register:
     title: '&6Registrazione'
+    body: '&7Crea un account per iniziare a giocare su questo server.'
     password: '&fPassword'
     confirm_password: '&fConferma password'
     email: '&fEmail'
@@ -150,6 +154,7 @@ dialog:
     button: '&aRegistrati'
   two_factor:
     title: '&6Autenticazione a due fattori'
+    body: '&7Apri la tua app di autenticazione e inserisci il codice a 6 cifre.'
     code: '&fCodice 2FA'
     button: '&aVerifica'
   button:

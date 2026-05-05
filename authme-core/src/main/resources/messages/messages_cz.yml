@@ -138,10 +138,14 @@ verification:
 dialog:
   login:
     title: '&6Přihlášení'
+    body: '&7Pro pokračování zadejte své heslo.'
     password: '&fHeslo'
+    recovery_email: '&fObnovovací e-mail (volitelné)'
+    recovery_button: '&eZapomenuté heslo?'
     button: '&aPřihlásit se'
   register:
     title: '&6Registrace'
+    body: '&7Vytvořte si účet a začněte hrát na tomto serveru.'
     password: '&fHeslo'
     confirm_password: '&fPotvrdit heslo'
     email: '&fE-mail'
@@ -149,6 +153,7 @@ dialog:
     button: '&aRegistrovat'
   two_factor:
     title: '&6Dvoufaktorové ověření'
+    body: '&7Otevřete svou autentizační aplikaci a zadejte 6místný kód.'
     code: '&fKód 2FA'
     button: '&aOvěřit'
   button:

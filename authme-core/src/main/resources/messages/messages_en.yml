@@ -148,10 +148,14 @@ two_factor:
 dialog:
   login:
     title: '&6Login'
+    body: '&7Please enter your password to continue.'
     password: '&fPassword'
+    recovery_email: '&fRecovery Email (optional)'
+    recovery_button: '&eForgot Password?'
     button: '&aLogin'
   register:
     title: '&6Register'
+    body: '&7Create an account to start playing on this server.'
     password: '&fPassword'
     confirm_password: '&fConfirm Password'
     email: '&fEmail'
@@ -159,6 +163,7 @@ dialog:
     button: '&aRegister'
   two_factor:
     title: '&6Two-Factor Authentication'
+    body: '&7Open your authenticator app and enter the 6-digit code.'
     code: '&f2FA Code'
     button: '&aVerify'
   button:

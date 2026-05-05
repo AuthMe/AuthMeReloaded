@@ -144,10 +144,14 @@ verification:
 dialog:
   login:
     title: '&6Prihlásenie'
+    body: '&7Pre pokračovanie zadaj svoje heslo.'
     password: '&fHeslo'
+    recovery_email: '&fObnovovací e-mail (voliteľný)'
+    recovery_button: '&eZabudol si heslo?'
     button: '&aPrihlásiť sa'
   register:
     title: '&6Registrácia'
+    body: '&7Vytvor si účet, aby si mohol hrať na tomto serveri.'
     password: '&fHeslo'
     confirm_password: '&fPotvrdiť heslo'
     email: '&fE-mail'
@@ -155,6 +159,7 @@ dialog:
     button: '&aZaregistrovať sa'
   two_factor:
     title: '&6Dvojfaktorové overenie'
+    body: '&7Otvor svoju autentifikačnú aplikáciu a zadaj 6-miestny kód.'
     code: '&f2FA kód'
     button: '&aOveriť'
   button:

@@ -150,10 +150,14 @@ two_factor:
 dialog:
   login:
     title: '&6Autentificare'
+    body: '&7Te rugăm să introduci parola pentru a continua.'
     password: '&fParolă'
+    recovery_email: '&fEmail de recuperare (opțional)'
+    recovery_button: '&eAi uitat parola?'
     button: '&aAutentificare'
   register:
     title: '&6Înregistrare'
+    body: '&7Creează un cont pentru a începe să joci pe acest server.'
     password: '&fParolă'
     confirm_password: '&fConfirmă parola'
     email: '&fE-mail'
@@ -161,6 +165,7 @@ dialog:
     button: '&aÎnregistrează-te'
   two_factor:
     title: '&6Autentificare cu doi factori'
+    body: '&7Deschide aplicația de autentificare și introdu codul de 6 cifre.'
     code: '&fCod 2FA'
     button: '&aVerifică'
   button:

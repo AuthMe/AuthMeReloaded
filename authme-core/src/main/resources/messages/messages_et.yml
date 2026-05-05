@@ -150,10 +150,14 @@ two_factor:
 dialog:
   login:
     title: '&6Sisselogimine'
+    body: '&7Jätkamiseks sisesta oma parool.'
     password: '&fParool'
+    recovery_email: '&fTaastamise e-post (valikuline)'
+    recovery_button: '&eUnustasid parooli?'
     button: '&aLogi sisse'
   register:
     title: '&6Registreerimine'
+    body: '&7Loo konto, et hakata sellel serveril mängima.'
     password: '&fParool'
     confirm_password: '&fKinnita parool'
     email: '&fE-post'
@@ -161,6 +165,7 @@ dialog:
     button: '&aRegistreeru'
   two_factor:
     title: '&6Kaheastmeline autentimine'
+    body: '&7Ava oma autentimisrakendus ja sisesta 6-kohaline kood.'
     code: '&f2FA kood'
     button: '&aKinnita'
   button:

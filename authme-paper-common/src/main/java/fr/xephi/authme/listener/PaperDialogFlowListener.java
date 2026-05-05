@@ -143,7 +143,10 @@ public class PaperDialogFlowListener implements Listener {
         }
 
         if (PaperDialogActionKeys.PRE_JOIN_LOGIN_CANCEL.equals(event.getIdentifier())) {
-            completeLoginResponse(playerId, messages.retrieveSingle(playerName, MessageKey.LOGIN_TIMEOUT_ERROR));
+            String kickMessage = commonService.getProperty(RegistrationSettings.PRE_JOIN_LOGIN_CANCEL_KICKS)
+                ? messages.retrieveSingle(playerName, MessageKey.LOGIN_TIMEOUT_ERROR)
+                : null;
+            completeLoginResponse(playerId, kickMessage);
             return;
         }
 

@@ -138,10 +138,14 @@ verification:
 dialog:
   login:
     title: '&6Giriş'
+    body: '&7Devam etmek için lütfen şifrenizi girin.'
     password: '&fŞifre'
+    recovery_email: '&fKurtarma E-postası (isteğe bağlı)'
+    recovery_button: '&eŞifrenizi mi unuttunuz?'
     button: '&aGiriş yap'
   register:
     title: '&6Kayıt'
+    body: '&7Bu sunucuda oynamaya başlamak için bir hesap oluşturun.'
     password: '&fŞifre'
     confirm_password: '&fŞifreyi onayla'
     email: '&fE-posta'
@@ -149,6 +153,7 @@ dialog:
     button: '&aKaydol'
   two_factor:
     title: '&6İki faktörlü kimlik doğrulama'
+    body: '&7Kimlik doğrulama uygulamanızı açın ve 6 haneli kodu girin.'
     code: '&f2FA kodu'
     button: '&aDoğrula'
   button:

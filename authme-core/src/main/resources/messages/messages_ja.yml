@@ -150,10 +150,14 @@ two_factor:
 dialog:
   login:
     title: '&6ログイン'
+    body: '&7続行するにはパスワードを入力してください。'
     password: '&fパスワード'
+    recovery_email: '&fリカバリーメール（任意）'
+    recovery_button: '&eパスワードをお忘れですか？'
     button: '&aログイン'
   register:
     title: '&6登録'
+    body: '&7アカウントを作成してこのサーバーでプレイしましょう。'
     password: '&fパスワード'
     confirm_password: '&fパスワードを確認'
     email: '&fメールアドレス'
@@ -161,6 +165,7 @@ dialog:
     button: '&a登録する'
   two_factor:
     title: '&62要素認証'
+    body: '&7認証アプリを開いて6桁のコードを入力してください。'
     code: '&f2FAコード'
     button: '&a確認'
   button:

@@ -138,10 +138,14 @@ verification:
 dialog:
   login:
     title: '&6Kirjautuminen'
+    body: '&7Syötä salasanasi jatkaaksesi.'
     password: '&fSalasana'
+    recovery_email: '&fPalautussähköposti (valinnainen)'
+    recovery_button: '&eUnohditko salasanasi?'
     button: '&aKirjaudu sisään'
   register:
     title: '&6Rekisteröinti'
+    body: '&7Luo tili aloittaaksesi pelaamisen tällä palvelimella.'
     password: '&fSalasana'
     confirm_password: '&fVahvista salasana'
     email: '&fSähköposti'
@@ -149,6 +153,7 @@ dialog:
     button: '&aRekisteröidy'
   two_factor:
     title: '&6Kaksivaiheinen tunnistautuminen'
+    body: '&7Avaa todennussovelluksesi ja anna 6-numeroinen koodi.'
     code: '&f2FA-koodi'
     button: '&aVahvista'
   button:

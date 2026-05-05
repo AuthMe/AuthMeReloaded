@@ -30,6 +30,31 @@ public class SpigotDialogHelperTest {
     }
 
     @Test
+    public void showLoginDialogIncludesForgotPasswordButtonWhenSpecified() {
+        // given
+        Player player = mock(Player.class);
+        DialogWindowSpec dialog = new DialogWindowSpec("Login",
+            java.util.List.of(
+                new DialogInputSpec("password", "Password", 100),
+                new DialogInputSpec("email", "Recovery Email", 100)),
+            "Login",
+            "Forgot Password?",
+            true,
+            false,
+            "email recover $(email)");
+
+        // when
+        SpigotDialogHelper.showLoginDialog(player, dialog);
+
+        // then
+        ArgumentCaptor<MultiActionDialog> captor = ArgumentCaptor.forClass(MultiActionDialog.class);
+        verify(player).showDialog(captor.capture());
+        assertThat(captor.getValue().actions().size(), is(2));
+        assertThat(((RunCommandAction) captor.getValue().actions().get(0).action()).template(), is("login $(password)"));
+        assertThat(((RunCommandAction) captor.getValue().actions().get(1).action()).template(), is("email recover $(email)"));
+    }
+
+    @Test
     public void showTotpDialogSendsCorrectCommandTemplate() {
         // given
         Player player = mock(Player.class);
@@ -143,7 +168,8 @@ public class SpigotDialogHelperTest {
             primaryButtonLabel,
             "Cancel",
             false,
-            false);
+            false,
+            null);
     }
 }
 

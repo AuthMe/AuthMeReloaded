@@ -138,10 +138,14 @@ verification:
 dialog:
   login:
     title: '&6Inloggen'
+    body: '&7Voer je wachtwoord in om door te gaan.'
     password: '&fWachtwoord'
+    recovery_email: '&fHerstel-e-mailadres (optioneel)'
+    recovery_button: '&eWachtwoord vergeten?'
     button: '&aInloggen'
   register:
     title: '&6Registratie'
+    body: '&7Maak een account aan om op deze server te beginnen met spelen.'
     password: '&fWachtwoord'
     confirm_password: '&fWachtwoord bevestigen'
     email: '&fE-mailadres'
@@ -149,6 +153,7 @@ dialog:
     button: '&aRegistreren'
   two_factor:
     title: '&6Twee-factor-authenticatie'
+    body: '&7Open je authenticatie-app en voer de 6-cijferige code in.'
     code: '&f2FA-code'
     button: '&aVerifiëren'
   button:

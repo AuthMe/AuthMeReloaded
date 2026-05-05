@@ -140,6 +140,25 @@ public final class RegistrationSettings implements SettingsHolder {
     public static final Property<Boolean> PRE_JOIN_REGISTER_CANCEL_KICKS =
         newProperty("settings.registration.preJoinDialog.registerCancelKicks", false);
 
+    @Comment({
+        "Kick players who cancel the Paper/Folia pre-join login dialog.",
+        "When false, cancelling lets the player join in limbo to use /email recover."})
+    public static final Property<Boolean> PRE_JOIN_LOGIN_CANCEL_KICKS =
+        newProperty("settings.registration.preJoinDialog.loginCancelKicks", true);
+
+    @Comment({
+        "Show a 'Forgot Password?' button in the post-join login dialog.",
+        "When clicked, executes /email recover using the email entered in the recovery field.",
+        "Requires an email provider to be configured to be useful."})
+    public static final Property<Boolean> DIALOG_SHOW_FORGOT_PASSWORD_BUTTON =
+        newProperty("settings.registration.dialog.showForgotPasswordButton", true);
+
+    @Comment({
+        "Show a short description body in login, register, and two-factor dialogs.",
+        "The body text helps players understand what the dialog is asking them to do."})
+    public static final Property<Boolean> DIALOG_SHOW_BODY =
+        newProperty("settings.registration.dialog.showBody", true);
+
 
     private RegistrationSettings() {
     }

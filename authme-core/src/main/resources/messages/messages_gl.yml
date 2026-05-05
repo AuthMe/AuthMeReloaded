@@ -138,10 +138,14 @@ verification:
 dialog:
   login:
     title: '&6Inicio de sesión'
+    body: '&7Por favor, introduce o teu contrasinal para continuar.'
     password: '&fContrasinal'
+    recovery_email: '&fCorreo de recuperación (opcional)'
+    recovery_button: '&eEsqueceu o contrasinal?'
     button: '&aIniciar sesión'
   register:
     title: '&6Rexistro'
+    body: '&7Crea unha conta para comezar a xogar neste servidor.'
     password: '&fContrasinal'
     confirm_password: '&fConfirmar contrasinal'
     email: '&fCorreo electrónico'
@@ -149,6 +153,7 @@ dialog:
     button: '&aRexistrarse'
   two_factor:
     title: '&6Autenticación de dous factores'
+    body: '&7Abre a túa aplicación de autenticación e introduce o código de 6 díxitos.'
     code: '&fCódigo 2FA'
     button: '&aVerificar'
   button:

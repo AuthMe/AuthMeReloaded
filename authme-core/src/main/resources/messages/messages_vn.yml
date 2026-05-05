@@ -138,10 +138,14 @@ verification:
 dialog:
   login:
     title: '&6Đăng nhập'
+    body: '&7Vui lòng nhập mật khẩu của bạn để tiếp tục.'
     password: '&fMật khẩu'
+    recovery_email: '&fEmail khôi phục (tùy chọn)'
+    recovery_button: '&eQuên mật khẩu?'
     button: '&aĐăng nhập'
   register:
     title: '&6Đăng ký'
+    body: '&7Tạo tài khoản để bắt đầu chơi trên máy chủ này.'
     password: '&fMật khẩu'
     confirm_password: '&fXác nhận mật khẩu'
     email: '&fEmail'
@@ -149,6 +153,7 @@ dialog:
     button: '&aĐăng ký'
   two_factor:
     title: '&6Xác thực hai yếu tố'
+    body: '&7Mở ứng dụng xác thực của bạn và nhập mã 6 chữ số.'
     code: '&fMã 2FA'
     button: '&aXác minh'
   button:

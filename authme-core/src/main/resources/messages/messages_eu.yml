@@ -138,10 +138,14 @@ verification:
 dialog:
   login:
     title: '&6Saioa hasi'
+    body: '&7Mesedez, sartu zure pasahitza jarraitzeko.'
     password: '&fPasahitza'
+    recovery_email: '&fBerreskuratze posta elektronikoa (aukerakoa)'
+    recovery_button: '&eAhaztu duzu pasahitza?'
     button: '&aSaioa hasi'
   register:
     title: '&6Erregistroa'
+    body: '&7Sortu kontu bat zerbitzari honetan jokatzen hasteko.'
     password: '&fPasahitza'
     confirm_password: '&fPasahitza baieztatu'
     email: '&fHelbide elektronikoa'
@@ -149,6 +153,7 @@ dialog:
     button: '&aErregistratu'
   two_factor:
     title: '&6Bi faktoreko autentifikazioa'
+    body: '&7Ireki zure autentikazio aplikazioa eta idatzi 6 digituko kodea.'
     code: '&f2FA kodea'
     button: '&aEgiaztatu'
   button:

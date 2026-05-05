@@ -342,7 +342,8 @@ public class AsynchronousLoginTest {
             buttonLabel,
             "Cancel",
             false,
-            false);
+            false,
+            null);
     }
 
     private void mockOnlinePlayersInBukkitService(String checkedIp) {

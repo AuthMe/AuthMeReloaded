@@ -139,10 +139,14 @@ verification:
 dialog:
   login:
     title: '&6Inicio de sesión'
+    body: '&7Por favor, introduce tu contraseña para continuar.'
     password: '&fContraseña'
+    recovery_email: '&fCorreo de recuperación (opcional)'
+    recovery_button: '&e¿Olvidaste tu contraseña?'
     button: '&aIniciar sesión'
   register:
     title: '&6Registro'
+    body: '&7Crea una cuenta para empezar a jugar en este servidor.'
     password: '&fContraseña'
     confirm_password: '&fConfirmar contraseña'
     email: '&fCorreo electrónico'
@@ -150,6 +154,7 @@ dialog:
     button: '&aRegistrarse'
   two_factor:
     title: '&6Autenticación de dos factores'
+    body: '&7Abre tu aplicación de autenticación e introduce el código de 6 dígitos.'
     code: '&fCódigo 2FA'
     button: '&aVerificar'
   button:

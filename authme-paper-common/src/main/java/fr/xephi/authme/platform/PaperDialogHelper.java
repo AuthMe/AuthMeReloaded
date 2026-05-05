@@ -6,6 +6,7 @@ import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.registry.data.dialog.ActionButton;
 import io.papermc.paper.registry.data.dialog.DialogBase;
 import io.papermc.paper.registry.data.dialog.action.DialogAction;
+import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import io.papermc.paper.registry.data.dialog.type.DialogType;
 import net.kyori.adventure.text.Component;
@@ -45,6 +46,7 @@ public final class PaperDialogHelper {
     public static Dialog createPreJoinLoginDialog(DialogWindowSpec dialog) {
         DialogBase base = DialogBase.builder(legacyComponent(dialog.title()))
             .inputs(createInputs(dialog))
+            .body(createBody(dialog))
             .canCloseWithEscape(dialog.canCloseWithEscape())
             .afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
             .build();
@@ -63,6 +65,7 @@ public final class PaperDialogHelper {
     public static Dialog createPreJoinRegisterDialog(DialogWindowSpec dialog) {
         DialogBase base = DialogBase.builder(legacyComponent(dialog.title()))
             .inputs(createInputs(dialog))
+            .body(createBody(dialog))
             .canCloseWithEscape(dialog.canCloseWithEscape())
             .afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
             .build();
@@ -81,6 +84,7 @@ public final class PaperDialogHelper {
     private static Dialog createInGameCommandDialog(DialogWindowSpec dialog, String commandTemplate) {
         DialogBase base = DialogBase.builder(legacyComponent(dialog.title()))
             .inputs(createInputs(dialog))
+            .body(createBody(dialog))
             .afterAction(DialogBase.DialogAfterAction.CLOSE)
             .build();
 
@@ -88,9 +92,17 @@ public final class PaperDialogHelper {
             .action(DialogAction.commandTemplate(commandTemplate))
             .build();
 
+        List<ActionButton> buttons = new ArrayList<>();
+        buttons.add(primaryButton);
+        if (dialog.showSecondaryButton() && dialog.secondaryButtonCommand() != null) {
+            buttons.add(ActionButton.builder(legacyComponent(dialog.secondaryButtonLabel()))
+                .action(DialogAction.commandTemplate(dialog.secondaryButtonCommand()))
+                .build());
+        }
+
         return Dialog.create(factory -> factory.empty()
             .base(base)
-            .type(DialogType.multiAction(List.of(primaryButton)).build()));
+            .type(DialogType.multiAction(buttons).build()));
     }
 
     private static List<ActionButton> createPreJoinButtons(DialogWindowSpec dialog,
@@ -109,9 +121,18 @@ public final class PaperDialogHelper {
     private static List<DialogInput> createInputs(DialogWindowSpec dialog) {
         List<DialogInput> inputs = new ArrayList<>();
         for (DialogInputSpec input : dialog.inputs()) {
-            inputs.add(DialogInput.text(input.id(), legacyComponent(input.label())).maxLength(input.maxLength()).build());
+            inputs.add(DialogInput.text(input.id(), legacyComponent(input.label()))
+                .maxLength(input.maxLength())
+                .build());
         }
         return inputs;
+    }
+
+    private static List<DialogBody> createBody(DialogWindowSpec dialog) {
+        if (dialog.body() == null) {
+            return List.of();
+        }
+        return List.of(DialogBody.plainMessage(legacyComponent(dialog.body())));
     }
 
     private static String createRegisterTemplate(RegistrationType type, RegisterSecondaryArgument secondArg) {

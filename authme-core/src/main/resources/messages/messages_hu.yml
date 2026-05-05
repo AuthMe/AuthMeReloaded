@@ -138,10 +138,14 @@ verification:
 dialog:
   login:
     title: '&6Bejelentkezés'
+    body: '&7Kérlek, add meg a jelszavadat a folytatáshoz.'
     password: '&fJelszó'
+    recovery_email: '&fVisszaállítási e-mail (nem kötelező)'
+    recovery_button: '&eElfelejtetted a jelszavadat?'
     button: '&aBejelentkezés'
   register:
     title: '&6Regisztráció'
+    body: '&7Hozz létre egy fiókot, hogy elkezdhess játszani ezen a szerveren.'
     password: '&fJelszó'
     confirm_password: '&fJelszó megerősítése'
     email: '&fE-mail cím'
@@ -149,6 +153,7 @@ dialog:
     button: '&aRegisztráció'
   two_factor:
     title: '&6Kétlépcsős hitelesítés'
+    body: '&7Nyisd meg a hitelesítő alkalmazásodat, és add meg a 6 jegyű kódot.'
     code: '&f2FA-kód'
     button: '&aEllenőrzés'
   button:

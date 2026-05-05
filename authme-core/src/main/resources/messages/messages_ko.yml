@@ -140,10 +140,14 @@ verification:
 dialog:
   login:
     title: '&6로그인'
+    body: '&7계속하려면 비밀번호를 입력하세요.'
     password: '&f비밀번호'
+    recovery_email: '&f복구 이메일 (선택사항)'
+    recovery_button: '&e비밀번호를 잊으셨나요?'
     button: '&a로그인'
   register:
     title: '&6회원가입'
+    body: '&7이 서버에서 플레이를 시작하려면 계정을 만드세요.'
     password: '&f비밀번호'
     confirm_password: '&f비밀번호 확인'
     email: '&f이메일'
@@ -151,6 +155,7 @@ dialog:
     button: '&a등록하기'
   two_factor:
     title: '&6이중 인증'
+    body: '&7인증 앱을 열고 6자리 코드를 입력하세요.'
     code: '&f2FA 코드'
     button: '&a확인'
   button:
