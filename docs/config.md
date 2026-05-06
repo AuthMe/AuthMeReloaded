@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Wed May 06 00:22:40 CEST 2026. See authme-tools/src/test/java/tools/docs/config/config.tpl.md -->
+<!-- File auto-generated on Wed May 06 11:56:53 CEST 2026. See authme-tools/src/test/java/tools/docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder,
@@ -232,7 +232,9 @@ settings:
         # Should we display all other accounts from a player when he joins?
         # permission: /authme.admin.accounts
         displayOtherAccounts: true
-        # Spawn priority; values: authme, essentials, cmi, multiverse, default
+        # Spawn priority; values: authme, essentials, cmi, multiverse, default, server
+        # Use "server" to apply the world's spawnRadius gamerule (players land at a random position
+        # within the configured radius around the world spawn). Use "default" for the exact world spawn.
         spawnPriority: authme,essentials,cmi,multiverse,default
         # Maximum Login authorized by IP
         maxLoginPerIp: 0
@@ -645,4 +647,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed May 06 00:22:40 CEST 2026
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed May 06 11:56:53 CEST 2026

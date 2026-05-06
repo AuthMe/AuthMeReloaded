@@ -11,6 +11,7 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -198,6 +199,9 @@ public class SpawnLoader implements Reloadable {
         Location spawnLoc = null;
         for (String priority : spawnPriority) {
             switch (priority.toLowerCase(Locale.ROOT).trim()) {
+                case "server":
+                    spawnLoc = getServerSpawnLocation(world);
+                    break;
                 case "default":
                     if (world.getSpawnLocation() != null) {
                         if (!isValidSpawnPoint(world.getSpawnLocation())) {
@@ -238,6 +242,28 @@ public class SpawnLoader implements Reloadable {
         logger.debug("Fall back to default world spawn location. World: `{0}`", world.getName());
 
         return world.getSpawnLocation(); // return default location
+    }
+
+    /**
+     * Returns a spawn location based on the world's native spawn, applying the {@code spawnRadius} gamerule
+     * when its value is positive. This mimics vanilla behavior where players are placed at a random
+     * position within the configured radius around the world spawn.
+     *
+     * @param world The world to retrieve the spawn point from
+     * @return A location within spawnRadius of the world spawn, or the exact world spawn if radius is 0
+     */
+    private Location getServerSpawnLocation(World world) {
+        Location worldSpawn = world.getSpawnLocation();
+        Integer radius = world.getGameRuleValue(GameRule.SPAWN_RADIUS);
+        if (radius == null || radius <= 0) {
+            return worldSpawn;
+        }
+        int dx = (int) (Math.random() * (radius * 2 + 1)) - radius;
+        int dz = (int) (Math.random() * (radius * 2 + 1)) - radius;
+        int x = (int) worldSpawn.getX() + dx;
+        int z = (int) worldSpawn.getZ() + dz;
+        int y = world.getHighestBlockYAt(x, z) + 1;
+        return new Location(world, x + 0.5, y, z + 0.5, worldSpawn.getYaw(), worldSpawn.getPitch());
     }
 
     /**

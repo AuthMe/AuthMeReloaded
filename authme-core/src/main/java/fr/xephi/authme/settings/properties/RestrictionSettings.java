@@ -147,7 +147,10 @@ public final class RestrictionSettings implements SettingsHolder {
     public static final Property<Boolean> DISPLAY_OTHER_ACCOUNTS =
         newProperty("settings.restrictions.displayOtherAccounts", true);
 
-    @Comment("Spawn priority; values: authme, essentials, cmi, multiverse, default")
+    @Comment({
+        "Spawn priority; values: authme, essentials, cmi, multiverse, default, server",
+        "Use \"server\" to apply the world's spawnRadius gamerule (players land at a random position",
+        "within the configured radius around the world spawn). Use \"default\" for the exact world spawn."})
     public static final Property<String> SPAWN_PRIORITY =
         newProperty("settings.restrictions.spawnPriority", "authme,essentials,cmi,multiverse,default");
 

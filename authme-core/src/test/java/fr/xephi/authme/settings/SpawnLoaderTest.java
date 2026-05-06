@@ -24,7 +24,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.bukkit.GameRule;
+
+import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -121,6 +126,45 @@ public class SpawnLoaderTest {
 
         // then
         assertThat(result, equalTo(worldSpawn));
+    }
+
+    @Test
+    public void shouldReturnExactWorldSpawnForServerPriorityWithZeroRadius() {
+        // given
+        given(settings.getProperty(RestrictionSettings.SPAWN_PRIORITY)).willReturn("server");
+        spawnLoader.reload();
+
+        World world = mock(World.class);
+        Location worldSpawn = new Location(world, 10.0, 64.0, -5.0);
+        given(world.getSpawnLocation()).willReturn(worldSpawn);
+        given(world.getGameRuleValue(GameRule.SPAWN_RADIUS)).willReturn(0);
+
+        // when
+        Location result = spawnLoader.getSpawnLocation(world);
+
+        // then
+        assertThat(result, equalTo(worldSpawn));
+    }
+
+    @Test
+    public void shouldReturnLocationWithinRadiusForServerPriority() {
+        // given
+        given(settings.getProperty(RestrictionSettings.SPAWN_PRIORITY)).willReturn("server");
+        spawnLoader.reload();
+
+        World world = mock(World.class);
+        Location worldSpawn = new Location(world, 100.0, 64.0, 200.0);
+        given(world.getSpawnLocation()).willReturn(worldSpawn);
+        given(world.getGameRuleValue(GameRule.SPAWN_RADIUS)).willReturn(10);
+        given(world.getHighestBlockYAt(org.mockito.ArgumentMatchers.anyInt(), org.mockito.ArgumentMatchers.anyInt())).willReturn(63);
+
+        // when
+        Location result = spawnLoader.getSpawnLocation(world);
+
+        // then
+        assertThat(result.getX(), both(greaterThanOrEqualTo(90.5)).and(lessThanOrEqualTo(110.5)));
+        assertThat(result.getZ(), both(greaterThanOrEqualTo(190.5)).and(lessThanOrEqualTo(210.5)));
+        assertThat(result.getY(), equalTo(64.0)); // highestBlockYAt(63) + 1 = 64
     }
 
     @Test
