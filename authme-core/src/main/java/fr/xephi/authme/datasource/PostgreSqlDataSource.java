@@ -34,7 +34,7 @@ import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
 /**
  * PostgreSQL data source.
  */
-public class PostgreSqlDataSource extends AbstractSqlDataSource {
+public class PostgreSqlDataSource extends AbstractSqlDataSource implements SqlConnectionSource {
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(PostgreSqlDataSource.class);
 
@@ -147,7 +147,8 @@ public class PostgreSqlDataSource extends AbstractSqlDataSource {
         logger.info("Hikari ConnectionPool arguments reloaded!");
     }
 
-    private Connection getConnection() throws SQLException {
+    @Override
+    public Connection getConnection() throws SQLException {
         return ds.getConnection();
     }
 

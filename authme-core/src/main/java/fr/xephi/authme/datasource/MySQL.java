@@ -35,7 +35,7 @@ import static fr.xephi.authme.datasource.SqlDataSourceUtils.logSqlException;
  * MySQL data source.
  */
 @SuppressWarnings({"checkstyle:AbbreviationAsWordInName"}) // Justification: Class name cannot be changed anymore
-public class MySQL extends AbstractSqlDataSource {
+public class MySQL extends AbstractSqlDataSource implements SqlConnectionSource {
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(MySQL.class);
 
     private boolean useSsl;
@@ -179,7 +179,8 @@ public class MySQL extends AbstractSqlDataSource {
         logger.info("Hikari ConnectionPool arguments reloaded!");
     }
 
-    private Connection getConnection() throws SQLException {
+    @Override
+    public Connection getConnection() throws SQLException {
         return ds.getConnection();
     }
 

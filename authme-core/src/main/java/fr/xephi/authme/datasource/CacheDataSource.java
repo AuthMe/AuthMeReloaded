@@ -16,6 +16,8 @@ import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.util.Utils;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -25,7 +27,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class CacheDataSource implements DataSource {
+public class CacheDataSource implements DataSource, SqlConnectionSource {
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(CacheDataSource.class);
 
@@ -216,6 +218,14 @@ public class CacheDataSource implements DataSource {
     @Override
     public DataSourceType getType() {
         return source.getType();
+    }
+
+    @Override
+    public Connection getConnection() throws SQLException {
+        if (source instanceof SqlConnectionSource sqlSource) {
+            return sqlSource.getConnection();
+        }
+        throw new SQLException("The configured data source does not support raw SQL connections");
     }
 
     @Override

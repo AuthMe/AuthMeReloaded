@@ -1,26 +1,23 @@
 package fr.xephi.authme.datasource.converter;
 
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.datasource.SqlConnectionSource;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
  * Base class for converters that read from an external plugin's MySQL/MariaDB table.
  * <p>
- * The source database is assumed to share the same host, port, database name, and credentials
- * as configured in AuthMe's {@code config.yml}. SQLite source databases are not supported.
+ * The source plugin is expected to share the same MySQL/MariaDB database as AuthMe.
+ * AuthMe's existing HikariCP connection pool is reused — no separate connection is opened.
+ * SQLite data sources are not supported by this converter base class.
  */
 abstract class AbstractSqlPluginConverter implements Converter {
 
     private final DataSource dataSource;
-    private final Settings settings;
 
-    AbstractSqlPluginConverter(Settings settings, DataSource dataSource) {
-        this.settings = settings;
+    AbstractSqlPluginConverter(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
@@ -29,19 +26,17 @@ abstract class AbstractSqlPluginConverter implements Converter {
     }
 
     /**
-     * Opens a JDBC connection to the database configured in AuthMe's settings.
+     * Returns a connection from AuthMe's existing HikariCP pool.
      *
      * @return an open connection
-     * @throws SQLException if the connection cannot be established
+     * @throws SQLException if the data source does not support SQL connections (e.g. SQLite)
      */
     protected Connection openConnection() throws SQLException {
-        String host = settings.getProperty(DatabaseSettings.MYSQL_HOST);
-        String port = settings.getProperty(DatabaseSettings.MYSQL_PORT);
-        String database = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
-        String user = settings.getProperty(DatabaseSettings.MYSQL_USERNAME);
-        String pass = settings.getProperty(DatabaseSettings.MYSQL_PASSWORD);
-        String url = "jdbc:mysql://" + host + ":" + port + "/" + database
-            + "?useUnicode=true&characterEncoding=utf-8";
-        return DriverManager.getConnection(url, user, pass);
+        if (dataSource instanceof SqlConnectionSource sqlSource) {
+            return sqlSource.getConnection();
+        }
+        throw new SQLException(
+            "This converter requires AuthMe to be configured with MySQL or MariaDB. "
+                + "SQLite is not supported as a shared data source for plugin converters.");
     }
 }

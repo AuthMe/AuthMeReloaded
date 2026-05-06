@@ -5,7 +5,6 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.UuidUtils;
 import org.bukkit.command.CommandSender;
 
@@ -37,8 +36,8 @@ public class NLoginConverter extends AbstractSqlPluginConverter {
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(NLoginConverter.class);
 
     @Inject
-    NLoginConverter(Settings settings, DataSource dataSource) {
-        super(settings, dataSource);
+    NLoginConverter(DataSource dataSource) {
+        super(dataSource);
     }
 
     @Override
