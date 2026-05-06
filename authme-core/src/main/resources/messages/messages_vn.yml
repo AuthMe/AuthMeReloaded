@@ -161,6 +161,12 @@ dialog:
     body: '&7Mở ứng dụng xác thực của bạn và nhập mã 6 chữ số.'
     code: '&fMã 2FA'
     button: '&aXác minh'
+  recovery:
+    title: '&6Khôi phục mật khẩu'
+    body: '&7Nhập địa chỉ email đã đăng ký của bạn và một mã đặt lại sẽ được gửi cho bạn.'
+    email: '&fĐịa chỉ Email'
+    button: '&aGửi Email Khôi Phục'
+
   button:
     cancel: '&cHủy'
 

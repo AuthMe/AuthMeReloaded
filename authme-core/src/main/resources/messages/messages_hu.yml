@@ -161,6 +161,12 @@ dialog:
     body: '&7Nyisd meg a hitelesítő alkalmazásodat, és add meg a 6 jegyű kódot.'
     code: '&f2FA-kód'
     button: '&aEllenőrzés'
+  recovery:
+    title: '&6Jelszó-visszaállítás'
+    body: '&7Add meg a regisztrált e-mail címedet, és egy visszaállítási kódot küldünk neked.'
+    email: '&fE-mail cím'
+    button: '&aVisszaállítási e-mail küldése'
+
   button:
     cancel: '&cMégse'
 

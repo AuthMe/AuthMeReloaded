@@ -161,6 +161,12 @@ dialog:
     body: '&7Abre a túa aplicación de autenticación e introduce o código de 6 díxitos.'
     code: '&fCódigo 2FA'
     button: '&aVerificar'
+  recovery:
+    title: '&6Recuperación de contrasinal'
+    body: '&7Introduce o teu enderezo de correo rexistrado e enviarémosche un código de restablecemento.'
+    email: '&fEnderezo de correo electrónico'
+    button: '&aEnviar correo de recuperación'
+
   button:
     cancel: '&cCancelar'
 

@@ -161,6 +161,12 @@ dialog:
     body: '&7Odprite svojo aplikacijo za preverjanje pristnosti in vnesite 6-mestno kodo.'
     code: '&fKoda 2FA'
     button: '&aPreveri'
+  recovery:
+    title: '&6Obnovitev gesla'
+    body: '&7Vnesite registrirani e-poštni naslov in poslali vam bomo kodo za ponastavitev.'
+    email: '&fE-poštni naslov'
+    button: '&aPošlji e-pošto za obnovitev'
+
   button:
     cancel: '&cPrekliči'
 

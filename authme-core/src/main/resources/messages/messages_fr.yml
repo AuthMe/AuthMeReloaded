@@ -164,6 +164,12 @@ dialog:
     body: '&7Ouvrez votre application d''authentification et saisissez le code à 6 chiffres.'
     code: '&fCode 2FA'
     button: '&aVérifier'
+  recovery:
+    title: '&6Récupération de mot de passe'
+    body: '&7Saisissez votre adresse e-mail enregistrée et un code de réinitialisation vous sera envoyé.'
+    email: '&fAdresse e-mail'
+    button: '&aEnvoyer l''e-mail de récupération'
+
   button:
     cancel: '&cAnnuler'
 

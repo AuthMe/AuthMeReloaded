@@ -320,6 +320,7 @@ public class AsynchronousLoginTest {
         given(passwordSecurity.comparePassword("hunter2", auth.getPassword(), "bobby")).willReturn(true);
         given(limboService.getLimboPlayer("bobby")).willReturn(limboPlayer);
         given(commonService.getProperty(RegistrationSettings.USE_DIALOG_UI)).willReturn(false);
+        given(commonService.getProperty(RegistrationSettings.USE_PREJOIN_DIALOG_UI)).willReturn(false);
 
         // when
         asynchronousLogin.login(player, "hunter2");

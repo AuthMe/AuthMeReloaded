@@ -164,6 +164,12 @@ dialog:
     body: '&7打開您的驗證器應用程式並輸入6位數字代碼。'
     code: '&f2FA代碼'
     button: '&a驗證'
+  recovery:
+    title: '&6密碼找回'
+    body: '&7請輸入您已登記嘅電郵地址，重設碼將發送至該地址。'
+    email: '&f電郵地址'
+    button: '&a發送找回電郵'
+
   button:
     cancel: '&c取消'
 

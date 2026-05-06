@@ -161,6 +161,12 @@ dialog:
     body: '&7Abra o seu aplicativo de autenticação e insira o código de 6 dígitos.'
     code: '&fCódigo 2FA'
     button: '&aVerificar'
+  recovery:
+    title: '&6Recuperação de Senha'
+    body: '&7Introduza o seu endereço de e-mail registado e ser-lhe-á enviado um código de redefinição.'
+    email: '&fEndereço de E-mail'
+    button: '&aEnviar E-mail de Recuperação'
+
   button:
     cancel: '&cCancelar'
 

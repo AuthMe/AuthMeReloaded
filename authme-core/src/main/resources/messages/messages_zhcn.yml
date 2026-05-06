@@ -161,6 +161,12 @@ dialog:
     body: '&7打开您的验证器应用并输入6位数字代码。'
     code: '&f2FA代码'
     button: '&a验证'
+  recovery:
+    title: '&6密码找回'
+    body: '&7请输入您注册的电子邮件地址，重置码将发送至该地址。'
+    email: '&f电子邮件地址'
+    button: '&a发送找回邮件'
+
   button:
     cancel: '&c取消'
 

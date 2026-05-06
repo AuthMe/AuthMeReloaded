@@ -161,6 +161,12 @@ dialog:
     body: '&7Kimlik doğrulama uygulamanızı açın ve 6 haneli kodu girin.'
     code: '&f2FA kodu'
     button: '&aDoğrula'
+  recovery:
+    title: '&6Şifre Kurtarma'
+    body: '&7Kayıtlı e-posta adresinizi girin, size bir sıfırlama kodu gönderilecektir.'
+    email: '&fE-posta Adresi'
+    button: '&aKurtarma E-postası Gönder'
+
   button:
     cancel: '&cİptal'
 

@@ -163,6 +163,12 @@ dialog:
     body: '&7인증 앱을 열고 6자리 코드를 입력하세요.'
     code: '&f2FA 코드'
     button: '&a확인'
+  recovery:
+    title: '&6비밀번호 복구'
+    body: '&7등록된 이메일 주소를 입력하면 재설정 코드가 전송됩니다.'
+    email: '&f이메일 주소'
+    button: '&a복구 이메일 전송'
+
   button:
     cancel: '&c취소'
 

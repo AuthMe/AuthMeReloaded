@@ -161,6 +161,12 @@ dialog:
     body: '&7Buka aplikasi autentikasi Anda dan masukkan kode 6 digit.'
     code: '&fKode 2FA'
     button: '&aVerifikasi'
+  recovery:
+    title: '&6Pemulihan Kata Sandi'
+    body: '&7Masukkan alamat email terdaftar Anda dan kode pengaturan ulang akan dikirimkan kepada Anda.'
+    email: '&fAlamat Email'
+    button: '&aKirim Email Pemulihan'
+
   button:
     cancel: '&cBatal'
 

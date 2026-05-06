@@ -163,6 +163,12 @@ dialog:
     body: '&7開啟您的驗證應用程式並輸入6位數字代碼。'
     code: '&f2FA代碼'
     button: '&a驗證'
+  recovery:
+    title: '&6密碼找回'
+    body: '&7請輸入您註冊的電子郵件地址，重設碼將傳送至該地址。'
+    email: '&f電子郵件地址'
+    button: '&a傳送找回郵件'
+
   button:
     cancel: '&c取消'
 

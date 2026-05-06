@@ -553,6 +553,18 @@ public enum MessageKey {
     /** Two-factor dialog submit button label. */
     DIALOG_TWO_FACTOR_BUTTON("dialog.two_factor.button"),
 
+    /** Password recovery dialog title. */
+    DIALOG_RECOVERY_TITLE("dialog.recovery.title"),
+
+    /** Password recovery dialog body text shown below the title. */
+    DIALOG_RECOVERY_BODY("dialog.recovery.body"),
+
+    /** Password recovery dialog email field label. */
+    DIALOG_RECOVERY_EMAIL("dialog.recovery.email"),
+
+    /** Password recovery dialog submit button label. */
+    DIALOG_RECOVERY_BUTTON("dialog.recovery.button"),
+
     /** Generic dialog cancel button label. */
     DIALOG_CANCEL_BUTTON("dialog.button.cancel"),
 

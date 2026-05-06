@@ -173,6 +173,12 @@ dialog:
     body: '&7認証アプリを開いて6桁のコードを入力してください。'
     code: '&f2FAコード'
     button: '&a確認'
+  recovery:
+    title: '&6パスワードの回復'
+    body: '&7登録したメールアドレスを入力すると、リセットコードが送信されます。'
+    email: '&fメールアドレス'
+    button: '&a回復メールを送信'
+
   button:
     cancel: '&cキャンセル'
 

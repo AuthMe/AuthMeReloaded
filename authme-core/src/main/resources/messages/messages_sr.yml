@@ -161,6 +161,12 @@ dialog:
     body: '&7Otvorite aplikaciju za autentifikaciju i unesite 6-cifreni kod.'
     code: '&f2FA kod'
     button: '&aPotvrdi'
+  recovery:
+    title: '&6Oporavak lozinke'
+    body: '&7Unesite vašu registrovanu email adresu i biće vam poslat kod za resetovanje.'
+    email: '&fEmail adresa'
+    button: '&aPošalji email za oporavak'
+
   button:
     cancel: '&cOtkaži'
 

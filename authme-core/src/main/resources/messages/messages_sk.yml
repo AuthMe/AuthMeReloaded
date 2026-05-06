@@ -167,6 +167,12 @@ dialog:
     body: '&7Otvor svoju autentifikačnú aplikáciu a zadaj 6-miestny kód.'
     code: '&f2FA kód'
     button: '&aOveriť'
+  recovery:
+    title: '&6Obnova hesla'
+    body: '&7Zadaj svoju registrovanú e-mailovú adresu a bude ti zaslaný kód na obnovenie.'
+    email: '&fE-mailová adresa'
+    button: '&aOdoslať e-mail na obnovenie'
+
   button:
     cancel: '&cZrušiť'
 

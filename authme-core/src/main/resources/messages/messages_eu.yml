@@ -161,6 +161,12 @@ dialog:
     body: '&7Ireki zure autentikazio aplikazioa eta idatzi 6 digituko kodea.'
     code: '&f2FA kodea'
     button: '&aEgiaztatu'
+  recovery:
+    title: '&6Pasahitza berreskuratu'
+    body: '&7Sartu zure erregistratutako helbide elektronikoa eta berrezarpen kode bat bidaliko dizugu.'
+    email: '&fHelbide elektronikoa'
+    button: '&aBerreskuratze mezu elektronikoa bidali'
+
   button:
     cancel: '&cUtzi'
 

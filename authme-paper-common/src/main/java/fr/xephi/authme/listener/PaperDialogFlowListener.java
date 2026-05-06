@@ -152,7 +152,20 @@ public class PaperDialogFlowListener implements Listener {
         }
 
         if (PaperDialogActionKeys.PRE_JOIN_LOGIN_RECOVERY.equals(event.getIdentifier())) {
-            processPreJoinLoginRecovery(playerId, playerName, event.getDialogResponseView());
+            processPreJoinLoginRecovery(playerId, playerName, connection);
+            return;
+        }
+
+        if (PaperDialogActionKeys.PRE_JOIN_RECOVERY_SUBMIT.equals(event.getIdentifier())) {
+            processPreJoinRecoverySubmit(playerId, playerName, event.getDialogResponseView());
+            return;
+        }
+
+        if (PaperDialogActionKeys.PRE_JOIN_RECOVERY_CANCEL.equals(event.getIdentifier())) {
+            String kickMessage = commonService.getProperty(RegistrationSettings.PRE_JOIN_LOGIN_CANCEL_KICKS)
+                ? messages.retrieveSingle(playerName, MessageKey.LOGIN_TIMEOUT_ERROR)
+                : null;
+            completeLoginResponse(playerId, kickMessage);
             return;
         }
 
@@ -223,7 +236,13 @@ public class PaperDialogFlowListener implements Listener {
         }
     }
 
-    private void processPreJoinLoginRecovery(UUID playerId, String playerName, DialogResponseView dialogResponseView) {
+    private void processPreJoinLoginRecovery(UUID playerId, String playerName,
+                                              PlayerConfigurationConnection connection) {
+        DialogWindowSpec recoverySpec = dialogWindowService.createPreJoinRecoveryDialog(playerName);
+        connection.getAudience().showDialog(PaperDialogHelper.createPreJoinRecoveryDialog(recoverySpec));
+    }
+
+    private void processPreJoinRecoverySubmit(UUID playerId, String playerName, DialogResponseView dialogResponseView) {
         String email = dialogResponseView == null ? null : dialogResponseView.getText("email");
         if (email != null && !email.isBlank()) {
             preJoinDialogService.storePendingRecoveryEmail(playerId, email);

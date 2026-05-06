@@ -171,6 +171,12 @@ dialog:
     body: '&7Open your authenticator app and enter the 6-digit code.'
     code: '&f2FA Code'
     button: '&aVerify'
+  recovery:
+    title: '&6Password Recovery'
+    body: '&7Enter your registered email address and a reset code will be sent to you.'
+    email: '&fEmail Address'
+    button: '&aSend Recovery Email'
+
   button:
     cancel: '&cCancel'
 

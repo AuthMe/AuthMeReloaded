@@ -173,6 +173,12 @@ dialog:
     body: '&7Ava oma autentimisrakendus ja sisesta 6-kohaline kood.'
     code: '&f2FA kood'
     button: '&aKinnita'
+  recovery:
+    title: '&6Parooli taastamine'
+    body: '&7Sisesta registreeritud meiliaadress ja saadetakse sulle lähtestamise kood.'
+    email: '&fMeiliaadress'
+    button: '&aSaada taastamise meil'
+
   button:
     cancel: '&cTühista'
 

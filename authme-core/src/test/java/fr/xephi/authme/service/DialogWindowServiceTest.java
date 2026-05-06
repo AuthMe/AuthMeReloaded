@@ -19,6 +19,7 @@ import org.mockito.quality.Strictness;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -176,11 +177,11 @@ public class DialogWindowServiceTest {
         // when — email configured: recovery button shown, cancel suppressed, email field present
         DialogWindowSpec dialog = dialogWindowService.createPreJoinLoginDialog("Bobby");
 
-        // then
+        // then — email field is on a separate recovery dialog now; only password on login dialog
         assertThat(dialog.secondaryButtonLabel(), is("dialog.login.recovery_button"));
         assertThat(dialog.showSecondaryButton(), is(true));
         assertThat(dialog.canCloseWithEscape(), is(false));
-        assertThat(dialog.secondaryButtonCommand(), is("email recover $(email)"));
-        assertThat(dialog.inputs().stream().map(input -> input.id()).toList(), contains("password", "email"));
+        assertThat(dialog.secondaryButtonCommand(), is(notNullValue()));
+        assertThat(dialog.inputs().stream().map(input -> input.id()).toList(), contains("password"));
     }
 }

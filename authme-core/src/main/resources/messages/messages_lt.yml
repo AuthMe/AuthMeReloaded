@@ -161,6 +161,12 @@ dialog:
     body: '&7Atidarykite autentifikavimo programėlę ir įveskite 6 skaitmenų kodą.'
     code: '&f2FA kodas'
     button: '&aPatvirtinti'
+  recovery:
+    title: '&6Slaptažodžio atgavimas'
+    body: '&7Įveskite savo registruotą el. pašto adresą ir jums bus išsiųstas atstatymo kodas.'
+    email: '&fEl. pašto adresas'
+    button: '&aSiųsti atgavimo el. laišką'
+
   button:
     cancel: '&cAtšaukti'
 

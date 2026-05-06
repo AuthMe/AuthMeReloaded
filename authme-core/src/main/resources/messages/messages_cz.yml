@@ -161,6 +161,12 @@ dialog:
     body: '&7Otevřete svou autentizační aplikaci a zadejte 6místný kód.'
     code: '&fKód 2FA'
     button: '&aOvěřit'
+  recovery:
+    title: '&6Obnova hesla'
+    body: '&7Zadejte svou registrovanou e-mailovou adresu a bude vám zaslán kód pro reset.'
+    email: '&fE-mailová adresa'
+    button: '&aOdeslat obnovovací e-mail'
+
   button:
     cancel: '&cZrušit'
 

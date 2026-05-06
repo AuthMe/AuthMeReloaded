@@ -161,6 +161,12 @@ dialog:
     body: '&7Open je authenticatie-app en voer de 6-cijferige code in.'
     code: '&f2FA-code'
     button: '&aVerifiëren'
+  recovery:
+    title: '&6Wachtwoordherstel'
+    body: '&7Voer je geregistreerde e-mailadres in en er wordt een herstelcode naar je verstuurd.'
+    email: '&fE-mailadres'
+    button: '&aHerstel-e-mail versturen'
+
   button:
     cancel: '&cAnnuleren'
 

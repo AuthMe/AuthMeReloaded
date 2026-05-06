@@ -161,6 +161,12 @@ dialog:
     body: '&7Otwórz aplikację uwierzytelniającą i wprowadź 6-cyfrowy kod.'
     code: '&fKod 2FA'
     button: '&aZweryfikuj'
+  recovery:
+    title: '&6Odzyskiwanie hasła'
+    body: '&7Podaj swój zarejestrowany adres e-mail, a wyślemy Ci kod resetujący.'
+    email: '&fAdres e-mail'
+    button: '&aWyślij e-mail odzyskiwania'
+
   button:
     cancel: '&cAnuluj'
 

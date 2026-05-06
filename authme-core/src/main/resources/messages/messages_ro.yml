@@ -173,6 +173,12 @@ dialog:
     body: '&7Deschide aplicația de autentificare și introdu codul de 6 cifre.'
     code: '&fCod 2FA'
     button: '&aVerifică'
+  recovery:
+    title: '&6Recuperare parolă'
+    body: '&7Introdu adresa de e-mail înregistrată și îți vom trimite un cod de resetare.'
+    email: '&fAdresă de e-mail'
+    button: '&aTrimite e-mail de recuperare'
+
   button:
     cancel: '&cAnulează'
 

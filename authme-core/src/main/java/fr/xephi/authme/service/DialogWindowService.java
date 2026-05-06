@@ -51,14 +51,38 @@ public class DialogWindowService {
         boolean showRecovery = commonService.getProperty(RegistrationSettings.DIALOG_SHOW_FORGOT_PASSWORD_BUTTON)
             && emailService.hasAllInformation();
         boolean showBody = commonService.getProperty(RegistrationSettings.DIALOG_SHOW_BODY);
+        Function<MessageKey, String> text = key -> messages.retrieveSingle(playerName, key);
+
         // When recovery is shown it occupies the secondary button slot, so cancel button is suppressed.
         // Escape is also disabled: the player must either submit, use recovery, or disconnect.
-        return createLoginDialogSpec(
-            key -> messages.retrieveSingle(playerName, key),
-            showRecovery,
-            !showRecovery && commonService.getProperty(RegistrationSettings.PRE_JOIN_DIALOG_SHOW_CANCEL_BUTTON),
-            !showRecovery && commonService.getProperty(RegistrationSettings.PRE_JOIN_DIALOG_ALLOW_CLOSE_WITH_ESCAPE),
-            showBody);
+        boolean showCancelButton = !showRecovery && commonService.getProperty(RegistrationSettings.PRE_JOIN_DIALOG_SHOW_CANCEL_BUTTON);
+        boolean canCloseWithEscape = !showRecovery && commonService.getProperty(RegistrationSettings.PRE_JOIN_DIALOG_ALLOW_CLOSE_WITH_ESCAPE);
+
+        // Password field only — email is collected on a separate recovery page if needed
+        return new DialogWindowSpec(
+            text.apply(MessageKey.DIALOG_LOGIN_TITLE),
+            List.of(new DialogInputSpec("password", text.apply(MessageKey.DIALOG_LOGIN_PASSWORD), DEFAULT_MAX_INPUT_LENGTH)),
+            text.apply(MessageKey.DIALOG_LOGIN_BUTTON),
+            showRecovery ? text.apply(MessageKey.DIALOG_LOGIN_RECOVERY_BUTTON) : text.apply(MessageKey.DIALOG_CANCEL_BUTTON),
+            showRecovery || showCancelButton,
+            canCloseWithEscape,
+            showRecovery ? "forgot_password" : null,
+            showBody ? text.apply(MessageKey.DIALOG_LOGIN_BODY) : null);
+    }
+
+    public DialogWindowSpec createPreJoinRecoveryDialog(String playerName) {
+        boolean showBody = commonService.getProperty(RegistrationSettings.DIALOG_SHOW_BODY);
+        Function<MessageKey, String> text = key -> messages.retrieveSingle(playerName, key);
+
+        return new DialogWindowSpec(
+            text.apply(MessageKey.DIALOG_RECOVERY_TITLE),
+            List.of(new DialogInputSpec("email", text.apply(MessageKey.DIALOG_RECOVERY_EMAIL), DEFAULT_MAX_INPUT_LENGTH)),
+            text.apply(MessageKey.DIALOG_RECOVERY_BUTTON),
+            text.apply(MessageKey.DIALOG_CANCEL_BUTTON),
+            true,
+            false,
+            null,
+            showBody ? text.apply(MessageKey.DIALOG_RECOVERY_BODY) : null);
     }
 
     public DialogWindowSpec createTotpDialog(Player player) {

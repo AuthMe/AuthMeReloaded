@@ -161,6 +161,12 @@ dialog:
     body: '&7Öffne deine Authentifizierungs-App und gib den 6-stelligen Code ein.'
     code: '&f2FA-Code'
     button: '&aVerifizieren'
+  recovery:
+    title: '&6Passwort-Wiederherstellung'
+    body: '&7Gib deine registrierte E-Mail-Adresse ein und ein Rücksetzcode wird dir zugeschickt.'
+    email: '&fE-Mail-Adresse'
+    button: '&aWiederherstellungs-E-Mail senden'
+
   button:
     cancel: '&cAbbrechen'
 

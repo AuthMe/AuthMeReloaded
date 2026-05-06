@@ -161,6 +161,12 @@ dialog:
     body: '&7Malfermu vian aŭtentikigan aplikaĵon kaj enigu la 6-cifran kodon.'
     code: '&f2FA-kodo'
     button: '&aKonfirmi'
+  recovery:
+    title: '&6Restarigo de Pasvorto'
+    body: '&7Enigu vian registritan retadreson kaj resendkodo estos sendita al vi.'
+    email: '&fRetadreso'
+    button: '&aSendi Restarigan Retmesaĝon'
+
   button:
     cancel: '&cNuligi'
 

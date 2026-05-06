@@ -66,6 +66,24 @@ public final class PaperDialogHelper {
             .type(DialogType.multiAction(createPreJoinButtons(dialog, loginButton, secondaryKey)).build()));
     }
 
+    public static Dialog createPreJoinRecoveryDialog(DialogWindowSpec dialog) {
+        DialogBase base = DialogBase.builder(legacyComponent(dialog.title()))
+            .inputs(createInputs(dialog))
+            .body(createBody(dialog))
+            .canCloseWithEscape(false)
+            .afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
+            .build();
+
+        ActionButton submitButton = ActionButton.builder(legacyComponent(dialog.primaryButtonLabel()))
+            .action(DialogAction.customClick(PaperDialogActionKeys.PRE_JOIN_RECOVERY_SUBMIT, null))
+            .build();
+
+        return Dialog.create(factory -> factory.empty()
+            .base(base)
+            .type(DialogType.multiAction(createPreJoinButtons(dialog, submitButton,
+                PaperDialogActionKeys.PRE_JOIN_RECOVERY_CANCEL)).build()));
+    }
+
     public static Dialog createPreJoinRegisterDialog(DialogWindowSpec dialog) {
         DialogBase base = DialogBase.builder(legacyComponent(dialog.title()))
             .inputs(createInputs(dialog))

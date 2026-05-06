@@ -161,6 +161,12 @@ dialog:
     body: '&7Avaa todennussovelluksesi ja anna 6-numeroinen koodi.'
     code: '&f2FA-koodi'
     button: '&aVahvista'
+  recovery:
+    title: '&6Salasanan palautus'
+    body: '&7Anna rekisteröity sähköpostiosoitteesi ja sinulle lähetetään palautuskoodi.'
+    email: '&fSähköpostiosoite'
+    button: '&aLähetä palautussähköposti'
+
   button:
     cancel: '&cPeruuta'
 
