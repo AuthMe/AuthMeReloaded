@@ -5,7 +5,7 @@ Run a converter with `/authme converter <name>` (requires `authme.admin.converte
 
 ---
 
-AuthMeReloaded currently ships the **Auth+**, **LibreLogin**, **LimboAuth**, and **nLogin** converters, plus the built-in database migration helpers below.
+AuthMeReloaded currently ships the **Auth+**, **LibreLogin**, **LimboAuth**, **nLogin**, and **OpeNLogin** converters, plus the built-in database migration helpers below.
 
 ---
 
@@ -89,6 +89,23 @@ Migrates accounts from the **nLogin** plugin.
 
 **Notes:**
 - Email addresses and last-login timestamps are migrated.
+- Players already present in AuthMe's database are skipped automatically.
+
+---
+
+### OpeNLogin → `openlogin`
+
+Migrates accounts from the **OpeNLogin** plugin.
+
+**Requirement:** OpeNLogin must be (or have been) installed on the same server. The converter reads its SQLite database file directly — no shared database is required.
+
+**Source file:** `plugins/OpeNLogin/accounts.db`
+
+**Before running:**
+1. Set `passwordHash` to `BCRYPT` in AuthMe's `config.yml` — OpeNLogin uses BCrypt exclusively.
+
+**Notes:**
+- OpeNLogin does not store email addresses or UUIDs; those fields will be empty for migrated accounts.
 - Players already present in AuthMe's database are skipped automatically.
 
 ---
