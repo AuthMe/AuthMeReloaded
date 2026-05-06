@@ -14,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -262,8 +263,48 @@ public class SpawnLoader implements Reloadable {
         int dz = (int) (Math.random() * (radius * 2 + 1)) - radius;
         int x = (int) worldSpawn.getX() + dx;
         int z = (int) worldSpawn.getZ() + dz;
-        int y = world.getHighestBlockYAt(x, z) + 1;
-        return new Location(world, x + 0.5, y, z + 0.5, worldSpawn.getYaw(), worldSpawn.getPitch());
+        Integer y = getSafeSpawnY(world, x, z, worldSpawn.getBlockY());
+        if (y == null) {
+            return worldSpawn;
+        }
+        double spawnX = x + 0.5;
+        double spawnZ = z + 0.5;
+        float yaw = (float) Math.toDegrees(Math.atan2(-(worldSpawn.getX() - spawnX), worldSpawn.getZ() - spawnZ));
+        return new Location(world, spawnX, y, spawnZ, yaw, 0.0f);
+    }
+
+    /**
+     * Returns a safe Y coordinate for spawning at (x, z), searching near the world spawn's Y.
+     * Checks if the foot and head blocks are passable at the base Y; if the foot is already
+     * passable the search goes downward (looking for a floor), otherwise upward (looking for a gap).
+     * A margin of 10 blocks is applied in each direction. Returns {@code null} if no safe spot
+     * is found, in which case the caller should fall back to the exact world spawn location.
+     */
+    private Integer getSafeSpawnY(World world, int x, int z, int baseY) {
+        if (isPassable(world, x, baseY, z) && isPassable(world, x, baseY + 1, z)) {
+            return baseY;
+        }
+        int margin = 10;
+        if (world.getBlockAt(x, baseY, z).isPassable()) {
+            for (int dy = 1; dy <= margin; dy++) {
+                int y = baseY - dy;
+                if (isPassable(world, x, y, z) && isPassable(world, x, y + 1, z)) {
+                    return y;
+                }
+            }
+        } else {
+            for (int dy = 1; dy <= margin; dy++) {
+                int y = baseY + dy;
+                if (isPassable(world, x, y, z) && isPassable(world, x, y + 1, z)) {
+                    return y;
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean isPassable(World world, int x, int y, int z) {
+        return world.getBlockAt(x, y, z).isPassable();
     }
 
     /**
