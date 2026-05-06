@@ -150,7 +150,8 @@ public final class RestrictionSettings implements SettingsHolder {
     @Comment({
         "Spawn priority; values: authme, essentials, cmi, multiverse, default, server",
         "Use \"server\" to apply the world's spawnRadius gamerule (players land at a random position",
-        "within the configured radius around the world spawn). Use \"default\" for the exact world spawn."})
+        "within the configured radius around the world spawn).",
+        "Use \"default\" for the exact world spawn."})
     public static final Property<String> SPAWN_PRIORITY =
         newProperty("settings.restrictions.spawnPriority", "authme,essentials,cmi,multiverse,default");
 
