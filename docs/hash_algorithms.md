@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Wed May 06 00:22:42 CEST 2026. See authme-tools/src/test/java/tools/docs/hashmethods/hash_algorithms.tpl.md -->
+<!-- File auto-generated on Wed May 06 10:48:06 CEST 2026. See authme-tools/src/test/java/tools/docs/hashmethods/hash_algorithms.tpl.md -->
 
 ## Hash Algorithms
 AuthMe supports the following hash algorithms for storing your passwords safely.
@@ -24,8 +24,10 @@ PHPBB | Acceptable | 60 |  | | Text | 22 |
 PHPFUSION | Do not use | 64 | Y | |  |  | Y
 ROYALAUTH | Do not use | 128 |  | | None |  | 
 SALTED2MD5 | Acceptable | 32 |  | | Text |  | Y
+SALTEDSHA256 | Acceptable | 64 |  | |  |  | Y
 SALTEDSHA512 | Recommended | 128 |  | |  |  | Y
 SHA256 | Recommended | 86 |  | | Text | 16 | 
+DOUBLE_SHA512 | Acceptable | 128 |  | |  |  | Y
 SMF | Do not use | 40 |  | | Username |  | Y
 TWO_FACTOR | Does not work | 16 |  | | None |  | 
 WBB3 | Acceptable | 40 |  | | Text | 40 | Y
@@ -80,4 +82,4 @@ or bad.
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed May 06 00:22:42 CEST 2026
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed May 06 10:48:06 CEST 2026
