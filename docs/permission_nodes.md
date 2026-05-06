@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Wed May 06 00:22:42 CEST 2026. See authme-tools/src/test/java/tools/docs/permissions/permission_nodes.tpl.md -->
+<!-- File auto-generated on Wed May 06 10:21:25 CEST 2026. See authme-tools/src/test/java/tools/docs/permissions/permission_nodes.tpl.md -->
 
 ## AuthMe Permission Nodes
 The following are the permission nodes that are currently supported by the latest dev builds.
@@ -62,6 +62,7 @@ and Paper 1.21 builds.
 - **authme.player.email** – Grants all email permissions.
 - **authme.player.email.add** – Command permission to add an email address.
 - **authme.player.email.change** – Command permission to change the email address.
+- **authme.player.email.confirm** – Command permission to confirm a new email address via a verification code.
 - **authme.player.email.recover** – Command permission to recover an account using its email address.
 - **authme.player.email.see** – Command permission to see the own email address.
 - **authme.player.freemium** – Permission to disable premium mode.
@@ -80,4 +81,4 @@ and Paper 1.21 builds.
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed May 06 00:22:42 CEST 2026
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed May 06 10:21:25 CEST 2026

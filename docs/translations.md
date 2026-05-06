@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Wed May 06 00:22:43 CEST 2026. See authme-tools/src/test/java/tools/docs/translations/translations.tpl.md -->
+<!-- File auto-generated on Wed May 06 10:21:25 CEST 2026. See authme-tools/src/test/java/tools/docs/translations/translations.tpl.md -->
 
 # AuthMe Translations
 The following translations are available in AuthMe. Set `messagesLanguage` to the language code
@@ -16,9 +16,9 @@ Code | Language | Translated | &nbsp;
 [es](https://github.com/AuthMe/AuthMeReloaded/blob/master/authme-core/src/main/resources/messages/messages_es.yml) | Spanish | 100% | <img src="https://via.placeholder.com/100x7/66ff66?text=%20" alt="100" />
 [et](https://github.com/AuthMe/AuthMeReloaded/blob/master/authme-core/src/main/resources/messages/messages_et.yml) | Estonian | 100% | <img src="https://via.placeholder.com/100x7/66ff66?text=%20" alt="100" />
 [eu](https://github.com/AuthMe/AuthMeReloaded/blob/master/authme-core/src/main/resources/messages/messages_eu.yml) | Basque | 100% | <img src="https://via.placeholder.com/100x7/66ff66?text=%20" alt="100" />
-[fi](https://github.com/AuthMe/AuthMeReloaded/blob/master/authme-core/src/main/resources/messages/messages_fi.yml) | Finnish | 65% | <img src="https://via.placeholder.com/65x7/bb7700?text=%20" alt="65" />
+[fi](https://github.com/AuthMe/AuthMeReloaded/blob/master/authme-core/src/main/resources/messages/messages_fi.yml) | Finnish | 66% | <img src="https://via.placeholder.com/66x7/bb7700?text=%20" alt="66" />
 [fr](https://github.com/AuthMe/AuthMeReloaded/blob/master/authme-core/src/main/resources/messages/messages_fr.yml) | French | 100% | <img src="https://via.placeholder.com/100x7/66ff66?text=%20" alt="100" />
-[gl](https://github.com/AuthMe/AuthMeReloaded/blob/master/authme-core/src/main/resources/messages/messages_gl.yml) | Galician | 67% | <img src="https://via.placeholder.com/67x7/bb8800?text=%20" alt="67" />
+[gl](https://github.com/AuthMe/AuthMeReloaded/blob/master/authme-core/src/main/resources/messages/messages_gl.yml) | Galician | 68% | <img src="https://via.placeholder.com/68x7/bb8800?text=%20" alt="68" />
 [hu](https://github.com/AuthMe/AuthMeReloaded/blob/master/authme-core/src/main/resources/messages/messages_hu.yml) | Hungarian | 99% | <img src="https://via.placeholder.com/99x7/66ee55?text=%20" alt="99" />
 [id](https://github.com/AuthMe/AuthMeReloaded/blob/master/authme-core/src/main/resources/messages/messages_id.yml) | Indonesian | 95% | <img src="https://via.placeholder.com/95x7/77dd44?text=%20" alt="95" />
 [it](https://github.com/AuthMe/AuthMeReloaded/blob/master/authme-core/src/main/resources/messages/messages_it.yml) | Italian | 100% | <img src="https://via.placeholder.com/100x7/66ff66?text=%20" alt="100" />
@@ -44,4 +44,4 @@ Code | Language | Translated | &nbsp;
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed May 06 00:22:43 CEST 2026
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed May 06 10:21:25 CEST 2026
