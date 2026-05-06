@@ -346,6 +346,56 @@ class LimboServiceTest {
         verify(authGroupHandler).setGroup(player, null, AuthGroupType.REGISTERED_UNAUTHENTICATED);
     }
 
+    @Test
+    void shouldRestoreSpeedsForAutoLoginFromDiskLimbo() {
+        // given - disk limbo exists with the pre-revoke speeds
+        Player player = newPlayer("Premium", false, 0.0f, false, 0.0f);
+        LimboPlayer diskLimbo = new LimboPlayer(null, false, Collections.emptyList(), true, 0.3f, 0.15f);
+        given(limboPersistence.getLimboPlayer(player)).willReturn(diskLimbo);
+        given(settings.getProperty(LimboSettings.RESTORE_ALLOW_FLIGHT)).willReturn(AllowFlightRestoreType.RESTORE);
+        given(settings.getProperty(LimboSettings.RESTORE_WALK_SPEED)).willReturn(WalkFlySpeedRestoreType.RESTORE);
+        given(settings.getProperty(LimboSettings.RESTORE_FLY_SPEED)).willReturn(WalkFlySpeedRestoreType.RESTORE);
+
+        // when
+        limboService.restoreSpeedsForAutoLogin(player);
+
+        // then
+        verify(player).setAllowFlight(true);
+        verify(player).setWalkSpeed(0.3f);
+        verify(player).setFlySpeed(0.15f);
+        verify(limboPersistence).removeLimboPlayer(player);
+    }
+
+    @Test
+    void shouldRestoreDefaultSpeedsForAutoLoginWhenNoDiskLimboAndSpeedsAreZero() {
+        // given - no disk limbo, but Bukkit loaded zero speeds from stale playerdata (crash scenario)
+        Player player = newPlayer("Premium", false, 0.0f, false, 0.0f);
+        given(limboPersistence.getLimboPlayer(player)).willReturn(null);
+
+        // when
+        limboService.restoreSpeedsForAutoLogin(player);
+
+        // then
+        verify(player).setWalkSpeed(LimboPlayer.DEFAULT_WALK_SPEED);
+        verify(player).setFlySpeed(LimboPlayer.DEFAULT_FLY_SPEED);
+        verify(limboPersistence).removeLimboPlayer(player);
+    }
+
+    @Test
+    void shouldNotModifySpeedsForAutoLoginWhenNoDiskLimboAndSpeedsAreNormal() {
+        // given - no disk limbo, player authenticated cleanly before session (nominal case)
+        Player player = newPlayer("Premium", false, 0.2f, false, 0.1f);
+        given(limboPersistence.getLimboPlayer(player)).willReturn(null);
+
+        // when
+        limboService.restoreSpeedsForAutoLogin(player);
+
+        // then - speeds already correct, must not be overwritten
+        verify(player, Mockito.never()).setWalkSpeed(Mockito.anyFloat());
+        verify(player, Mockito.never()).setFlySpeed(Mockito.anyFloat());
+        verify(limboPersistence).removeLimboPlayer(player);
+    }
+
     private static Player newPlayer(String name) {
         Player player = mock(Player.class);
         lenient().when(player.getName()).thenReturn(name);

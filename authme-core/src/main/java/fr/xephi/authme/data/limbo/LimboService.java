@@ -149,6 +149,36 @@ public class LimboService {
     }
 
     /**
+     * Restores walk/fly speed for a player that has been auto-logged in (premium bypass or session),
+     * bypassing the normal limbo lifecycle. Repairs zero speeds left in Bukkit playerdata by a
+     * previous session that crashed while the player was unauthenticated, and cleans up any
+     * stale disk limbo.
+     *
+     * @param player the auto-logged-in player
+     */
+    public void restoreSpeedsForAutoLogin(Player player) {
+        String lowerName = player.getName().toLowerCase(Locale.ROOT);
+        LimboPlayer diskLimbo = persistence.getLimboPlayer(player);
+        if (diskLimbo != null) {
+            // Disk limbo captured speeds before revokeLimboStates ran — restore from it
+            settings.getProperty(RESTORE_ALLOW_FLIGHT).restoreAllowFlight(player, diskLimbo);
+            settings.getProperty(RESTORE_FLY_SPEED).restoreFlySpeed(player, diskLimbo);
+            settings.getProperty(RESTORE_WALK_SPEED).restoreWalkSpeed(player, diskLimbo);
+            logger.debug("Restored speeds from disk LimboPlayer for `{0}` during auto-login", lowerName);
+        } else {
+            // No snapshot: only correct stale zero speed persisted by a previous crash
+            // (do not touch allowFlight — original value is unknown without a limbo snapshot)
+            if (player.getWalkSpeed() < 0.01f) {
+                player.setWalkSpeed(LimboPlayer.DEFAULT_WALK_SPEED);
+            }
+            if (player.getFlySpeed() < 0.01f) {
+                player.setFlySpeed(LimboPlayer.DEFAULT_FLY_SPEED);
+            }
+        }
+        persistence.removeLimboPlayer(player);
+    }
+
+    /**
      * Re-applies limbo speed and flight restrictions after a player respawns.
      * Bukkit sends a fresh PlayerAbilities packet on respawn that resets walk/fly speed,
      * so the restrictions set during join must be re-applied one tick later.

@@ -115,6 +115,8 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         if (limbo != null) {
             limboService.restoreEntities(player);
             limboService.restoreData(player);
+        } else {
+            limboService.restoreSpeedsForAutoLogin(player);
         }
 
         if (commonService.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
