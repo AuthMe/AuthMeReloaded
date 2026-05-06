@@ -100,6 +100,11 @@ email:
   email_cooldown_error: '&c最近すでにメールが送信されています。新しいメールを送信する前に、%time 待つ必要があります。'
   add_not_allowed: '&cメールアドレスの追加は許可されていません。'
   change_not_allowed: '&cメールアドレスの変更は許可されていません。'
+  confirm_code_sent: '&3確認コードが &f%email&3 に送信されました。&f/email confirm <code>&3 で確認してください。'
+  usage_email_confirm: '&c使用法: /email confirm <code>'
+  confirm_wrong_code: '&c確認コードが間違っています。もう一度お試しください。'
+  confirm_code_expired: '&c保留中のメール確認が見つかりません。もう一度手続きを開始してください。'
+  confirm_success: '&2メールアドレスが確認され、アカウントに保存されました！'
 
 # Password recovery by email
 recovery:

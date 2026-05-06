@@ -103,6 +103,11 @@ email:
     send_failure: '이메일을 보낼 수 없습니다. 관리자에게 알려주세요.'
     change_password_expired: '더 이상 이 명령어를 통해 비밀번호를 변경할 수 없습니다.'
     email_cooldown_error: '&c이메일을 이미 발송했습니다. %time 후에 다시 발송할 수 있습니다.'
+    confirm_code_sent: '&3인증 코드가 &f%email&3(으)로 전송되었습니다. &f/email confirm <code>&3 를 사용하여 확인하세요.'
+    usage_email_confirm: '&c사용법: /email confirm <code>'
+    confirm_wrong_code: '&c잘못된 인증 코드입니다. 다시 시도해 주세요.'
+    confirm_code_expired: '&c대기 중인 이메일 인증을 찾을 수 없습니다. 처음부터 다시 시작해 주세요.'
+    confirm_success: '&2이메일 주소가 확인되어 계정에 저장되었습니다!'
 
 # Password recovery by email
 recovery:

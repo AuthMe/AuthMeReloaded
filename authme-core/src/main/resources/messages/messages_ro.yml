@@ -100,6 +100,11 @@ email:
   email_cooldown_error: '&cAi primit deja un mail pentru schimbarea parolei. Trebuie sa astepti %time inainte de a trimite unul nou.'
   add_not_allowed: '&cAdaugarea email-ului nu a fost permisa.'
   change_not_allowed: '&cModificarea email-ului nu a fost permisa.'
+  confirm_code_sent: '&3Un cod de verificare a fost trimis la &f%email&3. Folosește &f/email confirm <code>&3 pentru a confirma.'
+  usage_email_confirm: '&cFolosire: /email confirm <code>'
+  confirm_wrong_code: '&cCod de confirmare greșit. Te rugăm să încerci din nou.'
+  confirm_code_expired: '&cNu s-a găsit nicio confirmare de email în așteptare. Te rugăm să reiei procesul.'
+  confirm_success: '&2Adresa de email confirmată și salvată în contul tău!'
 
 # Password recovery by email
 recovery:

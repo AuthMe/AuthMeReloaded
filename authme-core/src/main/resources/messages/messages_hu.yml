@@ -101,6 +101,11 @@ email:
     send_failure: 'Nem sikerült elküldeni az emailt. Lépj kapcsolatba egy adminnal.'
     change_password_expired: 'Ezzel a paranccsal már nem módosíthatja jelszavát.'
     email_cooldown_error: '&cEgy emailt már kiküldtünk. Következő email küldése előtt várnod kell: %time.'
+    confirm_code_sent: '&3Egy ellenőrző kódot küldtünk a &f%email&3 címre. A megerősítéshez használd a &f/email confirm <code>&3 parancsot.'
+    usage_email_confirm: '&cHasználat: /email confirm <code>'
+    confirm_wrong_code: '&cHibás ellenőrző kód. Kérjük, próbáld újra.'
+    confirm_code_expired: '&cNem található folyamatban lévő email megerősítés. Kérjük, kezdd el újra a folyamatot.'
+    confirm_success: '&2Az e-mail cím megerősítve és elmentve a fiókodba!'
 
 # Password recovery by email
 recovery:

@@ -24,6 +24,7 @@ public class Settings extends SettingsManagerImpl {
     private String passwordEmailMessage;
     private String verificationEmailMessage;
     private String recoveryCodeEmailMessage;
+    private String emailConfirmationMessage;
 
     /**
      * Constructor.
@@ -67,10 +68,20 @@ public class Settings extends SettingsManagerImpl {
         return recoveryCodeEmailMessage;
     }
 
+    /**
+     * Return the text to use when a player confirms a new email address.
+     *
+     * @return The email message
+     */
+    public String getEmailConfirmationMessage() {
+        return emailConfirmationMessage;
+    }
+
     private void loadSettingsFromFiles() {
         passwordEmailMessage = readFile("email.html");
         verificationEmailMessage = readFile("verification_code_email.html");
         recoveryCodeEmailMessage = readFile("recovery_code_email.html");
+        emailConfirmationMessage = readFile("email_confirmation_email.html");
     }
 
     @Override

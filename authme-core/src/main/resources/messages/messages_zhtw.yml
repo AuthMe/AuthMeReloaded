@@ -103,6 +103,11 @@ email:
     send_failure: '&b【AuthMe】&4無法傳送電子郵件，請聯絡管理員。'
     change_password_expired: '&b【AuthMe】&6您現在不能使用這個指令變更密碼了。'
     email_cooldown_error: '&b【AuthMe】&c電子郵件已經寄出了，您只能在 %time 後才能傳送。'
+    confirm_code_sent: '&3驗證碼已傳送至 &f%email&3。使用 &f/email confirm <code>&3 進行確認。'
+    usage_email_confirm: '&c用法：/email confirm <code>'
+    confirm_wrong_code: '&c驗證碼錯誤，請重試。'
+    confirm_code_expired: '&c找不到待確認的電子郵件驗證。請重新開始流程。'
+    confirm_success: '&2電子郵件地址已確認並儲存至您的帳號！'
 
 # Password recovery by email
 recovery:

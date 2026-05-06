@@ -100,6 +100,11 @@ email:
     email_cooldown_error: '&cMeil on juba saadetud. Sa pead ootama %time enne kui saad küsida uue saatmist.'
     add_not_allowed: '&cMeiliaadressi lisamine ei ole lubatud.'
     change_not_allowed: '&cMeiliaadressi muutmine ei ole lubatud.'
+    confirm_code_sent: '&3Kinnituskood on saadetud aadressile &f%email&3. Kasuta &f/email confirm <code>&3 kinnitamiseks.'
+    usage_email_confirm: '&cKasutus: /email confirm <code>'
+    confirm_wrong_code: '&cVale kinnituskood. Palun proovi uuesti.'
+    confirm_code_expired: '&cÜhtegi ootel olevat e-posti kinnitust ei leitud. Palun alusta protsessi uuesti.'
+    confirm_success: '&2E-posti aadress kinnitatud ja salvestatud teie kontole!'
 
 # Password recovery by email
 recovery:

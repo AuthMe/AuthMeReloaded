@@ -101,6 +101,11 @@ email:
     send_failure: 'Ezin izan da mezua bidali. Mesedez, jarri harremanetan administratzaile batekin.'
     change_password_expired: 'Pasahitza aldatzeko denbora iraungi da.'
     email_cooldown_error: '&cMezu bat bidali dizugu duela denbora gutxik. %time itxaron behar duzu berriro bidaltzeko eskatu aurretik.'
+    confirm_code_sent: '&3Egiaztapen kode bat bidali da &f%email&3 helbidera. Erabili &f/email confirm <code>&3 berresteko.'
+    usage_email_confirm: '&cErabilera: /email confirm <code>'
+    confirm_wrong_code: '&cBerresteko kode okerra. Mesedez, saiatu berriro.'
+    confirm_code_expired: '&cEz da aurkitu email berrespenik zain. Mesedez, hasi prozesua berriz.'
+    confirm_success: '&2Helbide elektronikoa berretsi eta zure kontuan gordeta!'
 
 # Password recovery by email
 recovery:

@@ -101,6 +101,11 @@ email:
     send_failure: 'Eposta gonderilemedi. Yetkili ile iletisime gec.'
     change_password_expired: 'Artik bu komutu kullanarak sifrenizi degistiremezsiniz.'
     email_cooldown_error: '&cKisa bir sure once eposta gonderildi. Yeni bir eposta almak icin %time beklemelisin.'
+    confirm_code_sent: '&3Bir doğrulama kodu &f%email&3 adresine gönderildi. Onaylamak için &f/email confirm <code>&3 kullanın.'
+    usage_email_confirm: '&cKullanım: /email confirm <code>'
+    confirm_wrong_code: '&cYanlış onay kodu. Lütfen tekrar deneyin.'
+    confirm_code_expired: '&cBekleyen eposta onayı bulunamadı. Lütfen işlemi yeniden başlatın.'
+    confirm_success: '&2E-posta adresi onaylandı ve hesabınıza kaydedildi!'
 
 # Password recovery by email
 recovery:

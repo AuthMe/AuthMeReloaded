@@ -101,6 +101,11 @@ email:
     send_failure: 'El.pašto laiškas nebuvo išsiųstas. Susikietite su administratoriumi.'
     change_password_expired: 'Jūs nebegalite pakeisti savo slaptažodzio naudojant šią komandą.'
     email_cooldown_error: '&cEl.pašto laiškas jau buvo išsiųstas. Palaukite %time prieš šiunčiant naują.'
+    confirm_code_sent: '&3Patvirtinimo kodas išsiųstas į &f%email&3. Naudok &f/email confirm <code>&3 patvirtinimui.'
+    usage_email_confirm: '&cNaudojimas: /email confirm <code>'
+    confirm_wrong_code: '&cNeteisingas patvirtinimo kodas. Bandykite dar kartą.'
+    confirm_code_expired: '&cLaukiančio el. pašto patvirtinimo nerasta. Pradėkite procesą iš naujo.'
+    confirm_success: '&2El. pašto adresas patvirtintas ir išsaugotas jūsų paskyroje!'
 
 # Password recovery by email
 recovery:

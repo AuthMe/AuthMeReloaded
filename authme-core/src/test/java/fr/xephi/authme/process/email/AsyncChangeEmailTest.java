@@ -9,9 +9,11 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.EmailChangedEvent;
+import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.PendingEmailVerificationCache;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import org.bukkit.entity.Player;
@@ -61,6 +63,12 @@ public class AsyncChangeEmailTest {
     @Mock
     private BukkitService bukkitService;
 
+    @Mock
+    private EmailService emailService;
+
+    @Mock
+    private PendingEmailVerificationCache pendingEmailVerificationCache;
+
     @BeforeAll
     public static void setUp() {
         TestHelper.setupLogger();
@@ -77,9 +85,10 @@ public class AsyncChangeEmailTest {
         given(dataSource.updateEmail(auth)).willReturn(true);
         given(validationService.validateEmail(newEmail)).willReturn(true);
         given(validationService.isEmailFreeForRegistration(newEmail, player)).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(false);
         EmailChangedEvent event = spy(new EmailChangedEvent(player, "old@mail.tld", newEmail, false));
         given(bukkitService.createAndCallEvent(any(Function.class))).willReturn(event);
-        
+
         // when
         process.changeEmail(player, "old@mail.tld", newEmail);
 
@@ -101,6 +110,7 @@ public class AsyncChangeEmailTest {
         given(dataSource.updateEmail(auth)).willReturn(true);
         given(validationService.validateEmail(newEmail)).willReturn(true);
         given(validationService.isEmailFreeForRegistration(newEmail, player)).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(false);
         EmailChangedEvent event = spy(new EmailChangedEvent(player, oldEmail, newEmail, false));
         given(bukkitService.createAndCallEvent(any(Function.class))).willReturn(event);
 
@@ -124,6 +134,7 @@ public class AsyncChangeEmailTest {
         given(dataSource.updateEmail(auth)).willReturn(false);
         given(validationService.validateEmail(newEmail)).willReturn(true);
         given(validationService.isEmailFreeForRegistration(newEmail, player)).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(false);
         EmailChangedEvent event = spy(new EmailChangedEvent(player, "old@mail.tld", newEmail, false));
         given(bukkitService.createAndCallEvent(any(Function.class))).willReturn(event);
 

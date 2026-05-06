@@ -104,6 +104,11 @@ email:
     send_failure: '&8[&6用戶系統&8] &c電郵系統錯誤，請聯絡伺服器管理員。 &7(err: smtperr)'
     change_password_expired: '&8[&6用戶系統&8] &c此指令已過期，請重新辦理。'
     email_cooldown_error: '&8[&6用戶系統&8] &c你最近已經辦理過重寄郵件，請等待 %time 後再嘗試吧。'
+    confirm_code_sent: '&3驗證碼已傳送至 &f%email&3。使用 &f/email confirm <code>&3 進行確認。'
+    usage_email_confirm: '&c用法：/email confirm <code>'
+    confirm_wrong_code: '&c驗證碼錯誤，請重試。'
+    confirm_code_expired: '&c找不到待確認嘅電郵驗證。請重新開始流程。'
+    confirm_success: '&2電郵地址已確認並儲存至您嘅帳號！'
 
 # Password recovery by email
 recovery:

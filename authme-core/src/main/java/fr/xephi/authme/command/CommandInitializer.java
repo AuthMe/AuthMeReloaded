@@ -34,6 +34,7 @@ import fr.xephi.authme.command.executable.captcha.CaptchaCommand;
 import fr.xephi.authme.command.executable.changepassword.ChangePasswordCommand;
 import fr.xephi.authme.command.executable.email.AddEmailCommand;
 import fr.xephi.authme.command.executable.email.ChangeEmailCommand;
+import fr.xephi.authme.command.executable.email.ConfirmEmailCommand;
 import fr.xephi.authme.command.executable.email.EmailBaseCommand;
 import fr.xephi.authme.command.executable.email.EmailSetPasswordCommand;
 import fr.xephi.authme.command.executable.email.ProcessCodeCommand;
@@ -609,6 +610,17 @@ public class CommandInitializer {
             .withArgument("password", "New password", MANDATORY)
             .permission(PlayerPermission.RECOVER_EMAIL)
             .executableCommand(EmailSetPasswordCommand.class)
+            .register();
+
+        // Register the confirm email command
+        CommandDescription.builder()
+            .parent(emailBase)
+            .labels("confirm", "confirmemail")
+            .description("Confirm new email address")
+            .detailedDescription("Confirm a new email address by submitting the code sent to that address.")
+            .withArgument("code", "Confirmation code", MANDATORY)
+            .permission(PlayerPermission.CONFIRM_EMAIL)
+            .executableCommand(ConfirmEmailCommand.class)
             .register();
 
         return emailBase;

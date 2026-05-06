@@ -104,6 +104,11 @@ email:
     send_failure: '&cLe mail n''a pas pu être envoyé. Veuillez contacter un admin.'
     change_password_expired: 'Vous ne pouvez pas changer votre mot de passe avec cette commande.'
     email_cooldown_error: '&cUn mail de récupération a déjà été envoyé récemment. Veuillez attendre %time pour le demander de nouveau.'
+    confirm_code_sent: '&3Un code de vérification a été envoyé à &f%email&3. Utilisez &f/email confirm <code>&3 pour confirmer.'
+    usage_email_confirm: '&cUsage: /email confirm <code>'
+    confirm_wrong_code: '&cCode de confirmation incorrect. Veuillez réessayer.'
+    confirm_code_expired: '&cAucune confirmation d''email en attente. Veuillez recommencer le processus.'
+    confirm_success: '&2Adresse email confirmée et enregistrée sur votre compte !'
 
 # Récupération de mot de passe par mail
 recovery:

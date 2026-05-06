@@ -5,12 +5,15 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.EmailChangedEvent;
+import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.PendingEmailVerificationCache;
 import fr.xephi.authme.service.ValidationService;
+import fr.xephi.authme.util.RandomStringUtils;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 
@@ -39,11 +42,19 @@ public class AsyncAddEmail implements AsynchronousProcess {
     @Inject
     private BukkitService bukkitService;
 
+    @Inject
+    private EmailService emailService;
+
+    @Inject
+    private PendingEmailVerificationCache pendingEmailVerificationCache;
+
     AsyncAddEmail() {
     }
 
     /**
      * Handles the request to add the given email to the player's account.
+     * If email sending is available, the address is held pending confirmation via
+     * {@code /email confirm <code>}. Otherwise it is saved directly.
      *
      * @param player the player to add the email to
      * @param email the email to add
@@ -69,18 +80,36 @@ public class AsyncAddEmail implements AsynchronousProcess {
                     service.send(player, MessageKey.EMAIL_ADD_NOT_ALLOWED);
                     return;
                 }
-                auth.setEmail(email);
-                if (dataSource.updateEmail(auth)) {
-                    playerCache.updatePlayer(auth);
-                    // TODO: send an update when a messaging service will be implemented (ADD_MAIL)
-                    service.send(player, MessageKey.EMAIL_ADDED_SUCCESS);
+                if (emailService.hasAllInformation()) {
+                    sendConfirmationCode(player, email);
                 } else {
-                    logger.warning("Could not save email for player '" + player + "'");
-                    service.send(player, MessageKey.ERROR);
+                    saveEmailDirectly(auth, player, email);
                 }
             }
         } else {
             sendUnloggedMessage(player);
+        }
+    }
+
+    private void sendConfirmationCode(Player player, String email) {
+        String code = RandomStringUtils.generateNum(6);
+        if (emailService.sendEmailConfirmationMail(player.getName(), email, code)) {
+            pendingEmailVerificationCache.addPending(player.getName(), email, code);
+            service.send(player, MessageKey.EMAIL_CONFIRM_CODE_SENT, email);
+        } else {
+            logger.warning("Could not send confirmation email for player '" + player + "'");
+            service.send(player, MessageKey.EMAIL_SEND_FAILURE);
+        }
+    }
+
+    private void saveEmailDirectly(PlayerAuth auth, Player player, String email) {
+        auth.setEmail(email);
+        if (dataSource.updateEmail(auth)) {
+            playerCache.updatePlayer(auth);
+            service.send(player, MessageKey.EMAIL_ADDED_SUCCESS);
+        } else {
+            logger.warning("Could not save email for player '" + player + "'");
+            service.send(player, MessageKey.ERROR);
         }
     }
 

@@ -104,6 +104,11 @@ email:
     email_cooldown_error: '&cUm e-mail já foi enviado, espere %time antes de enviar novamente!'
     add_not_allowed: '&cAdicionar um e-mail não é permitido.'
     change_not_allowed: '&cAlterar o e-mail não é permitido.'
+    confirm_code_sent: '&3Um código de verificação foi enviado para &f%email&3. Use &f/email confirm <code>&3 para confirmar.'
+    usage_email_confirm: '&cUso: /email confirm <code>'
+    confirm_wrong_code: '&cCódigo de confirmação incorreto. Por favor, tente novamente.'
+    confirm_code_expired: '&cNenhuma confirmação de email pendente encontrada. Por favor, reinicie o processo.'
+    confirm_success: '&2Endereço de email confirmado e salvo na sua conta!'
 
 # Recuperação de senha por e-mail
 recovery:

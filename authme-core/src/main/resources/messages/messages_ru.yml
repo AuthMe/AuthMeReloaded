@@ -96,6 +96,11 @@ email:
     send_failure: 'Письмо не может быть отправлено. Свяжитесь в администратором.'
     change_password_expired: 'Больше нельзя сменить свой пароль, используя эту команду.'
     email_cooldown_error: '&cПисьмо было отправлено недавно. Подождите %time, прежде чем отправить новое.'
+    confirm_code_sent: '&3Код подтверждения отправлен на &f%email&3. Используйте &f/email confirm <code>&3 для подтверждения.'
+    usage_email_confirm: '&cИспользование: /email confirm <code>'
+    confirm_wrong_code: '&cНеверный код подтверждения. Попробуйте ещё раз.'
+    confirm_code_expired: '&cОжидающее подтверждение email не найдено. Начните процесс заново.'
+    confirm_success: '&2Адрес электронной почты подтверждён и сохранён в аккаунте!'
 
 # Password recovery by email
 recovery:

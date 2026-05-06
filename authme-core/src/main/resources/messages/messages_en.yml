@@ -100,6 +100,11 @@ email:
   email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
   add_not_allowed: '&cAdding email was not allowed.'
   change_not_allowed: '&cChanging email was not allowed.'
+  confirm_code_sent: '&3A verification code has been sent to &f%email&3. Use &f/email confirm <code>&3 to confirm.'
+  usage_email_confirm: '&cUsage: /email confirm <code>'
+  confirm_wrong_code: '&cWrong confirmation code. Please try again.'
+  confirm_code_expired: '&cNo pending email confirmation found. Please start the process again.'
+  confirm_success: '&2Email address confirmed and saved to your account!'
 
 # Password recovery by email
 recovery:

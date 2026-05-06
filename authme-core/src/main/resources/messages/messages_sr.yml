@@ -101,6 +101,11 @@ email:
     send_failure: 'Email se nije mogao poslati. Molimo Vas da kontaktirate administratora.'
     change_password_expired: 'Ne možete više promeniti svoju lozinku koristeći ovu komandu.'
     email_cooldown_error: '&cEmail je već poslat. Morate sačekati %time pre nego što možete poslati drugi.'
+    confirm_code_sent: '&3Kod za potvrdu je poslat na &f%email&3. Koristite &f/email confirm <code>&3 za potvrdu.'
+    usage_email_confirm: '&cUpotreba: /email confirm <code>'
+    confirm_wrong_code: '&cPogrešan kod za potvrdu. Molimo pokušajte ponovo.'
+    confirm_code_expired: '&cNije pronađena nijedna aktivna potvrda emaila. Molimo pokrenite proces ponovo.'
+    confirm_success: '&2Email adresa potvrđena i sačuvana na vašem nalogu!'
 
 # Password recovery by email
 recovery:

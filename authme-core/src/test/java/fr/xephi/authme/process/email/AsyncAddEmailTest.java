@@ -9,9 +9,11 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.EmailChangedEvent;
+import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.PendingEmailVerificationCache;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import org.bukkit.entity.Player;
@@ -22,6 +24,8 @@ import org.mockito.Mock;
 import java.util.function.Function;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -59,6 +63,12 @@ public class AsyncAddEmailTest {
     @Mock
     private BukkitService bukkitService;
 
+    @Mock
+    private EmailService emailService;
+
+    @Mock
+    private PendingEmailVerificationCache pendingEmailVerificationCache;
+
     @BeforeAll
     public static void setUp() {
         TestHelper.setupLogger();
@@ -76,6 +86,7 @@ public class AsyncAddEmailTest {
         given(dataSource.updateEmail(any(PlayerAuth.class))).willReturn(true);
         given(validationService.validateEmail(email)).willReturn(true);
         given(validationService.isEmailFreeForRegistration(email, player)).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(false);
         EmailChangedEvent event = spy(new EmailChangedEvent(player, null, email, false));
         given(bukkitService.createAndCallEvent(any(Function.class))).willReturn(event);
 
@@ -90,6 +101,31 @@ public class AsyncAddEmailTest {
     }
 
     @Test
+    public void shouldSendConfirmationCodeWhenEmailIsConfigured() {
+        // given
+        String email = "my.mail@example.org";
+        given(player.getName()).willReturn("testEr");
+        given(playerCache.isAuthenticated("tester")).willReturn(true);
+        PlayerAuth auth = mock(PlayerAuth.class);
+        given(auth.getEmail()).willReturn(null);
+        given(playerCache.getAuth("tester")).willReturn(auth);
+        given(validationService.validateEmail(email)).willReturn(true);
+        given(validationService.isEmailFreeForRegistration(email, player)).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(true);
+        given(emailService.sendEmailConfirmationMail(any(), any(), any())).willReturn(true);
+        EmailChangedEvent event = spy(new EmailChangedEvent(player, null, email, false));
+        given(bukkitService.createAndCallEvent(any(Function.class))).willReturn(event);
+
+        // when
+        asyncAddEmail.addEmail(player, email);
+
+        // then
+        verify(dataSource, never()).updateEmail(any());
+        verify(pendingEmailVerificationCache).addPending(eq("testEr"), eq(email), anyString());
+        verify(service).send(player, MessageKey.EMAIL_CONFIRM_CODE_SENT, email);
+    }
+
+    @Test
     public void shouldReturnErrorWhenMailCannotBeSaved() {
         // given
         String email = "my.mail@example.org";
@@ -101,6 +137,7 @@ public class AsyncAddEmailTest {
         given(dataSource.updateEmail(any(PlayerAuth.class))).willReturn(false);
         given(validationService.validateEmail(email)).willReturn(true);
         given(validationService.isEmailFreeForRegistration(email, player)).willReturn(true);
+        given(emailService.hasAllInformation()).willReturn(false);
         EmailChangedEvent event = spy(new EmailChangedEvent(player, null, email, false));
         given(bukkitService.createAndCallEvent(any(Function.class))).willReturn(event);
 

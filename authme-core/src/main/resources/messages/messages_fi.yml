@@ -101,6 +101,11 @@ email:
     # TODO send_failure: 'The email could not be sent. Please contact an administrator.'
     # TODO change_password_expired: 'You cannot change your password using this command anymore.'
     # TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
+    confirm_code_sent: '&3Vahvistuskoodi on lähetetty osoitteeseen &f%email&3. Käytä &f/email confirm <code>&3 vahvistaaksesi.'
+    usage_email_confirm: '&cKäyttö: /email confirm <code>'
+    confirm_wrong_code: '&cVäärä vahvistuskoodi. Yritä uudelleen.'
+    confirm_code_expired: '&cOdottavaa sähköpostivahvistusta ei löydy. Aloita prosessi uudelleen.'
+    confirm_success: '&2Sähköpostiosoite vahvistettu ja tallennettu tilillesi!'
 
 # Password recovery by email
 recovery:

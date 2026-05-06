@@ -101,6 +101,11 @@ email:
     send_failure: 'Emaila ni bilo mogoče poslati. Prosimo obvestite administratorja.'
     change_password_expired: 'Prosim uporabite novi ukaz.'
     email_cooldown_error: '&cSporočilo je bilo že poslano. Pocakajte %time preden zahtevate novega!'
+    confirm_code_sent: '&3Potrditvena koda je bila poslana na &f%email&3. Uporabite &f/email confirm <code>&3 za potrditev.'
+    usage_email_confirm: '&cUporaba: /email confirm <code>'
+    confirm_wrong_code: '&cNapačna potrditvena koda. Prosimo, poskusite znova.'
+    confirm_code_expired: '&cNi najdene nobene čakajoče e-poštne potrditve. Prosimo, začnite postopek znova.'
+    confirm_success: '&2E-poštni naslov potrjen in shranjen na vaš račun!'
 
 # Password recovery by email
 recovery:

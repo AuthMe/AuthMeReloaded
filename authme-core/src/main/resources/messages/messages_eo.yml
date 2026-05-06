@@ -101,6 +101,11 @@ email:
     send_failure: 'La retpoŝto ne estis sendita. Bonvolu kontakti administranto.'
     change_password_expired: 'Vi ne povas ŝanĝi vian pasvorton per tiu ĉi komando plu.'
     email_cooldown_error: '&cRetmesaĝon jam sendita lastatempe. Vi devas atendi %time antaŭ vi povas sendi novan.'
+    confirm_code_sent: '&3Konfirmkodo estis sendita al &f%email&3. Uzu &f/email confirm <code>&3 por konfirmi.'
+    usage_email_confirm: '&cUzo: /email confirm <code>'
+    confirm_wrong_code: '&cMalĝusta konfirmkodo. Bonvolu provi denove.'
+    confirm_code_expired: '&cNeniu atendanta retpoŝta konfirmo trovis. Bonvolu rekomenci la procezon.'
+    confirm_success: '&2Retpoŝta adreso konfirmita kaj konservita en via konto!'
 
 # Password recovery by email
 recovery:

@@ -101,6 +101,11 @@ email:
     send_failure: 'Не вдалося надіслати лист. Зверніться до адміністратора.'
     change_password_expired: 'Ви більше не можете змінювати свій пароль, використовуючи цю команду.'
     email_cooldown_error: '&cНещодавно вже було надіслано електронний лист. Заждиiть ще %time перш нiж вiдправляти ще листа.'
+    confirm_code_sent: '&3Код підтвердження надіслано на &f%email&3. Використайте &f/email confirm <code>&3 для підтвердження.'
+    usage_email_confirm: '&cВикористання: /email confirm <code>'
+    confirm_wrong_code: '&cНеправильний код підтвердження. Спробуйте знову.'
+    confirm_code_expired: '&cОчікуване підтвердження email не знайдено. Почніть процес знову.'
+    confirm_success: '&2Адресу електронної пошти підтверджено та збережено в обліковому записі!'
 
 # Password recovery by email
 recovery:

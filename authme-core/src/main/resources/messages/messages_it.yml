@@ -102,6 +102,11 @@ email:
     send_failure: 'Non è stato possibile inviare l''email di recupero. Per favore contatta un amministratore.'
     change_password_expired: 'Non puoi più cambiare la tua password con questo comando.'
     email_cooldown_error: '&cUna email di recupero ti è già stata inviata recentemente. Devi attendere %time prima di poterne richiedere una nuova.'
+    confirm_code_sent: '&3Un codice di verifica è stato inviato a &f%email&3. Usa &f/email confirm <code>&3 per confermare.'
+    usage_email_confirm: '&cUtilizzo: /email confirm <code>'
+    confirm_wrong_code: '&cCodice di conferma errato. Riprova.'
+    confirm_code_expired: '&cNessuna conferma email in sospeso. Riavvia il processo.'
+    confirm_success: '&2Indirizzo email confermato e salvato nel tuo account!'
 
 # Password recovery by email
 recovery:

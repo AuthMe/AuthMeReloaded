@@ -51,6 +51,11 @@ public enum PlayerPermission implements PermissionNode {
     RECOVER_EMAIL("authme.player.email.recover"),
 
     /**
+     * Command permission to confirm a new email address via a verification code.
+     */
+    CONFIRM_EMAIL("authme.player.email.confirm"),
+
+    /**
      * Command permission to use captcha.
      */
     CAPTCHA("authme.player.captcha"),

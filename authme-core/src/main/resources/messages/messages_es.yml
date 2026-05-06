@@ -102,6 +102,11 @@ email:
     send_failure: 'No se ha podido enviar el correo electrónico. Por favor, contacta con un administrador.'
     change_password_expired: 'No puedes cambiar la contraseña utilizando este comando.'
     email_cooldown_error: '&cEl correo ha sido enviado recientemente. Debes esperar %time antes de volver a enviar uno nuevo.'
+    confirm_code_sent: '&3Se ha enviado un código de verificación a &f%email&3. Usa &f/email confirm <code>&3 para confirmar.'
+    usage_email_confirm: '&cUso: /email confirm <code>'
+    confirm_wrong_code: '&cCódigo de confirmación incorrecto. Por favor, inténtalo de nuevo.'
+    confirm_code_expired: '&cNo se encontró confirmación de email pendiente. Por favor, reinicia el proceso.'
+    confirm_success: '&2¡Dirección de email confirmada y guardada en tu cuenta!'
 
 # Password recovery by email
 recovery:

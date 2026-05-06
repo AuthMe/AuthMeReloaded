@@ -519,7 +519,22 @@ public enum MessageKey {
     PREMIUM_PENDING_FAIL("premium.pending_fail"),
 
     /** Admin notification: verification is pending, player must reconnect to confirm. */
-    PREMIUM_ADMIN_PENDING("premium.admin.pending", "%name");
+    PREMIUM_ADMIN_PENDING("premium.admin.pending", "%name"),
+
+    /** A confirmation code has been sent to %email. Use /email confirm <code> to save the address. */
+    EMAIL_CONFIRM_CODE_SENT("email.confirm_code_sent", "%email"),
+
+    /** Usage: /email confirm <code> */
+    USAGE_CONFIRM_EMAIL("email.usage_email_confirm"),
+
+    /** Wrong confirmation code; the pending entry is still valid. */
+    EMAIL_CONFIRM_WRONG_CODE("email.confirm_wrong_code"),
+
+    /** No pending email confirmation found (expired or never started). */
+    EMAIL_CONFIRM_CODE_EXPIRED("email.confirm_code_expired"),
+
+    /** Email address confirmed and saved to account. */
+    EMAIL_CONFIRM_SUCCESS("email.confirm_success");
 
 
     private String key;

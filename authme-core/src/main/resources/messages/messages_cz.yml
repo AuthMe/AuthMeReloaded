@@ -101,6 +101,11 @@ email:
     send_failure: 'Email nemohl být odeslán. Kontaktuj prosím admina.'
     change_password_expired: 'Nemůžeš si změnit heslo pomocí toho příkazu.'
     email_cooldown_error: '&cEmail už byl nedávno odeslán. Musíš čekat ještě %time před odesláním nového.'
+    confirm_code_sent: '&3Ověřovací kód byl odeslán na &f%email&3. Použij &f/email confirm <code>&3 k potvrzení.'
+    usage_email_confirm: '&cPoužití: /email confirm <code>'
+    confirm_wrong_code: '&cNesprávný ověřovací kód. Zkuste to prosím znovu.'
+    confirm_code_expired: '&cNebylo nalezeno žádné čekající potvrzení emailu. Začni prosím znovu.'
+    confirm_success: '&2E-mailová adresa potvrzena a uložena do tvého účtu!'
 
 # Password recovery by email
 recovery:

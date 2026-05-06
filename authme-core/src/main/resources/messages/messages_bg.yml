@@ -101,6 +101,11 @@ email:
     send_failure: 'Съобщението не беше изпратено. Моля свържете се с администратора.'
     change_password_expired: 'Вече не е възможно да смените паролата си с тази команда.'
     email_cooldown_error: '&cВече е бил изпратен имейл адрес. Трябва а изчакате %time преди да изпратите нов.'
+    confirm_code_sent: '&3Код за потвърждение е изпратен на &f%email&3. Използвайте &f/email confirm <code>&3 за потвърждение.'
+    usage_email_confirm: '&cУпотреба: /email confirm <code>'
+    confirm_wrong_code: '&cГрешен код за потвърждение. Моля, опитайте отново.'
+    confirm_code_expired: '&cНе е намерено чакащо потвърждение на имейл. Моля, започнете процеса отново.'
+    confirm_success: '&2Имейл адресът е потвърден и запазен в акаунта ви!'
 
 # Password recovery by email
 recovery:

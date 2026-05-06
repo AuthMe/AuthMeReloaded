@@ -109,6 +109,33 @@ public class EmailService {
     }
 
     /**
+     * Sends an email to the new address with a code to confirm the address change.
+     *
+     * @param name  the name of the player
+     * @param email the new email address to confirm
+     * @param code  the confirmation code
+     * @return true if email could be sent, false otherwise
+     */
+    public boolean sendEmailConfirmationMail(String name, String email, String code) {
+        if (!hasAllInformation()) {
+            logger.warning("Cannot send email confirmation: not all email settings are complete");
+            return false;
+        }
+
+        HtmlEmail htmlEmail;
+        try {
+            htmlEmail = sendMailSsl.initializeMail(email);
+        } catch (EmailException e) {
+            logger.logException("Failed to create email confirmation mail with the given settings:", e);
+            return false;
+        }
+
+        // TTL matches PendingEmailVerificationCache.TTL_MS (10 minutes)
+        String mailText = replaceTagsForVerificationEmail(settings.getEmailConfirmationMessage(), name, code, 10);
+        return sendMailSsl.sendEmail(mailText, htmlEmail);
+    }
+
+    /**
      * Sends an email to the user with a recovery code for the password recovery process.
      *
      * @param name the name of the player

@@ -101,6 +101,11 @@ email:
     send_failure: 'Email tidak dapat dikirim. Tolong kontak Administrator.'
     change_password_expired: 'Kamu tidak dapat mengubah password menggunakan perintah ini lagi.'
     email_cooldown_error: '&cSebuah email telah dikirim beberapa waktu lalu. Kamu harus menunggu %time sebelum kamu mengirim yang baru.'
+    confirm_code_sent: '&3Kode verifikasi telah dikirim ke &f%email&3. Gunakan &f/email confirm <code>&3 untuk konfirmasi.'
+    usage_email_confirm: '&cPenggunaan: /email confirm <code>'
+    confirm_wrong_code: '&cKode konfirmasi salah. Silakan coba lagi.'
+    confirm_code_expired: '&cTidak ada konfirmasi email yang tertunda. Silakan mulai prosesnya lagi.'
+    confirm_success: '&2Alamat email dikonfirmasi dan disimpan ke akun Anda!'
 
 # Password recovery by email
 recovery:

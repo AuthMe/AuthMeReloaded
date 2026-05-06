@@ -101,6 +101,11 @@ email:
     # TODO send_failure: 'The email could not be sent. Please contact an administrator.'
     # TODO change_password_expired: 'You cannot change your password using this command anymore.'
     # TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
+    confirm_code_sent: '&3Enviouse un código de verificación a &f%email&3. Usa &f/email confirm <code>&3 para confirmar.'
+    usage_email_confirm: '&cUso: /email confirm <code>'
+    confirm_wrong_code: '&cCódigo de confirmación incorrecto. Por favor, téntao de novo.'
+    confirm_code_expired: '&cNon se atopou ningunha confirmación de email pendente. Por favor, reinicia o proceso.'
+    confirm_success: '&2Enderezo de email confirmado e gardado na túa conta!'
 
 # Password recovery by email
 recovery:

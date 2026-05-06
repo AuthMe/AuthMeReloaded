@@ -101,6 +101,11 @@ email:
     send_failure: 'Nie można wysłać e-maila. Skontaktuj się z administracją.'
     change_password_expired: 'Nie zmienisz już hasła przy użyciu tej komendy.'
     email_cooldown_error: '&cE-mail został wysłany, musisz poczekać %time przed wysłaniem następnego.'
+    confirm_code_sent: '&3Kod weryfikacyjny został wysłany na &f%email&3. Użyj &f/email confirm <code>&3 aby potwierdzić.'
+    usage_email_confirm: '&cUżycie: /email confirm <code>'
+    confirm_wrong_code: '&cBłędny kod potwierdzający. Spróbuj ponownie.'
+    confirm_code_expired: '&cNie znaleziono oczekującego potwierdzenia emaila. Zacznij proces od nowa.'
+    confirm_success: '&2Adres email potwierdzony i zapisany na Twoim koncie!'
 
 # Password recovery by email
 recovery:

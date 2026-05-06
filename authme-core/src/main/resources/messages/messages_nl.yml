@@ -101,6 +101,11 @@ email:
     send_failure: 'De e-mail kon niet verzonden worden. Neem contact op met een administrator.'
     change_password_expired: 'Je kunt je wachtwoord niet meer veranderen met dit commando.'
     email_cooldown_error: '&cEr is recent al een e-mail verzonden. Je moet %time wachten voordat je een nieuw bericht kunt versturen.'
+    confirm_code_sent: '&3Een verificatiecode is verzonden naar &f%email&3. Gebruik &f/email confirm <code>&3 om te bevestigen.'
+    usage_email_confirm: '&cGebruik: /email confirm <code>'
+    confirm_wrong_code: '&cVerkeerde bevestigingscode. Probeer het opnieuw.'
+    confirm_code_expired: '&cGeen openstaande e-mailbevestiging gevonden. Start het proces opnieuw.'
+    confirm_success: '&2E-mailadres bevestigd en opgeslagen in je account!'
 
 # Password recovery by email
 recovery:

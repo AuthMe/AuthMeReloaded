@@ -101,6 +101,11 @@ email:
     send_failure: '&8[&6玩家系统&8] 邮件发送失败，请联系管理员'
     change_password_expired: '&8[&6玩家系统&8] 您不能使用此命令更改密码'
     email_cooldown_error: '&8[&6玩家系统&8] &c邮件已在几分钟前发送，您需要等待 %time 后才能再次请求发送'
+    confirm_code_sent: '&3验证码已发送至 &f%email&3。使用 &f/email confirm <code>&3 进行确认。'
+    usage_email_confirm: '&c用法：/email confirm <code>'
+    confirm_wrong_code: '&c验证码错误，请重试。'
+    confirm_code_expired: '&c未找到待确认的邮箱验证。请重新开始流程。'
+    confirm_success: '&2邮箱地址已确认并保存至您的账号！'
 
 # Password recovery by email
 recovery:

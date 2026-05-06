@@ -101,6 +101,11 @@ email:
     # TODO send_failure: 'The email could not be sent. Please contact an administrator.'
     # TODO change_password_expired: 'You cannot change your password using this command anymore.'
     # TODO email_cooldown_error: '&cAn email was already sent recently. You must wait %time before you can send a new one.'
+    confirm_code_sent: '&3驗證碼已傳送至 &f%email&3。使用 &f/email confirm <code>&3 進行確認。'
+    usage_email_confirm: '&c用法：/email confirm <code>'
+    confirm_wrong_code: '&c驗證碼錯誤，請重試。'
+    confirm_code_expired: '&c未找到待確認的郵箱驗證。請重新開始流程。'
+    confirm_success: '&2電子郵件地址已確認並儲存至您的帳號！'
 
 # Password recovery by email
 recovery:
