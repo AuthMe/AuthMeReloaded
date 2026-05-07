@@ -5,7 +5,7 @@ Run a converter with `/authme converter <name>` (requires `authme.admin.converte
 
 ---
 
-AuthMeReloaded currently ships the **Auth+**, **LibreLogin**, **LimboAuth**, **nLogin**, and **OpeNLogin** converters, plus the built-in database migration helpers below.
+AuthMeReloaded currently ships the **Auth+**, **LibreLogin**, **LimboAuth**, **nLogin**, **OpeNLogin**, and **tiAuth** converters, plus the built-in database migration helpers below.
 
 ---
 
@@ -106,6 +106,32 @@ Migrates accounts from the **OpeNLogin** plugin.
 
 **Notes:**
 - OpeNLogin does not store email addresses or UUIDs; those fields will be empty for migrated accounts.
+- Players already present in AuthMe's database are skipped automatically.
+
+---
+
+### tiAuth → `tiauth`
+
+Migrates accounts from the **tiAuth** plugin.
+
+**Supported database types:**
+
+| tiAuth `database.type` | Requirement |
+|---|---|
+| `SQLITE` | Reads `plugins/tiAuth/auth.db` directly — no shared database required. |
+| `MYSQL` / `POSTGRESQL` | tiAuth and AuthMe must share the same database (same host, port, and database name). |
+| `H2` (default) | Not supported. Reconfigure tiAuth to use `SQLITE` or `MYSQL`, migrate the data, then re-run this converter. |
+
+**Source table:** `auth_users`
+
+**Before running**, set `passwordHash` in AuthMe's `config.yml` to match the algorithm configured in tiAuth. tiAuth hashes are directly compatible with AuthMe's formats:
+
+| tiAuth algorithm | AuthMe `passwordHash` |
+|---|---|
+| BCrypt (default, cost 12) | `BCRYPT` |
+| SHA-256 (`$SHA$…`) | `SHA256` |
+
+**Notes:**
 - Players already present in AuthMe's database are skipped automatically.
 
 ---
