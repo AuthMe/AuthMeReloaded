@@ -24,6 +24,8 @@ You can also create your own translation file and, if you want, you can share it
 
 #### Features:
 <ul>
+  <li>Dedicated builds for <strong>Spigot Legacy</strong> (1.16–1.19), <strong>Spigot 1.21</strong> (1.20–1.21), <strong>Paper 1.21+</strong>, and <strong>Folia 1.21+</strong></li>
+  <li>Native proxy plugins for <strong>BungeeCord</strong> and <strong>Velocity</strong></li>
   <li><strong>E-Mail Recovery System!</strong></li>
   <li>Username spoofing protection.</li>
   <li>Countries Whitelist/Blacklist! <a href="https://dev.maxmind.com/geoip/legacy/codes/iso3166/">(country codes)</a></li>
@@ -32,38 +34,25 @@ You can also create your own translation file and, if you want, you can share it
   <li><strong>Avoid the "Logged in from another location" message!</strong></li>
   <li>Two-factor (2FA) support!</li>
   <li>Session Login!</li>
+  <li>Messages served in each player's own Minecraft client language, with server-language fallback</li>
   <li>Editable translations and messages!</li>
-  <li><strong>MySQL and SQLite Backend support!</strong></li>
-  <li>Supported password encryption algorithms: SHA256, ARGON2, BCRYPT, PBKDF2</li>
-  <li>Supported alternative registration methods:<br>
-  <ul>
-    <li>PHPBB, VBulletin: PHPBB - MD5VB</li>
-    <li>Xenforo: XFBCRYPT</li>
-    <li>MyBB: MYBB</li>
-    <li>IPB3: IPB3</li>
-    <li>IPB4: IPB4</li>
-    <li>PhpFusion: PHPFUSION</li>
-    <li>Joomla: JOOMLA</li>
-    <li>WBB3: WBB3*</li>
-    <li>SHA512: SALTEDSHA512</li>
-    <li>DoubleSaltedMD5: SALTED2MD5</li>
-    <li>WordPress: WORDPRESS</li>
-    <li><a href="https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/hash_algorithms.md">List of all supported hashes</a></li>
-  </ul></li>
+  <li><strong>MySQL, MariaDB, PostgreSQL and SQLite Backend support!</strong></li>
+  <li>Supported password encryption algorithms: SHA256, ARGON2, BCRYPT, PBKDF2, PBKDF2BASE64 — <a href="https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/hash_algorithms.md">full list</a></li>
+  <li>Supports hashes from external systems for zero-downtime migration (XFBCRYPT, MYBB, PHPBB, JOOMLA, WORDPRESS, WBB3/WBB4, IPB3, and <a href="https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/hash_algorithms.md">more</a>)</li>
   <li>Custom MySQL tables/columns names (useful with forum databases)</li>
   <li><strong>Cached database queries!</strong></li>
   <li><strong>Fully compatible with Citizens2, CombatTag, CombatTagPlus!</strong></li>
-  <li><strong>Velocity proxy bridge for inter-server authentication.</strong></li>
-  <li>Compatible with Minecraft mods like <strong>BuildCraft or RedstoneCraft</strong></li>
   <li>Graphical login/register dialogs, with optional Paper/Folia pre-join dialogs</li>
   <li>Restricted users (associate a username with an IP)</li>
   <li>Protect player's inventory until correct authentication (requires PacketEvents)</li>
   <li><strong>Premium bypass: Mojang-account holders skip password auth (requires PacketEvents)</strong></li>
   <li>Saves the quit location of the player</li>
+  <li>Ender pearls thrown before authentication are returned to the player on login</li>
+  <li>Separate timeouts for login and registration</li>
+  <li>Email address confirmation required before saving on <code>/email add</code> and <code>/email change</code></li>
   <li>Automatic database backup</li>
   <li>Available languages: <a href="https://github.com/AuthMe/AuthMeReloaded/blob/master/docs/translations.md">translations</a></li>
-  <li>Built-in deprecated FlatFile (auths.db) to SQL (authme.sql) converter!</li>
-  <li><strong>Import Auth+ accounts or migrate between SQLite and MySQL without losing AuthMe data.</strong></li>
+  <li><strong>Account importers for Auth+, LibreLogin, LimboAuth, nLogin, OpeNLogin, tiAuth — and built-in SQLite ↔ MySQL/MariaDB/PostgreSQL migration.</strong></li>
 </ul>
 
 #### Configuration
@@ -98,7 +87,7 @@ Minecraft login phase — no password prompt is ever shown.
 - [List of all permission nodes](http://github.com/AuthMe/AuthMeReloaded/blob/master/docs/permission_nodes.md)
 
 #### How To
-- [How to use the Auth+ converter](docs/converters.md)
+- [How to use the account importers (Auth+, LibreLogin, LimboAuth, nLogin, OpeNLogin, tiAuth)](docs/converters.md)
 - [Website integration](https://github.com/AuthMe/AuthMeReloaded/tree/master/samples/website_integration)
 - Convert between database types (e.g. SQLite to MySQL): `/authme converter sqliteToSql`
 
@@ -151,15 +140,14 @@ Minecraft login phase — no password prompt is ever shown.
 >- Build and tooling command reference: [docs/build.md](docs/build.md)
 
 ##### Running requirements:
->- Use the jar matching your server platform/version
->- Java 17+ for `AuthMe-*-Spigot-Legacy.jar` (Spigot 1.16.x – 1.19.x)
->- Java 21+ for:
->  - `AuthMe-*-Bungee.jar` (BungeeCord / Waterfall-compatible 1.19 API)
->  - `AuthMe-*-Velocity.jar` (Velocity 3.4+ proxy bridge)
->  - `AuthMe-*-Spigot-1.21.jar` (Spigot 1.20.x – 1.21.x)
->  - `AuthMe-*-Paper.jar` (Paper 1.21+)
->  - `AuthMe-*-Folia.jar` (Folia 1.21+)
->- [PacketEvents](https://github.com/retrooper/packetevents) 2.x (optional plugin; required for inventory protection, tab-complete blocking, and premium bypass)
+>- Use the jar matching your server platform/version:
+>  - Java 17+: `AuthMe-*-Spigot-Legacy.jar` — Spigot 1.16.x – 1.19.x
+>  - Java 21+: `AuthMe-*-Spigot-1.21.jar` — Spigot 1.20.x – 1.21.x
+>  - Java 21+: `AuthMe-*-Paper.jar` — Paper 1.21+
+>  - Java 21+: `AuthMe-*-Folia.jar` — Folia 1.21+
+>  - Java 21+: `AuthMe-*-Bungee.jar` — BungeeCord / Waterfall proxy (1.19 API)
+>  - Java 21+: `AuthMe-*-Velocity.jar` — Velocity 3.4+ proxy
+>- [PacketEvents](https://github.com/retrooper/packetevents) 2.x (optional plugin; required for inventory protection, tab-complete blocking, and premium bypass in direct-connection mode)
 
 ## Credits
 
