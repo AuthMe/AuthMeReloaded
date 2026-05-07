@@ -7,9 +7,12 @@ import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.util.UuidUtils;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,30 +23,49 @@ import static fr.xephi.authme.util.Utils.logAndSendMessage;
 /**
  * Converts data from nLogin to AuthMe.
  * <p>
- * nLogin stores accounts in the {@code nlogin} table of the configured database.
- * This converter expects that nLogin and AuthMe share the same MySQL/MariaDB database.
+ * The storage backend is determined by reading {@code plugins/nLogin/config.yml}:
+ * <ul>
+ *   <li><b>SQLite</b> ({@code database.type: SQLite}) — opens {@code plugins/nLogin/nlogin.db}
+ *       directly.</li>
+ *   <li><b>MySQL / MariaDB</b> — opens a dedicated JDBC connection using nLogin's own credentials
+ *       ({@code database.remote.*}); AuthMe may use any datasource type.</li>
+ * </ul>
+ * The account table name is read from {@code database.table.account.table-name} (default:
+ * {@code nlogin}).
  * <p>
  * nLogin deliberately reuses AuthMe's password hash formats for BCrypt, SHA-256 and SHA-512, so
  * hashes are copied as-is. Configure AuthMe's {@code passwordHash} to match the algorithm used by
  * nLogin (default: {@code BCRYPT}). Argon2 hashes are also supported via {@code ARGON2}.
  */
-public class NLoginConverter extends AbstractSqlPluginConverter {
+public class NLoginConverter implements Converter {
 
-    private static final String TABLE = "nlogin";
-    private static final String QUERY = "SELECT last_name, password, last_ip, email, "
-        + "creation_date, last_login, unique_id FROM " + TABLE;
+    private static final String CONFIG_PATH = "plugins/nLogin/config.yml";
+    private static final String SQLITE_DB_PATH = "plugins/nLogin/nlogin.db";
+    private static final String DEFAULT_TABLE = "nlogin";
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(NLoginConverter.class);
+    private final DataSource dataSource;
 
     @Inject
     NLoginConverter(DataSource dataSource) {
-        super(dataSource);
+        this.dataSource = dataSource;
     }
 
     @Override
     public void execute(CommandSender sender) {
-        try (Connection conn = openConnection();
-             PreparedStatement ps = conn.prepareStatement(QUERY);
+        File configFile = new File(CONFIG_PATH);
+        if (!configFile.exists()) {
+            logAndSendMessage(sender, "nLogin conversion failed: config not found at " + CONFIG_PATH);
+            return;
+        }
+
+        YamlConfiguration nLoginConfig = YamlConfiguration.loadConfiguration(configFile);
+        String dbType = nLoginConfig.getString("database.type", "SQLite");
+        String table = nLoginConfig.getString("database.table.account.table-name", DEFAULT_TABLE);
+        String query = "SELECT last_name, password, last_ip, email, creation_date, last_login, unique_id FROM " + table;
+
+        try (Connection conn = openConnection(dbType, nLoginConfig);
+             PreparedStatement ps = conn.prepareStatement(query);
              ResultSet rs = ps.executeQuery()) {
 
             long imported = 0;
@@ -55,7 +77,7 @@ public class NLoginConverter extends AbstractSqlPluginConverter {
                 }
                 String name = realName.toLowerCase(Locale.ROOT);
 
-                if (getDataSource().isAuthAvailable(name)) {
+                if (dataSource.isAuthAvailable(name)) {
                     ++skipped;
                     continue;
                 }
@@ -79,7 +101,7 @@ public class NLoginConverter extends AbstractSqlPluginConverter {
                     .lastLogin(lastLogin > 0 ? lastLogin : null)
                     .uuid(parseNLoginUuid(rs.getString("unique_id")));
 
-                getDataSource().saveAuth(builder.build());
+                dataSource.saveAuth(builder.build());
                 ++imported;
             }
 
@@ -90,6 +112,36 @@ public class NLoginConverter extends AbstractSqlPluginConverter {
             logAndSendMessage(sender, "nLogin conversion failed: " + e.getMessage());
             logger.logException("nLogin conversion error:", e);
         }
+    }
+
+    private Connection openConnection(String dbType, YamlConfiguration nLoginConfig) throws SQLException {
+        if ("SQLite".equalsIgnoreCase(dbType)) {
+            File sqliteFile = new File(SQLITE_DB_PATH);
+            if (!sqliteFile.exists()) {
+                throw new SQLException("nLogin SQLite database not found at '" + SQLITE_DB_PATH + "'");
+            }
+            try {
+                Class.forName("org.sqlite.JDBC");
+            } catch (ClassNotFoundException e) {
+                throw new SQLException("SQLite JDBC driver not available", e);
+            }
+            return DriverManager.getConnection("jdbc:sqlite:" + sqliteFile.getAbsolutePath());
+        }
+
+        // MySQL or MariaDB: open a dedicated connection using nLogin's own credentials
+        String hostname = nLoginConfig.getString("database.remote.hostname", "localhost:3306");
+        String database = nLoginConfig.getString("database.remote.database", "nLogin");
+        String username = nLoginConfig.getString("database.remote.username", "root");
+        String password = nLoginConfig.getString("database.remote.password", "");
+
+        String[] hostParts = hostname.split(":", 2);
+        String host = hostParts[0];
+        String port = hostParts.length > 1 ? hostParts[1] : "3306";
+
+        String scheme = "MariaDB".equalsIgnoreCase(dbType) ? "mariadb" : "mysql";
+        String url = "jdbc:" + scheme + "://" + host + ":" + port + "/" + database
+            + "?useUnicode=true&characterEncoding=utf8";
+        return DriverManager.getConnection(url, username, password);
     }
 
     /**
