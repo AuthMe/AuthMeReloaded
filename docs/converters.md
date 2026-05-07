@@ -75,9 +75,14 @@ Migrates accounts from the **LimboAuth** plugin.
 
 Migrates accounts from the **nLogin** plugin.
 
-**Requirement:** nLogin and AuthMe must share the same MySQL/MariaDB database.
+**The converter reads `plugins/nLogin/config.yml` to determine the storage backend:**
 
-**Source table:** `nlogin`
+| nLogin `database.type` | Requirement |
+|---|---|
+| `SQLite` (default) | Reads `plugins/nLogin/nlogin.db` directly — no shared database required. |
+| `MySQL` / `MariaDB` | nLogin and AuthMe must share the same database (same host, port, and database name). |
+
+**Source table:** Read from `database.table.account.table-name` in nLogin's config (default: `nlogin`).
 
 **Before running**, set `passwordHash` in AuthMe's `config.yml` to match the algorithm configured in nLogin. nLogin deliberately reuses AuthMe's hash formats, so hashes are transferred as-is:
 
@@ -113,6 +118,8 @@ Migrates accounts from the **OpeNLogin** plugin.
 ### tiAuth → `tiauth`
 
 Migrates accounts from the **tiAuth** plugin.
+
+**The converter reads `plugins/tiAuth/config.yml` to determine the storage backend.**
 
 **Supported database types:**
 
