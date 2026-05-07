@@ -143,8 +143,20 @@ public class LibreLoginConverter implements Converter {
             return null;
         }
         switch (algo) {
-            case "BCrypt-2A":
-                return new HashedPassword(hash);
+            case "BCrypt-2A": {
+                // LibreLogin splits the BCrypt string: hashed_password = "<cost>$<hashRemainder>",
+                // salt = 22-char BCrypt base64 salt. Reconstruct: $2a$<cost>$<salt><hashRemainder>
+                if (salt == null) {
+                    logger.warning("Null salt for BCrypt-2A account '" + name + "', skipping");
+                    return null;
+                }
+                int sep = hash.indexOf('$');
+                if (sep < 0) {
+                    logger.warning("Malformed BCrypt-2A hash for player '" + name + "', skipping");
+                    return null;
+                }
+                return new HashedPassword("$2a$" + hash.substring(0, sep) + "$" + salt + hash.substring(sep + 1));
+            }
 
             case "Argon2-ID": {
                 String phc = decodeArgon2(hash);
