@@ -92,7 +92,7 @@ public class NLoginConverter implements Converter {
             }
 
             long creationDate = rs.getLong("creation_date");
-            long lastLogin = rs.getLong("last_login");
+            long lastLogin = rs.getLong("last_seen");
 
             PlayerAuth auth = PlayerAuth.builder()
                 .name(name)
@@ -147,7 +147,7 @@ public class NLoginConverter implements Converter {
                 return;
             }
 
-            String query = "SELECT last_name, password, last_ip, email, creation_date, last_login, unique_id FROM " + table;
+            String query = "SELECT last_name, password, last_ip, email, creation_date, last_seen, unique_id FROM " + table;
             try (Connection conn = openConnection(dbFile);
                  PreparedStatement ps = conn.prepareStatement(query);
                  ResultSet rs = ps.executeQuery()) {
@@ -170,7 +170,7 @@ public class NLoginConverter implements Converter {
 
         @Override
         public void execute(CommandSender sender) {
-            String query = "SELECT last_name, password, last_ip, email, creation_date, last_login, unique_id FROM " + table;
+            String query = "SELECT last_name, password, last_ip, email, creation_date, last_seen, unique_id FROM " + table;
             try (Connection conn = openConnection();
                  PreparedStatement ps = conn.prepareStatement(query);
                  ResultSet rs = ps.executeQuery()) {
