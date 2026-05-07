@@ -64,13 +64,13 @@ If your LibreLogin database contains accounts with **mixed algorithms**, set `pa
 
 Migrates accounts from the **LimboAuth** plugin.
 
-**The converter reads `plugins/LimboAuth/config.yml` to determine the storage backend.**
+**The converter reads `plugins/limboauth/config.yml` to determine the storage backend.**
 
 **Supported database types:**
 
 | LimboAuth `database.storage-type` | Requirement |
 |---|---|
-| `SQLITE` | Reads `plugins/LimboAuth/limboauth.db` directly — no shared database required. |
+| `SQLITE` | Reads `plugins/limboauth/limboauth.db` directly — no shared database required. |
 | `MYSQL` / `MARIADB` / `POSTGRESQL` | LimboAuth and AuthMe must share the same database (same host, port, and database name). |
 | `H2` (default) | Not supported. Reconfigure LimboAuth to use `SQLITE` or `MYSQL`/`MARIADB`/`POSTGRESQL`, migrate the data, then re-run this converter. |
 

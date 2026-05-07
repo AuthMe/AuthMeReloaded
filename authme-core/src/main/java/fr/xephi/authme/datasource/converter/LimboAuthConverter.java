@@ -22,10 +22,10 @@ import static fr.xephi.authme.util.Utils.logAndSendMessage;
 /**
  * Converts data from LimboAuth to AuthMe.
  * <p>
- * The storage backend is determined by reading {@code plugins/LimboAuth/config.yml}:
+ * The storage backend is determined by reading {@code plugins/limboauth/config.yml}:
  * <ul>
  *   <li><b>SQLite</b> ({@code database.storage-type: SQLITE}) — reads
- *       {@code plugins/LimboAuth/limboauth.db} directly.</li>
+ *       {@code plugins/limboauth/limboauth.db} directly.</li>
  *   <li><b>MySQL / MariaDB / PostgreSQL</b> — uses AuthMe's existing connection pool; LimboAuth
  *       must share the same database as AuthMe.</li>
  *   <li><b>H2</b> (default) — not supported; reconfigure LimboAuth to use SQLite or
@@ -37,8 +37,8 @@ import static fr.xephi.authme.util.Utils.logAndSendMessage;
  */
 public class LimboAuthConverter implements Converter {
 
-    private static final String CONFIG_PATH = "plugins/LimboAuth/config.yml";
-    private static final String SQLITE_DB_PATH = "plugins/LimboAuth/limboauth.db";
+    private static final String CONFIG_PATH = "plugins/limboauth/config.yml";
+    private static final String SQLITE_DB_PATH = "plugins/limboauth/limboauth.db";
     private static final String TABLE = "AUTH";
     private static final String QUERY =
         "SELECT NICKNAME, LOWERCASENICKNAME, HASH, IP, REGDATE, LOGINDATE, UUID, PREMIUMUUID, TOTPTOKEN FROM " + TABLE;
