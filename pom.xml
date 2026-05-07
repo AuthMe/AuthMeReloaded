@@ -924,7 +924,7 @@
         <dependency>
             <groupId>dev.folia</groupId>
             <artifactId>folia-api</artifactId>
-            <version>1.21.11-R0.1-SNAPSHOT</version>
+            <version>26.1.2.build.8-stable</version>
             <scope>provided</scope>
         </dependency>
 
