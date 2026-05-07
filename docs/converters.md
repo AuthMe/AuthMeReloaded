@@ -30,7 +30,14 @@ Migrates accounts from the **Auth+** plugin.
 
 Migrates accounts from the **LibreLogin** plugin.
 
-**Requirement:** LibreLogin and AuthMe must share the same MySQL/MariaDB database (same host, port, and database name as configured in AuthMe's `config.yml`). SQLite databases are not supported by this converter.
+**The converter reads `plugins/LibreLogin/config.conf` to determine the storage backend.**
+
+**Supported database types:**
+
+| LibreLogin `database.type` | Requirement |
+|---|---|
+| `librelogin-sqlite` (default) | Reads the SQLite database at `plugins/LibreLogin/<sqlite.path>` (default: `user-data.db`) directly — no shared database required. |
+| `librelogin-mysql` / `librelogin-postgresql` | LibreLogin and AuthMe must share the same database (same host, port, and database name). |
 
 **Source table:** `librepremium_data`
 
@@ -57,7 +64,15 @@ If your LibreLogin database contains accounts with **mixed algorithms**, set `pa
 
 Migrates accounts from the **LimboAuth** plugin.
 
-**Requirement:** LimboAuth and AuthMe must share the same MySQL/MariaDB database.
+**The converter reads `plugins/LimboAuth/config.yml` to determine the storage backend.**
+
+**Supported database types:**
+
+| LimboAuth `database.storage-type` | Requirement |
+|---|---|
+| `SQLITE` | Reads `plugins/LimboAuth/limboauth.db` directly — no shared database required. |
+| `MYSQL` / `MARIADB` / `POSTGRESQL` | LimboAuth and AuthMe must share the same database (same host, port, and database name). |
+| `H2` (default) | Not supported. Reconfigure LimboAuth to use `SQLITE` or `MYSQL`/`MARIADB`/`POSTGRESQL`, migrate the data, then re-run this converter. |
 
 **Source table:** `AUTH`
 
@@ -145,7 +160,7 @@ Migrates accounts from the **tiAuth** plugin.
 
 ### SQLite → SQL → `sqlitetosql`
 
-Copies AuthMe data from a SQLite database into the configured SQL database.
+Copies AuthMe data from a SQLite database into the configured SQL database (MySQL, MariaDB, or PostgreSQL). Configure the destination connection in AuthMe's `config.yml` before running.
 
 ---
 
