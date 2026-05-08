@@ -5,9 +5,7 @@ import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.permission.handlers.LuckPermsHandler;
 import fr.xephi.authme.permission.handlers.PermissionHandler;
-import fr.xephi.authme.permission.handlers.PermissionsExHandler;
 import fr.xephi.authme.permission.handlers.VaultHandler;
-import fr.xephi.authme.permission.handlers.ZPermissionsHandler;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import net.luckperms.api.LuckPerms;
@@ -19,23 +17,17 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicesManager;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.tyrannyofheaven.bukkit.zPermissions.ZPermissionsService;
-
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static fr.xephi.authme.permission.PermissionsSystemType.LUCK_PERMS;
-import static fr.xephi.authme.permission.PermissionsSystemType.PERMISSIONS_EX;
 import static fr.xephi.authme.permission.PermissionsSystemType.VAULT;
-import static fr.xephi.authme.permission.PermissionsSystemType.Z_PERMISSIONS;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.nullValue;
@@ -144,8 +136,6 @@ public class PermissionsManagerInitializationTest {
     public static Stream<Arguments> createParameters() {
         Map<PermissionsSystemType, Class<?>> handlersByPermissionSystemType = ImmutableMap.of(
             LUCK_PERMS, LuckPermsHandler.class,
-            PERMISSIONS_EX, PermissionsExHandler.class,
-            Z_PERMISSIONS, ZPermissionsHandler.class,
             VAULT, VaultHandler.class);
 
         // Verify that all handlers are present -> reminder to add any new entry here as well
@@ -163,12 +153,6 @@ public class PermissionsManagerInitializationTest {
         if (permissionsSystemType == LUCK_PERMS) {
             LuckPerms api = mock(LuckPerms.class);
             ReflectionTestUtils.setField(LuckPermsProvider.class, null, "instance", api);
-        } else if (permissionsSystemType == PERMISSIONS_EX) {
-            Assumptions.assumeFalse(true,
-                "PermissionsEx instance cannot be mocked because of missing dependencies -- skipping");
-        } else if (permissionsSystemType == Z_PERMISSIONS) {
-            ZPermissionsService zPermissionsService = mock(ZPermissionsService.class);
-            given(servicesManager.load(ZPermissionsService.class)).willReturn(zPermissionsService);
         } else if (permissionsSystemType == VAULT) {
             setUpForVault();
         } else {

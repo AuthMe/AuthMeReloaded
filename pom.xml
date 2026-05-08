@@ -658,38 +658,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- PermissionsEx plugin -->
-        <dependency>
-            <groupId>ru.tehkode</groupId>
-            <artifactId>PermissionsEx</artifactId>
-            <version>1.23.5-SNAPSHOT</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-dbcp</artifactId>
-                    <groupId>commons-dbcp</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>accounts-client</artifactId>
-                    <groupId>com.mojang</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!-- zPermissions plugin -->
-        <dependency>
-            <groupId>org.tyrannyofheaven.bukkit</groupId>
-            <artifactId>zPermissions</artifactId>
-            <version>1.4.3-SNAPSHOT</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.avaje</groupId>
-                    <artifactId>ebean</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
         <!-- Vault, https://dev.bukkit.org/bukkit-plugins/vault/ -->
         <dependency>
             <groupId>net.milkbowl.vault</groupId>

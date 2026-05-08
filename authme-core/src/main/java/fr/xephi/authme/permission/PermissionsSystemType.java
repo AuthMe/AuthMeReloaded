@@ -11,16 +11,6 @@ public enum PermissionsSystemType {
     LUCK_PERMS("LuckPerms", "LuckPerms"),
 
     /**
-     * Permissions Ex.
-     */
-    PERMISSIONS_EX("PermissionsEx", "PermissionsEx"),
-
-    /**
-     * zPermissions.
-     */
-    Z_PERMISSIONS("zPermissions", "zPermissions"),
-
-    /**
      * Vault.
      */
     VAULT("Vault", "Vault");

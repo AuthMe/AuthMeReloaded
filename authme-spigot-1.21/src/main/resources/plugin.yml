@@ -11,9 +11,6 @@ api-version: ${plugin.api-version}
 softdepend:
     - Vault
     - LuckPerms
-    - PermissionsEx
-    - bPermissions
-    - zPermissions
     - Multiverse-Core
     - Essentials
     - EssentialsSpawn

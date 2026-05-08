@@ -12,9 +12,6 @@ folia-supported: true
 softdepend:
     - Vault
     - LuckPerms
-    - PermissionsEx
-    - bPermissions
-    - zPermissions
     - Multiverse-Core
     - Essentials
     - EssentialsSpawn

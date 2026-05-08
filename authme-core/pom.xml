@@ -114,14 +114,6 @@
             <artifactId>api</artifactId>
         </dependency>
         <dependency>
-            <groupId>ru.tehkode</groupId>
-            <artifactId>PermissionsEx</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.tyrannyofheaven.bukkit</groupId>
-            <artifactId>zPermissions</artifactId>
-        </dependency>
-        <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>VaultAPI</artifactId>
         </dependency>

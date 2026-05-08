@@ -11,9 +11,6 @@ api-version: 1.16
 softdepend:
     - Vault
     - LuckPerms
-    - PermissionsEx
-    - bPermissions
-    - zPermissions
     - Multiverse-Core
     - Essentials
     - EssentialsSpawn
