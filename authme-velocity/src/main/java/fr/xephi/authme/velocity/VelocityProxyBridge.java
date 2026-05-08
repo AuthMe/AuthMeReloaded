@@ -63,6 +63,9 @@ final class VelocityProxyBridge {
     private List<String> premiumListBuffer = new ArrayList<>();
     // Players with a pending premium verification (ran /premium but not yet confirmed via reconnect)
     private volatile Set<String> pendingPremiumUsernames = ConcurrentHashMap.newKeySet();
+    // Players for whom we already forced online-mode once to verify premium status; if they appear
+    // in onPreLogin again without having reached onLogin, Mojang auth failed → cancel the request.
+    private final Set<String> pendingVerificationAttempted = ConcurrentHashMap.newKeySet();
     // Players whose Mojang UUID was confirmed by the proxy during the login phase (LoginSuccess with UUID v4)
     private final Set<String> proxyVerifiedPremium = ConcurrentHashMap.newKeySet();
     private final ScheduledExecutorService retryScheduler = Executors.newSingleThreadScheduledExecutor(r -> {
@@ -94,7 +97,10 @@ final class VelocityProxyBridge {
         if (!player.isOnlineMode()) {
             return;
         }
-        markProxyVerifiedPremium(normalizeName(player.getUsername()));
+        String normalizedName = normalizeName(player.getUsername());
+        // Mojang auth succeeded: the attempt tracking entry is no longer needed.
+        pendingVerificationAttempted.remove(normalizedName);
+        markProxyVerifiedPremium(normalizedName);
     }
 
     /**
@@ -397,9 +403,23 @@ final class VelocityProxyBridge {
 
     void onPreLogin(com.velocitypowered.api.event.connection.PreLoginEvent event) {
         String normalizedName = normalizeName(event.getUsername());
-        if (premiumUsernames.contains(normalizedName) || pendingPremiumUsernames.contains(normalizedName)) {
+        if (premiumUsernames.contains(normalizedName)) {
             event.setResult(com.velocitypowered.api.event.connection.PreLoginEvent.PreLoginComponentResult.forceOnlineMode());
             logger.debug("Forcing online-mode for premium player '{}'", normalizedName);
+        } else if (pendingPremiumUsernames.contains(normalizedName)) {
+            if (pendingVerificationAttempted.contains(normalizedName)) {
+                // The player was already given a forced online-mode attempt but never reached onLogin —
+                // meaning Mojang rejected them. Cancel the premium request so they can reconnect normally.
+                pendingPremiumUsernames.remove(normalizedName);
+                pendingVerificationAttempted.remove(normalizedName);
+                logger.info("Pending premium verification failed for '{}' (Mojang auth rejected) — premium request cancelled",
+                    normalizedName);
+            } else {
+                // First attempt: force online-mode and track that the attempt is in progress.
+                pendingVerificationAttempted.add(normalizedName);
+                event.setResult(com.velocitypowered.api.event.connection.PreLoginEvent.PreLoginComponentResult.forceOnlineMode());
+                logger.debug("Forcing online-mode for pending premium player '{}'", normalizedName);
+            }
         }
     }
 
@@ -415,6 +435,7 @@ final class VelocityProxyBridge {
         authenticationStore.clear(event.getPlayer());
         proxyVerifiedPremium.remove(normalizedName);
         pendingPremiumUsernames.remove(normalizedName);
+        pendingVerificationAttempted.remove(normalizedName);
     }
 
     void shutdown() {

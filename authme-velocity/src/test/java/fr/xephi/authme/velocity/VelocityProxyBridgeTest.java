@@ -556,6 +556,35 @@ class VelocityProxyBridgeTest {
         verify(preLoginEvent, never()).setResult(any());
     }
 
+    @Test
+    void shouldForceOnlineModeOnFirstPendingAttemptThenCancelOnSecond() {
+        given(pluginMessageEvent.getResult()).willReturn(PluginMessageEvent.ForwardResult.forward());
+        given(pluginMessageEvent.getIdentifier()).willReturn(VelocityProxyBridge.AUTHME_CHANNEL);
+        given(pluginMessageEvent.getSource()).willReturn(sourceConnection);
+        given(sourceConnection.getServer()).willReturn(authServer);
+        given(authServer.getServerInfo()).willReturn(authServerInfo);
+        given(authServerInfo.getName()).willReturn("lobby");
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+
+        given(pluginMessageEvent.getData()).willReturn(createAuthMePayload("premium.pending.set", "alice"));
+        bridge.onPluginMessage(pluginMessageEvent);
+
+        // First reconnect: should force online-mode so Mojang can verify
+        com.velocitypowered.api.event.connection.PreLoginEvent firstAttempt =
+            mock(com.velocitypowered.api.event.connection.PreLoginEvent.class);
+        given(firstAttempt.getUsername()).willReturn("alice");
+        bridge.onPreLogin(firstAttempt);
+        verify(firstAttempt).setResult(any());
+
+        // Mojang rejected the player (no onLogin fired) — second reconnect should cancel the pending
+        // request and NOT force online-mode, so the player can rejoin in offline mode
+        com.velocitypowered.api.event.connection.PreLoginEvent secondAttempt =
+            mock(com.velocitypowered.api.event.connection.PreLoginEvent.class);
+        given(secondAttempt.getUsername()).willReturn("alice");
+        bridge.onPreLogin(secondAttempt);
+        verify(secondAttempt, never()).setResult(any());
+    }
+
     private static byte[] createChunkPayload(int seq, boolean last, String csv) {
         ByteArrayDataOutput output = ByteStreams.newDataOutput();
         output.writeUTF("premium.list.chunk");

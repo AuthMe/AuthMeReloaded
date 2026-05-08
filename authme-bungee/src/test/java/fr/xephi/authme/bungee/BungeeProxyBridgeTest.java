@@ -480,6 +480,34 @@ class BungeeProxyBridgeTest {
         verify(pendingConnection, never()).setOnlineMode(true);
     }
 
+    @Test
+    void shouldForceOnlineModeOnFirstPendingAttemptThenCancelOnSecond() {
+        given(pluginMessageEvent.isCancelled()).willReturn(false);
+        given(pluginMessageEvent.getTag()).willReturn(BungeeProxyBridge.AUTHME_CHANNEL);
+        given(pluginMessageEvent.getSender()).willReturn(sourceServer);
+        BungeeProxyBridge bridge = new BungeeProxyBridge(proxyServer, logger, createConfiguration(), new BungeeAuthenticationStore());
+
+        given(pluginMessageEvent.getData()).willReturn(createAuthMePayload("premium.pending.set", "alice"));
+        bridge.onPluginMessage(pluginMessageEvent);
+
+        // First reconnect: should force online-mode so Mojang can verify
+        PreLoginEvent firstAttempt = org.mockito.Mockito.mock(PreLoginEvent.class);
+        PendingConnection firstConn = org.mockito.Mockito.mock(PendingConnection.class);
+        given(firstAttempt.getConnection()).willReturn(firstConn);
+        given(firstConn.getName()).willReturn("Alice");
+        bridge.onPreLogin(firstAttempt);
+        verify(firstConn).setOnlineMode(true);
+
+        // Mojang rejected the player (no onLogin fired) — second reconnect should cancel the pending
+        // request and NOT force online-mode, so the player can rejoin in offline mode
+        PreLoginEvent secondAttempt = org.mockito.Mockito.mock(PreLoginEvent.class);
+        PendingConnection secondConn = org.mockito.Mockito.mock(PendingConnection.class);
+        given(secondAttempt.getConnection()).willReturn(secondConn);
+        given(secondConn.getName()).willReturn("Alice");
+        bridge.onPreLogin(secondAttempt);
+        verify(secondConn, never()).setOnlineMode(true);
+    }
+
     private static byte[] createChunkPayload(int seq, boolean last, String csv) {
         ByteArrayDataOutput output = ByteStreams.newDataOutput();
         output.writeUTF("premium.list.chunk");

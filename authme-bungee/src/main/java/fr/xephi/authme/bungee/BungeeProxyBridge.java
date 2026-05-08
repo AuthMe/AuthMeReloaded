@@ -60,6 +60,9 @@ public final class BungeeProxyBridge implements Listener {
     private List<String> premiumListBuffer = new ArrayList<>();
     // Players with a pending premium verification (ran /premium but not yet confirmed via reconnect)
     private volatile Set<String> pendingPremiumUsernames = ConcurrentHashMap.newKeySet();
+    // Players for whom we already forced online-mode once to verify premium status; if they appear
+    // in onPreLogin again without having reached onLogin, Mojang auth failed → cancel the request.
+    private final Set<String> pendingVerificationAttempted = ConcurrentHashMap.newKeySet();
     // Players whose Mojang UUID was confirmed by the proxy during the login phase (LoginSuccess with UUID v4)
     private final Set<String> proxyVerifiedPremium = ConcurrentHashMap.newKeySet();
     private final ScheduledExecutorService retryScheduler = Executors.newSingleThreadScheduledExecutor(r -> {
@@ -339,14 +342,29 @@ public final class BungeeProxyBridge implements Listener {
         authenticationStore.clear(event.getPlayer());
         proxyVerifiedPremium.remove(normalizedName);
         pendingPremiumUsernames.remove(normalizedName);
+        pendingVerificationAttempted.remove(normalizedName);
     }
 
     @EventHandler
     public void onPreLogin(PreLoginEvent event) {
         String normalizedName = normalizeName(event.getConnection().getName());
-        if (premiumUsernames.contains(normalizedName) || pendingPremiumUsernames.contains(normalizedName)) {
+        if (premiumUsernames.contains(normalizedName)) {
             event.getConnection().setOnlineMode(true);
             logger.fine("Forcing online-mode for premium player '" + normalizedName + "'");
+        } else if (pendingPremiumUsernames.contains(normalizedName)) {
+            if (pendingVerificationAttempted.contains(normalizedName)) {
+                // The player was already given a forced online-mode attempt but never reached onLogin —
+                // meaning Mojang rejected them. Cancel the premium request so they can reconnect normally.
+                pendingPremiumUsernames.remove(normalizedName);
+                pendingVerificationAttempted.remove(normalizedName);
+                logger.info("Pending premium verification failed for '" + normalizedName
+                    + "' (Mojang auth rejected) — premium request cancelled");
+            } else {
+                // First attempt: force online-mode and track that the attempt is in progress.
+                pendingVerificationAttempted.add(normalizedName);
+                event.getConnection().setOnlineMode(true);
+                logger.fine("Forcing online-mode for pending premium player '" + normalizedName + "'");
+            }
         }
     }
 
@@ -365,6 +383,8 @@ public final class BungeeProxyBridge implements Listener {
             return;
         }
         String normalizedName = normalizeName(event.getConnection().getName());
+        // Mojang auth succeeded: the attempt tracking entry is no longer needed.
+        pendingVerificationAttempted.remove(normalizedName);
         markProxyVerifiedPremium(normalizedName);
     }
 
