@@ -148,6 +148,7 @@ dialog:
     recovery_email: '&fEmail khôi phục (tùy chọn)'
     recovery_button: '&eQuên mật khẩu?'
     button: '&aĐăng nhập'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6Đăng ký'
     body: '&7Tạo tài khoản để bắt đầu chơi trên máy chủ này.'
@@ -156,6 +157,7 @@ dialog:
     email: '&fEmail'
     confirm_email: '&fXác nhận email'
     button: '&aĐăng ký'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6Xác thực hai yếu tố'
     body: '&7Mở ứng dụng xác thực của bạn và nhập mã 6 chữ số.'

@@ -520,6 +520,9 @@ public enum MessageKey {
     /** Login dialog forgot-password button label. */
     DIALOG_LOGIN_RECOVERY_BUTTON("dialog.login.recovery_button"),
 
+    /** Kick message shown when the player cancels the pre-join login dialog. */
+    DIALOG_LOGIN_CANCELED("dialog.login.canceled"),
+
     /** Register dialog title. */
     DIALOG_REGISTER_TITLE("dialog.register.title"),
 
@@ -540,6 +543,9 @@ public enum MessageKey {
 
     /** Register dialog submit button label. */
     DIALOG_REGISTER_BUTTON("dialog.register.button"),
+
+    /** Kick message shown when the player cancels the pre-join register dialog. */
+    DIALOG_REGISTER_CANCELED("dialog.register.canceled"),
 
     /** Two-factor dialog title. */
     DIALOG_TWO_FACTOR_TITLE("dialog.two_factor.title"),

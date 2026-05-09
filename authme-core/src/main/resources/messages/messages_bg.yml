@@ -146,6 +146,7 @@ dialog:
     recovery_email: '&fИмейл за възстановяване (незадължително)'
     recovery_button: '&eЗабравена парола?'
     button: '&aВход'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6Регистрация'
     body: '&7Създайте акаунт, за да започнете да играете на сървъра.'
@@ -154,6 +155,7 @@ dialog:
     email: '&fИмейл'
     confirm_email: '&fПотвърди имейла'
     button: '&aРегистриране'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6Двуфакторна автентикация'
     body: '&7Отворете приложението за удостоверяване и въведете 6-цифрения код.'

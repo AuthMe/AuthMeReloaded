@@ -151,6 +151,7 @@ dialog:
     recovery_email: '&f恢復電郵（可選）'
     recovery_button: '&e忘記密碼？'
     button: '&a登入'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6註冊'
     body: '&7建立帳戶以開始在此伺服器上遊玩。'
@@ -159,6 +160,7 @@ dialog:
     email: '&f電郵'
     confirm_email: '&f確認電郵'
     button: '&a註冊'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6雙重驗證'
     body: '&7打開您的驗證器應用程式並輸入6位數字代碼。'

@@ -148,6 +148,7 @@ dialog:
     recovery_email: '&fEmail pemulihan (opsional)'
     recovery_button: '&eLupa kata sandi?'
     button: '&aMasuk'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6Pendaftaran'
     body: '&7Buat akun untuk mulai bermain di server ini.'
@@ -156,6 +157,7 @@ dialog:
     email: '&fEmail'
     confirm_email: '&fKonfirmasi email'
     button: '&aDaftar'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6Autentikasi dua faktor'
     body: '&7Buka aplikasi autentikasi Anda dan masukkan kode 6 digit.'

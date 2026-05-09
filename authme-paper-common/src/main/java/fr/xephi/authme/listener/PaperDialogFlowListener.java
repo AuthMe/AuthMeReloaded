@@ -145,7 +145,7 @@ public class PaperDialogFlowListener implements Listener {
 
         if (PaperDialogActionKeys.PRE_JOIN_LOGIN_CANCEL.equals(event.getIdentifier())) {
             String kickMessage = commonService.getProperty(RegistrationSettings.PRE_JOIN_LOGIN_CANCEL_KICKS)
-                ? messages.retrieveSingle(playerName, MessageKey.LOGIN_TIMEOUT_ERROR)
+                ? messages.retrieveSingle(playerName, MessageKey.DIALOG_LOGIN_CANCELED)
                 : null;
             completeLoginResponse(playerId, kickMessage);
             return;
@@ -163,7 +163,7 @@ public class PaperDialogFlowListener implements Listener {
 
         if (PaperDialogActionKeys.PRE_JOIN_RECOVERY_CANCEL.equals(event.getIdentifier())) {
             String kickMessage = commonService.getProperty(RegistrationSettings.PRE_JOIN_LOGIN_CANCEL_KICKS)
-                ? messages.retrieveSingle(playerName, MessageKey.LOGIN_TIMEOUT_ERROR)
+                ? messages.retrieveSingle(playerName, MessageKey.DIALOG_LOGIN_CANCELED)
                 : null;
             completeLoginResponse(playerId, kickMessage);
             return;
@@ -181,7 +181,7 @@ public class PaperDialogFlowListener implements Listener {
 
         if (PaperDialogActionKeys.PRE_JOIN_REGISTER_CANCEL.equals(event.getIdentifier())) {
             String kickMessage = commonService.getProperty(RegistrationSettings.PRE_JOIN_REGISTER_CANCEL_KICKS)
-                ? messages.retrieveSingle(playerName, MessageKey.LOGIN_TIMEOUT_ERROR)
+                ? messages.retrieveSingle(playerName, MessageKey.DIALOG_REGISTER_CANCELED)
                 : null;
             completeRegisterResponse(playerId, kickMessage);
         }
@@ -208,10 +208,11 @@ public class PaperDialogFlowListener implements Listener {
         String kickMessage = loginResponse.join();
         pendingLoginResponses.remove(playerId);
         preJoinDialogService.unregisterPreJoinFuture(playerId);
-        connection.getAudience().closeDialog();
 
         if (kickMessage != null) {
             connection.disconnect(LEGACY_SERIALIZER.deserialize(kickMessage));
+        } else {
+            connection.getAudience().closeDialog();
         }
     }
 
@@ -261,10 +262,11 @@ public class PaperDialogFlowListener implements Listener {
         connection.getAudience().showDialog(dialog);
         String kickMessage = registerResponse.join();
         pendingRegisterResponses.remove(playerId);
-        connection.getAudience().closeDialog();
 
         if (kickMessage != null) {
             connection.disconnect(LEGACY_SERIALIZER.deserialize(kickMessage));
+        } else {
+            connection.getAudience().closeDialog();
         }
     }
 

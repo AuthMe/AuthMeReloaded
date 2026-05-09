@@ -148,6 +148,7 @@ dialog:
     recovery_email: '&fCorreo de recuperación (opcional)'
     recovery_button: '&eEsqueceu o contrasinal?'
     button: '&aIniciar sesión'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6Rexistro'
     body: '&7Crea unha conta para comezar a xogar neste servidor.'
@@ -156,6 +157,7 @@ dialog:
     email: '&fCorreo electrónico'
     confirm_email: '&fConfirmar correo electrónico'
     button: '&aRexistrarse'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6Autenticación de dous factores'
     body: '&7Abre a túa aplicación de autenticación e introduce o código de 6 díxitos.'

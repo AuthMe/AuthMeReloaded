@@ -148,6 +148,7 @@ dialog:
     recovery_email: '&fHerstel-e-mailadres (optioneel)'
     recovery_button: '&eWachtwoord vergeten?'
     button: '&aInloggen'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6Registratie'
     body: '&7Maak een account aan om op deze server te beginnen met spelen.'
@@ -156,6 +157,7 @@ dialog:
     email: '&fE-mailadres'
     confirm_email: '&fE-mailadres bevestigen'
     button: '&aRegistreren'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6Twee-factor-authenticatie'
     body: '&7Open je authenticatie-app en voer de 6-cijferige code in.'

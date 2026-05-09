@@ -148,6 +148,7 @@ dialog:
     recovery_email: '&fObnovovací e-mail (volitelné)'
     recovery_button: '&eZapomenuté heslo?'
     button: '&aPřihlásit se'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6Registrace'
     body: '&7Vytvořte si účet a začněte hrát na tomto serveru.'
@@ -156,6 +157,7 @@ dialog:
     email: '&fE-mail'
     confirm_email: '&fPotvrdit e-mail'
     button: '&aRegistrovat'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6Dvoufaktorové ověření'
     body: '&7Otevřete svou autentizační aplikaci a zadejte 6místný kód.'

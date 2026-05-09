@@ -150,6 +150,7 @@ dialog:
     title: '&6Керү'
     password: '&fСерсүз'
     button: '&aКерү'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6Теркәлү'
     password: '&fСерсүз'
@@ -157,6 +158,7 @@ dialog:
     email: '&fЭлектрон почтасы'
     confirm_email: '&fЭлектрон почтасын раслау'
     button: '&aТеркәлү'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6Ике-адымлы аутентификация'
     code: '&fСеркод'

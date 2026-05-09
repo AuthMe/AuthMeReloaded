@@ -160,6 +160,7 @@ dialog:
     recovery_email: '&fTaastamise e-post (valikuline)'
     recovery_button: '&eUnustasid parooli?'
     button: '&aLogi sisse'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6Registreerimine'
     body: '&7Loo konto, et hakata sellel serveril mängima.'
@@ -168,6 +169,7 @@ dialog:
     email: '&fE-post'
     confirm_email: '&fKinnita e-post'
     button: '&aRegistreeru'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6Kaheastmeline autentimine'
     body: '&7Ava oma autentimisrakendus ja sisesta 6-kohaline kood.'

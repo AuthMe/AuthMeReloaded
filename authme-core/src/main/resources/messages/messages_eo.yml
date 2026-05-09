@@ -148,6 +148,7 @@ dialog:
     recovery_email: '&fRetpoŝto por restarigo (nedeviga)'
     recovery_button: '&eForgesita pasvorto?'
     button: '&aEnsaluti'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6Registriĝo'
     body: '&7Kreu konton por komenci ludi sur ĉi tiu servilo.'
@@ -156,6 +157,7 @@ dialog:
     email: '&fRetpoŝto'
     confirm_email: '&fKonfirmi retpoŝton'
     button: '&aRegistriĝi'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6Du-ŝtupa aŭtentigo'
     body: '&7Malfermu vian aŭtentikigan aplikaĵon kaj enigu la 6-cifran kodon.'

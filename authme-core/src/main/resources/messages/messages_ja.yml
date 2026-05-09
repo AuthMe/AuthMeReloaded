@@ -160,6 +160,7 @@ dialog:
     recovery_email: '&fリカバリーメール（任意）'
     recovery_button: '&eパスワードをお忘れですか？'
     button: '&aログイン'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6登録'
     body: '&7アカウントを作成してこのサーバーでプレイしましょう。'
@@ -168,6 +169,7 @@ dialog:
     email: '&fメールアドレス'
     confirm_email: '&fメールアドレスを確認'
     button: '&a登録する'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&62要素認証'
     body: '&7認証アプリを開いて6桁のコードを入力してください。'

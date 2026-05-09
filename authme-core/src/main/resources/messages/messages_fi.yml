@@ -148,6 +148,7 @@ dialog:
     recovery_email: '&fPalautussähköposti (valinnainen)'
     recovery_button: '&eUnohditko salasanasi?'
     button: '&aKirjaudu sisään'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6Rekisteröinti'
     body: '&7Luo tili aloittaaksesi pelaamisen tällä palvelimella.'
@@ -156,6 +157,7 @@ dialog:
     email: '&fSähköposti'
     confirm_email: '&fVahvista sähköposti'
     button: '&aRekisteröidy'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6Kaksivaiheinen tunnistautuminen'
     body: '&7Avaa todennussovelluksesi ja anna 6-numeroinen koodi.'

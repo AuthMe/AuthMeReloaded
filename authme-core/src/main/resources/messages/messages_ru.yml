@@ -143,6 +143,7 @@ dialog:
     recovery_email: '&fРезервная почта (необязательно)'
     recovery_button: '&eЗабыли пароль?'
     button: '&aВойти'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6Регистрация'
     body: '&7Создайте аккаунт, чтобы начать играть на этом сервере.'
@@ -151,6 +152,7 @@ dialog:
     email: '&fЭлектронная почта'
     confirm_email: '&fПодтвердите электронную почту'
     button: '&aЗарегистрироваться'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6Двухфакторная аутентификация'
     body: '&7Откройте приложение для аутентификации и введите 6-значный код.'

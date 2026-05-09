@@ -148,6 +148,7 @@ dialog:
     recovery_email: '&fРезервна пошта (необов''язково)'
     recovery_button: '&eЗабули пароль?'
     button: '&aУвійти'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6Реєстрація'
     body: '&7Створіть акаунт, щоб почати грати на цьому сервері.'
@@ -156,6 +157,7 @@ dialog:
     email: '&fЕлектронна пошта'
     confirm_email: '&fПідтвердьте електронну пошту'
     button: '&aЗареєструватися'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6Двофакторна автентифікація'
     body: '&7Відкрийте додаток для автентифікації та введіть 6-значний код.'

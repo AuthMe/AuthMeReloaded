@@ -148,6 +148,7 @@ dialog:
     recovery_email: '&fKurtarma E-postası (isteğe bağlı)'
     recovery_button: '&eŞifrenizi mi unuttunuz?'
     button: '&aGiriş yap'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6Kayıt'
     body: '&7Bu sunucuda oynamaya başlamak için bir hesap oluşturun.'
@@ -156,6 +157,7 @@ dialog:
     email: '&fE-posta'
     confirm_email: '&fE-postayı onayla'
     button: '&aKaydol'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6İki faktörlü kimlik doğrulama'
     body: '&7Kimlik doğrulama uygulamanızı açın ve 6 haneli kodu girin.'
