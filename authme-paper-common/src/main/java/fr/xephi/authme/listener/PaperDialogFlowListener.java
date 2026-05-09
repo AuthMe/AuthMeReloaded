@@ -208,9 +208,8 @@ public class PaperDialogFlowListener implements Listener {
 
         if (kickMessage != null) {
             preJoinDialogService.storePendingKickMessage(playerId, kickMessage);
-        } else {
-            connection.getAudience().closeDialog();
         }
+        connection.getAudience().closeDialog();
     }
 
     private void processPreJoinLogin(UUID playerId, String playerName, DialogResponseView dialogResponseView) {
@@ -262,9 +261,8 @@ public class PaperDialogFlowListener implements Listener {
 
         if (kickMessage != null) {
             preJoinDialogService.storePendingKickMessage(playerId, kickMessage);
-        } else {
-            connection.getAudience().closeDialog();
         }
+        connection.getAudience().closeDialog();
     }
 
     private void storePendingRegistration(PlayerConfigurationConnection connection, UUID playerId, String playerName,
