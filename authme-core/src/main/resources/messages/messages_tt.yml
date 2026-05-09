@@ -100,6 +100,11 @@ email:
   email_cooldown_error: '&cХат күптән түгел җибәрелде инде. Яңа хатны җибәрә алаганчы, сезгә %time вакытны көтәргә кирәк.'
   add_not_allowed: '&cЭлектрон почтасын өстәү рөхсәт ителмәде.'
   change_not_allowed: '&cЭлектрон почтасын үзгәртү рөхсәт ителмәде.'
+  confirm_code_sent: '&3Верификация коды &f%email&3 электрон почтасына җибәрелде. Раслау өчен &f«/email confirm <код>»&3 кулланыгыз.'
+  usage_email_confirm: '&cКуллану: /email confirm <код>'
+  confirm_wrong_code: '&cХаталы раслау коды. Яңадан карап карагызчы.'
+  confirm_code_expired: '&cКөтелә торган электрон почтасын раслау табылмады. Процессны яңадан башлагызчы.'
+  confirm_success: '&2Электрон почтасы расланды һәм аккаунтыгызга сакланды!'
 
 # Password recovery by email
 recovery:
@@ -133,7 +138,7 @@ verification:
 
 # Two-factor authentication
 two_factor:
-  code_created: '&2Сезнең серкод — %code. Сез моннан, %url сылтамасыннан сканлый аласыз'
+  code_created: '&2Серкодыгыз — %code. Сез моннан, %url сылтамасыннан сканлый аласыз'
   confirmation_required: '«/2fa confirm <код>» кулланып, кодыгызны раслагызчы'
   code_required: '«/2fa code <код>» кулланып, кодыгызны кертегезче'
   already_enabled: 'Сезнең аккаунт өчен ике-адымлы аутентификация кушылды инде!'
@@ -148,11 +153,15 @@ two_factor:
 dialog:
   login:
     title: '&6Керү'
+    body: '&7Дәвам итү өчен серсүзегезне кертегезче.'
     password: '&fСерсүз'
+    recovery_email: '&fТергезү өчен электрон почтасы (мәҗбүри түгел)'
+    recovery_button: '&eСерсүзне оныттыгызмы?'
     button: '&aКерү'
     canceled: '&cYou have canceled the login.'
   register:
     title: '&6Теркәлү'
+    body: '&7Бу серверда уйнап башлау өчен аккаунт ясагыз.'
     password: '&fСерсүз'
     confirm_password: '&fСерсүзне раслау'
     email: '&fЭлектрон почтасы'
@@ -161,6 +170,7 @@ dialog:
     canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6Ике-адымлы аутентификация'
+    body: '&7Сезнең аутентификацияләү кушымтасын ачыгыз һәм 6-санлы кодны кертегез.'
     code: '&fСеркод'
     button: '&aРаслау'
   recovery:
