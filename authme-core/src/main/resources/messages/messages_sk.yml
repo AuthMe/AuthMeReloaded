@@ -154,6 +154,7 @@ dialog:
     recovery_email: '&fObnovovací e-mail (voliteľný)'
     recovery_button: '&eZabudol si heslo?'
     button: '&aPrihlásiť sa'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6Registrácia'
     body: '&7Vytvor si účet, aby si mohol hrať na tomto serveri.'
@@ -162,6 +163,7 @@ dialog:
     email: '&fE-mail'
     confirm_email: '&fPotvrdiť e-mail'
     button: '&aZaregistrovať sa'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6Dvojfaktorové overenie'
     body: '&7Otvor svoju autentifikačnú aplikáciu a zadaj 6-miestny kód.'

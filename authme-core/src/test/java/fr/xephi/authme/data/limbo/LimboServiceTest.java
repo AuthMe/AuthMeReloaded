@@ -367,6 +367,42 @@ class LimboServiceTest {
     }
 
     @Test
+    void shouldRestoreEnderPearlsForAutoLoginFromDiskLimbo() {
+        // given - premium player had an ender pearl in flight before disconnecting; no in-memory limbo
+        Player player = newPlayer("Premium", false, 0.0f, false, 0.0f);
+        Server server = mock(Server.class);
+        World world = mock(World.class);
+        EnderPearl recreatedPearl = mock(EnderPearl.class);
+        given(player.getServer()).willReturn(server);
+        given(server.getWorlds()).willReturn(Collections.singletonList(world));
+        given(world.getEntities()).willReturn(Collections.emptyList());
+
+        World pearlWorld = mock(World.class);
+        given(pearlWorld.spawnEntity(any(Location.class), eq(EntityType.ENDER_PEARL))).willReturn(recreatedPearl);
+        Location pearlLocation = new Location(pearlWorld, 5.0, 64.0, -2.5, 15.0f, 30.0f);
+        Vector pearlVelocity = new Vector(0.01, 0.2, -0.03);
+        UUID pearlUuid = UUID.nameUUIDFromBytes("premium-pearl".getBytes());
+
+        LimboPlayer diskLimbo = new LimboPlayer(null, false, Collections.emptyList(), false, 0.2f, 0.1f);
+        diskLimbo.setEnderPearls(Collections.singletonList(new EnderPearlRestoreData(pearlUuid, pearlLocation, pearlVelocity)));
+        given(limboPersistence.getLimboPlayer(player)).willReturn(diskLimbo);
+        given(settings.getProperty(LimboSettings.RESTORE_ALLOW_FLIGHT)).willReturn(AllowFlightRestoreType.RESTORE);
+        given(settings.getProperty(LimboSettings.RESTORE_WALK_SPEED)).willReturn(WalkFlySpeedRestoreType.RESTORE);
+        given(settings.getProperty(LimboSettings.RESTORE_FLY_SPEED)).willReturn(WalkFlySpeedRestoreType.RESTORE);
+        given(settings.getProperty(LimboSettings.RECREATE_ENDER_PEARLS)).willReturn(true);
+
+        // when
+        limboService.restoreSpeedsForAutoLogin(player);
+
+        // then - ender pearl must be recreated from disk limbo even though no in-memory limbo exists
+        verify(pearlWorld).spawnEntity(pearlLocation, EntityType.ENDER_PEARL);
+        verify(recreatedPearl).setShooter(player);
+        verify(recreatedPearl).setVelocity(pearlVelocity);
+        assertThat(diskLimbo.getEnderPearls(), hasSize(0));
+        verify(limboPersistence).removeLimboPlayer(player);
+    }
+
+    @Test
     void shouldRestoreDefaultSpeedsForAutoLoginWhenNoDiskLimboAndSpeedsAreZero() {
         // given - no disk limbo, but Bukkit loaded zero speeds from stale playerdata (crash scenario)
         Player player = newPlayer("Premium", false, 0.0f, false, 0.0f);

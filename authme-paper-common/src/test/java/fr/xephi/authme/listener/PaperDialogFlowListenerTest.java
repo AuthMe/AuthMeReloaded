@@ -168,7 +168,7 @@ public class PaperDialogFlowListenerTest {
         setField(listener, "commonService", commonService);
         setField(listener, "messages", messages);
         given(commonService.getProperty(RegistrationSettings.PRE_JOIN_LOGIN_CANCEL_KICKS)).willReturn(true);
-        given(messages.retrieveSingle("Bobby", MessageKey.LOGIN_TIMEOUT_ERROR)).willReturn("Timed out!");
+        given(messages.retrieveSingle("Bobby", MessageKey.DIALOG_LOGIN_CANCELED)).willReturn("Canceled!");
 
         UUID playerId = UUID.randomUUID();
         CompletableFuture<String> future = new CompletableFuture<>();
@@ -192,7 +192,7 @@ public class PaperDialogFlowListenerTest {
         listener.onPlayerCustomClick(event);
 
         assertThat(future.isDone(), is(true));
-        assertThat(future.getNow(null), is("Timed out!"));
+        assertThat(future.getNow(null), is("Canceled!"));
     }
 
     @Test
@@ -237,7 +237,7 @@ public class PaperDialogFlowListenerTest {
         setField(listener, "commonService", commonService);
         setField(listener, "messages", messages);
         given(commonService.getProperty(RegistrationSettings.PRE_JOIN_REGISTER_CANCEL_KICKS)).willReturn(true);
-        given(messages.retrieveSingle("Bobby", MessageKey.LOGIN_TIMEOUT_ERROR)).willReturn("Timed out!");
+        given(messages.retrieveSingle("Bobby", MessageKey.DIALOG_REGISTER_CANCELED)).willReturn("Canceled!");
 
         UUID playerId = UUID.randomUUID();
         CompletableFuture<String> future = new CompletableFuture<>();
@@ -261,7 +261,7 @@ public class PaperDialogFlowListenerTest {
         listener.onPlayerCustomClick(event);
 
         assertThat(future.isDone(), is(true));
-        assertThat(future.getNow(null), is("Timed out!"));
+        assertThat(future.getNow(null), is("Canceled!"));
     }
 
     @Test

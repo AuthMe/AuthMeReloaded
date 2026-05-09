@@ -160,6 +160,7 @@ dialog:
     recovery_email: '&fEmail de recuperare (opțional)'
     recovery_button: '&eAi uitat parola?'
     button: '&aAutentificare'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6Înregistrare'
     body: '&7Creează un cont pentru a începe să joci pe acest server.'
@@ -168,6 +169,7 @@ dialog:
     email: '&fE-mail'
     confirm_email: '&fConfirmă e-mailul'
     button: '&aÎnregistrează-te'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6Autentificare cu doi factori'
     body: '&7Deschide aplicația de autentificare și introdu codul de 6 cifre.'

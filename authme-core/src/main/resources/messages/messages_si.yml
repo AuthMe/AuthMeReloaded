@@ -148,6 +148,7 @@ dialog:
     recovery_email: '&fE-pošta za obnovitev (neobvezno)'
     recovery_button: '&eZabili ste geslo?'
     button: '&aPrijava'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6Registracija'
     body: '&7Ustvarite račun, da začnete igrati na tem strežniku.'
@@ -156,6 +157,7 @@ dialog:
     email: '&fE-pošta'
     confirm_email: '&fPotrdi e-pošto'
     button: '&aRegistriraj se'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6Dvofaktorska avtentikacija'
     body: '&7Odprite svojo aplikacijo za preverjanje pristnosti in vnesite 6-mestno kodo.'

@@ -148,6 +148,7 @@ dialog:
     recovery_email: '&fBerreskuratze posta elektronikoa (aukerakoa)'
     recovery_button: '&eAhaztu duzu pasahitza?'
     button: '&aSaioa hasi'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6Erregistroa'
     body: '&7Sortu kontu bat zerbitzari honetan jokatzen hasteko.'
@@ -156,6 +157,7 @@ dialog:
     email: '&fHelbide elektronikoa'
     confirm_email: '&fHelbide elektronikoa baieztatu'
     button: '&aErregistratu'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6Bi faktoreko autentifikazioa'
     body: '&7Ireki zure autentikazio aplikazioa eta idatzi 6 digituko kodea.'

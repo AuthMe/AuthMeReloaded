@@ -148,6 +148,7 @@ dialog:
     recovery_email: '&fE-mail de recuperação (opcional)'
     recovery_button: '&eEsqueceu a senha?'
     button: '&aIniciar sessão'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6Registo'
     body: '&7Crie uma conta para começar a jogar neste servidor.'
@@ -156,6 +157,7 @@ dialog:
     email: '&fE-mail'
     confirm_email: '&fConfirmar e-mail'
     button: '&aRegistar'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6Autenticação de dois fatores'
     body: '&7Abra o seu aplicativo de autenticação e insira o código de 6 dígitos.'

@@ -150,6 +150,7 @@ dialog:
     recovery_email: '&f복구 이메일 (선택사항)'
     recovery_button: '&e비밀번호를 잊으셨나요?'
     button: '&a로그인'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6회원가입'
     body: '&7이 서버에서 플레이를 시작하려면 계정을 만드세요.'
@@ -158,6 +159,7 @@ dialog:
     email: '&f이메일'
     confirm_email: '&f이메일 확인'
     button: '&a등록하기'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6이중 인증'
     body: '&7인증 앱을 열고 6자리 코드를 입력하세요.'

@@ -148,6 +148,7 @@ dialog:
     recovery_email: '&fAtgavimo el. paštas (neprivaloma)'
     recovery_button: '&ePamiršote slaptažodį?'
     button: '&aPrisijungti'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6Registracija'
     body: '&7Sukurkite paskyrą, kad galėtumėte žaisti šiame serveryje.'
@@ -156,6 +157,7 @@ dialog:
     email: '&fEl. paštas'
     confirm_email: '&fPatvirtinti el. paštą'
     button: '&aRegistruotis'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6Dviejų veiksnių autentifikavimas'
     body: '&7Atidarykite autentifikavimo programėlę ir įveskite 6 skaitmenų kodą.'

@@ -165,6 +165,7 @@ public class LimboService {
             settings.getProperty(RESTORE_FLY_SPEED).restoreFlySpeed(player, diskLimbo);
             settings.getProperty(RESTORE_WALK_SPEED).restoreWalkSpeed(player, diskLimbo);
             logger.debug("Restored speeds from disk LimboPlayer for `{0}` during auto-login", lowerName);
+            doRestoreEntities(player, diskLimbo);
         } else {
             // No snapshot: only correct stale zero speed persisted by a previous crash
             // (do not touch allowFlight — original value is unknown without a limbo snapshot)
@@ -314,6 +315,11 @@ public class LimboService {
         if (limbo == null) {
             return;
         }
+        doRestoreEntities(player, limbo);
+    }
+
+    private void doRestoreEntities(Player player, LimboPlayer limbo) {
+        String name = player.getName().toLowerCase(Locale.ROOT);
         Map<UUID, EnderPearlRestoreData> pendingPearls = new HashMap<>();
         for (EnderPearlRestoreData pearl : limbo.getEnderPearls()) {
             pendingPearls.put(pearl.getUuid(), pearl);

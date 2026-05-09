@@ -148,6 +148,7 @@ dialog:
     recovery_email: '&fVisszaállítási e-mail (nem kötelező)'
     recovery_button: '&eElfelejtetted a jelszavadat?'
     button: '&aBejelentkezés'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6Regisztráció'
     body: '&7Hozz létre egy fiókot, hogy elkezdhess játszani ezen a szerveren.'
@@ -156,6 +157,7 @@ dialog:
     email: '&fE-mail cím'
     confirm_email: '&fE-mail cím megerősítése'
     button: '&aRegisztráció'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6Kétlépcsős hitelesítés'
     body: '&7Nyisd meg a hitelesítő alkalmazásodat, és add meg a 6 jegyű kódot.'

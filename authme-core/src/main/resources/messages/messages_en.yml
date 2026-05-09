@@ -158,6 +158,7 @@ dialog:
     recovery_email: '&fRecovery Email (optional)'
     recovery_button: '&eForgot Password?'
     button: '&aLogin'
+    canceled: '&cYou have canceled the login.'
   register:
     title: '&6Register'
     body: '&7Create an account to start playing on this server.'
@@ -166,6 +167,7 @@ dialog:
     email: '&fEmail'
     confirm_email: '&fConfirm Email'
     button: '&aRegister'
+    canceled: '&cYou have canceled the registration.'
   two_factor:
     title: '&6Two-Factor Authentication'
     body: '&7Open your authenticator app and enter the 6-digit code.'

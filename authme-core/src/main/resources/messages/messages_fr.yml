@@ -151,6 +151,7 @@ dialog:
     recovery_email: '&fE-mail de récupération (optionnel)'
     recovery_button: '&eMot de passe oublié ?'
     button: '&aSe connecter'
+    canceled: '&cVous avez annulé la connexion.'
   register:
     title: '&6Inscription'
     body: '&7Créez un compte pour commencer à jouer sur ce serveur.'
@@ -159,6 +160,7 @@ dialog:
     email: '&fE-mail'
     confirm_email: '&fConfirmer l''e-mail'
     button: '&aS''inscrire'
+    canceled: '&cVous avez annulé l''inscription.'
   two_factor:
     title: '&6Authentification à deux facteurs'
     body: '&7Ouvrez votre application d''authentification et saisissez le code à 6 chiffres.'
