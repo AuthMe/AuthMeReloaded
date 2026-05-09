@@ -38,6 +38,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -122,7 +123,8 @@ class VelocityProxyBridgeTest {
         bridge.onServerConnected(new ServerConnectedEvent(player, authServer, null));
 
         verify(pluginMessageEvent).setResult(any(PluginMessageEvent.ForwardResult.class));
-        verify(currentServer).sendPluginMessage(eq(VelocityProxyBridge.AUTHME_CHANNEL), payloadCaptor.capture());
+        // Two messages are sent: proxy.started handshake (first) and perform.login (second)
+        verify(currentServer, times(2)).sendPluginMessage(eq(VelocityProxyBridge.AUTHME_CHANNEL), payloadCaptor.capture());
         assertPerformLoginPayload(payloadCaptor.getValue(), "alice", "test-secret");
     }
 

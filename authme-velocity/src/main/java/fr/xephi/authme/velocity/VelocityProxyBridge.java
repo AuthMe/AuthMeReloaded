@@ -283,7 +283,7 @@ final class VelocityProxyBridge {
             .map(s -> s.getServerInfo().getName()).orElse("(none)");
         logger.debug("ServerConnected: {} moved from '{}' to '{}'", playerName, prevServer, newServer);
 
-        sendProxyStartedHandshakeIfPending(event.getServer());
+        sendProxyStartedHandshakeIfPending(event.getServer(), event.getPlayer().getCurrentServer().orElse(null));
 
         if (!configuration.autoLoginEnabled()) {
             logger.debug("autoLogin is disabled, skipping auto-login for {}", playerName);
@@ -473,6 +473,10 @@ final class VelocityProxyBridge {
     }
 
     private void sendProxyStartedHandshakeIfPending(RegisteredServer server) {
+        sendProxyStartedHandshakeIfPending(server, null);
+    }
+
+    private void sendProxyStartedHandshakeIfPending(RegisteredServer server, ServerConnection triggeringConnection) {
         if (!configuration.isAuthServer(server)) {
             return;
         }
@@ -480,12 +484,27 @@ final class VelocityProxyBridge {
         if (!notifiedAuthServers.add(serverName)) {
             return;
         }
-        if (server.sendPluginMessage(AUTHME_CHANNEL, createProxyStartedMessage())) {
+        // Try via the specific triggering connection first to avoid the race condition where
+        // ServerConnectedEvent fires before the player is added to RegisteredServer.playersConnected.
+        boolean sent = triggeringConnection != null
+            ? triggeringConnection.sendPluginMessage(AUTHME_CHANNEL, createProxyStartedMessage())
+            : server.sendPluginMessage(AUTHME_CHANNEL, createProxyStartedMessage());
+        if (!sent) {
+            sent = server.sendPluginMessage(AUTHME_CHANNEL, createProxyStartedMessage());
+        }
+        if (sent) {
             logger.info("Sent deferred proxy.started handshake to auth server '{}'", serverName);
         } else {
             notifiedAuthServers.remove(serverName);
-            logger.info("Failed to send deferred proxy.started handshake to '{}'; scheduling retry", serverName);
-            retryScheduler.schedule(() -> sendProxyStartedHandshakeIfPending(server), 1, TimeUnit.SECONDS);
+            // Only schedule a timer retry if players are connected; otherwise the next
+            // ServerConnectedEvent will re-attempt naturally, avoiding an infinite retry loop
+            // when a player immediately disconnects (e.g., dialog cancel).
+            if (!server.getPlayersConnected().isEmpty()) {
+                logger.info("Failed to send deferred proxy.started handshake to '{}'; scheduling retry", serverName);
+                retryScheduler.schedule(() -> sendProxyStartedHandshakeIfPending(server), 1, TimeUnit.SECONDS);
+            } else {
+                logger.debug("Deferred proxy.started handshake for '{}' pending until next player connection", serverName);
+            }
         }
     }
 
