@@ -9,10 +9,12 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Shared platform adapter behavior for Paper-derived servers.
@@ -72,6 +74,14 @@ public abstract class AbstractPaperPlatformAdapter extends AbstractSpigotPlatfor
     @Override
     public List<Class<? extends Listener>> getListeners() {
         return EventRegistrationAdapter.getCommonListeners();
+    }
+
+    @Override
+    public void normalizePreLoginUuid(AsyncPlayerPreLoginEvent event, UUID offlineUuid) {
+        com.destroystokyo.paper.profile.PlayerProfile profile = event.getPlayerProfile();
+        if (profile != null) {
+            profile.setId(offlineUuid);
+        }
     }
 
     @Override

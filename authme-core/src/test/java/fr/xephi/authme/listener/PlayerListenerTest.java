@@ -1180,6 +1180,7 @@ class PlayerListenerTest {
         verify(event, atLeast(0)).getLoginResult();
         verify(event, atLeast(0)).getAddress();
         verify(event, atLeast(0)).getName();
+        verify(event, atLeast(0)).getUniqueId();
         verifyNoMoreInteractions(event);
     }
 
