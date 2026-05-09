@@ -434,7 +434,6 @@ final class VelocityProxyBridge {
         }
         authenticationStore.clear(event.getPlayer());
         proxyVerifiedPremium.remove(normalizedName);
-        pendingPremiumUsernames.remove(normalizedName);
         pendingVerificationAttempted.remove(normalizedName);
     }
 

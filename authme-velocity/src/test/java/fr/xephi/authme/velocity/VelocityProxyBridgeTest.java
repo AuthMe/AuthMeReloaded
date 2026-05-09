@@ -559,6 +559,32 @@ class VelocityProxyBridgeTest {
     }
 
     @Test
+    void shouldPreservePendingPremiumStateAcrossDisconnectReconnect() {
+        given(pluginMessageEvent.getResult()).willReturn(PluginMessageEvent.ForwardResult.forward());
+        given(pluginMessageEvent.getIdentifier()).willReturn(VelocityProxyBridge.AUTHME_CHANNEL);
+        given(pluginMessageEvent.getSource()).willReturn(sourceConnection);
+        given(sourceConnection.getServer()).willReturn(authServer);
+        given(authServer.getServerInfo()).willReturn(authServerInfo);
+        given(authServerInfo.getName()).willReturn("lobby");
+        given(player.getUsername()).willReturn("alice");
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+
+        // Backend kicks the player for premium verification and sends PREMIUM_PENDING_SET
+        given(pluginMessageEvent.getData()).willReturn(createAuthMePayload("premium.pending.set", "alice"));
+        bridge.onPluginMessage(pluginMessageEvent);
+
+        // Player is kicked by the backend — disconnect must NOT clear the pending state
+        bridge.onDisconnect(new DisconnectEvent(player, DisconnectEvent.LoginStatus.SUCCESSFUL_LOGIN));
+
+        // On reconnect, Velocity must still force online-mode for the pending player
+        com.velocitypowered.api.event.connection.PreLoginEvent reconnectAttempt =
+            mock(com.velocitypowered.api.event.connection.PreLoginEvent.class);
+        given(reconnectAttempt.getUsername()).willReturn("alice");
+        bridge.onPreLogin(reconnectAttempt);
+        verify(reconnectAttempt).setResult(any());
+    }
+
+    @Test
     void shouldForceOnlineModeOnFirstPendingAttemptThenCancelOnSecond() {
         given(pluginMessageEvent.getResult()).willReturn(PluginMessageEvent.ForwardResult.forward());
         given(pluginMessageEvent.getIdentifier()).willReturn(VelocityProxyBridge.AUTHME_CHANNEL);

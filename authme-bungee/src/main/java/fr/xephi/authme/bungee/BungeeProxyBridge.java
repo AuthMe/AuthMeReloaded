@@ -341,7 +341,6 @@ public final class BungeeProxyBridge implements Listener {
         cancelPendingLogin(normalizedName);
         authenticationStore.clear(event.getPlayer());
         proxyVerifiedPremium.remove(normalizedName);
-        pendingPremiumUsernames.remove(normalizedName);
         pendingVerificationAttempted.remove(normalizedName);
     }
 

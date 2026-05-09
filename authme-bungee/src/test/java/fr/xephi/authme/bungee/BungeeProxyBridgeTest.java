@@ -481,6 +481,31 @@ class BungeeProxyBridgeTest {
     }
 
     @Test
+    void shouldPreservePendingPremiumStateAcrossDisconnectReconnect() {
+        given(pluginMessageEvent.isCancelled()).willReturn(false);
+        given(pluginMessageEvent.getTag()).willReturn(BungeeProxyBridge.AUTHME_CHANNEL);
+        given(pluginMessageEvent.getSender()).willReturn(sourceServer);
+        given(player.getName()).willReturn("alice");
+        BungeeProxyBridge bridge = new BungeeProxyBridge(proxyServer, logger, createConfiguration(), new BungeeAuthenticationStore());
+
+        // Backend kicks the player for premium verification and sends PREMIUM_PENDING_SET
+        given(pluginMessageEvent.getData()).willReturn(createAuthMePayload("premium.pending.set", "alice"));
+        bridge.onPluginMessage(pluginMessageEvent);
+
+        // Player is kicked by the backend — disconnect must NOT clear the pending state
+        given(playerDisconnectEvent.getPlayer()).willReturn(player);
+        bridge.onPlayerDisconnect(playerDisconnectEvent);
+
+        // On reconnect, Bungee must still force online-mode for the pending player
+        PreLoginEvent reconnectAttempt = org.mockito.Mockito.mock(PreLoginEvent.class);
+        PendingConnection reconnectConn = org.mockito.Mockito.mock(PendingConnection.class);
+        given(reconnectAttempt.getConnection()).willReturn(reconnectConn);
+        given(reconnectConn.getName()).willReturn("alice");
+        bridge.onPreLogin(reconnectAttempt);
+        verify(reconnectConn).setOnlineMode(true);
+    }
+
+    @Test
     void shouldForceOnlineModeOnFirstPendingAttemptThenCancelOnSecond() {
         given(pluginMessageEvent.isCancelled()).willReturn(false);
         given(pluginMessageEvent.getTag()).willReturn(BungeeProxyBridge.AUTHME_CHANNEL);
