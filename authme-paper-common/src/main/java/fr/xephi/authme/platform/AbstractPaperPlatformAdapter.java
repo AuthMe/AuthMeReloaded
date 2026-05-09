@@ -1,11 +1,13 @@
 package fr.xephi.authme.platform;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -80,7 +82,9 @@ public abstract class AbstractPaperPlatformAdapter extends AbstractSpigotPlatfor
     public void normalizePreLoginUuid(AsyncPlayerPreLoginEvent event, UUID offlineUuid) {
         com.destroystokyo.paper.profile.PlayerProfile profile = event.getPlayerProfile();
         if (profile != null) {
-            profile.setId(offlineUuid);
+            PlayerProfile newProfile = Bukkit.createProfile(offlineUuid, profile.getName());
+            newProfile.setProperties(profile.getProperties());
+            event.setPlayerProfile(newProfile);
         }
     }
 
