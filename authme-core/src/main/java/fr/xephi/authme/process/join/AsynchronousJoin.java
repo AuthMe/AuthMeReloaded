@@ -155,6 +155,11 @@ public class AsynchronousJoin implements AsynchronousProcess {
             preJoinDialogService.consumePendingRegistration(playerId);
         boolean shouldSkipPostJoinDialog = preJoinDialogService.consumeSkipPostJoinDialog(playerId);
         boolean pendingForceLogin = preJoinDialogService.consumePendingForceLogin(playerId);
+        String pendingKick = preJoinDialogService.consumePendingKickMessage(playerId);
+        if (pendingKick != null) {
+            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player, () -> player.kickPlayer(pendingKick));
+            return;
+        }
 
         if (!validationService.fulfillsNameRestrictions(player)) {
             handlePlayerWithUnmetNameRestriction(player, ip);

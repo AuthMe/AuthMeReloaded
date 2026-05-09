@@ -28,7 +28,6 @@ import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.dialog.DialogResponseView;
 import io.papermc.paper.event.connection.configuration.AsyncPlayerConnectionConfigureEvent;
 import io.papermc.paper.event.player.PlayerCustomClickEvent;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -49,8 +48,6 @@ import java.util.concurrent.ConcurrentMap;
  * Handles Paper/Folia dialog flows that happen during the configuration phase.
  */
 public class PaperDialogFlowListener implements Listener {
-
-    private static final LegacyComponentSerializer LEGACY_SERIALIZER = LegacyComponentSerializer.legacySection();
 
     private final ConcurrentMap<UUID, CompletableFuture<String>> pendingLoginResponses = new ConcurrentHashMap<>();
     private final ConcurrentMap<UUID, CompletableFuture<String>> pendingRegisterResponses = new ConcurrentHashMap<>();
@@ -210,7 +207,7 @@ public class PaperDialogFlowListener implements Listener {
         preJoinDialogService.unregisterPreJoinFuture(playerId);
 
         if (kickMessage != null) {
-            connection.disconnect(LEGACY_SERIALIZER.deserialize(kickMessage));
+            preJoinDialogService.storePendingKickMessage(playerId, kickMessage);
         } else {
             connection.getAudience().closeDialog();
         }
@@ -264,7 +261,7 @@ public class PaperDialogFlowListener implements Listener {
         pendingRegisterResponses.remove(playerId);
 
         if (kickMessage != null) {
-            connection.disconnect(LEGACY_SERIALIZER.deserialize(kickMessage));
+            preJoinDialogService.storePendingKickMessage(playerId, kickMessage);
         } else {
             connection.getAudience().closeDialog();
         }
