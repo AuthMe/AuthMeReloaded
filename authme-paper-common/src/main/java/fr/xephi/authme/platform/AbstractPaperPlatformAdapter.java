@@ -1,22 +1,18 @@
 package fr.xephi.authme.platform;
 
-import com.destroystokyo.paper.profile.PlayerProfile;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Shared platform adapter behavior for Paper-derived servers.
@@ -76,16 +72,6 @@ public abstract class AbstractPaperPlatformAdapter extends AbstractSpigotPlatfor
     @Override
     public List<Class<? extends Listener>> getListeners() {
         return EventRegistrationAdapter.getCommonListeners();
-    }
-
-    @Override
-    public void normalizePreLoginUuid(AsyncPlayerPreLoginEvent event, UUID offlineUuid) {
-        com.destroystokyo.paper.profile.PlayerProfile profile = event.getPlayerProfile();
-        if (profile != null) {
-            PlayerProfile newProfile = Bukkit.createProfile(offlineUuid, profile.getName());
-            newProfile.setProperties(profile.getProperties());
-            event.setPlayerProfile(newProfile);
-        }
     }
 
     @Override

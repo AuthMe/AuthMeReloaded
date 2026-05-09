@@ -10,7 +10,6 @@ import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.platform.ChatAdapter;
-import fr.xephi.authme.platform.EventRegistrationAdapter;
 import fr.xephi.authme.platform.TeleportAdapter;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.AntiBotService;
@@ -20,9 +19,7 @@ import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
-import fr.xephi.authme.service.PremiumLoginVerifier;
 import fr.xephi.authme.settings.properties.HooksSettings;
-import fr.xephi.authme.settings.properties.PremiumSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.ChatColor;
@@ -62,7 +59,6 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.InventoryView;
 
 import javax.inject.Inject;
-import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
@@ -110,10 +106,6 @@ public class PlayerListener implements Listener {
     private ChatAdapter chatAdapter;
     @Inject
     private TeleportAdapter teleportAdapter;
-    @Inject
-    private PremiumLoginVerifier premiumLoginVerifier;
-    @Inject
-    private EventRegistrationAdapter eventRegistrationAdapter;
 
     // Lowest priority to apply fast protection checks
     @EventHandler(priority = EventPriority.LOWEST)
@@ -172,7 +164,6 @@ public class PlayerListener implements Listener {
             onJoinVerifier.checkNameCasing(name, auth);
             final String ip = event.getAddress().getHostAddress();
             onJoinVerifier.checkPlayerCountry(name, ip, isAuthAvailable);
-            normalizePremiumUuidIfNeeded(event, name, auth);
         } catch (FailedVerificationException e) {
             event.setKickMessage(messages.retrieveSingle(name, e.getReason(), e.getArgs()));
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
@@ -254,36 +245,6 @@ public class PlayerListener implements Listener {
         }
 
         management.performQuit(player);
-    }
-
-    /**
-     * When the backend is in offline-mode but the proxy has forwarded a Mojang UUID (v4) for a
-     * premium player, replaces the event UUID with the deterministic offline UUID so that all
-     * plugins — permissions, inventories, etc. — consistently use the same identifier.
-     *
-     * The Mojang UUID is saved in {@link PremiumLoginVerifier} so that
-     * {@code AsynchronousJoin#canBypassWithPremium} can still verify premium identity via the
-     * existing {@code getVerifiedUuid} path without requiring the PacketEvents handshake.
-     *
-     * UUID replacement is platform-specific: Paper/Folia implement it via
-     * {@link EventRegistrationAdapter#normalizePreLoginUuid}; Spigot silently skips it.
-     */
-    private void normalizePremiumUuidIfNeeded(AsyncPlayerPreLoginEvent event, String name, PlayerAuth auth) {
-        if (event.getUniqueId().version() != 4
-                || !Boolean.TRUE.equals(settings.getProperty(HooksSettings.BUNGEECORD))
-                || !Boolean.TRUE.equals(settings.getProperty(PremiumSettings.ENABLE_PREMIUM))) {
-            return;
-        }
-        // Skip if the player registered with a v4 UUID (truly online-mode backend or equivalent).
-        if (auth == null || (auth.getUuid() != null && auth.getUuid().version() == 4)) {
-            return;
-        }
-        UUID mojangUuid = event.getUniqueId();
-        UUID offlineUuid = UUID.nameUUIDFromBytes(
-            ("OfflinePlayer:" + event.getName()).getBytes(StandardCharsets.UTF_8));
-        // Store the Mojang UUID so canBypassWithPremium can verify it after the UUID is replaced.
-        premiumLoginVerifier.storeVerified(name, mojangUuid);
-        eventRegistrationAdapter.normalizePreLoginUuid(event, offlineUuid);
     }
 
     private void saveStateBeforeQuit(Player player) {
