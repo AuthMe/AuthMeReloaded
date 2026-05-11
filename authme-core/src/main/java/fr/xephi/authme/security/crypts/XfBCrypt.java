@@ -1,7 +1,5 @@
 package fr.xephi.authme.security.crypts;
 
-import at.favre.lib.crypto.bcrypt.BCrypt;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,7 +9,7 @@ public class XfBCrypt extends BCryptBasedHash {
     private static final Pattern HASH_PATTERN = Pattern.compile("\"hash\";s.*\"(.*)?\"");
 
     XfBCrypt() {
-        super(new BCryptHasher(BCrypt.Version.VERSION_2A, 10));
+        super(new BCryptHasher("2a", 10));
     }
 
     /**

@@ -1,12 +1,12 @@
 package fr.xephi.authme.security.crypts;
 
 import com.google.common.primitives.Ints;
-import de.rtner.misc.BinTools;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.Usage;
 import fr.xephi.authme.settings.Settings;
+import org.bouncycastle.util.encoders.Hex;
 
 import javax.inject.Inject;
 
@@ -24,7 +24,7 @@ public class Pbkdf2 extends AbstractPbkdf2 {
     @Override
     public String computeHash(String password, String salt, String name) {
         return "pbkdf2_sha256$" + numberOfRounds + "$" + salt + "$"
-            + BinTools.bin2hex(deriveKey(password, salt.getBytes(), numberOfRounds, 64));
+            + Hex.toHexString(deriveKey(password, salt.getBytes(), numberOfRounds, 64)).toUpperCase();
     }
 
     @Override
@@ -38,7 +38,7 @@ public class Pbkdf2 extends AbstractPbkdf2 {
             logger.warning("Cannot read number of rounds for Pbkdf2: '" + line[1] + "'");
             return false;
         }
-        return verifyKey(password, line[2].getBytes(), iterations, BinTools.hex2bin(line[3]));
+        return verifyKey(password, line[2].getBytes(), iterations, Hex.decode(line[3]));
     }
 
     @Override

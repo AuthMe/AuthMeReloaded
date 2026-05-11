@@ -1,7 +1,5 @@
 package fr.xephi.authme.security.crypts;
 
-import at.favre.lib.crypto.bcrypt.BCrypt;
-
 import javax.inject.Inject;
 
 /**
@@ -15,6 +13,6 @@ public class BCrypt2y extends BCryptBasedHash {
     }
 
     public BCrypt2y(int cost) {
-        super(new BCryptHasher(BCrypt.Version.VERSION_2Y, cost));
+        super(new BCryptHasher("2y", cost));
     }
 }

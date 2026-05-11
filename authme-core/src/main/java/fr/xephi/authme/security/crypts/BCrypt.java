@@ -1,6 +1,5 @@
 package fr.xephi.authme.security.crypts;
 
-import at.favre.lib.crypto.bcrypt.BCrypt.Version;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 
@@ -18,6 +17,6 @@ public class BCrypt extends BCryptBasedHash {
 
     private static BCryptHasher createHasher(Settings settings) {
         int bCryptLog2Rounds = settings.getProperty(HooksSettings.BCRYPT_LOG2_ROUND);
-        return new BCryptHasher(Version.VERSION_2A, bCryptLog2Rounds);
+        return new BCryptHasher("2a", bCryptLog2Rounds);
     }
 }

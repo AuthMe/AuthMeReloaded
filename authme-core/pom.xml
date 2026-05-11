@@ -62,16 +62,8 @@
             <artifactId>postgresql</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.rtner</groupId>
-            <artifactId>PBKDF2</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.mkammerer</groupId>
-            <artifactId>argon2-jvm-nolibs</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>at.favre.lib</groupId>
-            <artifactId>bcrypt</artifactId>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
         </dependency>
         <dependency>
             <groupId>com.warrenstrange</groupId>
