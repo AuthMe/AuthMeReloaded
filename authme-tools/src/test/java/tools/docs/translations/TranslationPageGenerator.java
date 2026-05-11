@@ -133,6 +133,7 @@ public class TranslationPageGenerator implements AutoToolTask {
             .put("sk", "Slovakian")
             .put("sr", "Serbian")
             .put("tr", "Turkish")
+            .put("tt", "Tatar")
             .put("uk", "Ukrainian")
             .put("vn", "Vietnamese")
             .put("zhcn", "Chinese (China)")
