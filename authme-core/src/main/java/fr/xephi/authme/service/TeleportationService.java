@@ -205,6 +205,10 @@ public class TeleportationService implements Reloadable {
                     logger.debug("Teleporting `{0}` after login, based on the remembered join location",
                         player.getName());
                     location = joinLocation;
+                } else if (hasDefaultStoredQuitLocation(auth)) {
+                    logger.debug("Skipping teleport of `{0}` after login: no real quit location saved (resetpos sentinel)",
+                        player.getName());
+                    return;
                 } else {
                     logger.debug("Teleporting `{0}` after login, based on the player auth", player.getName());
                 }
