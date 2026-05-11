@@ -28,9 +28,7 @@ libraries:
   - com.mysql:mysql-connector-j:${dependencies.mysql-connector-j.version}
   - org.mariadb.jdbc:mariadb-java-client:${dependencies.mariadb-java-client.version}
   - org.postgresql:postgresql:${dependencies.postgresql.version}
-  - de.rtner:PBKDF2:${dependencies.pbkdf2.version}
-  - de.mkammerer:argon2-jvm-nolibs:${dependencies.argon2-jvm-nolibs.version}
-  - at.favre.lib:bcrypt:${dependencies.bcrypt.version}
+  - org.bouncycastle:bcprov-jdk18on:${dependencies.bcprov.version}
   - com.warrenstrange:googleauth:${dependencies.googleauth.version}
   - ch.jalu:configme:${dependencies.configme.version}
   - org.bstats:bstats-bukkit:${dependencies.bstats.version}

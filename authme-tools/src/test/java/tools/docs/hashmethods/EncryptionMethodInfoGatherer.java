@@ -2,12 +2,10 @@ package tools.docs.hashmethods;
 
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.security.HashAlgorithm;
-import fr.xephi.authme.security.crypts.Argon2;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HexSaltedMethod;
 import fr.xephi.authme.security.crypts.description.AsciiRestricted;
@@ -38,7 +36,7 @@ public class EncryptionMethodInfoGatherer {
     private Map<HashAlgorithm, MethodDescription> descriptions;
 
     public EncryptionMethodInfoGatherer() {
-        ConsoleLogger.initialize(Logger.getAnonymousLogger(), null); // set logger because of Argon2.isLibraryLoaded()
+        ConsoleLogger.initialize(Logger.getAnonymousLogger(), null);
         descriptions = new LinkedHashMap<>();
         constructDescriptions();
     }
@@ -83,11 +81,6 @@ public class EncryptionMethodInfoGatherer {
     }
 
     private static EncryptionMethod createEncryptionMethod(Class<? extends EncryptionMethod> clazz) {
-        if (clazz == Argon2.class && !Argon2.isLibraryLoaded()) {
-            // The library for Argon2 isn't installed, so override the hash implementation to avoid using the library
-            return new Argon2DummyExtension();
-        }
-
         EncryptionMethod method = injector.createIfHasDependencies(clazz);
         if (method == null) {
             throw new NullPointerException("Failed to instantiate '" + clazz + "'. Is a dependency missing?");
@@ -167,11 +160,4 @@ public class EncryptionMethodInfoGatherer {
         return injector;
     }
 
-    private static final class Argon2DummyExtension extends Argon2 {
-        @Override
-        public String computeHash(String password) {
-            // Argon2 produces hashes of 96 characters -> return dummy value with this length
-            return Strings.repeat(".", 96);
-        }
-    }
 }

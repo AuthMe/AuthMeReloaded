@@ -1,27 +1,29 @@
 package fr.xephi.authme.security.crypts;
 
 import com.google.common.primitives.Ints;
-import de.rtner.security.auth.spi.PBKDF2Engine;
-import de.rtner.security.auth.spi.PBKDF2Parameters;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.security.crypts.description.AsciiRestricted;
+import org.bouncycastle.crypto.generators.PKCS5S2ParametersGenerator;
+import org.bouncycastle.crypto.digests.SHA256Digest;
+import org.bouncycastle.crypto.params.KeyParameter;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.Base64;
 
 @AsciiRestricted
 public class Pbkdf2Django extends HexSaltedMethod {
 
     private static final int DEFAULT_ITERATIONS = 24000;
+    private static final int HASH_BYTES = 32;
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(Pbkdf2Django.class);
 
     @Override
     public String computeHash(String password, String salt, String name) {
-        String result = "pbkdf2_sha256$" + DEFAULT_ITERATIONS + "$" + salt + "$";
-        PBKDF2Parameters params = new PBKDF2Parameters("HmacSHA256", "ASCII", salt.getBytes(), DEFAULT_ITERATIONS);
-        PBKDF2Engine engine = new PBKDF2Engine(params);
-
-        return result + Base64.getEncoder().encodeToString(engine.deriveKey(password, 32));
+        byte[] derived = derive(password, salt.getBytes(StandardCharsets.US_ASCII), DEFAULT_ITERATIONS);
+        return "pbkdf2_sha256$" + DEFAULT_ITERATIONS + "$" + salt + "$"
+            + Base64.getEncoder().encodeToString(derived);
     }
 
     @Override
@@ -35,12 +37,10 @@ public class Pbkdf2Django extends HexSaltedMethod {
             logger.warning("Cannot read number of rounds for Pbkdf2Django: '" + line[1] + "'");
             return false;
         }
-
         String salt = line[2];
-        byte[] derivedKey = Base64.getDecoder().decode(line[3]);
-        PBKDF2Parameters params = new PBKDF2Parameters("HmacSHA256", "ASCII", salt.getBytes(), iterations, derivedKey);
-        PBKDF2Engine engine = new PBKDF2Engine(params);
-        return engine.verifyKey(password);
+        byte[] expected = Base64.getDecoder().decode(line[3]);
+        byte[] computed = derive(password, salt.getBytes(StandardCharsets.US_ASCII), iterations);
+        return MessageDigest.isEqual(computed, expected);
     }
 
     @Override
@@ -48,4 +48,9 @@ public class Pbkdf2Django extends HexSaltedMethod {
         return 12;
     }
 
+    private static byte[] derive(String password, byte[] saltBytes, int iterations) {
+        PKCS5S2ParametersGenerator gen = new PKCS5S2ParametersGenerator(new SHA256Digest());
+        gen.init(password.getBytes(StandardCharsets.US_ASCII), saltBytes, iterations);
+        return ((KeyParameter) gen.generateDerivedMacParameters(HASH_BYTES * 8)).getKey();
+    }
 }

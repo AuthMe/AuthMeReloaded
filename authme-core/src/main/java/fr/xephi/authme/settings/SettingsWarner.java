@@ -3,12 +3,9 @@ package fr.xephi.authme.settings;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
-import fr.xephi.authme.security.HashAlgorithm;
-import fr.xephi.authme.security.crypts.Argon2;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.settings.properties.SecuritySettings;
 
 import javax.inject.Inject;
 
@@ -53,13 +50,6 @@ public class SettingsWarner {
             logger.warning("Warning: Session timeout needs to be positive in order to work!");
         }
 
-        // Check if argon2 library is present and can be loaded
-        if (settings.getProperty(SecuritySettings.PASSWORD_HASH).equals(HashAlgorithm.ARGON2)
-            && !Argon2.isLibraryLoaded()) {
-            logger.warning("WARNING!!! You use Argon2 Hash Algorithm method but we can't find the Argon2 "
-                + "library on your system! See https://github.com/AuthMe/AuthMeReloaded/wiki/Argon2-as-Password-Hash");
-            authMe.stopOrUnload();
-        }
     }
 
 }

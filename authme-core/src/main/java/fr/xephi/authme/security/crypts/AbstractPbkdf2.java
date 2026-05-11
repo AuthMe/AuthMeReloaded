@@ -1,9 +1,13 @@
 package fr.xephi.authme.security.crypts;
 
-import de.rtner.security.auth.spi.PBKDF2Engine;
-import de.rtner.security.auth.spi.PBKDF2Parameters;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import org.bouncycastle.crypto.generators.PKCS5S2ParametersGenerator;
+import org.bouncycastle.crypto.digests.SHA256Digest;
+import org.bouncycastle.crypto.params.KeyParameter;
+
+import java.security.MessageDigest;
+import java.nio.charset.StandardCharsets;
 
 public abstract class AbstractPbkdf2 extends HexSaltedMethod {
 
@@ -15,12 +19,13 @@ public abstract class AbstractPbkdf2 extends HexSaltedMethod {
     }
 
     protected byte[] deriveKey(String password, byte[] saltBytes, int iterations, int keyLength) {
-        PBKDF2Parameters params = new PBKDF2Parameters("HmacSHA256", "UTF-8", saltBytes, iterations);
-        return new PBKDF2Engine(params).deriveKey(password, keyLength);
+        PKCS5S2ParametersGenerator gen = new PKCS5S2ParametersGenerator(new SHA256Digest());
+        gen.init(password.getBytes(StandardCharsets.UTF_8), saltBytes, iterations);
+        return ((KeyParameter) gen.generateDerivedMacParameters(keyLength * 8)).getKey();
     }
 
     protected boolean verifyKey(String password, byte[] saltBytes, int iterations, byte[] expectedKey) {
-        PBKDF2Parameters params = new PBKDF2Parameters("HmacSHA256", "UTF-8", saltBytes, iterations, expectedKey);
-        return new PBKDF2Engine(params).verifyKey(password);
+        byte[] computed = deriveKey(password, saltBytes, iterations, expectedKey.length);
+        return MessageDigest.isEqual(computed, expectedKey);
     }
 }

@@ -82,12 +82,10 @@ The tooling lives in `authme-tools`, but you can run it directly from the reposi
 mvn -q -pl authme-tools -am -P run-tools process-test-classes
 
 # Regenerate repository docs
-mvn -q -pl authme-tools -am -P run-tools process-test-classes \
-  -Dexec.args=updateDocs
+mvn -q -pl authme-tools -am -P run-tools process-test-classes "-Dexec.args=updateDocs"
 
 # Regenerate generated command/plugin manifests
-mvn -q -pl authme-tools -am -P run-tools process-test-classes \
-  "-Dexec.args=generateCommandsYml generatePluginYml"
+mvn -q -pl authme-tools -am -P run-tools process-test-classes "-Dexec.args=generateCommandsYml generatePluginYml"
 ```
 
 ## Generated files
