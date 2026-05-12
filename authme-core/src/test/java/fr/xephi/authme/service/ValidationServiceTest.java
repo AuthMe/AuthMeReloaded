@@ -30,6 +30,7 @@ import java.util.OptionalLong;
 import java.util.logging.Logger;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskAsynchronously;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -59,6 +60,8 @@ public class ValidationServiceTest {
     private GeoIpService geoIpService;
     @Mock
     private PwnedPasswordService pwnedPasswordService;
+    @Mock
+    private BukkitService bukkitService;
     @Captor
     private ArgumentCaptor<String> stringCaptor;
 
@@ -72,6 +75,7 @@ public class ValidationServiceTest {
         given(settings.getProperty(EmailSettings.MAX_REG_PER_EMAIL)).willReturn(3);
         given(settings.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(newHashSet("name01", "npc"));
         given(settings.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)).willReturn(false);
+        setBukkitServiceToRunTaskAsynchronously(bukkitService);
     }
 
     @Test
@@ -128,7 +132,7 @@ public class ValidationServiceTest {
         given(pwnedPasswordService.getPwnedCount("safePass")).willReturn(OptionalLong.of(42));
 
         // when
-        ValidationResult error = validationService.validatePassword("safePass", "some_user");
+        ValidationResult error = validationService.validatePasswordAsync("safePass", "some_user").join();
 
         // then
         assertErrorEquals(error, MessageKey.PASSWORD_PWNED_ERROR, "42");
@@ -142,7 +146,7 @@ public class ValidationServiceTest {
         given(pwnedPasswordService.getPwnedCount("safePass")).willReturn(OptionalLong.of(10));
 
         // when
-        ValidationResult error = validationService.validatePassword("safePass", "some_user");
+        ValidationResult error = validationService.validatePasswordAsync("safePass", "some_user").join();
 
         // then
         assertThat(error.hasError(), equalTo(false));
@@ -156,7 +160,7 @@ public class ValidationServiceTest {
         given(pwnedPasswordService.getPwnedCount("safePass")).willReturn(OptionalLong.empty());
 
         // when
-        ValidationResult error = validationService.validatePassword("safePass", "some_user");
+        ValidationResult error = validationService.validatePasswordAsync("safePass", "some_user").join();
 
         // then
         assertThat(error.hasError(), equalTo(false));
@@ -469,4 +473,3 @@ public class ValidationServiceTest {
         assertThat(validationResult.getArgs(), equalTo(args));
     }
 }
-

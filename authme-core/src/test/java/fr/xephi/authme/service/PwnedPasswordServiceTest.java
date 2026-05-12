@@ -46,6 +46,21 @@ class PwnedPasswordServiceTest {
     }
 
     @Test
+    void shouldHashPasswordWithUtf8Encoding() {
+        // given
+        TestPwnedPasswordService service = new TestPwnedPasswordService(
+            "494475F5F874980B7676D511E23D886DA64:123");
+
+        // when
+        OptionalLong count = service.getPwnedCount("pässword");
+
+        // then
+        assertThat(count.isPresent(), equalTo(true));
+        assertThat(count.getAsLong(), equalTo(123L));
+        assertThat(service.requestedHashPrefix, equalTo("23B74"));
+    }
+
+    @Test
     void shouldReturnEmptyWhenRangeRequestFails() {
         // given
         TestPwnedPasswordService service = new TestPwnedPasswordService(new IOException("boom"));

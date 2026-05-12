@@ -11,7 +11,6 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
-import fr.xephi.authme.service.ValidationService.ValidationResult;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -49,37 +48,39 @@ public class RegisterAdminCommand implements ExecutableCommand {
         final String playerNameLowerCase = playerName.toLowerCase(Locale.ROOT);
 
         // Command logic
-        ValidationResult passwordValidation = validationService.validatePassword(playerPass, playerName);
-        if (passwordValidation.hasError()) {
-            commonService.send(sender, passwordValidation.getMessageKey(), passwordValidation.getArgs());
-            return;
-        }
-
-        bukkitService.runTaskOptionallyAsync(() -> {
-            if (dataSource.isAuthAvailable(playerNameLowerCase)) {
-                commonService.send(sender, MessageKey.NAME_ALREADY_REGISTERED);
-                return;
-            }
-            HashedPassword hashedPassword = passwordSecurity.computeHash(playerPass, playerNameLowerCase);
-            PlayerAuth auth = PlayerAuth.builder()
-                .name(playerNameLowerCase)
-                .realName(playerName)
-                .password(hashedPassword)
-                .registrationDate(System.currentTimeMillis())
-                .build();
-
-            if (!dataSource.saveAuth(auth)) {
-                commonService.send(sender, MessageKey.ERROR);
+        validationService.validatePasswordAsync(playerPass, playerName).thenAccept(passwordValidation -> {
+            if (passwordValidation.hasError()) {
+                commonService.send(sender, passwordValidation.getMessageKey(), passwordValidation.getArgs());
                 return;
             }
 
-            commonService.send(sender, MessageKey.REGISTER_SUCCESS);
-            logger.info(sender.getName() + " registered " + playerName);
-            final Player player = bukkitService.getPlayerExact(playerName);
-            if (player != null) {
-                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player,
-                    () -> player.kickPlayer(commonService.retrieveSingleMessage(player, MessageKey.KICK_FOR_ADMIN_REGISTER)));
-            }
+            bukkitService.runTaskOptionallyAsync(() -> {
+                if (dataSource.isAuthAvailable(playerNameLowerCase)) {
+                    commonService.send(sender, MessageKey.NAME_ALREADY_REGISTERED);
+                    return;
+                }
+                HashedPassword hashedPassword = passwordSecurity.computeHash(playerPass, playerNameLowerCase);
+                PlayerAuth auth = PlayerAuth.builder()
+                    .name(playerNameLowerCase)
+                    .realName(playerName)
+                    .password(hashedPassword)
+                    .registrationDate(System.currentTimeMillis())
+                    .build();
+
+                if (!dataSource.saveAuth(auth)) {
+                    commonService.send(sender, MessageKey.ERROR);
+                    return;
+                }
+
+                commonService.send(sender, MessageKey.REGISTER_SUCCESS);
+                logger.info(sender.getName() + " registered " + playerName);
+                final Player player = bukkitService.getPlayerExact(playerName);
+                if (player != null) {
+                    bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player,
+                        () -> player.kickPlayer(
+                            commonService.retrieveSingleMessage(player, MessageKey.KICK_FOR_ADMIN_REGISTER)));
+                }
+            });
         });
     }
 }

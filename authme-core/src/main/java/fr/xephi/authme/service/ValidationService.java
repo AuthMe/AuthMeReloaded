@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.OptionalLong;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
 import static fr.xephi.authme.util.StringUtils.isInsideString;
@@ -51,6 +52,8 @@ public class ValidationService implements Reloadable {
     private GeoIpService geoIpService;
     @Inject
     private PwnedPasswordService pwnedPasswordService;
+    @Inject
+    private BukkitService bukkitService;
 
     private Pattern passwordRegex;
     private Multimap<String, String> restrictedNames;
@@ -85,12 +88,41 @@ public class ValidationService implements Reloadable {
             return new ValidationResult(MessageKey.INVALID_PASSWORD_LENGTH);
         } else if (settings.getProperty(SecuritySettings.UNSAFE_PASSWORDS).contains(passLow)) {
             return new ValidationResult(MessageKey.PASSWORD_UNSAFE_ERROR);
-        } else if (settings.getProperty(SecuritySettings.ENABLE_PWNED_PASSWORD_CHECK)) {
-            OptionalLong pwnedCount = pwnedPasswordService.getPwnedCount(password);
-            int threshold = settings.getProperty(SecuritySettings.PWNED_PASSWORD_CHECK_THRESHOLD);
-            if (pwnedCount.isPresent() && pwnedCount.getAsLong() > threshold) {
-                return new ValidationResult(MessageKey.PASSWORD_PWNED_ERROR, Long.toString(pwnedCount.getAsLong()));
+        }
+        return new ValidationResult();
+    }
+
+    /**
+     * Verifies whether a password is valid, including the optional Pwned Passwords API check.
+     *
+     * @param password the password to verify
+     * @param username the username the password is associated with
+     * @return the validation result future
+     */
+    public CompletableFuture<ValidationResult> validatePasswordAsync(String password, String username) {
+        ValidationResult validationResult = validatePassword(password, username);
+        if (validationResult.hasError() || !settings.getProperty(SecuritySettings.ENABLE_PWNED_PASSWORD_CHECK)) {
+            return CompletableFuture.completedFuture(validationResult);
+        }
+
+        CompletableFuture<ValidationResult> future = new CompletableFuture<>();
+        bukkitService.runTaskAsynchronously(() -> {
+            try {
+                future.complete(validatePwnedPassword(password));
+            } catch (RuntimeException e) {
+                future.completeExceptionally(e);
+            } catch (Error e) {
+                future.completeExceptionally(e);
             }
+        });
+        return future;
+    }
+
+    private ValidationResult validatePwnedPassword(String password) {
+        OptionalLong pwnedCount = pwnedPasswordService.getPwnedCount(password);
+        int threshold = settings.getProperty(SecuritySettings.PWNED_PASSWORD_CHECK_THRESHOLD);
+        if (pwnedCount.isPresent() && pwnedCount.getAsLong() > threshold) {
+            return new ValidationResult(MessageKey.PASSWORD_PWNED_ERROR, Long.toString(pwnedCount.getAsLong()));
         }
         return new ValidationResult();
     }

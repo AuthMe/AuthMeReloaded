@@ -4,13 +4,16 @@ import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.security.HashUtils;
+import fr.xephi.authme.security.MessageDigestAlgorithm;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.Locale;
 import java.util.OptionalLong;
 import java.util.stream.Collectors;
@@ -35,7 +38,7 @@ public class PwnedPasswordService {
      * @return the count, 0 when absent, or empty if the API could not be queried
      */
     public OptionalLong getPwnedCount(String password) {
-        String hash = HashUtils.sha1(password).toUpperCase(Locale.ROOT);
+        String hash = sha1Utf8(password).toUpperCase(Locale.ROOT);
         String hashPrefix = hash.substring(0, HASH_PREFIX_LENGTH);
         String hashSuffix = hash.substring(HASH_PREFIX_LENGTH);
 
@@ -96,5 +99,11 @@ public class PwnedPasswordService {
             logger.debug("Could not parse Pwned Passwords count: {0}", count);
             return OptionalLong.empty();
         }
+    }
+
+    private static String sha1Utf8(String password) {
+        MessageDigest digest = HashUtils.getDigest(MessageDigestAlgorithm.SHA1);
+        byte[] hashedPassword = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+        return String.format("%0" + (hashedPassword.length << 1) + "x", new BigInteger(1, hashedPassword));
     }
 }

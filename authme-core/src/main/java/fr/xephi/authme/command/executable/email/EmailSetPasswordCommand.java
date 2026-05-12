@@ -10,7 +10,6 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PasswordRecoveryService;
 import fr.xephi.authme.service.ValidationService;
-import fr.xephi.authme.service.ValidationService.ValidationResult;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -44,16 +43,17 @@ public class EmailSetPasswordCommand extends PlayerCommand {
             String name = player.getName();
             String password = arguments.get(0);
 
-            ValidationResult result = validationService.validatePassword(password, name);
-            if (!result.hasError()) {
-                HashedPassword hashedPassword = passwordSecurity.computeHash(password, name);
-                dataSource.updatePassword(name, hashedPassword);
-                recoveryService.removeFromSuccessfulRecovery(player);
-                logger.info("Player '" + name + "' has changed their password from recovery");
-                commonService.send(player, MessageKey.PASSWORD_CHANGED_SUCCESS);
-            } else {
-                commonService.send(player, result.getMessageKey(), result.getArgs());
-            }
+            validationService.validatePasswordAsync(password, name).thenAccept(result -> {
+                if (!result.hasError()) {
+                    HashedPassword hashedPassword = passwordSecurity.computeHash(password, name);
+                    dataSource.updatePassword(name, hashedPassword);
+                    recoveryService.removeFromSuccessfulRecovery(player);
+                    logger.info("Player '" + name + "' has changed their password from recovery");
+                    commonService.send(player, MessageKey.PASSWORD_CHANGED_SUCCESS);
+                } else {
+                    commonService.send(player, result.getMessageKey(), result.getArgs());
+                }
+            });
         } else {
             commonService.send(player, MessageKey.CHANGE_PASSWORD_EXPIRED);
         }
