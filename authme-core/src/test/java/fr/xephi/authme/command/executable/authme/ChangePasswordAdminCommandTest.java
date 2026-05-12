@@ -42,14 +42,15 @@ class ChangePasswordAdminCommandTest {
         // given
         String name = "theUser";
         String pass = "newPassword";
-        given(validationService.validatePassword(pass, name)).willReturn(new ValidationResult());
+        given(validationService.validatePasswordAsync(pass, name))
+            .willReturn(completedValidation(new ValidationResult()));
         CommandSender sender = mock(CommandSender.class);
 
         // when
         command.executeCommand(sender, Arrays.asList(name, pass));
 
         // then
-        verify(validationService).validatePassword(pass, name);
+        verify(validationService).validatePasswordAsync(pass, name);
         verify(management).performPasswordChangeAsAdmin(sender, name, pass);
     }
 
@@ -58,16 +59,21 @@ class ChangePasswordAdminCommandTest {
         // given
         String name = "theUser";
         String pass = "newPassword";
-        given(validationService.validatePassword(pass, name)).willReturn(
-            new ValidationResult(MessageKey.INVALID_PASSWORD_LENGTH, "7"));
+        given(validationService.validatePasswordAsync(pass, name)).willReturn(
+            completedValidation(new ValidationResult(MessageKey.INVALID_PASSWORD_LENGTH, "7")));
         CommandSender sender = mock(CommandSender.class);
 
         // when
         command.executeCommand(sender, Arrays.asList(name, pass));
 
         // then
-        verify(validationService).validatePassword(pass, name);
+        verify(validationService).validatePasswordAsync(pass, name);
         verify(commonService).send(sender, MessageKey.INVALID_PASSWORD_LENGTH, "7");
         verifyNoInteractions(management);
+    }
+
+    private static java.util.concurrent.CompletableFuture<ValidationResult> completedValidation(
+        ValidationResult validationResult) {
+        return java.util.concurrent.CompletableFuture.completedFuture(validationResult);
     }
 }

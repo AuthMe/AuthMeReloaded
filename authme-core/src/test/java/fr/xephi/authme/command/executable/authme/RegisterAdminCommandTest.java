@@ -67,15 +67,15 @@ class RegisterAdminCommandTest {
         // given
         String user = "tester";
         String password = "myPassword";
-        given(validationService.validatePassword(password, user))
-            .willReturn(new ValidationResult(MessageKey.INVALID_PASSWORD_LENGTH));
+        given(validationService.validatePasswordAsync(password, user))
+            .willReturn(completedValidation(new ValidationResult(MessageKey.INVALID_PASSWORD_LENGTH)));
         CommandSender sender = mock(CommandSender.class);
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password));
 
         // then
-        verify(validationService).validatePassword(password, user);
+        verify(validationService).validatePasswordAsync(password, user);
         verify(commandService).send(sender, MessageKey.INVALID_PASSWORD_LENGTH, new String[0]);
         verify(bukkitService, never()).runTaskAsynchronously(any(Runnable.class));
     }
@@ -85,7 +85,8 @@ class RegisterAdminCommandTest {
         // given
         String user = "my_name55";
         String password = "@some-pass@";
-        given(validationService.validatePassword(password, user)).willReturn(new ValidationResult());
+        given(validationService.validatePasswordAsync(password, user))
+            .willReturn(completedValidation(new ValidationResult()));
         given(dataSource.isAuthAvailable(user)).willReturn(true);
         CommandSender sender = mock(CommandSender.class);
         setBukkitServiceToRunTaskOptionallyAsync(bukkitService);
@@ -94,7 +95,7 @@ class RegisterAdminCommandTest {
         command.executeCommand(sender, Arrays.asList(user, password));
 
         // then
-        verify(validationService).validatePassword(password, user);
+        verify(validationService).validatePasswordAsync(password, user);
         verify(commandService).send(sender, MessageKey.NAME_ALREADY_REGISTERED);
         verify(dataSource, never()).saveAuth(any(PlayerAuth.class));
     }
@@ -104,7 +105,8 @@ class RegisterAdminCommandTest {
         // given
         String user = "test-test";
         String password = "afdjhfkt";
-        given(validationService.validatePassword(password, user)).willReturn(new ValidationResult());
+        given(validationService.validatePasswordAsync(password, user))
+            .willReturn(completedValidation(new ValidationResult()));
         given(dataSource.isAuthAvailable(user)).willReturn(false);
         given(dataSource.saveAuth(any(PlayerAuth.class))).willReturn(false);
         HashedPassword hashedPassword = new HashedPassword("235sdf4w5udsgf");
@@ -116,7 +118,7 @@ class RegisterAdminCommandTest {
         command.executeCommand(sender, Arrays.asList(user, password));
 
         // then
-        verify(validationService).validatePassword(password, user);
+        verify(validationService).validatePasswordAsync(password, user);
         verify(commandService).send(sender, MessageKey.ERROR);
         ArgumentCaptor<PlayerAuth> captor = ArgumentCaptor.forClass(PlayerAuth.class);
         verify(dataSource).saveAuth(captor.capture());
@@ -128,7 +130,8 @@ class RegisterAdminCommandTest {
         // given
         String user = "someone";
         String password = "Al1O3P49S5%";
-        given(validationService.validatePassword(password, user)).willReturn(new ValidationResult());
+        given(validationService.validatePasswordAsync(password, user))
+            .willReturn(completedValidation(new ValidationResult()));
         given(dataSource.isAuthAvailable(user)).willReturn(false);
         given(dataSource.saveAuth(any(PlayerAuth.class))).willReturn(true);
         HashedPassword hashedPassword = new HashedPassword("$aea2345EW235dfsa@#R%987048");
@@ -141,7 +144,7 @@ class RegisterAdminCommandTest {
         command.executeCommand(sender, Arrays.asList(user, password));
 
         // then
-        verify(validationService).validatePassword(password, user);
+        verify(validationService).validatePasswordAsync(password, user);
         verify(commandService).send(sender, MessageKey.REGISTER_SUCCESS);
         ArgumentCaptor<PlayerAuth> captor = ArgumentCaptor.forClass(PlayerAuth.class);
         verify(dataSource).saveAuth(captor.capture());
@@ -153,7 +156,8 @@ class RegisterAdminCommandTest {
         // given
         String user = "someone";
         String password = "Al1O3P49S5%";
-        given(validationService.validatePassword(password, user)).willReturn(new ValidationResult());
+        given(validationService.validatePasswordAsync(password, user))
+            .willReturn(completedValidation(new ValidationResult()));
         given(dataSource.isAuthAvailable(user)).willReturn(false);
         given(dataSource.saveAuth(any(PlayerAuth.class))).willReturn(true);
         HashedPassword hashedPassword = new HashedPassword("$aea2345EW235dfsa@#R%987048");
@@ -170,7 +174,7 @@ class RegisterAdminCommandTest {
         command.executeCommand(sender, Arrays.asList(user, password));
 
         // then
-        verify(validationService).validatePassword(password, user);
+        verify(validationService).validatePasswordAsync(password, user);
         verify(commandService).send(sender, MessageKey.REGISTER_SUCCESS);
         ArgumentCaptor<PlayerAuth> captor = ArgumentCaptor.forClass(PlayerAuth.class);
         verify(dataSource).saveAuth(captor.capture());
@@ -182,5 +186,10 @@ class RegisterAdminCommandTest {
         assertThat(auth.getRealName(), equalTo(name));
         assertThat(auth.getNickname(), equalTo(name.toLowerCase(Locale.ROOT)));
         assertThat(auth.getPassword(), equalTo(hashedPassword));
+    }
+
+    private static java.util.concurrent.CompletableFuture<ValidationResult> completedValidation(
+        ValidationResult validationResult) {
+        return java.util.concurrent.CompletableFuture.completedFuture(validationResult);
     }
 }
