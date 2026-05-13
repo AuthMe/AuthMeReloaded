@@ -463,6 +463,23 @@ class BungeeProxyBridgeTest {
         verify(pendingConnection).setOnlineMode(true);
     }
 
+    @Test
+    void shouldForceOnlineModeForPremiumHandshakeAfterChunkedPremiumListResync() {
+        given(pluginMessageEvent.isCancelled()).willReturn(false);
+        given(pluginMessageEvent.getTag()).willReturn(BungeeProxyBridge.AUTHME_CHANNEL);
+        given(pluginMessageEvent.getSender()).willReturn(sourceServer);
+        given(pluginMessageEvent.getData()).willReturn(createChunkPayload(0, true, "Alice"));
+        given(playerHandshakeEvent.getConnection()).willReturn(pendingConnection);
+        given(pendingConnection.getName()).willReturn("Alice");
+        given(pendingConnection.isOnlineMode()).willReturn(false);
+
+        BungeeProxyBridge bridge = new BungeeProxyBridge(proxyServer, logger, createConfiguration(), new BungeeAuthenticationStore());
+        bridge.onPluginMessage(pluginMessageEvent);
+        bridge.onPlayerHandshake(playerHandshakeEvent);
+
+        verify(pendingConnection).setOnlineMode(true);
+    }
+
     private static byte[] createChunkPayload(int seq, boolean last, String csv) {
         ByteArrayDataOutput output = ByteStreams.newDataOutput();
         output.writeUTF("premium.list.chunk");

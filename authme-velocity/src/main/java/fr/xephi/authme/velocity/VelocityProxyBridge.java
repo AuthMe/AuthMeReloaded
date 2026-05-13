@@ -231,7 +231,7 @@ final class VelocityProxyBridge {
             if (!parsedMessage.playerName().isEmpty()) {
                 for (String name : parsedMessage.playerName().split(",")) {
                     if (!name.isEmpty()) {
-                        newPremiumSet.add(name.trim());
+                        newPremiumSet.add(normalizeName(name.trim()));
                     }
                 }
             }
@@ -250,7 +250,7 @@ final class VelocityProxyBridge {
             if (!csv.isEmpty()) {
                 for (String name : csv.split(",")) {
                     if (!name.isEmpty()) {
-                        premiumListBuffer.add(name.trim());
+                        premiumListBuffer.add(normalizeName(name.trim()));
                     }
                 }
             }

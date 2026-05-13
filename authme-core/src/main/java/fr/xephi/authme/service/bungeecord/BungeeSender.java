@@ -5,6 +5,7 @@ import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.SettingsDependent;
@@ -146,8 +147,11 @@ public class BungeeSender implements SettingsDependent {
         if (!isEnabled || !plugin.isEnabled()) {
             return;
         }
+        List<String> normalizedUsernames = premiumUsernames.stream()
+            .map(name -> name.toLowerCase(Locale.ROOT))
+            .toList();
         int chunkSize = 1000;
-        int total = premiumUsernames.size();
+        int total = normalizedUsernames.size();
         if (total == 0) {
             sendPremiumListChunk(carrier, 0, true, "");
             return;
@@ -156,7 +160,7 @@ public class BungeeSender implements SettingsDependent {
         for (int i = 0; i < numChunks; i++) {
             int fromIndex = i * chunkSize;
             int toIndex = Math.min(fromIndex + chunkSize, total);
-            String csv = String.join(",", premiumUsernames.subList(fromIndex, toIndex));
+            String csv = String.join(",", normalizedUsernames.subList(fromIndex, toIndex));
             sendPremiumListChunk(carrier, i, i == numChunks - 1, csv);
         }
     }

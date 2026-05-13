@@ -228,7 +228,7 @@ public final class BungeeProxyBridge implements Listener {
             if (!parsedMessage.playerName().isEmpty()) {
                 for (String name : parsedMessage.playerName().split(",")) {
                     if (!name.isEmpty()) {
-                        newPremiumSet.add(name.trim());
+                        newPremiumSet.add(normalizeName(name.trim()));
                     }
                 }
             }
@@ -247,7 +247,7 @@ public final class BungeeProxyBridge implements Listener {
             if (!csv.isEmpty()) {
                 for (String name : csv.split(",")) {
                     if (!name.isEmpty()) {
-                        premiumListBuffer.add(name.trim());
+                        premiumListBuffer.add(normalizeName(name.trim()));
                     }
                 }
             }
