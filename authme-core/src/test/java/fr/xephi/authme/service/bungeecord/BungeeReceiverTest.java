@@ -8,8 +8,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.HashUtils;
 import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.PendingPremiumCache;
-import fr.xephi.authme.service.PremiumService;
+import fr.xephi.authme.service.ProxyLoginRequestValidator;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import org.bukkit.Server;
@@ -53,10 +52,7 @@ class BungeeReceiverTest {
     private DataSource dataSource;
 
     @Mock
-    private PendingPremiumCache pendingPremiumCache;
-
-    @Mock
-    private PremiumService premiumService;
+    private ProxyLoginRequestValidator proxyLoginRequestValidator;
 
     @Mock
     private Settings settings;
@@ -78,7 +74,8 @@ class BungeeReceiverTest {
         given(settings.getProperty(HooksSettings.BUNGEECORD)).willReturn(true);
         given(messenger.isIncomingChannelRegistered(plugin, "authme:main")).willReturn(false);
 
-        new BungeeReceiver(plugin, bukkitService, proxySessionManager, management, bungeeSender, dataSource, pendingPremiumCache, premiumService, settings);
+        new BungeeReceiver(plugin, bukkitService, proxySessionManager, management, bungeeSender, dataSource,
+            proxyLoginRequestValidator, settings);
 
         verify(messenger).registerIncomingPluginChannel(eq(plugin), eq("authme:main"), any(BungeeReceiver.class));
     }
@@ -89,7 +86,8 @@ class BungeeReceiverTest {
         given(messenger.isIncomingChannelRegistered(plugin, "authme:main")).willReturn(false, true);
 
         BungeeReceiver bungeeReceiver =
-            new BungeeReceiver(plugin, bukkitService, proxySessionManager, management, bungeeSender, dataSource, pendingPremiumCache, premiumService, settings);
+            new BungeeReceiver(plugin, bukkitService, proxySessionManager, management, bungeeSender, dataSource,
+                proxyLoginRequestValidator, settings);
         bungeeReceiver.reload(settings);
 
         verify(messenger).registerIncomingPluginChannel(plugin, "authme:main", bungeeReceiver);
@@ -102,7 +100,7 @@ class BungeeReceiverTest {
         String sharedSecret = "test-secret";
         String playerName = "Bobby";
         long timestamp = System.currentTimeMillis();
-        String hmac = HashUtils.hmacSha256(sharedSecret, playerName + ":" + timestamp);
+        String hmac = HashUtils.hmacSha256(sharedSecret, playerName + ":" + timestamp + ":");
 
         given(settings.getProperty(HooksSettings.BUNGEECORD)).willReturn(true);
         given(settings.getProperty(HooksSettings.PROXY_SHARED_SECRET)).willReturn(sharedSecret);
@@ -111,9 +109,11 @@ class BungeeReceiverTest {
         Player player = mock(Player.class);
         given(player.isOnline()).willReturn(true);
         given(bukkitService.getPlayerExact(playerName)).willReturn(player);
+        given(proxyLoginRequestValidator.validate(player, null)).willReturn(true);
 
         BungeeReceiver receiver =
-            new BungeeReceiver(plugin, bukkitService, proxySessionManager, management, bungeeSender, dataSource, pendingPremiumCache, premiumService, settings);
+            new BungeeReceiver(plugin, bukkitService, proxySessionManager, management, bungeeSender, dataSource,
+                proxyLoginRequestValidator, settings);
 
         byte[] payload = buildPerformLoginPayload(playerName, timestamp, hmac);
 
@@ -121,7 +121,7 @@ class BungeeReceiverTest {
         receiver.onPluginMessageReceived("authme:main", player, payload);
 
         // then
-        verify(proxySessionManager).processProxySessionMessage(playerName);
+        verify(proxySessionManager).processProxySessionMessage(playerName, null);
         verify(management).forceLoginFromProxy(player);
         verify(bungeeSender).sendAuthMeBungeecordMessage(player, MessageType.PERFORM_LOGIN_ACK);
     }
@@ -132,7 +132,7 @@ class BungeeReceiverTest {
         String sharedSecret = "test-secret";
         String playerName = "Bobby";
         long timestamp = System.currentTimeMillis();
-        String hmac = HashUtils.hmacSha256(sharedSecret, playerName + ":" + timestamp);
+        String hmac = HashUtils.hmacSha256(sharedSecret, playerName + ":" + timestamp + ":");
 
         given(settings.getProperty(HooksSettings.BUNGEECORD)).willReturn(true);
         given(settings.getProperty(HooksSettings.PROXY_SHARED_SECRET)).willReturn(sharedSecret);
@@ -140,7 +140,8 @@ class BungeeReceiverTest {
         given(bukkitService.getPlayerExact(playerName)).willReturn(null);
 
         BungeeReceiver receiver =
-            new BungeeReceiver(plugin, bukkitService, proxySessionManager, management, bungeeSender, dataSource, pendingPremiumCache, premiumService, settings);
+            new BungeeReceiver(plugin, bukkitService, proxySessionManager, management, bungeeSender, dataSource,
+                proxyLoginRequestValidator, settings);
 
         Player carrier = mock(Player.class);
         byte[] payload = buildPerformLoginPayload(playerName, timestamp, hmac);
@@ -149,7 +150,7 @@ class BungeeReceiverTest {
         receiver.onPluginMessageReceived("authme:main", carrier, payload);
 
         // then
-        verify(proxySessionManager).processProxySessionMessage(playerName);
+        verify(proxySessionManager).processProxySessionMessage(playerName, null);
         verify(management, never()).forceLoginFromProxy(any());
         verify(bungeeSender, never()).sendAuthMeBungeecordMessage(any(), any());
     }
@@ -159,6 +160,7 @@ class BungeeReceiverTest {
         out.writeUTF(MessageType.PERFORM_LOGIN.getId());
         out.writeUTF(playerName);
         out.writeLong(timestamp);
+        out.writeUTF("");
         out.writeUTF(hmac);
         return out.toByteArray();
     }

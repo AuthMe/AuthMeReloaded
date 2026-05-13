@@ -209,6 +209,29 @@ chatRequiresAuth: true
 
 ---
 
+### Premium UUID compatibility — `premium.keepOfflineUuidCompatibility`
+
+Controls how the AuthMe proxy plugins expose **premium** players to backend servers.
+
+```yaml
+premium:
+  keepOfflineUuidCompatibility: false   # default
+```
+
+- `false` (**default**) — premium players keep their **Mojang UUID v4** on the backend
+- `true` — premium players keep the backend **offline UUID v3** for plugin compatibility
+
+Behavior by proxy:
+
+| Proxy | `false` | `true` |
+|---|---|---|
+| Velocity | Native per-player online mode, Mojang UUID forwarded | Same native login flow, but the final profile is rewritten back to offline UUID |
+| BungeeCord / Waterfall | Local per-player online-mode handshake, Mojang UUID forwarded | PacketEvents login-phase verification, then resume offline login |
+
+PacketEvents is only required on the **Bungee** proxy when this setting is `true`.
+
+---
+
 ## Multi-proxy setup
 
 Some networks run multiple proxy instances behind a load balancer (e.g., two Velocity nodes behind HAProxy or TCPShield). The following explains what works automatically and what requires manual coordination.

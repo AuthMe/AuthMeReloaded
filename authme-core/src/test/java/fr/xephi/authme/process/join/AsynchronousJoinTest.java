@@ -13,10 +13,13 @@ import fr.xephi.authme.process.register.AsyncRegister;
 import fr.xephi.authme.service.PreJoinDialogService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.PendingPremiumCache;
 import fr.xephi.authme.service.PremiumLoginVerifier;
+import fr.xephi.authme.service.PremiumService;
 import fr.xephi.authme.service.DialogStateService;
 import fr.xephi.authme.service.DialogWindowService;
 import fr.xephi.authme.service.PluginHookService;
+import fr.xephi.authme.service.ProxyLoginRequestValidator;
 import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
@@ -37,6 +40,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.util.UUID;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -96,6 +100,12 @@ public class AsynchronousJoinTest {
     private PreJoinDialogService preJoinDialogService;
     @Mock
     private PremiumLoginVerifier premiumLoginVerifier;
+    @Mock
+    private PendingPremiumCache pendingPremiumCache;
+    @Mock
+    private PremiumService premiumService;
+    @Mock
+    private ProxyLoginRequestValidator proxyLoginRequestValidator;
 
     @BeforeAll
     public static void initLogger() {
@@ -199,7 +209,9 @@ public class AsynchronousJoinTest {
         // given
         Player player = mockPlayer("Bobby");
         setUpRegisteredJoin(player);
-        given(proxySessionManager.shouldResumeSession("bobby")).willReturn(true);
+        given(proxySessionManager.consumeLoginRequest("bobby"))
+            .willReturn(new ProxySessionManager.ProxyLoginRequest("bobby", null));
+        given(proxyLoginRequestValidator.validate(player, null)).willReturn(true);
 
         // when
         asynchronousJoin.processJoin(player);
@@ -231,6 +243,33 @@ public class AsynchronousJoinTest {
         verify(limboService).createLimboPlayer(player, true);
         verify(asynchronousLogin).login(player, "hunter2");
         verify(dialogAdapter, never()).showLoginDialog(eq(player), any(DialogWindowSpec.class));
+    }
+
+    @Test
+    public void shouldWaitForSignedProxyPremiumLoginWithoutFailingPendingEnrollment() {
+        // given
+        Player player = mockPlayer("Bobby");
+        setUpRegisteredJoin(player);
+        given(service.getProperty(PremiumSettings.ENABLE_PREMIUM)).willReturn(true);
+        given(bungeeSender.isEnabled()).willReturn(true);
+        UUID offlineUuid = UUID.fromString("f0647d73-8421-3979-bdb6-6b88dc3d03d4");
+        UUID pendingPremiumUuid = UUID.fromString("8d6d0684-d8b4-4d40-8d2d-0dd4df5555c8");
+        given(player.getUniqueId()).willReturn(offlineUuid);
+
+        fr.xephi.authme.data.auth.PlayerAuth auth = mock(fr.xephi.authme.data.auth.PlayerAuth.class);
+        given(database.getAuth("bobby")).willReturn(auth);
+        given(auth.isPremium()).willReturn(false);
+        given(pendingPremiumCache.getPendingUuid("Bobby")).willReturn(pendingPremiumUuid);
+
+        // when
+        asynchronousJoin.processJoin(player);
+
+        // then
+        verify(pendingPremiumCache, never()).removePending("Bobby");
+        verify(bungeeSender, never()).sendPremiumUnset("Bobby");
+        verify(service, never()).send(eq(player), eq(fr.xephi.authme.message.MessageKey.PREMIUM_PENDING_FAIL));
+        verify(premiumService, never()).finalizePendingPremium(any(), any());
+        verify(limboService).createLimboPlayer(player, true);
     }
 
     @Test
@@ -284,6 +323,7 @@ public class AsynchronousJoinTest {
         given(sessionService.canResumeSession(player)).willReturn(false);
         given(proxySessionManager.shouldResumeSession(normalizedName)).willReturn(false);
         given(service.getProperty(RestrictionSettings.LOGIN_TIMEOUT)).willReturn(30);
+        given(service.getProperty(RegistrationSettings.USE_DIALOG_UI)).willReturn(false);
         given(pluginHookService.isEssentialsAvailable()).willReturn(false);
         given(service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)).willReturn(false);
     }
