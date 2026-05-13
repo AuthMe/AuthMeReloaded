@@ -1,5 +1,5 @@
 # AUTO-GENERATED FILE! Do not edit this directly
-# File auto-generated on Wed May 06 00:22:42 CEST 2026. See authme-tools/src/test/java/tools/docs/proxies/velocity/config.tpl.yml
+# File auto-generated on Wed May 13 01:10:04 CEST 2026. See authme-tools/src/test/java/tools/docs/proxies/velocity/config.tpl.yml
 #
 # Reference configuration for the native AuthMe Velocity proxy plugin.
 # The live file is created in plugins/authmevelocity/config.yml.
@@ -43,4 +43,9 @@ loginServer: ''
 # Generated automatically on first start — copy this value to the proxySharedSecret
 # setting of every backend server running AuthMe.
 proxySharedSecret: ''
+premium:
+    # Keep verified premium players on the backend offline UUID for plugin compatibility.
+    # When false, premium players keep their Mojang UUID on the backend instead.
+    # Velocity can do both modes natively; false is the default.
+    keepOfflineUuidCompatibility: false
 

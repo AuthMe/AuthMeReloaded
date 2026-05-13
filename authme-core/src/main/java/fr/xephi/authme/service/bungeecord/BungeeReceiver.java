@@ -11,10 +11,10 @@ import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.HashUtils;
 import fr.xephi.authme.service.BukkitService;
-import fr.xephi.authme.service.PendingPremiumCache;
-import fr.xephi.authme.service.PremiumService;
+import fr.xephi.authme.service.ProxyLoginRequestValidator;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.util.UuidUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -35,8 +35,7 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
     private final Management management;
     private final BungeeSender bungeeSender;
     private final DataSource dataSource;
-    private final PendingPremiumCache pendingPremiumCache;
-    private final PremiumService premiumService;
+    private final ProxyLoginRequestValidator proxyLoginRequestValidator;
 
     private static final String AUTHME_CHANNEL = "authme:main";
     private static final long MAX_AGE_MILLIS = 30_000L;
@@ -47,16 +46,14 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
     @Inject
     BungeeReceiver(AuthMe plugin, BukkitService bukkitService, ProxySessionManager proxySessionManager,
                    Management management, BungeeSender bungeeSender, DataSource dataSource,
-                   PendingPremiumCache pendingPremiumCache, PremiumService premiumService,
-                   Settings settings) {
+                   ProxyLoginRequestValidator proxyLoginRequestValidator, Settings settings) {
         this.plugin = plugin;
         this.bukkitService = bukkitService;
         this.proxySessionManager = proxySessionManager;
         this.management = management;
         this.bungeeSender = bungeeSender;
         this.dataSource = dataSource;
-        this.pendingPremiumCache = pendingPremiumCache;
-        this.premiumService = premiumService;
+        this.proxyLoginRequestValidator = proxyLoginRequestValidator;
         reload(settings);
     }
 
@@ -130,27 +127,41 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
 
         if (type.get() == MessageType.PERFORM_LOGIN) {
             long timestamp;
+            String uuidOrHmac;
+            UUID verifiedPremiumUuid = null;
             String hmac;
             try {
                 timestamp = in.readLong();
-                hmac = in.readUTF();
+                uuidOrHmac = in.readUTF();
             } catch (IllegalStateException e) {
                 logger.warning("Received perform.login without HMAC — update your proxy plugin");
                 return;
             }
-            if (!verifyHmac(argument, timestamp, hmac)) {
+            try {
+                UUID parsedUuid = UuidUtils.parseUuidSafely(uuidOrHmac);
+                if (parsedUuid != null || uuidOrHmac.isEmpty()) {
+                    verifiedPremiumUuid = parsedUuid;
+                    hmac = in.readUTF();
+                } else {
+                    hmac = uuidOrHmac;
+                }
+            } catch (IllegalStateException e) {
+                hmac = uuidOrHmac;
+            }
+            if (!verifyHmac(argument, timestamp, verifiedPremiumUuid, hmac)) {
                 return;
             }
-            performLogin(argument);
+            performLogin(argument, verifiedPremiumUuid);
         }
     }
 
-    private boolean verifyHmac(String playerName, long timestamp, String providedHmac) {
+    private boolean verifyHmac(String playerName, long timestamp, UUID verifiedPremiumUuid, String providedHmac) {
         if (Math.abs(System.currentTimeMillis() - timestamp) > MAX_AGE_MILLIS) {
             logger.warning("Rejected perform.login for " + playerName + ": message has expired");
             return false;
         }
-        String expectedHmac = HashUtils.hmacSha256(proxySharedSecret, playerName + ":" + timestamp);
+        String expectedHmac = HashUtils.hmacSha256(proxySharedSecret,
+            buildPerformLoginPayload(playerName, timestamp, verifiedPremiumUuid));
         if (!HashUtils.isEqual(expectedHmac, providedHmac)) {
             logger.warning("Rejected perform.login for " + playerName + ": invalid HMAC");
             return false;
@@ -158,39 +169,45 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
         return true;
     }
 
-    private void performLogin(String name) {
+    private String buildPerformLoginPayload(String playerName, long timestamp, UUID verifiedPremiumUuid) {
+        return playerName + ":" + timestamp + ":" + (verifiedPremiumUuid == null ? "" : verifiedPremiumUuid);
+    }
+
+    private void performLogin(String name, UUID verifiedPremiumUuid) {
         logger.debug("Received perform.login request for {0}", name);
         // Always queue in the proxy session manager so processJoin can consume it even when
         // the player is already online (PlayerJoinEvent fires before ServerSwitchEvent on the
         // proxy, so processJoin may run before perform.login arrives at this backend).
-        proxySessionManager.processProxySessionMessage(name);
+        proxySessionManager.processProxySessionMessage(name, verifiedPremiumUuid);
         Player player = bukkitService.getPlayerExact(name);
         if (player != null && player.isOnline()) {
-            // If the player has a pending premium verification, the proxy has already confirmed
-            // their Mojang identity via its own online-mode handshake (UUID v4). Finalize the
-            // verification before force-logging them in so the UUID is persisted to the database.
-            UUID pendingUuid = pendingPremiumCache.removePending(name);
-            if (pendingUuid != null) {
-                UUID playerId = player.getUniqueId();
-                if (playerId.version() == 4) {
-                    premiumService.finalizePendingPremium(player, playerId);
-                } else {
-                    // Unexpected: proxy sent PERFORM_LOGIN but player has an offline UUID.
-                    // Discard the pending state and let the player use a password.
-                    logger.warning("Received PERFORM_LOGIN for pending-premium player " + name
-                        + " but their UUID is not v4 — discarding pending verification");
-                    bungeeSender.sendPremiumUnset(name);
-                }
+            if (verifiedPremiumUuid == null) {
+                completeProxyLogin(player);
+            } else {
+                bukkitService.runTaskAsynchronously(() -> {
+                    if (!proxyLoginRequestValidator.validate(player, verifiedPremiumUuid)) {
+                        proxySessionManager.removeLoginRequest(name);
+                        return;
+                    }
+                    bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player, () -> {
+                        if (player.isOnline()) {
+                            completeProxyLogin(player);
+                        }
+                    });
+                });
             }
-            // Player is already online: also drive the login directly in case processJoin
-            // has already run past the proxy-session check and created a limbo player.
-            management.forceLoginFromProxy(player);
-            logger.debug("Sending auto-login ACK for {0}", player.getName());
-            bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.PERFORM_LOGIN_ACK);
-            logger.info(player.getName() + " has been automatically logged in via proxy request.");
         } else {
             logger.info(name + " is not yet online; queued for auto-login when they connect.");
         }
+    }
+
+    private void completeProxyLogin(Player player) {
+        // Player is already online: also drive the login directly in case processJoin
+        // has already run past the proxy-session check and created a limbo player.
+        management.forceLoginFromProxy(player);
+        logger.debug("Sending auto-login ACK for {0}", player.getName());
+        bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.PERFORM_LOGIN_ACK);
+        logger.info(player.getName() + " has been automatically logged in via proxy request.");
     }
 
 }

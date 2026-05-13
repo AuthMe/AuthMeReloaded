@@ -9,8 +9,8 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
+import net.md_5.bungee.api.event.PlayerHandshakeEvent;
 import net.md_5.bungee.api.event.PluginMessageEvent;
-import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import org.junit.jupiter.api.Test;
@@ -78,6 +78,9 @@ class BungeeProxyBridgeTest {
 
     @Mock
     private ServerConnectEvent serverConnectEvent;
+
+    @Mock
+    private PlayerHandshakeEvent playerHandshakeEvent;
 
     @Mock
     private PendingConnection pendingConnection;
@@ -160,7 +163,7 @@ class BungeeProxyBridgeTest {
         BungeeProxyBridge bridge = new BungeeProxyBridge(
             proxyServer, logger, new BungeeProxyConfiguration(
                 Set.of("lobby"), false, true, Set.of("/login"), true, true,
-                "Authentication required.", true, true, "limbo", "", ""),
+                "Authentication required.", true, true, "limbo", "", "", false),
             new BungeeAuthenticationStore());
         bridge.onPluginMessage(pluginMessageEvent);
 
@@ -444,93 +447,20 @@ class BungeeProxyBridgeTest {
     }
 
     @Test
-    void shouldUpdatePremiumSetAfterReceivingAllChunks() {
+    void shouldForceOnlineModeForPremiumHandshakeWhenOfflineCompatibilityDisabled() {
         given(pluginMessageEvent.isCancelled()).willReturn(false);
         given(pluginMessageEvent.getTag()).willReturn(BungeeProxyBridge.AUTHME_CHANNEL);
         given(pluginMessageEvent.getSender()).willReturn(sourceServer);
-        BungeeProxyBridge bridge = new BungeeProxyBridge(proxyServer, logger, createConfiguration(), new BungeeAuthenticationStore());
-
-        given(pluginMessageEvent.getData()).willReturn(createChunkPayload(0, false, "alice,bob"));
-        bridge.onPluginMessage(pluginMessageEvent);
-        given(pluginMessageEvent.getData()).willReturn(createChunkPayload(1, true, "charlie"));
-        bridge.onPluginMessage(pluginMessageEvent);
-
-        PreLoginEvent preLoginEvent = org.mockito.Mockito.mock(PreLoginEvent.class);
-        given(preLoginEvent.getConnection()).willReturn(pendingConnection);
+        given(pluginMessageEvent.getData()).willReturn(createAuthMePayload("premium.set", "Alice"));
+        given(playerHandshakeEvent.getConnection()).willReturn(pendingConnection);
         given(pendingConnection.getName()).willReturn("Alice");
-        bridge.onPreLogin(preLoginEvent);
+        given(pendingConnection.isOnlineMode()).willReturn(false);
+
+        BungeeProxyBridge bridge = new BungeeProxyBridge(proxyServer, logger, createConfiguration(), new BungeeAuthenticationStore());
+        bridge.onPluginMessage(pluginMessageEvent);
+        bridge.onPlayerHandshake(playerHandshakeEvent);
+
         verify(pendingConnection).setOnlineMode(true);
-    }
-
-    @Test
-    void shouldNotUpdatePremiumSetOnPartialChunkOnly() {
-        given(pluginMessageEvent.isCancelled()).willReturn(false);
-        given(pluginMessageEvent.getTag()).willReturn(BungeeProxyBridge.AUTHME_CHANNEL);
-        given(pluginMessageEvent.getSender()).willReturn(sourceServer);
-        BungeeProxyBridge bridge = new BungeeProxyBridge(proxyServer, logger, createConfiguration(), new BungeeAuthenticationStore());
-
-        // Only first chunk (not last) — set must not be updated yet
-        given(pluginMessageEvent.getData()).willReturn(createChunkPayload(0, false, "alice,bob"));
-        bridge.onPluginMessage(pluginMessageEvent);
-
-        PreLoginEvent preLoginEvent = org.mockito.Mockito.mock(PreLoginEvent.class);
-        given(preLoginEvent.getConnection()).willReturn(pendingConnection);
-        given(pendingConnection.getName()).willReturn("Alice");
-        bridge.onPreLogin(preLoginEvent);
-        verify(pendingConnection, never()).setOnlineMode(true);
-    }
-
-    @Test
-    void shouldPreservePendingPremiumStateAcrossDisconnectReconnect() {
-        given(pluginMessageEvent.isCancelled()).willReturn(false);
-        given(pluginMessageEvent.getTag()).willReturn(BungeeProxyBridge.AUTHME_CHANNEL);
-        given(pluginMessageEvent.getSender()).willReturn(sourceServer);
-        given(player.getName()).willReturn("alice");
-        BungeeProxyBridge bridge = new BungeeProxyBridge(proxyServer, logger, createConfiguration(), new BungeeAuthenticationStore());
-
-        // Backend kicks the player for premium verification and sends PREMIUM_PENDING_SET
-        given(pluginMessageEvent.getData()).willReturn(createAuthMePayload("premium.pending.set", "alice"));
-        bridge.onPluginMessage(pluginMessageEvent);
-
-        // Player is kicked by the backend — disconnect must NOT clear the pending state
-        given(playerDisconnectEvent.getPlayer()).willReturn(player);
-        bridge.onPlayerDisconnect(playerDisconnectEvent);
-
-        // On reconnect, Bungee must still force online-mode for the pending player
-        PreLoginEvent reconnectAttempt = org.mockito.Mockito.mock(PreLoginEvent.class);
-        PendingConnection reconnectConn = org.mockito.Mockito.mock(PendingConnection.class);
-        given(reconnectAttempt.getConnection()).willReturn(reconnectConn);
-        given(reconnectConn.getName()).willReturn("alice");
-        bridge.onPreLogin(reconnectAttempt);
-        verify(reconnectConn).setOnlineMode(true);
-    }
-
-    @Test
-    void shouldForceOnlineModeOnFirstPendingAttemptThenCancelOnSecond() {
-        given(pluginMessageEvent.isCancelled()).willReturn(false);
-        given(pluginMessageEvent.getTag()).willReturn(BungeeProxyBridge.AUTHME_CHANNEL);
-        given(pluginMessageEvent.getSender()).willReturn(sourceServer);
-        BungeeProxyBridge bridge = new BungeeProxyBridge(proxyServer, logger, createConfiguration(), new BungeeAuthenticationStore());
-
-        given(pluginMessageEvent.getData()).willReturn(createAuthMePayload("premium.pending.set", "alice"));
-        bridge.onPluginMessage(pluginMessageEvent);
-
-        // First reconnect: should force online-mode so Mojang can verify
-        PreLoginEvent firstAttempt = org.mockito.Mockito.mock(PreLoginEvent.class);
-        PendingConnection firstConn = org.mockito.Mockito.mock(PendingConnection.class);
-        given(firstAttempt.getConnection()).willReturn(firstConn);
-        given(firstConn.getName()).willReturn("Alice");
-        bridge.onPreLogin(firstAttempt);
-        verify(firstConn).setOnlineMode(true);
-
-        // Mojang rejected the player (no onLogin fired) — second reconnect should cancel the pending
-        // request and NOT force online-mode, so the player can rejoin in offline mode
-        PreLoginEvent secondAttempt = org.mockito.Mockito.mock(PreLoginEvent.class);
-        PendingConnection secondConn = org.mockito.Mockito.mock(PendingConnection.class);
-        given(secondAttempt.getConnection()).willReturn(secondConn);
-        given(secondConn.getName()).willReturn("Alice");
-        bridge.onPreLogin(secondAttempt);
-        verify(secondConn, never()).setOnlineMode(true);
     }
 
     private static byte[] createChunkPayload(int seq, boolean last, String csv) {
@@ -543,7 +473,7 @@ class BungeeProxyBridgeTest {
     private static BungeeProxyConfiguration createConfiguration() {
         return new BungeeProxyConfiguration(
             Set.of("lobby"), false, true, Set.of("/login", "/register", "/l", "/reg", "/email", "/captcha", "/2fa", "/totp", "/log"),
-            true, true, "Authentication required.", true, false, "", "", "test-secret");
+            true, true, "Authentication required.", true, false, "", "", "test-secret", false);
     }
 
     private static byte[] createAuthMePayload(String typeId, String playerName) {
@@ -558,8 +488,9 @@ class BungeeProxyBridgeTest {
         assertEquals("perform.login", in.readUTF());
         assertEquals(expectedPlayerName, in.readUTF());
         long timestamp = in.readLong();
+        assertEquals("", in.readUTF());
         String hmac = in.readUTF();
         assertTrue(Math.abs(System.currentTimeMillis() - timestamp) < 5000L, "timestamp should be recent");
-        assertEquals(ProxyMessageSecurity.computeHmac(sharedSecret, expectedPlayerName, timestamp), hmac);
+        assertEquals(ProxyMessageSecurity.computeHmac(sharedSecret, expectedPlayerName, timestamp, null), hmac);
     }
 }

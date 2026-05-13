@@ -7,6 +7,7 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
+import java.util.UUID;
 
 final class ProxyMessageSecurity {
 
@@ -16,11 +17,12 @@ final class ProxyMessageSecurity {
     private ProxyMessageSecurity() {
     }
 
-    static String computeHmac(String secret, String playerName, long timestamp) {
+    static String computeHmac(String secret, String playerName, long timestamp, UUID verifiedPremiumUuid) {
         try {
             Mac mac = Mac.getInstance(HMAC_ALGO);
             mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), HMAC_ALGO));
-            byte[] hmacBytes = mac.doFinal((playerName + ":" + timestamp).getBytes(StandardCharsets.UTF_8));
+            String payload = playerName + ":" + timestamp + ":" + (verifiedPremiumUuid == null ? "" : verifiedPremiumUuid);
+            byte[] hmacBytes = mac.doFinal(payload.getBytes(StandardCharsets.UTF_8));
             return HexFormat.of().formatHex(hmacBytes);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             throw new IllegalStateException("Failed to compute HMAC-SHA256", e);
@@ -31,7 +33,7 @@ final class ProxyMessageSecurity {
         if (Math.abs(System.currentTimeMillis() - timestamp) > MAX_AGE_MILLIS) {
             return false;
         }
-        String expectedHmac = computeHmac(secret, playerName, timestamp);
+        String expectedHmac = computeHmac(secret, playerName, timestamp, null);
         return MessageDigest.isEqual(
             expectedHmac.getBytes(StandardCharsets.UTF_8),
             providedHmac.getBytes(StandardCharsets.UTF_8));

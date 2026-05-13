@@ -3,6 +3,8 @@ package fr.xephi.authme.bungee;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import fr.xephi.authme.bungee.premium.BungeePremiumOnlineModeHandler;
+import fr.xephi.authme.bungee.premium.BungeePremiumVerificationManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.ProxyServer;
@@ -10,11 +12,9 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.ChatEvent;
-import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
+import net.md_5.bungee.api.event.PlayerHandshakeEvent;
 import net.md_5.bungee.api.event.PluginMessageEvent;
-import net.md_5.bungee.api.event.PostLoginEvent;
-import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -31,6 +31,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 public final class BungeeProxyBridge implements Listener {
@@ -60,11 +61,8 @@ public final class BungeeProxyBridge implements Listener {
     private List<String> premiumListBuffer = new ArrayList<>();
     // Players with a pending premium verification (ran /premium but not yet confirmed via reconnect)
     private volatile Set<String> pendingPremiumUsernames = ConcurrentHashMap.newKeySet();
-    // Players for whom we already forced online-mode once to verify premium status; if they appear
-    // in onPreLogin again without having reached onLogin, Mojang auth failed → cancel the request.
-    private final Set<String> pendingVerificationAttempted = ConcurrentHashMap.newKeySet();
-    // Players whose Mojang UUID was confirmed by the proxy during the login phase (LoginSuccess with UUID v4)
-    private final Set<String> proxyVerifiedPremium = ConcurrentHashMap.newKeySet();
+    private final BungeePremiumOnlineModeHandler premiumOnlineModeHandler;
+    private final BungeePremiumVerificationManager premiumVerificationManager;
     private final ScheduledExecutorService retryScheduler = Executors.newSingleThreadScheduledExecutor(r -> {
         Thread t = new Thread(r, "authme-bungee-retry");
         t.setDaemon(true);
@@ -77,15 +75,17 @@ public final class BungeeProxyBridge implements Listener {
         this.logger = logger;
         this.configuration = configuration;
         this.authenticationStore = authenticationStore;
-    }
-
-    private void markProxyVerifiedPremium(String normalizedName) {
-        proxyVerifiedPremium.add(normalizedName);
-        logger.info("Proxy-verified premium: '" + normalizedName + "' authenticated online-mode with Mojang");
+        this.premiumOnlineModeHandler = new BungeePremiumOnlineModeHandler(this::requiresPremiumVerification);
+        this.premiumVerificationManager =
+            new BungeePremiumVerificationManager(proxyServer, logger,
+                this::requiresPremiumVerification, this::isPendingPremiumVerification,
+                this::clearPendingPremiumVerification,
+                () -> this.configuration.keepOfflineUuidCompatibility());
     }
 
     void reload(BungeeProxyConfiguration configuration) {
         this.configuration = configuration;
+        premiumVerificationManager.refreshRegistration();
         logger.info("Configuration reloaded");
     }
 
@@ -104,6 +104,9 @@ public final class BungeeProxyBridge implements Listener {
             logger.info("autoLogin is disabled");
         }
 
+        logger.info("premium.keepOfflineUuidCompatibility is "
+            + (configuration.keepOfflineUuidCompatibility() ? "enabled" : "disabled"));
+
         if (configuration.sendOnLogoutEnabled() && configuration.sendOnLogoutTarget().isEmpty()) {
             logger.warning("sendOnLogout is enabled but unloggedUserServer is empty; logout redirects will be skipped");
         }
@@ -113,6 +116,30 @@ public final class BungeeProxyBridge implements Listener {
         proxyServer.registerChannel(AUTHME_CHANNEL);
         logger.info("Registered AuthMe BungeeCord bridge channel");
         broadcastProxyStartedHandshake();
+        premiumVerificationManager.register();
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerHandshake(PlayerHandshakeEvent event) {
+        if (!configuration.keepOfflineUuidCompatibility()) {
+            premiumOnlineModeHandler.enableOnlineModeIfRequired(event.getConnection());
+        }
+    }
+
+    private boolean requiresPremiumVerification(String normalizedName) {
+        return premiumUsernames.contains(normalizedName) || pendingPremiumUsernames.contains(normalizedName);
+    }
+
+    private boolean isPendingPremiumVerification(String normalizedName) {
+        return pendingPremiumUsernames.contains(normalizedName);
+    }
+
+    private void clearPendingPremiumVerification(String normalizedName) {
+        if (pendingPremiumUsernames.remove(normalizedName)) {
+            premiumVerificationManager.clearVerifiedPremium(normalizedName);
+            logger.warning("Cleared pending premium verification for '" + normalizedName
+                + "' after a failed proxy-side premium handshake");
+        }
     }
 
     void broadcastProxyStartedHandshake() {
@@ -190,9 +217,11 @@ public final class BungeeProxyBridge implements Listener {
         } else if (PREMIUM_UNSET_MESSAGE.equals(parsedMessage.typeId())) {
             premiumUsernames.remove(parsedMessage.playerName());
             pendingPremiumUsernames.remove(parsedMessage.playerName());
+            premiumVerificationManager.clearVerifiedPremium(parsedMessage.playerName());
             logger.fine(() -> "Premium disabled for '" + parsedMessage.playerName() + "' (proxy cache updated)");
         } else if (PREMIUM_PENDING_SET_MESSAGE.equals(parsedMessage.typeId())) {
             pendingPremiumUsernames.add(parsedMessage.playerName());
+            premiumVerificationManager.clearVerifiedPremium(parsedMessage.playerName());
             logger.fine(() -> "Pending premium verification started for '" + parsedMessage.playerName() + "'");
         } else if (PREMIUM_LIST_MESSAGE.equals(parsedMessage.typeId())) {
             Set<String> newPremiumSet = ConcurrentHashMap.newKeySet();
@@ -255,24 +284,20 @@ public final class BungeeProxyBridge implements Listener {
         }
 
         String normalizedName = normalizeName(player.getName());
-
-        // Pending players have passed Mojang auth at the proxy, but we must NOT send PERFORM_LOGIN
-        // for them: the backend needs to run canBypassWithPremium() to finalize (persist) the premium
-        // UUID. Only confirmed premium players (premiumUsernames) trigger the auto-login bypass.
-        boolean isPremiumJoin = connectingToAuthServer
-            && proxyVerifiedPremium.contains(normalizedName)
-            && !pendingPremiumUsernames.contains(normalizedName);
+        UUID verifiedPremiumUuid = premiumVerificationManager.getVerifiedPremiumUuid(normalizedName);
+        boolean isPremiumJoin = connectingToAuthServer && verifiedPremiumUuid != null;
         if (!authenticationStore.isAuthenticated(player) && !isPremiumJoin) {
             return;
         }
         if (isPremiumJoin) {
-            logger.fine("Proxy-verified premium player " + normalizedName
+            logger.fine("PacketEvents-verified premium player " + normalizedName
                 + " joining auth server — sending perform.login immediately");
         }
 
         String serverName = currentServer.getInfo().getName();
         logger.info("Sending auto-login request to server '" + serverName + "' for player " + normalizedName);
-        currentServer.getInfo().sendData(AUTHME_CHANNEL, createPerformLoginMessage(normalizedName), false);
+        currentServer.getInfo().sendData(
+            AUTHME_CHANNEL, createPerformLoginMessage(normalizedName, verifiedPremiumUuid), false);
         initiatePendingLogin(normalizedName);
     }
 
@@ -340,73 +365,12 @@ public final class BungeeProxyBridge implements Listener {
         }
         cancelPendingLogin(normalizedName);
         authenticationStore.clear(event.getPlayer());
-        proxyVerifiedPremium.remove(normalizedName);
-        pendingVerificationAttempted.remove(normalizedName);
-    }
-
-    @EventHandler
-    public void onPreLogin(PreLoginEvent event) {
-        String normalizedName = normalizeName(event.getConnection().getName());
-        if (premiumUsernames.contains(normalizedName)) {
-            event.getConnection().setOnlineMode(true);
-            logger.fine("Forcing online-mode for premium player '" + normalizedName + "'");
-        } else if (pendingPremiumUsernames.contains(normalizedName)) {
-            if (pendingVerificationAttempted.contains(normalizedName)) {
-                // The player was already given a forced online-mode attempt but never reached onLogin —
-                // meaning Mojang rejected them. Cancel the premium request so they can reconnect normally.
-                pendingPremiumUsernames.remove(normalizedName);
-                pendingVerificationAttempted.remove(normalizedName);
-                logger.info("Pending premium verification failed for '" + normalizedName
-                    + "' (Mojang auth rejected) — premium request cancelled");
-            } else {
-                // First attempt: force online-mode and track that the attempt is in progress.
-                pendingVerificationAttempted.add(normalizedName);
-                event.getConnection().setOnlineMode(true);
-                logger.fine("Forcing online-mode for pending premium player '" + normalizedName + "'");
-            }
-        }
-    }
-
-    /**
-     * Fires after the proxy has finished the Mojang authentication phase for a connecting player.
-     * If the connection ended up in online mode (real Mojang account verified at the proxy), the
-     * player is recorded as proxy-verified premium so the auto-login bypass on the auth server
-     * will fire on {@link ServerSwitchEvent}.
-     */
-    @EventHandler
-    public void onLogin(LoginEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-        if (!event.getConnection().isOnlineMode()) {
-            return;
-        }
-        String normalizedName = normalizeName(event.getConnection().getName());
-        // Mojang auth succeeded: the attempt tracking entry is no longer needed.
-        pendingVerificationAttempted.remove(normalizedName);
-        markProxyVerifiedPremium(normalizedName);
-    }
-
-    /**
-     * Fallback: if for any reason the {@link LoginEvent} hook did not flag the player (e.g. the
-     * proxy is in global online mode and {@code isOnlineMode()} on PendingConnection is reported
-     * after {@code LoginEvent}), {@link PostLoginEvent} still gives us the verified UUID from the
-     * proxy. A version-4 UUID means Mojang verified the identity.
-     */
-    @EventHandler
-    public void onPostLogin(PostLoginEvent event) {
-        ProxiedPlayer player = event.getPlayer();
-        if (player.getUniqueId() != null && player.getUniqueId().version() == 4) {
-            String normalizedName = normalizeName(player.getName());
-            if (proxyVerifiedPremium.add(normalizedName)) {
-                logger.info("Proxy-verified premium (PostLogin fallback): '" + normalizedName
-                    + "' has a Mojang UUID");
-            }
-        }
+        premiumVerificationManager.clearVerifiedPremium(normalizedName);
     }
 
     void shutdown() {
         proxyServer.unregisterChannel(AUTHME_CHANNEL);
+        premiumVerificationManager.shutdown();
         retryScheduler.shutdownNow();
     }
 
@@ -429,7 +393,9 @@ public final class BungeeProxyBridge implements Listener {
         String currentServerName = currentConn.getInfo().getName();
         logger.info("Player " + normalizedName + " already on server '" + currentServerName
             + "' when login message arrived — sending auto-login immediately");
-        currentConn.getInfo().sendData(AUTHME_CHANNEL, createPerformLoginMessage(normalizedName), false);
+        UUID verifiedPremiumUuid = premiumVerificationManager.getVerifiedPremiumUuid(normalizedName);
+        currentConn.getInfo().sendData(
+            AUTHME_CHANNEL, createPerformLoginMessage(normalizedName, verifiedPremiumUuid), false);
         initiatePendingLogin(normalizedName);
     }
 
@@ -488,7 +454,9 @@ public final class BungeeProxyBridge implements Listener {
             String serverName = server.getInfo().getName();
             logger.fine("Retrying auto-login for " + normalizedName + " on server '" + serverName
                 + "' (attempt " + (current + 1) + "/" + MAX_RETRIES + ")");
-            server.getInfo().sendData(AUTHME_CHANNEL, createPerformLoginMessage(normalizedName), false);
+            UUID verifiedPremiumUuid = premiumVerificationManager.getVerifiedPremiumUuid(normalizedName);
+            server.getInfo().sendData(
+                AUTHME_CHANNEL, createPerformLoginMessage(normalizedName, verifiedPremiumUuid), false);
             scheduleRetry(normalizedName);
         }, 1, TimeUnit.SECONDS);
     }
@@ -507,7 +475,6 @@ public final class BungeeProxyBridge implements Listener {
                     && !PREMIUM_PENDING_SET_MESSAGE.equals(typeId)) {
                 return ParsedPluginMessage.ignored();
             }
-            // premium.list and premium.list.chunk carry non-player-name data; read as-is
             String argument = input.readUTF();
             return new ParsedPluginMessage(typeId,
                 (PREMIUM_LIST_MESSAGE.equals(typeId) || PREMIUM_LIST_CHUNK_MESSAGE.equals(typeId))
@@ -563,13 +530,15 @@ public final class BungeeProxyBridge implements Listener {
         player.connect(targetServer);
     }
 
-    private byte[] createPerformLoginMessage(String normalizedName) {
+    private byte[] createPerformLoginMessage(String normalizedName, UUID verifiedPremiumUuid) {
         long timestamp = System.currentTimeMillis();
-        String hmac = ProxyMessageSecurity.computeHmac(configuration.sharedSecret(), normalizedName, timestamp);
+        String hmac = ProxyMessageSecurity.computeHmac(
+            configuration.sharedSecret(), normalizedName, timestamp, verifiedPremiumUuid);
         ByteArrayDataOutput output = ByteStreams.newDataOutput();
         output.writeUTF(PERFORM_LOGIN_MESSAGE);
         output.writeUTF(normalizedName);
         output.writeLong(timestamp);
+        output.writeUTF(verifiedPremiumUuid == null ? "" : verifiedPremiumUuid.toString());
         output.writeUTF(hmac);
         return output.toByteArray();
     }
