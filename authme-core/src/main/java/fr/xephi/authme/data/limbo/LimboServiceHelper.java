@@ -49,7 +49,13 @@ class LimboServiceHelper {
         boolean isOperator = isRegistered && player.isOp();
         boolean flyEnabled = player.getAllowFlight();
         float walkSpeed = player.getWalkSpeed();
+        if (walkSpeed <= 0.01f) {
+            walkSpeed = LimboPlayer.DEFAULT_WALK_SPEED;
+        }
         float flySpeed = player.getFlySpeed();
+        if (flySpeed <= 0.01f) {
+            flySpeed = LimboPlayer.DEFAULT_FLY_SPEED;
+        }
         Collection<UserGroup> playerGroups = permissionsManager.hasGroupSupport()
             ? permissionsManager.getGroups(player) : Collections.emptyList();
 

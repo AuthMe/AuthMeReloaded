@@ -132,6 +132,12 @@ public class LimboService {
 
         if (limbo == null) {
             logger.debug("No LimboPlayer found for `{0}` - cannot restore", lowerName);
+            if (player.getWalkSpeed() < 0.01f) {
+                player.setWalkSpeed(LimboPlayer.DEFAULT_WALK_SPEED);
+            }
+            if (player.getFlySpeed() < 0.01f) {
+                player.setFlySpeed(LimboPlayer.DEFAULT_FLY_SPEED);
+            }
         } else {
             player.setOp(limbo.isOperator());
             settings.getProperty(RESTORE_ALLOW_FLIGHT).restoreAllowFlight(player, limbo);
@@ -177,6 +183,29 @@ public class LimboService {
             }
         }
         persistence.removeLimboPlayer(player);
+    }
+
+    /**
+     * Restores walk/fly speed synchronously in the quit event handler, before
+     * the player's data is saved to disk. This ensures the .dat file contains
+     * the correct speed so the player is never stuck with 0.0f after leaving.
+     * <p>
+     * Unlike {@link #restoreData(Player)}, this only touches speed and does
+     * <b>not</b> remove the in-memory limbo entry ({@code get} vs {@code remove}),
+     * so the async quit process can still perform full cleanup afterwards.
+     *
+     * @param player the player whose speed should be restored
+     */
+    public void restoreSpeedSync(Player player) {
+        String lowerName = player.getName().toLowerCase(Locale.ROOT);
+        LimboPlayer limbo = entries.get(lowerName);
+        if (limbo != null) {
+            settings.getProperty(RESTORE_FLY_SPEED).restoreFlySpeed(player, limbo);
+            settings.getProperty(RESTORE_WALK_SPEED).restoreWalkSpeed(player, limbo);
+        } else if (player.getWalkSpeed() < 0.01f || player.getFlySpeed() < 0.01f) {
+            player.setWalkSpeed(LimboPlayer.DEFAULT_WALK_SPEED);
+            player.setFlySpeed(LimboPlayer.DEFAULT_FLY_SPEED);
+        }
     }
 
     /**

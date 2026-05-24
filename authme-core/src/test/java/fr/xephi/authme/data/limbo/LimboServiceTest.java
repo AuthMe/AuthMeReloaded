@@ -233,7 +233,12 @@ class LimboServiceTest {
         limboService.restoreData(player);
 
         // then
-        verify(player, only()).getName();
+        verify(player).getName();
+        // Speed was set to 0.0f by revokeLimboStates; restore to default since no limbo
+        verify(player).getWalkSpeed();
+        verify(player).setWalkSpeed(LimboPlayer.DEFAULT_WALK_SPEED);
+        verify(player).getFlySpeed();
+        verify(player).setFlySpeed(LimboPlayer.DEFAULT_FLY_SPEED);
         verify(authGroupHandler).setGroup(player, null, AuthGroupType.LOGGED_IN);
         // Disk limbo must always be removed even when no in-memory entry exists (race condition: player
         // disconnected before createLimboPlayer ran, leaving a stale disk entry from a previous session)
@@ -250,6 +255,11 @@ class LimboServiceTest {
         limboService.restoreData(player);
 
         // then
+        verify(player).getName();
+        verify(player).getWalkSpeed();
+        verify(player).setWalkSpeed(LimboPlayer.DEFAULT_WALK_SPEED);
+        verify(player).getFlySpeed();
+        verify(player).setFlySpeed(LimboPlayer.DEFAULT_FLY_SPEED);
         verify(limboPersistence).removeLimboPlayer(player);
         verify(authGroupHandler).setGroup(player, null, AuthGroupType.LOGGED_IN);
     }
