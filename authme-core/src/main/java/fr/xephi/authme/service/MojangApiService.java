@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.UUID;
@@ -72,7 +73,9 @@ public class MojangApiService {
      */
     public Optional<UUID> hasJoined(String username, String serverHash) {
         try {
-            String url = settings.getProperty(PremiumSettings.SESSION_SERVER) + "?username=" + username + "&serverId=" + serverHash;
+            String url = settings.getProperty(PremiumSettings.SESSION_SERVER)
+                + "?username=" + URLEncoder.encode(username, "UTF-8")
+                + "&serverId=" + URLEncoder.encode(serverHash, "UTF-8");
             HttpURLConnection conn = openGet(url);
             int code = conn.getResponseCode();
             if (code == HttpURLConnection.HTTP_NO_CONTENT || code == HttpURLConnection.HTTP_NOT_FOUND) {
