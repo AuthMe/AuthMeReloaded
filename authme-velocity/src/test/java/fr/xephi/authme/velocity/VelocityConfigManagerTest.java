@@ -31,6 +31,7 @@ class VelocityConfigManagerTest {
         assertTrue(configManager.getConfiguration().isWhitelistedCommand("/login"));
         assertTrue(configManager.getConfiguration().chatRequiresAuth());
         assertFalse(configManager.getConfiguration().sharedSecret().isEmpty());
+        assertFalse(configManager.getConfiguration().keepOfflineUuidCompatibility());
     }
 
     @Test
@@ -45,17 +46,19 @@ class VelocityConfigManagerTest {
     @Test
     void shouldNormalizeConfiguredServersAndLogoutTarget() throws IOException {
         Files.writeString(tempDirectory.resolve("config.yml"), """
-            authServers:
-            - Lobby
-            - HUB
-            allServersAreAuthServers: false
-            serverSwitch:
-              requiresAuth: false
-              kickMessage: Please authenticate first.
-            autoLogin: true
-            sendOnLogout: true
-            unloggedUserServer: LiMbO
-            """);
+authServers:
+- Lobby
+- HUB
+allServersAreAuthServers: false
+serverSwitch:
+  requiresAuth: false
+  kickMessage: Please authenticate first.
+autoLogin: true
+sendOnLogout: true
+unloggedUserServer: LiMbO
+premium:
+  keepOfflineUuidCompatibility: true
+""");
 
         VelocityProxyConfiguration configuration = new VelocityConfigManager(tempDirectory).getConfiguration();
 
@@ -66,6 +69,7 @@ class VelocityConfigManagerTest {
         assertTrue(configuration.autoLoginEnabled());
         assertTrue(configuration.sendOnLogoutEnabled());
         assertEquals("limbo", configuration.sendOnLogoutTarget());
+        assertTrue(configuration.keepOfflineUuidCompatibility());
     }
 
     @Test

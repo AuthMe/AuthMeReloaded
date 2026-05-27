@@ -25,13 +25,15 @@ final class VelocityProxyConfiguration {
     private final boolean chatRequiresAuth;
     private final String loginServer;
     private final String sharedSecret;
+    private final boolean keepOfflineUuidCompatibility;
 
     VelocityProxyConfiguration(Set<String> authServers, boolean allServersAreAuthServers,
                                boolean serverSwitchRequiresAuth, String serverSwitchKickMessage,
                                boolean autoLoginEnabled, boolean sendOnLogoutEnabled,
                                String sendOnLogoutTarget, boolean commandsRequireAuth,
                                Set<String> commandWhitelist, boolean chatRequiresAuth,
-                               String loginServer, String sharedSecret) {
+                               String loginServer, String sharedSecret,
+                               boolean keepOfflineUuidCompatibility) {
         this.authServers = authServers;
         this.allServersAreAuthServers = allServersAreAuthServers;
         this.serverSwitchRequiresAuth = serverSwitchRequiresAuth;
@@ -44,6 +46,7 @@ final class VelocityProxyConfiguration {
         this.chatRequiresAuth = chatRequiresAuth;
         this.loginServer = normalizeServerName(loginServer);
         this.sharedSecret = sharedSecret;
+        this.keepOfflineUuidCompatibility = keepOfflineUuidCompatibility;
     }
 
     static VelocityProxyConfiguration from(SettingsManager settingsManager) {
@@ -59,7 +62,8 @@ final class VelocityProxyConfiguration {
             normalizeCommandAliases(settingsManager.getProperty(VelocityConfigProperties.COMMANDS_WHITELIST)),
             settingsManager.getProperty(VelocityConfigProperties.CHAT_REQUIRES_AUTH),
             settingsManager.getProperty(VelocityConfigProperties.LOGIN_SERVER),
-            settingsManager.getProperty(VelocityConfigProperties.PROXY_SHARED_SECRET));
+            settingsManager.getProperty(VelocityConfigProperties.PROXY_SHARED_SECRET),
+            settingsManager.getProperty(VelocityConfigProperties.PREMIUM_KEEP_OFFLINE_UUID_COMPATIBILITY));
     }
 
     Set<String> authServers() {
@@ -104,6 +108,10 @@ final class VelocityProxyConfiguration {
 
     String sharedSecret() {
         return sharedSecret;
+    }
+
+    boolean keepOfflineUuidCompatibility() {
+        return keepOfflineUuidCompatibility;
     }
 
     boolean isAuthServer(RegisteredServer server) {

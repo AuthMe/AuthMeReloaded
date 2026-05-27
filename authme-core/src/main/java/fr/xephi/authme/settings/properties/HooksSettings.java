@@ -26,7 +26,8 @@ public final class HooksSettings implements SettingsHolder {
     @Comment({
         "Shared secret used to verify perform.login messages from the AuthMe proxy plugin.",
         "Must match the proxySharedSecret value in your AuthMe Velocity or Bungee proxy config.",
-        "All backend servers must have the same value set here."
+        "All backend servers must have the same value set here.",
+        "Leaving this empty disables auto-login: all perform.login messages will be rejected."
     })
     public static final Property<String> PROXY_SHARED_SECRET =
         newProperty("Hooks.proxySharedSecret", "");

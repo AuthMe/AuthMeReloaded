@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.event.command.CommandExecuteEvent;
+import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
@@ -12,6 +13,7 @@ import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ConnectionRequestBuilder;
+import com.velocitypowered.api.proxy.InboundConnection;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.ChannelRegistrar;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
@@ -97,7 +99,7 @@ class VelocityProxyBridgeTest {
     void shouldRegisterAuthMeChannel() {
         given(proxyServer.getChannelRegistrar()).willReturn(channelRegistrar);
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
         bridge.registerChannels();
 
         verify(channelRegistrar).register(VelocityProxyBridge.AUTHME_CHANNEL, VelocityProxyBridge.AUTHME_LEGACY_CHANNEL);
@@ -118,7 +120,7 @@ class VelocityProxyBridgeTest {
         given(currentServer.sendPluginMessage(eq(VelocityProxyBridge.AUTHME_CHANNEL), any(byte[].class)))
             .willReturn(true);
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
         bridge.onPluginMessage(pluginMessageEvent);
         bridge.onServerConnected(new ServerConnectedEvent(player, authServer, null));
 
@@ -132,7 +134,7 @@ class VelocityProxyBridgeTest {
     void shouldIgnoreAlreadyHandledPluginMessage() {
         given(pluginMessageEvent.getResult()).willReturn(PluginMessageEvent.ForwardResult.handled());
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
         bridge.onPluginMessage(pluginMessageEvent);
 
         verify(pluginMessageEvent, never()).getIdentifier();
@@ -149,7 +151,7 @@ class VelocityProxyBridgeTest {
         given(authServer.getServerInfo()).willReturn(authServerInfo);
         given(authServerInfo.getName()).willReturn("lobby");
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
         bridge.onPluginMessage(pluginMessageEvent);
         bridge.onServerConnected(new ServerConnectedEvent(player, authServer, null));
 
@@ -167,7 +169,7 @@ class VelocityProxyBridgeTest {
         given(authServer.getServerInfo()).willReturn(authServerInfo);
         given(authServerInfo.getName()).willReturn("lobby");
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
         bridge.onPluginMessage(pluginMessageEvent);
         bridge.onDisconnect(new DisconnectEvent(player, DisconnectEvent.LoginStatus.SUCCESSFUL_LOGIN));
         bridge.onServerConnected(new ServerConnectedEvent(player, authServer, null));
@@ -191,8 +193,8 @@ class VelocityProxyBridgeTest {
         VelocityProxyBridge bridge = new VelocityProxyBridge(
             proxyServer, logger, new VelocityProxyConfiguration(Set.of("lobby"), false, true,
                 "Authentication required.", true, true, "limbo", true,
-                Set.of("/login", "/register"), true, "", ""),
-            new VelocityAuthenticationStore());
+                Set.of("/login", "/register"), true, "", "", false),
+            new VelocityAuthenticationStore(), null);
         bridge.onPluginMessage(pluginMessageEvent);
 
         verify(connectionRequest).fireAndForget();
@@ -204,7 +206,7 @@ class VelocityProxyBridgeTest {
         given(pluginMessageEvent.getIdentifier()).willReturn(VelocityProxyBridge.AUTHME_CHANNEL);
         given(pluginMessageEvent.getSource()).willReturn(player);
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
         bridge.onPluginMessage(pluginMessageEvent);
 
         verify(pluginMessageEvent).setResult(PluginMessageEvent.ForwardResult.handled());
@@ -226,7 +228,7 @@ class VelocityProxyBridgeTest {
             .willReturn(true);
         given(proxyServer.getPlayer("alice")).willReturn(Optional.of(player));
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
         bridge.onPluginMessage(pluginMessageEvent);
         bridge.onServerConnected(new ServerConnectedEvent(player, authServer, null));
 
@@ -255,7 +257,7 @@ class VelocityProxyBridgeTest {
             .willReturn(true);
         given(proxyServer.getPlayer("alice")).willReturn(Optional.of(player));
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
 
         // Mark authenticated via auth server login
         given(pluginMessageEvent.getData()).willReturn(createAuthMePayload("login", "Alice"));
@@ -286,7 +288,7 @@ class VelocityProxyBridgeTest {
         given(authServer.getServerInfo()).willReturn(authServerInfo);
         given(authServerInfo.getName()).willReturn("lobby");
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
         bridge.onPluginMessage(pluginMessageEvent);
         bridge.onServerConnected(new ServerConnectedEvent(player, authServer, null));
 
@@ -300,7 +302,7 @@ class VelocityProxyBridgeTest {
         given(nonAuthServer.getServerInfo()).willReturn(nonAuthServerInfo);
         given(nonAuthServerInfo.getName()).willReturn("survival");
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
         ServerPreConnectEvent event = new ServerPreConnectEvent(player, nonAuthServer, authServer);
 
         bridge.onServerPreConnect(event);
@@ -316,7 +318,7 @@ class VelocityProxyBridgeTest {
         given(nonAuthServer.getServerInfo()).willReturn(nonAuthServerInfo);
         given(nonAuthServerInfo.getName()).willReturn("survival");
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
         ServerPreConnectEvent event = new ServerPreConnectEvent(player, nonAuthServer);
 
         bridge.onServerPreConnect(event);
@@ -331,7 +333,7 @@ class VelocityProxyBridgeTest {
         given(nonAuthServer.getServerInfo()).willReturn(nonAuthServerInfo);
         given(nonAuthServerInfo.getName()).willReturn("survival");
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
         bridge.onServerConnected(new ServerConnectedEvent(player, nonAuthServer, null));
 
         verify(currentServer, never()).sendPluginMessage(any(), any(byte[].class));
@@ -354,7 +356,7 @@ class VelocityProxyBridgeTest {
         given(currentServer.sendPluginMessage(eq(VelocityProxyBridge.AUTHME_CHANNEL), any(byte[].class)))
             .willReturn(true);
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
         bridge.onPluginMessage(pluginMessageEvent);
         bridge.onServerConnected(new ServerConnectedEvent(player, nonAuthServer, authServer));
 
@@ -374,7 +376,7 @@ class VelocityProxyBridgeTest {
         given(authServer.getServerInfo()).willReturn(authServerInfo);
         given(authServerInfo.getName()).willReturn("lobby");
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
         bridge.onCommandExecute(commandEvent);
 
         verify(commandEvent).setResult(CommandExecuteEvent.CommandResult.denied());
@@ -390,7 +392,7 @@ class VelocityProxyBridgeTest {
         given(authServer.getServerInfo()).willReturn(authServerInfo);
         given(authServerInfo.getName()).willReturn("lobby");
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
         bridge.onCommandExecute(commandEvent);
 
         verify(commandEvent, never()).setResult(any());
@@ -408,7 +410,7 @@ class VelocityProxyBridgeTest {
         VelocityAuthenticationStore store = new VelocityAuthenticationStore();
         store.markAuthenticated("alice");
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), store);
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), store, null);
         bridge.onCommandExecute(commandEvent);
 
         verify(commandEvent, never()).setResult(any());
@@ -422,7 +424,7 @@ class VelocityProxyBridgeTest {
         given(nonAuthServer.getServerInfo()).willReturn(nonAuthServerInfo);
         given(nonAuthServerInfo.getName()).willReturn("survival");
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
         bridge.onCommandExecute(commandEvent);
 
         verify(commandEvent, never()).setResult(any());
@@ -433,7 +435,7 @@ class VelocityProxyBridgeTest {
         given(commandEvent.getCommandSource()).willReturn(player);
         given(player.getCurrentServer()).willReturn(Optional.empty());
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
         bridge.onCommandExecute(commandEvent);
 
         verify(commandEvent, never()).setResult(any());
@@ -443,7 +445,7 @@ class VelocityProxyBridgeTest {
     void shouldAllowCommandIfSourceIsNotAPlayer() {
         given(commandEvent.getCommandSource()).willReturn(consoleSource);
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
         bridge.onCommandExecute(commandEvent);
 
         verify(commandEvent, never()).setResult(any());
@@ -453,9 +455,9 @@ class VelocityProxyBridgeTest {
     void shouldNotBlockCommandIfCommandsRequireAuthIsDisabled() {
         VelocityProxyConfiguration config = new VelocityProxyConfiguration(
             Set.of("lobby"), false, true, "Authentication required.", false, false, "",
-            false, Set.of("/login"), true, "", "");
+            false, Set.of("/login"), true, "", "", false);
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, config, new VelocityAuthenticationStore());
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, config, new VelocityAuthenticationStore(), null);
         bridge.onCommandExecute(commandEvent);
 
         verify(commandEvent, never()).setResult(any());
@@ -472,7 +474,7 @@ class VelocityProxyBridgeTest {
         given(authServer.getServerInfo()).willReturn(authServerInfo);
         given(authServerInfo.getName()).willReturn("lobby");
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
         bridge.onPlayerChat(chatEvent);
 
         verify(chatEvent).setResult(PlayerChatEvent.ChatResult.denied());
@@ -490,7 +492,7 @@ class VelocityProxyBridgeTest {
         VelocityAuthenticationStore store = new VelocityAuthenticationStore();
         store.markAuthenticated("alice");
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), store);
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), store, null);
         bridge.onPlayerChat(chatEvent);
 
         verify(chatEvent, never()).setResult(any());
@@ -504,7 +506,7 @@ class VelocityProxyBridgeTest {
         given(nonAuthServer.getServerInfo()).willReturn(nonAuthServerInfo);
         given(nonAuthServerInfo.getName()).willReturn("survival");
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
         bridge.onPlayerChat(chatEvent);
 
         verify(chatEvent, never()).setResult(any());
@@ -515,7 +517,7 @@ class VelocityProxyBridgeTest {
         given(chatEvent.getPlayer()).willReturn(player);
         given(player.getCurrentServer()).willReturn(Optional.empty());
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
         bridge.onPlayerChat(chatEvent);
 
         verify(chatEvent, never()).setResult(any());
@@ -525,110 +527,31 @@ class VelocityProxyBridgeTest {
     void shouldNotBlockChatIfChatRequiresAuthIsDisabled() {
         VelocityProxyConfiguration config = new VelocityProxyConfiguration(
             Set.of("lobby"), false, true, "Authentication required.", false, false, "",
-            true, Set.of("/login"), false, "", "");
+            true, Set.of("/login"), false, "", "", false);
 
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, config, new VelocityAuthenticationStore());
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, config, new VelocityAuthenticationStore(), null);
         bridge.onPlayerChat(chatEvent);
 
         verify(chatEvent, never()).setResult(any());
     }
 
     @Test
-    void shouldUpdatePremiumSetAfterReceivingAllChunks() {
+    void shouldForceOnlineModeAfterChunkedPremiumListResync() {
         given(pluginMessageEvent.getResult()).willReturn(PluginMessageEvent.ForwardResult.forward());
         given(pluginMessageEvent.getIdentifier()).willReturn(VelocityProxyBridge.AUTHME_CHANNEL);
         given(pluginMessageEvent.getSource()).willReturn(sourceConnection);
+        given(pluginMessageEvent.getData()).willReturn(createChunkPayload(0, true, "Alice"));
         given(sourceConnection.getServer()).willReturn(authServer);
         given(authServer.getServerInfo()).willReturn(authServerInfo);
         given(authServerInfo.getName()).willReturn("lobby");
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
 
-        given(pluginMessageEvent.getData()).willReturn(createChunkPayload(0, false, "alice,bob"));
-        bridge.onPluginMessage(pluginMessageEvent);
-        given(pluginMessageEvent.getData()).willReturn(createChunkPayload(1, true, "charlie"));
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
         bridge.onPluginMessage(pluginMessageEvent);
 
-        com.velocitypowered.api.event.connection.PreLoginEvent preLoginEvent =
-            mock(com.velocitypowered.api.event.connection.PreLoginEvent.class);
-        given(preLoginEvent.getUsername()).willReturn("alice");
-        bridge.onPreLogin(preLoginEvent);
-        verify(preLoginEvent).setResult(any());
-    }
+        PreLoginEvent event = new PreLoginEvent(mock(InboundConnection.class), "Alice", null);
+        bridge.onPreLogin(event);
 
-    @Test
-    void shouldNotUpdatePremiumSetOnPartialChunkOnly() {
-        given(pluginMessageEvent.getResult()).willReturn(PluginMessageEvent.ForwardResult.forward());
-        given(pluginMessageEvent.getIdentifier()).willReturn(VelocityProxyBridge.AUTHME_CHANNEL);
-        given(pluginMessageEvent.getSource()).willReturn(sourceConnection);
-        given(sourceConnection.getServer()).willReturn(authServer);
-        given(authServer.getServerInfo()).willReturn(authServerInfo);
-        given(authServerInfo.getName()).willReturn("lobby");
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
-
-        // Only first chunk (not last) — set must not be updated yet
-        given(pluginMessageEvent.getData()).willReturn(createChunkPayload(0, false, "alice,bob"));
-        bridge.onPluginMessage(pluginMessageEvent);
-
-        com.velocitypowered.api.event.connection.PreLoginEvent preLoginEvent =
-            mock(com.velocitypowered.api.event.connection.PreLoginEvent.class);
-        given(preLoginEvent.getUsername()).willReturn("alice");
-        bridge.onPreLogin(preLoginEvent);
-        verify(preLoginEvent, never()).setResult(any());
-    }
-
-    @Test
-    void shouldPreservePendingPremiumStateAcrossDisconnectReconnect() {
-        given(pluginMessageEvent.getResult()).willReturn(PluginMessageEvent.ForwardResult.forward());
-        given(pluginMessageEvent.getIdentifier()).willReturn(VelocityProxyBridge.AUTHME_CHANNEL);
-        given(pluginMessageEvent.getSource()).willReturn(sourceConnection);
-        given(sourceConnection.getServer()).willReturn(authServer);
-        given(authServer.getServerInfo()).willReturn(authServerInfo);
-        given(authServerInfo.getName()).willReturn("lobby");
-        given(player.getUsername()).willReturn("alice");
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
-
-        // Backend kicks the player for premium verification and sends PREMIUM_PENDING_SET
-        given(pluginMessageEvent.getData()).willReturn(createAuthMePayload("premium.pending.set", "alice"));
-        bridge.onPluginMessage(pluginMessageEvent);
-
-        // Player is kicked by the backend — disconnect must NOT clear the pending state
-        bridge.onDisconnect(new DisconnectEvent(player, DisconnectEvent.LoginStatus.SUCCESSFUL_LOGIN));
-
-        // On reconnect, Velocity must still force online-mode for the pending player
-        com.velocitypowered.api.event.connection.PreLoginEvent reconnectAttempt =
-            mock(com.velocitypowered.api.event.connection.PreLoginEvent.class);
-        given(reconnectAttempt.getUsername()).willReturn("alice");
-        bridge.onPreLogin(reconnectAttempt);
-        verify(reconnectAttempt).setResult(any());
-    }
-
-    @Test
-    void shouldForceOnlineModeOnFirstPendingAttemptThenCancelOnSecond() {
-        given(pluginMessageEvent.getResult()).willReturn(PluginMessageEvent.ForwardResult.forward());
-        given(pluginMessageEvent.getIdentifier()).willReturn(VelocityProxyBridge.AUTHME_CHANNEL);
-        given(pluginMessageEvent.getSource()).willReturn(sourceConnection);
-        given(sourceConnection.getServer()).willReturn(authServer);
-        given(authServer.getServerInfo()).willReturn(authServerInfo);
-        given(authServerInfo.getName()).willReturn("lobby");
-        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore());
-
-        given(pluginMessageEvent.getData()).willReturn(createAuthMePayload("premium.pending.set", "alice"));
-        bridge.onPluginMessage(pluginMessageEvent);
-
-        // First reconnect: should force online-mode so Mojang can verify
-        com.velocitypowered.api.event.connection.PreLoginEvent firstAttempt =
-            mock(com.velocitypowered.api.event.connection.PreLoginEvent.class);
-        given(firstAttempt.getUsername()).willReturn("alice");
-        bridge.onPreLogin(firstAttempt);
-        verify(firstAttempt).setResult(any());
-
-        // Mojang rejected the player (no onLogin fired) — second reconnect should cancel the pending
-        // request and NOT force online-mode, so the player can rejoin in offline mode
-        com.velocitypowered.api.event.connection.PreLoginEvent secondAttempt =
-            mock(com.velocitypowered.api.event.connection.PreLoginEvent.class);
-        given(secondAttempt.getUsername()).willReturn("alice");
-        bridge.onPreLogin(secondAttempt);
-        verify(secondAttempt, never()).setResult(any());
+        assertEquals(PreLoginEvent.PreLoginComponentResult.forceOnlineMode().toString(), event.getResult().toString());
     }
 
     private static byte[] createChunkPayload(int seq, boolean last, String csv) {
@@ -642,7 +565,7 @@ class VelocityProxyBridgeTest {
         return new VelocityProxyConfiguration(Set.of("lobby"), false, true,
             "Authentication required.", true, false, "", true,
             Set.of("/login", "/register", "/l", "/reg", "/email", "/captcha", "/2fa", "/totp", "/log"),
-            true, "", "test-secret");
+            true, "", "test-secret", false);
     }
 
     private static byte[] createAuthMePayload(String typeId, String playerName) {
@@ -657,8 +580,9 @@ class VelocityProxyBridgeTest {
         assertEquals("perform.login", in.readUTF());
         assertEquals(expectedPlayerName, in.readUTF());
         long timestamp = in.readLong();
+        assertEquals("", in.readUTF());
         String hmac = in.readUTF();
         assertTrue(Math.abs(System.currentTimeMillis() - timestamp) < 5000L, "timestamp should be recent");
-        assertEquals(ProxyMessageSecurity.computeHmac(sharedSecret, expectedPlayerName, timestamp), hmac);
+        assertEquals(ProxyMessageSecurity.computeHmac(sharedSecret, expectedPlayerName, timestamp, null), hmac);
     }
 }

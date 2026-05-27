@@ -5,10 +5,9 @@ import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.command.CommandExecuteEvent;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
-import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
-import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
+import com.velocitypowered.api.event.player.GameProfileRequestEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
@@ -44,7 +43,7 @@ public final class AuthMeVelocityPlugin extends AbstractAuthMeVelocityPlugin {
     protected VelocityProxyBridge createProxyBridge(ProxyServer server, Logger logger, Path dataDirectory) {
         this.configManager = new VelocityConfigManager(dataDirectory);
         VelocityAuthenticationStore authenticationStore = new VelocityAuthenticationStore();
-        return new VelocityProxyBridge(server, logger, configManager.getConfiguration(), authenticationStore);
+        return new VelocityProxyBridge(server, logger, configManager.getConfiguration(), authenticationStore, dataDirectory);
     }
 
     @Subscribe
@@ -60,6 +59,16 @@ public final class AuthMeVelocityPlugin extends AbstractAuthMeVelocityPlugin {
     @Subscribe
     public void onPluginMessage(PluginMessageEvent event) {
         proxyBridge.onPluginMessage(event);
+    }
+
+    @Subscribe
+    public void onPreLogin(PreLoginEvent event) {
+        proxyBridge.onPreLogin(event);
+    }
+
+    @Subscribe
+    public void onGameProfileRequest(GameProfileRequestEvent event) {
+        proxyBridge.onGameProfileRequest(event);
     }
 
     @Subscribe
@@ -80,21 +89,6 @@ public final class AuthMeVelocityPlugin extends AbstractAuthMeVelocityPlugin {
     @Subscribe
     public void onPlayerChat(PlayerChatEvent event) {
         proxyBridge.onPlayerChat(event);
-    }
-
-    @Subscribe
-    public void onPreLogin(PreLoginEvent event) {
-        proxyBridge.onPreLogin(event);
-    }
-
-    @Subscribe
-    public void onLogin(LoginEvent event) {
-        proxyBridge.onLogin(event);
-    }
-
-    @Subscribe
-    public void onPostLogin(PostLoginEvent event) {
-        proxyBridge.onPostLogin(event);
     }
 
     @Subscribe

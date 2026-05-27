@@ -77,8 +77,8 @@ Hooks:
   bungeecord: true
 
   # Shared secret — must match proxySharedSecret in the proxy plugin config.
-  # Leave empty only for testing; always set in production.
-  proxySharedSecret: ""
+  # Must not be empty; see "Setting up the shared secret" below.
+  proxySharedSecret: "copy-from-proxy-config"
 
   # Optional: redirect players to this backend after login/register.
   # Leave empty to keep players on the current server.
@@ -114,7 +114,7 @@ The shared secret prevents malicious backend servers (or other plugins) from for
 2. Copy that value to `Hooks.proxySharedSecret` in the AuthMe `config.yml` of **every backend server**.
 3. Restart all backend servers (or run `/authme reload`).
 
-If `Hooks.proxySharedSecret` is left empty on a backend, HMAC verification still runs — using an empty string as the key. This means the backend will only accept `perform.login` messages signed with the same empty key, which provides no real security. Always set a real secret in production.
+If `Hooks.proxySharedSecret` is left empty on a backend, all `perform.login` messages are rejected with a warning — the backend logs `Hooks.proxySharedSecret is not configured` and refuses to auto-authenticate the player. Always copy the proxy-generated secret to every backend before enabling auto-login.
 
 ---
 
@@ -206,6 +206,29 @@ Blocks unauthenticated players on auth servers from sending chat messages.
 ```yaml
 chatRequiresAuth: true
 ```
+
+---
+
+### Premium UUID compatibility — `premium.keepOfflineUuidCompatibility`
+
+Controls how the AuthMe proxy plugins expose **premium** players to backend servers.
+
+```yaml
+premium:
+  keepOfflineUuidCompatibility: false   # default
+```
+
+- `false` (**default**) — premium players keep their **Mojang UUID v4** on the backend
+- `true` — premium players keep the backend **offline UUID v3** for plugin compatibility
+
+Behavior by proxy:
+
+| Proxy | `false` | `true` |
+|---|---|---|
+| Velocity | Native per-player online mode, Mojang UUID forwarded | Same native login flow, but the final profile is rewritten back to offline UUID |
+| BungeeCord / Waterfall | Local per-player online-mode handshake, Mojang UUID forwarded | PacketEvents login-phase verification, then resume offline login |
+
+PacketEvents is only required on the **Bungee** proxy when this setting is `true`.
 
 ---
 
@@ -308,6 +331,9 @@ Changes to the proxy config file can be applied without restarting the proxy:
 - Check `Hooks.proxySharedSecret` is set and matches `proxySharedSecret` in the proxy config.
 - Check `Hooks.bungeecord: true` in the backend AuthMe config.
 - Check `bungeecord: true` in `spigot.yml` (or Paper equivalent) — plugin messaging won't work without it.
+
+**`Hooks.proxySharedSecret is not configured`** in backend logs
+- `Hooks.proxySharedSecret` is empty in the backend `config.yml`. Copy the value from the proxy config and run `/authme reload`.
 
 **`Rejected perform.login for <player>: invalid HMAC`** in backend logs
 - The `proxySharedSecret` on this backend does not match the one in the proxy config. Copy it again and reload.

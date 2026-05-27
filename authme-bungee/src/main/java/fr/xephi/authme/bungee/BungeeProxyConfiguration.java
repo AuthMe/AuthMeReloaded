@@ -23,13 +23,15 @@ final class BungeeProxyConfiguration {
     private final String sendOnLogoutTarget;
     private final String loginServer;
     private final String sharedSecret;
+    private final boolean keepOfflineUuidCompatibility;
 
     BungeeProxyConfiguration(Set<String> authServers, boolean allServersAreAuthServers,
                              boolean commandsRequireAuth, Set<String> commandWhitelist,
                              boolean chatRequiresAuth, boolean serverSwitchRequiresAuth,
                              String serverSwitchKickMessage, boolean autoLoginEnabled,
                              boolean sendOnLogoutEnabled, String sendOnLogoutTarget,
-                             String loginServer, String sharedSecret) {
+                             String loginServer, String sharedSecret,
+                             boolean keepOfflineUuidCompatibility) {
         this.authServers = authServers;
         this.allServersAreAuthServers = allServersAreAuthServers;
         this.commandsRequireAuth = commandsRequireAuth;
@@ -42,6 +44,7 @@ final class BungeeProxyConfiguration {
         this.sendOnLogoutTarget = normalizeServerName(sendOnLogoutTarget);
         this.loginServer = normalizeServerName(loginServer);
         this.sharedSecret = sharedSecret;
+        this.keepOfflineUuidCompatibility = keepOfflineUuidCompatibility;
     }
 
     static BungeeProxyConfiguration from(SettingsManager settingsManager) {
@@ -57,7 +60,8 @@ final class BungeeProxyConfiguration {
             settingsManager.getProperty(BungeeConfigProperties.ENABLE_SEND_ON_LOGOUT),
             settingsManager.getProperty(BungeeConfigProperties.SEND_ON_LOGOUT_TARGET),
             settingsManager.getProperty(BungeeConfigProperties.LOGIN_SERVER),
-            settingsManager.getProperty(BungeeConfigProperties.PROXY_SHARED_SECRET));
+            settingsManager.getProperty(BungeeConfigProperties.PROXY_SHARED_SECRET),
+            settingsManager.getProperty(BungeeConfigProperties.PREMIUM_KEEP_OFFLINE_UUID_COMPATIBILITY));
     }
 
     Set<String> authServers() {
@@ -102,6 +106,10 @@ final class BungeeProxyConfiguration {
 
     String sharedSecret() {
         return sharedSecret;
+    }
+
+    boolean keepOfflineUuidCompatibility() {
+        return keepOfflineUuidCompatibility;
     }
 
     boolean isAuthServer(ServerInfo serverInfo) {

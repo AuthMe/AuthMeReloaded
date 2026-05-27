@@ -2,3 +2,5 @@ name: ${project.name}
 main: fr.xephi.authme.bungee.AuthMeBungeePlugin
 version: ${project.version}
 author: AuthMeTeam
+softDepends:
+  - packetevents

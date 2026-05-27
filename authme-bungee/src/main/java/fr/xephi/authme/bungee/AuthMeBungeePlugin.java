@@ -9,7 +9,7 @@ public final class AuthMeBungeePlugin extends AbstractAuthMeBungeePlugin {
     public void onEnable() {
         configManager = new BungeeConfigManager(getDataFolder().toPath());
         BungeeAuthenticationStore authenticationStore = new BungeeAuthenticationStore();
-        proxyBridge = new BungeeProxyBridge(getProxy(), getLogger(), configManager.getConfiguration(), authenticationStore);
+        proxyBridge = new BungeeProxyBridge(getProxy(), getLogger(), configManager.getConfiguration(), authenticationStore, getDataFolder().toPath());
 
         getProxy().getPluginManager().registerListener(this, proxyBridge);
         getProxy().getPluginManager().registerCommand(this, new BungeeReloadCommand(configManager, proxyBridge));

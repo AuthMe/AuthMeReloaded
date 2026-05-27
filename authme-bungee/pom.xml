@@ -32,6 +32,11 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>com.github.retrooper</groupId>
+            <artifactId>packetevents-bungeecord</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>

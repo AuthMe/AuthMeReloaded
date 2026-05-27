@@ -105,6 +105,7 @@
         </dependencies.mockito.javaagent>
         <dependencies.velocity.version>3.4.0</dependencies.velocity.version>
         <dependencies.bungeecord.version>1.21-R0.4</dependencies.bungeecord.version>
+        <dependencies.packetevents.version>2.12.1</dependencies.packetevents.version>
         <!-- Spigot -->
         <dependencies.spigot.version>1.16.5-R0.1-SNAPSHOT</dependencies.spigot.version>
         <dependencies.log4j-core.version>2.25.4</dependencies.log4j-core.version> <!-- version bundled 1.16.5 -->
@@ -628,7 +629,19 @@
         <dependency>
             <groupId>com.github.retrooper</groupId>
             <artifactId>packetevents-spigot</artifactId>
-            <version>2.12.1</version>
+            <version>${dependencies.packetevents.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.retrooper</groupId>
+            <artifactId>packetevents-bungeecord</artifactId>
+            <version>${dependencies.packetevents.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.retrooper</groupId>
+            <artifactId>packetevents-velocity</artifactId>
+            <version>${dependencies.packetevents.version}</version>
             <scope>provided</scope>
         </dependency>
 

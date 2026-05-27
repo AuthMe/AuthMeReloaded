@@ -67,6 +67,14 @@ public final class VelocityConfigProperties implements SettingsHolder {
     public static final Property<String> PROXY_SHARED_SECRET =
         newProperty("proxySharedSecret", "");
 
+    @Comment({
+        "Keep verified premium players on the backend offline UUID for plugin compatibility.",
+        "When false, premium players keep their Mojang UUID on the backend instead.",
+        "Velocity can do both modes natively; false is the default."
+    })
+    public static final Property<Boolean> PREMIUM_KEEP_OFFLINE_UUID_COMPATIBILITY =
+        newProperty("premium.keepOfflineUuidCompatibility", false);
+
     private VelocityConfigProperties() {
     }
 }

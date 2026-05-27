@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Wed May 06 11:56:53 CEST 2026. See authme-tools/src/test/java/tools/docs/config/config.tpl.md -->
+<!-- File auto-generated on Tue May 19 08:22:43 CEST 2026. See authme-tools/src/test/java/tools/docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder,
@@ -234,7 +234,8 @@ settings:
         displayOtherAccounts: true
         # Spawn priority; values: authme, essentials, cmi, multiverse, default, server
         # Use "server" to apply the world's spawnRadius gamerule (players land at a random position
-        # within the configured radius around the world spawn). Use "default" for the exact world spawn.
+        # within the configured radius around the world spawn).
+        # Use "default" for the exact world spawn.
         spawnPriority: authme,essentials,cmi,multiverse,default
         # Maximum Login authorized by IP
         maxLoginPerIp: 0
@@ -470,6 +471,7 @@ Hooks:
     # Shared secret used to verify perform.login messages from the AuthMe proxy plugin.
     # Must match the proxySharedSecret value in your AuthMe Velocity or Bungee proxy config.
     # All backend servers must have the same value set here.
+    # Leaving this empty disables auto-login: all perform.login messages will be rejected.
     proxySharedSecret: ''
     # Do we need to disable Essentials SocialSpy on join?
     disableSocialSpy: false
@@ -647,4 +649,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed May 06 11:56:53 CEST 2026
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Tue May 19 08:22:43 CEST 2026

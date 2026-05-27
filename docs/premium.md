@@ -7,23 +7,47 @@ dialog box.
 
 ## Requirements
 
-- **PacketEvents** must be installed as a separate plugin on the server, **unless** you
-  are using proxy mode (see [Behind a proxy](#behind-a-proxy)).  
-  Without PacketEvents in direct-connection mode, premium bypass is disabled at startup
-  (AuthMe logs a warning and falls back to normal password authentication for everyone).
-- For direct connections: an **offline-mode server** that clients reach without a proxy.
+- **Direct connections (no proxy):**
+  - the backend must run in **offline mode**
+  - **PacketEvents** must be installed on the backend server
+- **Behind a proxy:**
+  - install the matching AuthMe proxy plugin:
+    - **authme-velocity** for Velocity
+    - **authme-bungee** for BungeeCord / Waterfall
+  - set `Hooks.bungeecord: true` on every backend
+  - set the same shared secret in the proxy config and in `Hooks.proxySharedSecret` on every backend
+  - choose the proxy UUID mode with `premium.keepOfflineUuidCompatibility`:
+    - `false` (**default**) keeps the Mojang UUID on the backend
+    - `true` preserves the backend offline UUID v3 for plugin compatibility
+
+Without the required premium-verification component for your topology, AuthMe fails closed
+and falls back to normal password authentication.
 
 ## Setup
 
-### 1. Install PacketEvents
+### 1. Install the required verification component
 
-Download **PacketEvents 2.x** and drop the jar into your `plugins/` folder.
+- **Direct backend only:** install **PacketEvents 2.x** in `plugins/`
+- **Velocity proxy:** install **AuthMe Velocity**
+- **BungeeCord / Waterfall proxy:** install **AuthMe Bungee**
+  - install **PacketEvents 2.x** on the proxy only if `premium.keepOfflineUuidCompatibility: true`
 
 ### 2. Enable premium mode in `config.yml`
 
 ```yaml
 settings:
   enablePremium: true
+
+Hooks:
+  # Required only when using AuthMe behind Velocity/Bungee
+  bungeecord: true
+  proxySharedSecret: "same-secret-as-proxy"
+```
+
+```yaml
+# Proxy config (Velocity or Bungee)
+premium:
+  keepOfflineUuidCompatibility: false
 ```
 
 ### 3. Enroll players
@@ -91,12 +115,13 @@ UI shown, no password field displayed.
 
 ## Behind a proxy
 
-### Online-mode proxy (Velocity / BungeeCord online-mode)
+### AuthMe proxy plugin flow
 
-When Velocity or BungeeCord runs in **online mode**, the proxy authenticates players with
-Mojang before they reach the backend. The proxy then forwards the real Mojang UUID to the
-backend via IP forwarding. AuthMe uses that forwarded UUID directly — no PacketEvents
-required, no synthetic `ENCRYPTION_REQUEST` sent.
+For premium mode behind a proxy, use the matching AuthMe proxy plugin instead of relying on
+plain proxy UUID forwarding.
+
+The proxy verifies premium players first, then forwards a **signed** premium claim to the
+backend. The backend UUID behavior depends on `premium.keepOfflineUuidCompatibility`.
 
 **Backend configuration:**
 
@@ -105,37 +130,60 @@ settings:
   enablePremium: true
 
 Hooks:
-  bungeecord: true   # trust the UUID forwarded by the proxy
+  bungeecord: true
+  proxySharedSecret: "same-secret-as-proxy"
 ```
 
-**Proxy configuration requirements:**
+**Per-proxy behavior:**
 
-| Proxy | Required settings |
-|---|---|
-| Velocity | `player-info-forwarding-mode: MODERN` in `velocity.toml` + shared secret in `paper-global.yml` (or equivalent) |
-| BungeeCord | `ip_forward: true` in BungeeCord `config.yml` + `bungeecord: true` in backend `spigot.yml` |
+| Proxy | `premium.keepOfflineUuidCompatibility: false` (default) | `premium.keepOfflineUuidCompatibility: true` |
+|---|---|---|
+| Velocity | Native per-player online-mode login, Mojang UUID forwarded to backend | Native per-player online-mode login + rewrite back to offline UUID v3 |
+| BungeeCord / Waterfall | Local per-player online-mode handshake, Mojang UUID forwarded to backend | PacketEvents login-phase verification, then resume offline login with offline UUID v3 |
 
-> **Security:** with `Hooks.bungeecord: true` the backend trusts the UUID forwarded by the proxy.
-> The backend port **must** be firewalled so only the proxy can reach it — otherwise
-> anyone could connect directly with an arbitrary UUID and bypass authentication.
+**Requirements by mode:**
 
-PacketEvents is **not** required in this configuration.
+| Mode | Velocity | BungeeCord / Waterfall |
+|---|---|---|
+| `false` | No PacketEvents required | No PacketEvents required |
+| `true` | No PacketEvents required | PacketEvents required on the proxy |
 
-### Offline-mode proxy with AuthMe proxy plugin
+**What the backend trusts:**
 
-When the proxy runs in **offline mode**, install the matching AuthMe proxy plugin on the proxy:
+1. the `perform.login` message must have a valid HMAC using `Hooks.proxySharedSecret`
+2. the optional Mojang UUID inside that message must match either:
+   - the player's stored premium UUID, or
+   - the pending premium enrollment being finalized
 
-- **authme-velocity** for Velocity
-- **authme-bungee** for BungeeCord
+If either check fails, the premium auto-login request is rejected.
 
-These plugins maintain a list of premium-enrolled players and force per-player Mojang
-authentication for them via `PreLoginEvent`. The proxy then forwards the verified Mojang UUID
-to the backend the same way as in online-mode proxy setup. Set `Hooks.bungeecord: true` on the backend.
+**Premium cache synchronization:**
 
-The premium player list is synchronised automatically:
 - When the proxy plugin starts, the backend sends the full list of enrolled premium usernames.
 - When a player runs `/premium` or `/authme premium <player>`, the backend notifies the proxy
   immediately so the cache stays up to date.
+
+> **Security:** `Hooks.bungeecord: true` enables proxy-backed login handling, so backend ports
+> must only be reachable by the proxy. Do not expose backend servers directly to players.
+
+### Choosing the backend UUID mode
+
+`premium.keepOfflineUuidCompatibility` is a **proxy-side feature flag**:
+
+- `false` (**default**): premium players keep their **Mojang UUID v4** on the backend
+- `true`: premium players keep the backend **offline UUID v3** while the proxy still proves their premium identity
+
+Use `false` if you want the simplest premium proxy flow. Use `true` only when backend-side
+plugin compatibility requires offline UUID semantics.
+
+### Plain online-mode proxy forwarding
+
+If you run a proxy in normal online mode **without** the AuthMe proxy plugin, the backend sees
+the forwarded Mojang UUID from the proxy.
+
+That setup can work for general proxy forwarding, but it does **not** preserve the backend UUID
+on the offline v3 value. If you need premium bypass **and** backend plugin compatibility based on
+offline UUIDs, use the AuthMe proxy plugin flow above instead.
 
 ---
 
@@ -146,10 +194,14 @@ settings:
   # Enable premium mode: players with an official Minecraft account
   # can skip password authentication.
   # Verification method is chosen automatically:
-  #   - online-mode=true: Bukkit already has the Mojang UUID; no PacketEvents needed.
-  #   - offline-mode + proxy: set Hooks.bungeecord=true; UUID is forwarded by proxy.
-  #   - offline-mode, no proxy: PacketEvents required for cryptographic verification.
-  #     Without PacketEvents, premium auto-login is disabled (fail closed).
+  #   - direct offline-mode backend: PacketEvents verifies the Mojang session.
+  #   - behind AuthMe Velocity/Bungee proxy: the proxy verifies premium players
+  #     and sends a signed premium claim.
+  #     premium.keepOfflineUuidCompatibility=false (default) keeps the Mojang UUID.
+  #     premium.keepOfflineUuidCompatibility=true keeps the backend offline UUID.
+  #   - plain online-mode proxy forwarding also forwards the Mojang UUID, but
+  #     without the AuthMe proxy plugin's signed premium flow.
+  # If verification is unavailable, premium auto-login is disabled (fail closed).
   # Players must use /premium to opt in.
   enablePremium: false
 ```
@@ -171,7 +223,9 @@ settings:
 
 **Q: Can I use this on an online-mode server?**  
 A: Online-mode servers already enforce Mojang authentication at the server level — you do not
-need AuthMe's premium bypass at all. AuthMe is primarily designed for offline-mode servers.
+need AuthMe's premium bypass at all. AuthMe is primarily designed for offline-mode servers, or
+for proxy setups where the proxy verifies premium identity but the backend still keeps offline
+UUID semantics.
 
 **Q: What happens if Mojang's session server is down?**  
 A: The Minecraft client must contact `sessionserver.mojang.com/session/minecraft/join` before
@@ -187,6 +241,8 @@ player name, the player may need to be re-enrolled with `/authme premium` after 
 depending on your account-linking configuration.
 
 **Q: Can a non-premium player impersonate a premium player?**  
-A: No. The verify-token check and the `hasJoined` call together ensure that only a client
-which actually holds the Mojang session for that account can complete the handshake. An
-attacker who merely knows the username cannot forge the encrypted shared secret.
+A: No. In direct mode, the verify-token check and the `hasJoined` call ensure that only a client
+which actually holds the Mojang session for that account can complete the handshake. Behind a
+proxy, the backend additionally requires a valid HMAC-signed `perform.login` payload and refuses
+any premium UUID that does not match stored or pending premium state. An attacker who merely knows
+the username cannot forge those checks.

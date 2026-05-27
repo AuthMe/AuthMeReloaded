@@ -28,6 +28,7 @@ class BungeeConfigManagerTest {
         assertTrue(configManager.getConfiguration().serverSwitchRequiresAuth());
         assertFalse(configManager.getConfiguration().autoLoginEnabled());
         assertFalse(configManager.getConfiguration().sharedSecret().isEmpty());
+        assertFalse(configManager.getConfiguration().keepOfflineUuidCompatibility());
     }
 
     @Test
@@ -42,22 +43,24 @@ class BungeeConfigManagerTest {
     @Test
     void shouldNormalizeConfiguredSettings() throws IOException {
         Files.writeString(tempDirectory.resolve("config.yml"), """
-            authServers:
-            - Lobby
-            - HUB
-            allServersAreAuthServers: false
-            commands:
-              whitelist:
-              - login
-              - /REG
-            chatRequiresAuth: false
-            serverSwitch:
-              requiresAuth: false
-              kickMessage: Please authenticate first.
-            autoLogin: true
-            sendOnLogout: true
-            unloggedUserServer: LiMbO
-            """);
+authServers:
+- Lobby
+- HUB
+allServersAreAuthServers: false
+commands:
+  whitelist:
+  - login
+  - /REG
+chatRequiresAuth: false
+serverSwitch:
+  requiresAuth: false
+  kickMessage: Please authenticate first.
+autoLogin: true
+sendOnLogout: true
+unloggedUserServer: LiMbO
+premium:
+  keepOfflineUuidCompatibility: true
+""");
 
         BungeeProxyConfiguration configuration = new BungeeConfigManager(tempDirectory).getConfiguration();
 
@@ -71,5 +74,6 @@ class BungeeConfigManagerTest {
         assertTrue(configuration.autoLoginEnabled());
         assertTrue(configuration.sendOnLogoutEnabled());
         assertEquals("limbo", configuration.sendOnLogoutTarget());
+        assertTrue(configuration.keepOfflineUuidCompatibility());
     }
 }

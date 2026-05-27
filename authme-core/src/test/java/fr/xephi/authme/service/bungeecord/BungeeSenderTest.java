@@ -127,6 +127,23 @@ class BungeeSenderTest {
     }
 
     @Test
+    void shouldNormalizePremiumListUsernamesToLowercase() {
+        given(settings.getProperty(HooksSettings.BUNGEECORD)).willReturn(true);
+        given(settings.getProperty(HooksSettings.BUNGEECORD_SERVER)).willReturn("");
+        given(messenger.isOutgoingChannelRegistered(plugin, "BungeeCord")).willReturn(true);
+        given(messenger.isOutgoingChannelRegistered(plugin, "authme:main")).willReturn(true);
+        given(plugin.isEnabled()).willReturn(true);
+
+        BungeeSender sender = new BungeeSender(plugin, bukkitService, settings);
+        sender.sendPremiumList(carrier, List.of("Alice", "BOB"));
+
+        verify(bukkitService).sendAuthMePluginMessage(eq(carrier), payloadCaptor.capture());
+        ByteArrayDataInput in = ByteStreams.newDataInput(payloadCaptor.getValue());
+        assertEquals("premium.list.chunk", in.readUTF());
+        assertEquals("0:1:alice,bob", in.readUTF());
+    }
+
+    @Test
     void shouldSendTwoChunksFor1001Names() {
         given(settings.getProperty(HooksSettings.BUNGEECORD)).willReturn(true);
         given(settings.getProperty(HooksSettings.BUNGEECORD_SERVER)).willReturn("");
