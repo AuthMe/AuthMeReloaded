@@ -23,7 +23,7 @@ public final class PremiumSettings implements SettingsHolder {
 
     @Comment("Profile url used for premium verification.")
     public static final Property<String> ACCOUNT_SERVER =
-        newProperty("settings.premium.accountServer", "https://api.mojang.com/users/profiles/minecraft/");
+        newProperty("settings.premium.accountServer", "https://api.mojang.com");
 
     @Comment("Session server used for premium verification.")
     public static final Property<String> SESSION_SERVER =
