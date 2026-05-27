@@ -44,7 +44,7 @@ public class MojangApiService {
      */
     public Optional<UUID> fetchUuidByName(String username) {
         try {
-            HttpURLConnection conn = openGet(settings.getProperty(PremiumSettings.ACCOUNT_SERVER) + "/users/profiles/minecraft/" + username);
+            HttpURLConnection conn = openGet(settings.getProperty(PremiumSettings.ACCOUNT_SERVER) + username);
             int code = conn.getResponseCode();
             if (code == HttpURLConnection.HTTP_NO_CONTENT || code == HttpURLConnection.HTTP_NOT_FOUND) {
                 return Optional.empty();
