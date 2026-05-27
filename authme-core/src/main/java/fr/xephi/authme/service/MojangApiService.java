@@ -3,6 +3,8 @@ package fr.xephi.authme.service;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.util.UuidUtils;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.PremiumSettings;
 
 import javax.inject.Inject;
 import java.io.BufferedReader;
@@ -21,16 +23,16 @@ import java.util.regex.Pattern;
  */
 public class MojangApiService {
 
-    private static final String PROFILE_URL = "https://api.mojang.com/users/profiles/minecraft/";
-    private static final String HAS_JOINED_URL =
-        "https://sessionserver.mojang.com/session/minecraft/hasJoined";
     private static final Pattern UUID_PATTERN =
         Pattern.compile("\"id\"\\s*:\\s*\"([0-9a-fA-F]{32})\"");
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(MojangApiService.class);
 
+    private Settings settings;
+
     @Inject
-    MojangApiService() {
+    MojangApiService(Settings settings) {
+        this.settings = settings;
     }
 
     /**
@@ -41,7 +43,7 @@ public class MojangApiService {
      */
     public Optional<UUID> fetchUuidByName(String username) {
         try {
-            HttpURLConnection conn = openGet(PROFILE_URL + username);
+            HttpURLConnection conn = openGet(settings.getProperty(PremiumSettings.ACCOUNT_SERVER) + username);
             int code = conn.getResponseCode();
             if (code == HttpURLConnection.HTTP_NO_CONTENT || code == HttpURLConnection.HTTP_NOT_FOUND) {
                 return Optional.empty();
@@ -70,7 +72,7 @@ public class MojangApiService {
      */
     public Optional<UUID> hasJoined(String username, String serverHash) {
         try {
-            String url = HAS_JOINED_URL + "?username=" + username + "&serverId=" + serverHash;
+            String url = settings.getProperty(PremiumSettings.SESSION_SERVER) + "?username=" + username + "&serverId=" + serverHash;
             HttpURLConnection conn = openGet(url);
             int code = conn.getResponseCode();
             if (code == HttpURLConnection.HTTP_NO_CONTENT || code == HttpURLConnection.HTTP_NOT_FOUND) {
