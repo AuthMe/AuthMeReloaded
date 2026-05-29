@@ -543,12 +543,6 @@ final class VelocityProxyBridge {
             if (attempts == null) {
                 return;
             }
-            int current = attempts.getAndIncrement();
-            if (current >= MAX_RETRIES) {
-                pendingAutoLogins.remove(normalizedName);
-                logger.warn("No auto-login ACK received for {} after {} retries; giving up", normalizedName, MAX_RETRIES);
-                return;
-            }
             Optional<Player> playerOpt = proxyServer.getPlayer(normalizedName);
             if (playerOpt.isEmpty()) {
                 pendingAutoLogins.remove(normalizedName);
@@ -557,8 +551,14 @@ final class VelocityProxyBridge {
             }
             Optional<ServerConnection> serverOpt = playerOpt.get().getCurrentServer();
             if (serverOpt.isEmpty()) {
+                logger.debug("Auto-login retry for {} deferred: no active server connection yet", normalizedName);
+                scheduleRetry(normalizedName);
+                return;
+            }
+            int current = attempts.getAndIncrement();
+            if (current >= MAX_RETRIES) {
                 pendingAutoLogins.remove(normalizedName);
-                logger.debug("Auto-login retry cancelled for {} (player has no active server)", normalizedName);
+                logger.warn("No auto-login ACK received for {} after {} retries; giving up", normalizedName, MAX_RETRIES);
                 return;
             }
             String serverName = serverOpt.get().getServer().getServerInfo().getName();
