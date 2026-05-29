@@ -350,21 +350,19 @@ final class VelocityProxyBridge {
                 normalizedName);
         }
 
-        Optional<ServerConnection> currentServer = event.getPlayer().getCurrentServer();
-        if (currentServer.isEmpty()) {
-            // Velocity hasn't registered the new connection yet; let the retry mechanism handle it
-            logger.debug("Player {} has no active server connection in ServerConnectedEvent; scheduling auto-login retry", normalizedName);
-            initiatePendingLogin(normalizedName);
-            return;
-        }
-
-        String serverName = currentServer.get().getServer().getServerInfo().getName();
-        boolean sent = currentServer.get().sendPluginMessage(
+        // Use event.getServer() (the newly connected server) rather than
+        // event.getPlayer().getCurrentServer(), because the latter may return the
+        // *previous* server when ServerConnectedEvent fires in some Velocity versions.
+        String serverName = event.getServer().getServerInfo().getName();
+        boolean sent = event.getServer().sendPluginMessage(
             AUTHME_CHANNEL, createPerformLoginMessage(normalizedName, verifiedPremiumUuid));
         if (sent) {
             logger.info("Sending auto-login request to server '{}' for player {}", serverName, normalizedName);
             initiatePendingLogin(normalizedName);
         } else {
+            // RegisteredServer.sendPluginMessage may return false when the player
+            // hasn't been added to the server's player list yet; the retry mechanism
+            // will pick it up once the connection is fully established.
             logger.warn("Failed to send auto-login request to server '{}' for player {}; scheduling retry", serverName, normalizedName);
             initiatePendingLogin(normalizedName);
         }
@@ -549,24 +547,29 @@ final class VelocityProxyBridge {
                 logger.debug("Auto-login retry cancelled for {} (player no longer online)", normalizedName);
                 return;
             }
-            Optional<ServerConnection> serverOpt = playerOpt.get().getCurrentServer();
-            if (serverOpt.isEmpty()) {
-                logger.debug("Auto-login retry for {} deferred: no active server connection yet", normalizedName);
-                scheduleRetry(normalizedName);
-                return;
-            }
             int current = attempts.getAndIncrement();
             if (current >= MAX_RETRIES) {
                 pendingAutoLogins.remove(normalizedName);
                 logger.warn("No auto-login ACK received for {} after {} retries; giving up", normalizedName, MAX_RETRIES);
                 return;
             }
+            Optional<ServerConnection> serverOpt = playerOpt.get().getCurrentServer();
+            if (serverOpt.isEmpty()) {
+                logger.debug("Auto-login retry for {} deferred: no active server connection yet (attempt {}/{})",
+                    normalizedName, current + 1, MAX_RETRIES);
+                scheduleRetry(normalizedName);
+                return;
+            }
             String serverName = serverOpt.get().getServer().getServerInfo().getName();
             logger.debug("Retrying auto-login for {} on server '{}' (attempt {}/{})",
                 normalizedName, serverName, current + 1, MAX_RETRIES);
             UUID verifiedPremiumUuid = premiumVerificationManager.getVerifiedPremiumUuid(normalizedName);
-            serverOpt.get().sendPluginMessage(AUTHME_CHANNEL,
+            boolean sent = serverOpt.get().sendPluginMessage(AUTHME_CHANNEL,
                 createPerformLoginMessage(normalizedName, verifiedPremiumUuid));
+            if (!sent) {
+                logger.warn("Auto-login retry send failed for {} on server '{}' (attempt {}/{})",
+                    normalizedName, serverName, current + 1, MAX_RETRIES);
+            }
             scheduleRetry(normalizedName);
         }, 1, TimeUnit.SECONDS);
     }
