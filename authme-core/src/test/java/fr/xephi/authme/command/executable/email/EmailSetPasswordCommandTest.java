@@ -64,14 +64,14 @@ public class EmailSetPasswordCommandTest {
         given(recoveryService.canChangePassword(player)).willReturn(true);
         HashedPassword hashedPassword = passwordSecurity.computeHash("abc123", name);
         given(passwordSecurity.computeHash("abc123", name)).willReturn(hashedPassword);
-        given(validationService.validatePassword("abc123", name))
-            .willReturn(new ValidationService.ValidationResult());
+        given(validationService.validatePasswordAsync("abc123", name))
+            .willReturn(completedValidation(new ValidationService.ValidationResult()));
 
         // when
         command.runCommand(player, Collections.singletonList("abc123"));
 
         // then
-        verify(validationService).validatePassword("abc123", name);
+        verify(validationService).validatePasswordAsync("abc123", name);
         verify(dataSource).updatePassword(name, hashedPassword);
         verify(recoveryService).removeFromSuccessfulRecovery(player);
         verify(commonService).send(player, MessageKey.PASSWORD_CHANGED_SUCCESS);
@@ -84,15 +84,16 @@ public class EmailSetPasswordCommandTest {
         String name = "Morgan";
         given(player.getName()).willReturn(name);
         String password = "newPW";
-        given(validationService.validatePassword(password, name))
-            .willReturn(new ValidationService.ValidationResult(MessageKey.INVALID_PASSWORD_LENGTH));
+        given(validationService.validatePasswordAsync(password, name))
+            .willReturn(completedValidation(
+                new ValidationService.ValidationResult(MessageKey.INVALID_PASSWORD_LENGTH)));
         given(recoveryService.canChangePassword(player)).willReturn(true);
 
         // when
         command.executeCommand(player, Collections.singletonList(password));
 
         // then
-        verify(validationService).validatePassword(password, name);
+        verify(validationService).validatePasswordAsync(password, name);
         verify(commonService).send(player, MessageKey.INVALID_PASSWORD_LENGTH, new String[0]);
     }
 
@@ -108,6 +109,10 @@ public class EmailSetPasswordCommandTest {
         verifyNoInteractions(validationService, dataSource);
         verify(commonService).send(player, MessageKey.CHANGE_PASSWORD_EXPIRED);
     }
-}
 
+    private static java.util.concurrent.CompletableFuture<ValidationService.ValidationResult> completedValidation(
+        ValidationService.ValidationResult validationResult) {
+        return java.util.concurrent.CompletableFuture.completedFuture(validationResult);
+    }
+}
 

@@ -7,7 +7,6 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.ValidationService;
-import fr.xephi.authme.service.ValidationService.ValidationResult;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -54,13 +53,13 @@ public class ChangePasswordCommand extends PlayerCommand {
         String newPassword = arguments.get(1);
 
         // Make sure the password is allowed
-        ValidationResult passwordValidation = validationService.validatePassword(newPassword, name);
-        if (passwordValidation.hasError()) {
-            commonService.send(player, passwordValidation.getMessageKey(), passwordValidation.getArgs());
-            return;
-        }
-
-        management.performPasswordChange(player, oldPassword, newPassword);
+        validationService.validatePasswordAsync(newPassword, name).thenAccept(passwordValidation -> {
+            if (passwordValidation.hasError()) {
+                commonService.send(player, passwordValidation.getMessageKey(), passwordValidation.getArgs());
+            } else {
+                management.performPasswordChange(player, oldPassword, newPassword);
+            }
+        });
     }
 
     @Override

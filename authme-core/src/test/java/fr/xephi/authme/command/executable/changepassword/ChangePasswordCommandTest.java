@@ -91,14 +91,15 @@ public class ChangePasswordCommandTest {
         // given
         Player sender = initPlayerWithName("abc12", true);
         String password = "newPW";
-        given(validationService.validatePassword(password, "abc12")).willReturn(new ValidationResult(MessageKey.INVALID_PASSWORD_LENGTH));
+        given(validationService.validatePasswordAsync(password, "abc12"))
+            .willReturn(completedValidation(new ValidationResult(MessageKey.INVALID_PASSWORD_LENGTH)));
         given(codeManager.isVerificationRequired(sender)).willReturn(false);
 
         // when
         command.executeCommand(sender, Arrays.asList("tester", password));
 
         // then
-        verify(validationService).validatePassword(password, "abc12");
+        verify(validationService).validatePasswordAsync(password, "abc12");
         verify(commonService).send(sender, MessageKey.INVALID_PASSWORD_LENGTH, new String[0]);
         verify(codeManager).isVerificationRequired(sender);
     }
@@ -109,14 +110,15 @@ public class ChangePasswordCommandTest {
         String oldPass = "oldpass";
         String newPass = "abc123";
         Player player = initPlayerWithName("parker", true);
-        given(validationService.validatePassword("abc123", "parker")).willReturn(new ValidationResult());
+        given(validationService.validatePasswordAsync("abc123", "parker"))
+            .willReturn(completedValidation(new ValidationResult()));
         given(codeManager.isVerificationRequired(player)).willReturn(false);
 
         // when
         command.executeCommand(player, Arrays.asList(oldPass, newPass));
 
         // then
-        verify(validationService).validatePassword(newPass, "parker");
+        verify(validationService).validatePasswordAsync(newPass, "parker");
         verify(commonService, never()).send(eq(player), any(MessageKey.class));
         verify(management).performPasswordChange(player, oldPass, newPass);
         verify(codeManager).isVerificationRequired(player);
@@ -134,6 +136,10 @@ public class ChangePasswordCommandTest {
         when(playerCache.isAuthenticated(name)).thenReturn(loggedIn);
         return player;
     }
-}
 
+    private static java.util.concurrent.CompletableFuture<ValidationResult> completedValidation(
+        ValidationResult validationResult) {
+        return java.util.concurrent.CompletableFuture.completedFuture(validationResult);
+    }
+}
 

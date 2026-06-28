@@ -7,11 +7,13 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreRegisterEvent;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.process.AsynchronousProcess;
+import fr.xephi.authme.process.register.executors.AbstractPasswordRegisterParams;
 import fr.xephi.authme.process.register.executors.RegistrationExecutor;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.process.register.executors.RegistrationParameters;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.InternetProtocolUtils;
@@ -21,6 +23,7 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 
 import static fr.xephi.authme.permission.PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS;
 
@@ -38,6 +41,8 @@ public class AsyncRegister implements AsynchronousProcess {
     @Inject
     private CommonService service;
     @Inject
+    private ValidationService validationService;
+    @Inject
     private SingletonStore<RegistrationExecutor> registrationExecutorFactory;
 
     AsyncRegister() {
@@ -54,9 +59,28 @@ public class AsyncRegister implements AsynchronousProcess {
         if (preRegisterCheck(variant, parameters.getPlayer())) {
             RegistrationExecutor<P> executor = registrationExecutorFactory.getSingleton(variant.getExecutorClass());
             if (executor.isRegistrationAdmitted(parameters)) {
-                executeRegistration(parameters, executor);
+                validatePwnedPassword(parameters).thenAccept(passwordValidation -> {
+                    if (passwordValidation.hasError()) {
+                        service.send(parameters.getPlayer(), passwordValidation.getMessageKey(),
+                            passwordValidation.getArgs());
+                    } else {
+                        executeRegistration(parameters, executor);
+                    }
+                });
             }
         }
+    }
+
+    private CompletableFuture<ValidationService.ValidationResult> validatePwnedPassword(RegistrationParameters parameters) {
+        if (!(parameters instanceof AbstractPasswordRegisterParams)) {
+            return CompletableFuture.completedFuture(new ValidationService.ValidationResult());
+        }
+
+        AbstractPasswordRegisterParams passwordParams = (AbstractPasswordRegisterParams) parameters;
+        if (passwordParams.getPassword() == null) {
+            return CompletableFuture.completedFuture(new ValidationService.ValidationResult());
+        }
+        return validationService.validatePasswordAsync(passwordParams.getPassword(), passwordParams.getPlayerName());
     }
 
     /**

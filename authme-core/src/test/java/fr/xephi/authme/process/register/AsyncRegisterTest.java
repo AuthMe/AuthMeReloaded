@@ -6,6 +6,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 import ch.jalu.injector.factory.SingletonStore;
 import fr.xephi.authme.TestHelper;
+import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreRegisterEvent;
@@ -16,6 +17,7 @@ import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.process.register.executors.TwoFactorRegisterParams;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.entity.Player;
@@ -23,10 +25,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
@@ -50,6 +54,8 @@ public class AsyncRegisterTest {
     private BukkitService bukkitService;
     @Mock
     private DataSource dataSource;
+    @Mock
+    private ValidationService validationService;
     @Mock
     private SingletonStore<RegistrationExecutor> registrationExecutorStore;
 
@@ -150,6 +156,70 @@ public class AsyncRegisterTest {
         verify(executor, only()).isRegistrationAdmitted(params);
     }
 
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldExecuteRegistrationAfterPasswordValidation() {
+        // given
+        String name = "edbert";
+        Player player = mockPlayerWithName(name);
+        TestHelper.mockIpAddressToPlayer(player, "33.44.55.66");
+        given(playerCache.isAuthenticated(name)).willReturn(false);
+        given(commonService.getProperty(RegistrationSettings.IS_ENABLED)).willReturn(true);
+        given(commonService.getProperty(RestrictionSettings.MAX_REGISTRATION_PER_IP)).willReturn(0);
+        given(dataSource.isAuthAvailable(name)).willReturn(false);
+        given(bukkitService.createAndCallEvent(any(Function.class)))
+            .willReturn(new AuthMeAsyncPreRegisterEvent(player, false));
+
+        String password = "abc";
+        PasswordRegisterParams params = PasswordRegisterParams.of(player, password, null);
+        RegistrationExecutor executor = mock(RegistrationExecutor.class);
+        given(executor.isRegistrationAdmitted(params)).willReturn(true);
+        singletonStoreWillReturn(registrationExecutorStore, executor);
+        given(validationService.validatePasswordAsync(password, name))
+            .willReturn(completedValidation(new ValidationService.ValidationResult()));
+
+        PlayerAuth auth = mock(PlayerAuth.class);
+        given(executor.buildPlayerAuth(params)).willReturn(auth);
+        given(dataSource.saveAuth(auth)).willReturn(true);
+
+        // when
+        asyncRegister.register(RegistrationMethod.PASSWORD_REGISTRATION, params);
+
+        // then
+        verify(executor).executePostPersistAction(params);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldStopForRejectedPwnedPassword() {
+        // given
+        String name = "edbert";
+        Player player = mockPlayerWithName(name);
+        TestHelper.mockIpAddressToPlayer(player, "33.44.55.66");
+        given(playerCache.isAuthenticated(name)).willReturn(false);
+        given(commonService.getProperty(RegistrationSettings.IS_ENABLED)).willReturn(true);
+        given(commonService.getProperty(RestrictionSettings.MAX_REGISTRATION_PER_IP)).willReturn(0);
+        given(dataSource.isAuthAvailable(name)).willReturn(false);
+        given(bukkitService.createAndCallEvent(any(Function.class)))
+            .willReturn(new AuthMeAsyncPreRegisterEvent(player, false));
+
+        String password = "abc";
+        PasswordRegisterParams params = PasswordRegisterParams.of(player, password, null);
+        RegistrationExecutor executor = mock(RegistrationExecutor.class);
+        given(executor.isRegistrationAdmitted(params)).willReturn(true);
+        singletonStoreWillReturn(registrationExecutorStore, executor);
+        given(validationService.validatePasswordAsync(password, name))
+            .willReturn(completedValidation(
+                new ValidationService.ValidationResult(MessageKey.PASSWORD_PWNED_ERROR, "42")));
+
+        // when
+        asyncRegister.register(RegistrationMethod.PASSWORD_REGISTRATION, params);
+
+        // then
+        verify(commonService).send(player, MessageKey.PASSWORD_PWNED_ERROR, "42");
+        verify(executor, never()).buildPlayerAuth(params);
+    }
+
     private static Player mockPlayerWithName(String name) {
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
@@ -161,6 +231,9 @@ public class AsyncRegisterTest {
                                                  RegistrationExecutor mock) {
         given(store.getSingleton(any(Class.class))).willReturn(mock);
     }
+
+    private static CompletableFuture<ValidationService.ValidationResult> completedValidation(
+        ValidationService.ValidationResult validationResult) {
+        return CompletableFuture.completedFuture(validationResult);
+    }
 }
-
-
