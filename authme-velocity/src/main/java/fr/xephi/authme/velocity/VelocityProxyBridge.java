@@ -253,7 +253,7 @@ final class VelocityProxyBridge {
                 logger.info("Player {} authenticated on auth server '{}'", parsedMessage.playerName(), serverName);
 
                 proxyServer.getPlayer(normalizedName).ifPresent(player -> {
-                    boolean premium = requiresPremiumVerification(normalizeName(parsedMessage.playerName()));
+                    boolean premium = requiresPremiumVerification(normalizedName);
                     AuthMeVelocityLoginEvent loginEvent = new AuthMeVelocityLoginEvent(player, premium);
 
                     proxyServer.getEventManager().fireAndForget(loginEvent);

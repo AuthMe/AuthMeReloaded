@@ -255,7 +255,7 @@ public final class BungeeProxyBridge implements Listener {
 
                 ProxiedPlayer player = proxyServer.getPlayer(playerName);
                 if (player != null) {
-                    boolean premium = requiresPremiumVerification(parsedMessage.playerName());
+                    boolean premium = requiresPremiumVerification(playerName);
                     proxyServer.getPluginManager().callEvent(new AuthMeBungeeLoginEvent(player, premium));
                 }
 
