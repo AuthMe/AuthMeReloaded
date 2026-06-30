@@ -16,6 +16,7 @@ import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.DialogWindowService;
+import fr.xephi.authme.service.PendingPremiumCache;
 import fr.xephi.authme.service.PreJoinDialogService;
 import fr.xephi.authme.service.PremiumLoginVerifier;
 import fr.xephi.authme.service.SessionService;
@@ -74,6 +75,9 @@ public class PaperDialogFlowListener implements Listener {
 
     @Inject
     private PreJoinDialogService preJoinDialogService;
+
+    @Inject
+    private PendingPremiumCache pendingPremiumCache;
 
     @Inject
     private DialogWindowService dialogWindowService;
@@ -207,7 +211,11 @@ public class PaperDialogFlowListener implements Listener {
         // phase between the shouldSkipDialogs() check and now: if a proxy session has been queued,
         // force-login instead of showing the dialog.
         if (proxySessionManager.shouldResumeSession(normalizedName)) {
-            preJoinDialogService.approvePreJoinForceLogin(normalizedName);
+            ProxySessionManager.ProxyLoginRequest req = proxySessionManager.getLoginRequest(normalizedName);
+            if (req != null && (req.verifiedPremiumUuid() == null
+                || isProxyPremiumRequestValid(normalizedName, req))) {
+                preJoinDialogService.approvePreJoinForceLogin(normalizedName);
+            }
         }
 
         if (!loginResponse.isDone()) {
@@ -410,12 +418,36 @@ public class PaperDialogFlowListener implements Listener {
         return true;
     }
 
+    private boolean isProxyPremiumRequestValid(String normalizedName, ProxySessionManager.ProxyLoginRequest request) {
+        UUID verifiedUuid = request.verifiedPremiumUuid();
+        if (verifiedUuid == null) {
+            return true;
+        }
+        PlayerAuth auth = dataSource.getAuth(normalizedName);
+        if (auth == null) {
+            return false;
+        }
+        if (auth.isPremium()) {
+            return verifiedUuid.equals(auth.getPremiumUuid());
+        }
+        UUID pendingUuid = pendingPremiumCache.getPendingUuid(normalizedName);
+        return pendingUuid != null && verifiedUuid.equals(pendingUuid);
+    }
+
     // MC 1.21.6 (protocol 771) introduced the dialog / custom-click packets required for pre-join dialogs
     private static final int DIALOG_MIN_PROTOCOL = 771;
 
     private boolean shouldSkipDialogs(String normalizedName, PlayerConfigurationConnection connection) {
-        if (playerCache.isAuthenticated(normalizedName) || proxySessionManager.shouldResumeSession(normalizedName)) {
+        if (playerCache.isAuthenticated(normalizedName)) {
             return true;
+        }
+
+        if (proxySessionManager.shouldResumeSession(normalizedName)) {
+            ProxySessionManager.ProxyLoginRequest request = proxySessionManager.getLoginRequest(normalizedName);
+            if (request != null && (request.verifiedPremiumUuid() == null
+                || isProxyPremiumRequestValid(normalizedName, request))) {
+                return true;
+            }
         }
 
         InetSocketAddress clientAddress = connection.getClientAddress();

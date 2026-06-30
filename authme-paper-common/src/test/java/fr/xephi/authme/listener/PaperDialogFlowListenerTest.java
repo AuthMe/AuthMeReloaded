@@ -361,6 +361,8 @@ public class PaperDialogFlowListenerTest {
         given(commonService.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(Set.of());
         given(playerCache.isAuthenticated("bobby")).willReturn(false);
         given(proxySessionManager.shouldResumeSession("bobby")).willReturn(true);
+        given(proxySessionManager.getLoginRequest("bobby"))
+            .willReturn(new ProxySessionManager.ProxyLoginRequest("bobby", null));
 
         UUID playerId = UUID.randomUUID();
         PlayerProfile profile = mock(PlayerProfile.class);
