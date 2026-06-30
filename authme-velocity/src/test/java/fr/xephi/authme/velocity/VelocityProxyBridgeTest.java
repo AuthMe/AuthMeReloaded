@@ -11,6 +11,7 @@ import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
+import com.velocitypowered.api.event.player.configuration.PlayerEnteredConfigurationEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ConnectionRequestBuilder;
@@ -375,6 +376,55 @@ class VelocityProxyBridgeTest {
 
         verify(currentServer).sendPluginMessage(eq(VelocityProxyBridge.AUTHME_CHANNEL), payloadCaptor.capture());
         assertPerformLoginPayload(payloadCaptor.getValue(), "alice", "test-secret");
+    }
+
+    @Test
+    void shouldSendConfigPhaseAutoLoginForAuthenticatedPlayerEnteringAuthServer() {
+        given(player.getUsername()).willReturn("Alice");
+        given(currentServer.getServer()).willReturn(authServer);
+        given(authServer.getServerInfo()).willReturn(authServerInfo);
+        given(authServerInfo.getName()).willReturn("lobby");
+        given(currentServer.sendPluginMessage(eq(VelocityProxyBridge.AUTHME_CHANNEL), any(byte[].class)))
+            .willReturn(true);
+
+        VelocityAuthenticationStore store = new VelocityAuthenticationStore();
+        store.markAuthenticated("alice");
+
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), store, null);
+        bridge.onPlayerEnteredConfiguration(new PlayerEnteredConfigurationEvent(player, currentServer));
+
+        verify(currentServer).sendPluginMessage(eq(VelocityProxyBridge.AUTHME_CHANNEL), payloadCaptor.capture());
+        assertPerformLoginPayload(payloadCaptor.getValue(), "alice", "test-secret");
+    }
+
+    @Test
+    void shouldNotSendConfigPhaseAutoLoginForUnauthenticatedPlayer() {
+        given(player.getUsername()).willReturn("Alice");
+        given(currentServer.getServer()).willReturn(authServer);
+        given(authServer.getServerInfo()).willReturn(authServerInfo);
+        given(authServerInfo.getName()).willReturn("lobby");
+
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(),
+            new VelocityAuthenticationStore(), null);
+        bridge.onPlayerEnteredConfiguration(new PlayerEnteredConfigurationEvent(player, currentServer));
+
+        verify(currentServer, never()).sendPluginMessage(any(), any(byte[].class));
+    }
+
+    @Test
+    void shouldNotSendConfigPhaseAutoLoginWhenEnteringNonAuthServer() {
+        given(player.getUsername()).willReturn("Alice");
+        given(currentServer.getServer()).willReturn(nonAuthServer);
+        given(nonAuthServer.getServerInfo()).willReturn(nonAuthServerInfo);
+        given(nonAuthServerInfo.getName()).willReturn("survival");
+
+        VelocityAuthenticationStore store = new VelocityAuthenticationStore();
+        store.markAuthenticated("alice");
+
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), store, null);
+        bridge.onPlayerEnteredConfiguration(new PlayerEnteredConfigurationEvent(player, currentServer));
+
+        verify(currentServer, never()).sendPluginMessage(any(), any(byte[].class));
     }
 
     // --- Command blocking tests ---

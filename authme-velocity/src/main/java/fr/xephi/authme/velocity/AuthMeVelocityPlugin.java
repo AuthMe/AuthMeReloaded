@@ -11,6 +11,7 @@ import com.velocitypowered.api.event.player.GameProfileRequestEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
+import com.velocitypowered.api.event.player.configuration.PlayerEnteredConfigurationEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
@@ -69,6 +70,11 @@ public final class AuthMeVelocityPlugin extends AbstractAuthMeVelocityPlugin {
     @Subscribe
     public void onGameProfileRequest(GameProfileRequestEvent event) {
         proxyBridge.onGameProfileRequest(event);
+    }
+
+    @Subscribe
+    public void onPlayerEnteredConfiguration(PlayerEnteredConfigurationEvent event) {
+        proxyBridge.onPlayerEnteredConfiguration(event);
     }
 
     @Subscribe

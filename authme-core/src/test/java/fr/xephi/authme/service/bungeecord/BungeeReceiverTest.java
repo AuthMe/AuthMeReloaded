@@ -3,6 +3,7 @@ package fr.xephi.authme.service.bungeecord;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.ProxySessionManager;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.process.Management;
@@ -14,6 +15,7 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.Messenger;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +28,9 @@ import java.util.UUID;
 
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskAsynchronously;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -66,6 +71,11 @@ class BungeeReceiverTest {
 
     @Mock
     private Messenger messenger;
+
+    @BeforeAll
+    static void initLogger() {
+        TestHelper.setupLogger();
+    }
 
     @BeforeEach
     void setUp() {
@@ -226,6 +236,56 @@ class BungeeReceiverTest {
         verify(proxySessionManager).removeLoginRequest(playerName);
         verify(management, never()).forceLoginFromProxy(any());
         verify(bungeeSender, never()).sendAuthMeBungeecordMessage(any(), any());
+    }
+
+    @Test
+    void shouldValidateAndQueueConfigPhasePerformLogin() {
+        // given
+        String sharedSecret = "test-secret";
+        String playerName = "Bobby";
+        long timestamp = System.currentTimeMillis();
+        String hmac = HashUtils.hmacSha256(sharedSecret, playerName + ":" + timestamp + ":");
+
+        given(settings.getProperty(HooksSettings.BUNGEECORD)).willReturn(true);
+        given(settings.getProperty(HooksSettings.PROXY_SHARED_SECRET)).willReturn(sharedSecret);
+
+        BungeeReceiver receiver =
+            new BungeeReceiver(plugin, bukkitService, proxySessionManager, management, bungeeSender, dataSource,
+                proxyLoginRequestValidator, settings);
+
+        byte[] payload = buildPerformLoginPayload(playerName, timestamp, hmac);
+
+        // when
+        String result = receiver.handleConfigPhasePerformLogin(payload);
+
+        // then
+        assertThat(result, equalTo("bobby"));
+        verify(proxySessionManager).processProxySessionMessage(playerName, null);
+        verify(management, never()).forceLoginFromProxy(any());
+    }
+
+    @Test
+    void shouldRejectConfigPhasePerformLoginWithInvalidHmac() {
+        // given
+        String sharedSecret = "test-secret";
+        String playerName = "Bobby";
+        long timestamp = System.currentTimeMillis();
+
+        given(settings.getProperty(HooksSettings.BUNGEECORD)).willReturn(true);
+        given(settings.getProperty(HooksSettings.PROXY_SHARED_SECRET)).willReturn(sharedSecret);
+
+        BungeeReceiver receiver =
+            new BungeeReceiver(plugin, bukkitService, proxySessionManager, management, bungeeSender, dataSource,
+                proxyLoginRequestValidator, settings);
+
+        byte[] payload = buildPerformLoginPayload(playerName, timestamp, "not-a-valid-hmac");
+
+        // when
+        String result = receiver.handleConfigPhasePerformLogin(payload);
+
+        // then
+        assertThat(result, nullValue());
+        verify(proxySessionManager, never()).processProxySessionMessage(any(), any());
     }
 
     private static byte[] buildPerformLoginPayload(String playerName, long timestamp, String hmac) {

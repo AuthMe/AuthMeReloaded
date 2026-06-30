@@ -199,11 +199,21 @@ public class PaperDialogFlowListener implements Listener {
         long timeoutSeconds = Math.max(commonService.getProperty(RestrictionSettings.LOGIN_TIMEOUT), 1);
         loginResponse.completeOnTimeout(
             messages.retrieveSingle(playerName, MessageKey.LOGIN_TIMEOUT_ERROR), timeoutSeconds, TimeUnit.SECONDS);
+        String normalizedName = playerName.toLowerCase(Locale.ROOT);
         pendingLoginResponses.put(playerId, loginResponse);
-        preJoinDialogService.registerPreJoinFuture(playerName.toLowerCase(java.util.Locale.ROOT), playerId, loginResponse);
+        preJoinDialogService.registerPreJoinFuture(normalizedName, playerId, loginResponse);
 
-        connection.getAudience().showDialog(
-            PaperDialogHelper.createPreJoinLoginDialog(dialogWindowService.createPreJoinLoginDialog(playerName)));
+        // Close the race with a proxy auto-login (perform.login) that arrived during the configuration
+        // phase between the shouldSkipDialogs() check and now: if a proxy session has been queued,
+        // force-login instead of showing the dialog.
+        if (proxySessionManager.shouldResumeSession(normalizedName)) {
+            preJoinDialogService.approvePreJoinForceLogin(normalizedName);
+        }
+
+        if (!loginResponse.isDone()) {
+            connection.getAudience().showDialog(
+                PaperDialogHelper.createPreJoinLoginDialog(dialogWindowService.createPreJoinLoginDialog(playerName)));
+        }
         String kickMessage = loginResponse.join();
         pendingLoginResponses.remove(playerId);
         preJoinDialogService.unregisterPreJoinFuture(playerId);

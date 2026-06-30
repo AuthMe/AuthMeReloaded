@@ -11,6 +11,7 @@ import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.GameProfileRequestEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
+import com.velocitypowered.api.event.player.configuration.PlayerEnteredConfigurationEvent;
 import com.velocitypowered.api.proxy.ConnectionRequestBuilder;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -334,6 +335,45 @@ final class VelocityProxyBridge {
                 logger.info("Premium list received from backend: {} premium player(s)", premiumUsernames.size());
                 savePremiumNamesAsync();
             }
+        }
+    }
+
+    /**
+     * Sends the auto-login {@code perform.login} as soon as an already-authenticated player enters the
+     * configuration phase on an auth server, before the backend decides whether to show its blocking
+     * pre-join login dialog. The regular {@link #onServerConnected(ServerConnectedEvent)} path fires only
+     * after the configuration phase completes — too late to suppress that dialog on a server switch.
+     */
+    void onPlayerEnteredConfiguration(PlayerEnteredConfigurationEvent event) {
+        if (!configuration.autoLoginEnabled()) {
+            return;
+        }
+        ServerConnection server = event.server();
+        if (server == null) {
+            return;
+        }
+        RegisteredServer target = server.getServer();
+        // The pre-join dialog only appears on backends running AuthMe, i.e. auth servers.
+        if (!configuration.isAuthServer(target)) {
+            return;
+        }
+
+        String normalizedName = normalizeName(event.player().getUsername());
+        UUID verifiedPremiumUuid = premiumVerificationManager.getVerifiedPremiumUuid(normalizedName);
+        boolean isPremiumJoin = verifiedPremiumUuid != null;
+        if (!authenticationStore.isAuthenticated(normalizedName) && !isPremiumJoin) {
+            return;
+        }
+
+        boolean sent = server.sendPluginMessage(
+            AUTHME_CHANNEL, createPerformLoginMessage(normalizedName, verifiedPremiumUuid));
+        if (sent) {
+            logger.info("Sent config-phase auto-login to auth server '{}' for player {} (verifiedPremiumUuid={})",
+                target.getServerInfo().getName(), normalizedName, verifiedPremiumUuid);
+            initiatePendingLogin(normalizedName);
+        } else {
+            logger.debug("Config-phase auto-login send to '{}' for {} returned false; onServerConnected will retry",
+                target.getServerInfo().getName(), normalizedName);
         }
     }
 

@@ -21,6 +21,7 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -42,6 +43,7 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
 
     private boolean isEnabled;
     private String proxySharedSecret;
+    private boolean channelRegistered;
 
     @Inject
     BungeeReceiver(AuthMe plugin, BukkitService bukkitService, ProxySessionManager proxySessionManager,
@@ -62,12 +64,17 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
         this.proxySharedSecret = settings.getProperty(HooksSettings.PROXY_SHARED_SECRET);
         this.isEnabled = settings.getProperty(HooksSettings.BUNGEECORD);
         final Messenger messenger = plugin.getServer().getMessenger();
-        if (this.isEnabled && messenger != null) {
-            if (!messenger.isIncomingChannelRegistered(plugin, AUTHME_CHANNEL)) {
-                messenger.registerIncomingPluginChannel(plugin, AUTHME_CHANNEL, this);
-            }
-        } else if (messenger != null && messenger.isIncomingChannelRegistered(plugin, AUTHME_CHANNEL)) {
+        if (messenger == null) {
+            return;
+        }
+        // Track our own registration rather than querying the channel: other listeners
+        // (e.g. the Paper configuration-phase receiver) may register the same channel.
+        if (this.isEnabled && !channelRegistered) {
+            messenger.registerIncomingPluginChannel(plugin, AUTHME_CHANNEL, this);
+            channelRegistered = true;
+        } else if (!this.isEnabled && channelRegistered) {
             messenger.unregisterIncomingPluginChannel(plugin, AUTHME_CHANNEL, this);
+            channelRegistered = false;
         }
     }
 
@@ -126,33 +133,83 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
         }
 
         if (type.get() == MessageType.PERFORM_LOGIN) {
-            long timestamp;
-            String uuidOrHmac;
-            UUID verifiedPremiumUuid = null;
-            String hmac;
-            try {
-                timestamp = in.readLong();
-                uuidOrHmac = in.readUTF();
-            } catch (IllegalStateException e) {
-                logger.warning("Received perform.login without HMAC — update your proxy plugin");
+            VerifiedProxyLogin verified = parseAndVerifyPerformLogin(in, argument);
+            if (verified == null) {
                 return;
             }
-            try {
-                UUID parsedUuid = UuidUtils.parseUuidSafely(uuidOrHmac);
-                if (parsedUuid != null || uuidOrHmac.isEmpty()) {
-                    verifiedPremiumUuid = parsedUuid;
-                    hmac = in.readUTF();
-                } else {
-                    hmac = uuidOrHmac;
-                }
-            } catch (IllegalStateException e) {
+            performLogin(verified.name, verified.verifiedPremiumUuid);
+        }
+    }
+
+    /**
+     * Parses and HMAC-verifies the remainder of a {@code perform.login} message (everything after the
+     * player-name argument).
+     *
+     * @param in the data input positioned right after the player-name argument
+     * @param playerName the player-name argument that was already read
+     * @return the verified login data, or {@code null} if the message was malformed or failed verification
+     */
+    private VerifiedProxyLogin parseAndVerifyPerformLogin(ByteArrayDataInput in, String playerName) {
+        long timestamp;
+        String uuidOrHmac;
+        UUID verifiedPremiumUuid = null;
+        String hmac;
+        try {
+            timestamp = in.readLong();
+            uuidOrHmac = in.readUTF();
+        } catch (IllegalStateException e) {
+            logger.warning("Received perform.login without HMAC — update your proxy plugin");
+            return null;
+        }
+        try {
+            UUID parsedUuid = UuidUtils.parseUuidSafely(uuidOrHmac);
+            if (parsedUuid != null || uuidOrHmac.isEmpty()) {
+                verifiedPremiumUuid = parsedUuid;
+                hmac = in.readUTF();
+            } else {
                 hmac = uuidOrHmac;
             }
-            if (!verifyHmac(argument, timestamp, verifiedPremiumUuid, hmac)) {
-                return;
-            }
-            performLogin(argument, verifiedPremiumUuid);
+        } catch (IllegalStateException e) {
+            hmac = uuidOrHmac;
         }
+        if (!verifyHmac(playerName, timestamp, verifiedPremiumUuid, hmac)) {
+            return null;
+        }
+        return new VerifiedProxyLogin(playerName, verifiedPremiumUuid);
+    }
+
+    /**
+     * Validates and queues a {@code perform.login} received during Paper/Folia's connection
+     * configuration phase, when the player does not yet exist as a {@link Player}. Queuing it in the
+     * {@link ProxySessionManager} lets the blocking pre-join login dialog be skipped (and
+     * {@code processJoin} auto-login the player) instead of waiting for the post-join
+     * {@code perform.login}, which arrives only after the configuration phase has completed.
+     *
+     * @param data the raw plugin-message payload
+     * @return the normalized player name if this was a valid {@code perform.login}, otherwise {@code null}
+     */
+    public String handleConfigPhasePerformLogin(byte[] data) {
+        if (!isEnabled) {
+            return null;
+        }
+        ByteArrayDataInput in = ByteStreams.newDataInput(data);
+        String argument;
+        try {
+            String typeId = in.readUTF();
+            if (!MessageType.PERFORM_LOGIN.getId().equals(typeId)) {
+                return null;
+            }
+            argument = in.readUTF();
+        } catch (IllegalStateException e) {
+            return null;
+        }
+        VerifiedProxyLogin verified = parseAndVerifyPerformLogin(in, argument);
+        if (verified == null) {
+            return null;
+        }
+        proxySessionManager.processProxySessionMessage(verified.name, verified.verifiedPremiumUuid);
+        logger.debug("Config-phase perform.login validated and queued for {0}", verified.name);
+        return verified.name.toLowerCase(Locale.ROOT);
     }
 
     private boolean verifyHmac(String playerName, long timestamp, UUID verifiedPremiumUuid, String providedHmac) {
@@ -217,6 +274,21 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
         logger.debug("Sending auto-login ACK for {0}", player.getName());
         bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.PERFORM_LOGIN_ACK);
         logger.info(player.getName() + " has been automatically logged in via proxy request.");
+    }
+
+    /**
+     * Holder for a validated {@code perform.login}: the player name and the proxy-verified premium UUID
+     * (or {@code null} if the player is not a verified premium player).
+     */
+    private static final class VerifiedProxyLogin {
+
+        private final String name;
+        private final UUID verifiedPremiumUuid;
+
+        private VerifiedProxyLogin(String name, UUID verifiedPremiumUuid) {
+            this.name = name;
+            this.verifiedPremiumUuid = verifiedPremiumUuid;
+        }
     }
 
 }

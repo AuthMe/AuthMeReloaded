@@ -5,6 +5,7 @@ import fr.xephi.authme.listener.EntityListener;
 import fr.xephi.authme.listener.FoliaChatListener;
 import fr.xephi.authme.listener.FoliaPlayerSpawnLocationListener;
 import fr.xephi.authme.listener.PaperDialogFlowListener;
+import fr.xephi.authme.listener.PaperProxyAutoLoginListener;
 import fr.xephi.authme.listener.PaperLoginValidationListener;
 import fr.xephi.authme.listener.PlayerListener;
 import fr.xephi.authme.listener.PlayerOpenSignListener;
@@ -76,6 +77,7 @@ public class FoliaPlatformAdapterTest {
             ServerListener.class,
             FoliaChatListener.class,
             PaperDialogFlowListener.class,
+            PaperProxyAutoLoginListener.class,
             FoliaPlayerSpawnLocationListener.class,
             PaperLoginValidationListener.class,
             PlayerOpenSignListener.class));

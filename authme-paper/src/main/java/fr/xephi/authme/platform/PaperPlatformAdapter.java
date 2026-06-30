@@ -1,18 +1,11 @@
 package fr.xephi.authme.platform;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.command.CommandDescription;
-import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.listener.PaperChatListener;
 import fr.xephi.authme.listener.PaperDialogFlowListener;
 import fr.xephi.authme.listener.PaperLoginValidationListener;
+import fr.xephi.authme.listener.PaperProxyAutoLoginListener;
 import fr.xephi.authme.listener.PlayerOpenSignListener;
 import fr.xephi.authme.listener.PaperPlayerSpawnLocationListener;
-import fr.xephi.authme.process.register.RegisterSecondaryArgument;
-import fr.xephi.authme.process.register.RegistrationType;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 import java.util.Arrays;
@@ -53,6 +46,7 @@ public class PaperPlatformAdapter extends AbstractPaperPlatformAdapter {
             Arrays.asList(
                 PaperChatListener.class,
                 PaperDialogFlowListener.class,
+                PaperProxyAutoLoginListener.class,
                 PaperPlayerSpawnLocationListener.class,
                 PaperLoginValidationListener.class,
                 PlayerOpenSignListener.class));
