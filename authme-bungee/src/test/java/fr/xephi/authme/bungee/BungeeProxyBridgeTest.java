@@ -513,6 +513,32 @@ class BungeeProxyBridgeTest {
     }
 
     @Test
+    void shouldFirePremiumLoginEventWhenPremiumPlayerAuthenticatesOnAuthServer() {
+        given(pluginMessageEvent.isCancelled()).willReturn(false);
+        given(pluginMessageEvent.getTag()).willReturn(BungeeProxyBridge.AUTHME_CHANNEL);
+        given(pluginMessageEvent.getSender()).willReturn(sourceServer);
+        given(pluginMessageEvent.getData()).willReturn(
+            createAuthMePayload("premium.set", "Alice"),
+            createAuthMePayload("login", "Alice"));
+        given(sourceServer.getInfo()).willReturn(authServerInfo);
+        given(authServerInfo.getName()).willReturn("lobby");
+        given(proxyServer.getPlayer("alice")).willReturn(player);
+        given(player.getServer()).willReturn(currentServer);
+        given(currentServer.getInfo()).willReturn(authServerInfo);
+
+        stubEventsAllowed();
+
+        BungeeProxyBridge bridge = new BungeeProxyBridge(proxyServer, logger, createConfiguration(), new BungeeAuthenticationStore(), null);
+        bridge.onPluginMessage(pluginMessageEvent);
+        bridge.onPluginMessage(pluginMessageEvent);
+
+        ArgumentCaptor<AuthMeBungeeLoginEvent> eventCaptor = ArgumentCaptor.forClass(AuthMeBungeeLoginEvent.class);
+        verify(pluginManager).callEvent(eventCaptor.capture());
+        assertSame(player, eventCaptor.getValue().getPlayer());
+        assertTrue(eventCaptor.getValue().isPremium());
+    }
+
+    @Test
     void shouldFireLogoutEventWhenPlayerLogsOut() {
         given(pluginMessageEvent.isCancelled()).willReturn(false);
         given(pluginMessageEvent.getTag()).willReturn(BungeeProxyBridge.AUTHME_CHANNEL);
@@ -551,7 +577,7 @@ class BungeeProxyBridgeTest {
     private static byte[] createAuthMePayload(String typeId, String playerName) {
         ByteArrayDataOutput output = ByteStreams.newDataOutput();
         output.writeUTF(typeId);
-        output.writeUTF(playerName.toLowerCase());
+        output.writeUTF(playerName);
         return output.toByteArray();
     }
 

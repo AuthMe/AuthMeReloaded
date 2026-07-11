@@ -38,6 +38,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -354,6 +355,30 @@ class VelocityProxyBridgeTest {
     }
 
     @Test
+    void shouldFirePremiumLoginEventWhenPremiumPlayerAuthenticatesOnAuthServer() {
+        given(pluginMessageEvent.getResult()).willReturn(PluginMessageEvent.ForwardResult.forward());
+        given(pluginMessageEvent.getIdentifier()).willReturn(VelocityProxyBridge.AUTHME_CHANNEL);
+        given(pluginMessageEvent.getSource()).willReturn(sourceConnection);
+        given(pluginMessageEvent.getData()).willReturn(
+            createAuthMePayload("premium.set", "Alice"),
+            createAuthMePayload("login", "Alice"));
+        given(sourceConnection.getServer()).willReturn(authServer);
+        given(authServer.getServerInfo()).willReturn(authServerInfo);
+        given(authServerInfo.getName()).willReturn("lobby");
+        given(proxyServer.getPlayer("alice")).willReturn(Optional.of(player));
+        given(proxyServer.getEventManager()).willReturn(eventManager);
+
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
+        bridge.onPluginMessage(pluginMessageEvent);
+        bridge.onPluginMessage(pluginMessageEvent);
+
+        ArgumentCaptor<AuthMeVelocityLoginEvent> eventCaptor = ArgumentCaptor.forClass(AuthMeVelocityLoginEvent.class);
+        verify(eventManager).fireAndForget(eventCaptor.capture());
+        assertSame(player, eventCaptor.getValue().getPlayer());
+        assertTrue(eventCaptor.getValue().isPremium());
+    }
+
+    @Test
     void shouldForwardPerformLoginWhenSwitchingFromAuthServerToNonAuthServer() {
         given(pluginMessageEvent.getResult()).willReturn(PluginMessageEvent.ForwardResult.forward());
         given(pluginMessageEvent.getIdentifier()).willReturn(VelocityProxyBridge.AUTHME_CHANNEL);
@@ -634,7 +659,7 @@ class VelocityProxyBridgeTest {
     private static byte[] createAuthMePayload(String typeId, String playerName) {
         ByteArrayDataOutput output = ByteStreams.newDataOutput();
         output.writeUTF(typeId);
-        output.writeUTF(playerName.toLowerCase());
+        output.writeUTF(playerName);
         return output.toByteArray();
     }
 
