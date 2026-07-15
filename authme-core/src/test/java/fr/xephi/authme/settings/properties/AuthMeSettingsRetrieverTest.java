@@ -3,16 +3,16 @@ package fr.xephi.authme.settings.properties;
 import ch.jalu.configme.configurationdata.ConfigurationData;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.closeTo;
 
 /**
  * Test for {@link AuthMeSettingsRetriever}.
  */
-public class AuthMeSettingsRetrieverTest {
+class AuthMeSettingsRetrieverTest {
 
     @Test
-    public void shouldReturnAllProperties() {
+    void shouldReturnAllProperties() {
         // given / when
         ConfigurationData configurationData = AuthMeSettingsRetriever.buildConfigurationData();
 
@@ -24,4 +24,3 @@ public class AuthMeSettingsRetrieverTest {
             closeTo(193, 10));
     }
 }
-

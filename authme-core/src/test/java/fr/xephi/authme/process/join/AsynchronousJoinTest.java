@@ -10,15 +10,15 @@ import fr.xephi.authme.platform.DialogInputSpec;
 import fr.xephi.authme.platform.DialogWindowSpec;
 import fr.xephi.authme.process.login.AsynchronousLogin;
 import fr.xephi.authme.process.register.AsyncRegister;
-import fr.xephi.authme.service.PreJoinDialogService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
-import fr.xephi.authme.service.PendingPremiumCache;
-import fr.xephi.authme.service.PremiumLoginVerifier;
-import fr.xephi.authme.service.PremiumService;
 import fr.xephi.authme.service.DialogStateService;
 import fr.xephi.authme.service.DialogWindowService;
+import fr.xephi.authme.service.PendingPremiumCache;
 import fr.xephi.authme.service.PluginHookService;
+import fr.xephi.authme.service.PreJoinDialogService;
+import fr.xephi.authme.service.PremiumLoginVerifier;
+import fr.xephi.authme.service.PremiumService;
 import fr.xephi.authme.service.ProxyLoginRequestValidator;
 import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.ValidationService;
@@ -40,13 +40,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.util.UUID;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskLater;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskOptionallyAsync;
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -114,7 +114,7 @@ public class AsynchronousJoinTest {
 
     @BeforeEach
     public void setUp() {
-        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+        setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask(bukkitService);
         setBukkitServiceToRunTaskOptionallyAsync(bukkitService);
         setBukkitServiceToRunTaskLater(bukkitService);
         given(service.getProperty(PremiumSettings.ENABLE_PREMIUM)).willReturn(false);

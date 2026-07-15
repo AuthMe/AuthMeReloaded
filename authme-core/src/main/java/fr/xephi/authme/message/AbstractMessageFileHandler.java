@@ -12,7 +12,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import java.io.File;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -27,19 +26,17 @@ public abstract class AbstractMessageFileHandler implements Reloadable {
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(AbstractMessageFileHandler.class);
 
-    @DataFolder
-    @Inject
-    private File dataFolder;
-
-    @Inject
-    private Settings settings;
+    private final File dataFolder;
+    private final Settings settings;
 
     private String filename;
     private FileConfiguration configuration;
     private final String defaultFile;
     private final ConcurrentHashMap<String, FileConfiguration> languageCache = new ConcurrentHashMap<>();
 
-    protected AbstractMessageFileHandler() {
+    protected AbstractMessageFileHandler(@DataFolder File dataFolder, Settings settings) {
+        this.dataFolder = dataFolder;
+        this.settings = settings;
         this.defaultFile = createFilePath(DEFAULT_LANGUAGE);
     }
 

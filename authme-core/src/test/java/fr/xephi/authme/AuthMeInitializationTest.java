@@ -1,9 +1,5 @@
 package fr.xephi.authme;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import ch.jalu.configme.resource.PropertyReader;
 import ch.jalu.configme.resource.PropertyResource;
 import ch.jalu.injector.Injector;
@@ -17,6 +13,7 @@ import fr.xephi.authme.listener.BlockListener;
 import fr.xephi.authme.listener.LegacyPlayerLoginListener;
 import fr.xephi.authme.listener.LegacyPlayerSpawnLocationListener;
 import fr.xephi.authme.listener.PlayerListener;
+import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.platform.ChatAdapter;
 import fr.xephi.authme.platform.CommandRegistrationAdapter;
 import fr.xephi.authme.platform.DialogAdapter;
@@ -25,7 +22,6 @@ import fr.xephi.authme.platform.PacketInterceptionAdapter;
 import fr.xephi.authme.platform.PlatformAdapter;
 import fr.xephi.authme.platform.SchedulingAdapter;
 import fr.xephi.authme.platform.TeleportAdapter;
-import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.process.login.ProcessSyncPlayerLogin;
 import fr.xephi.authme.security.PasswordSecurity;
@@ -43,22 +39,20 @@ import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import fr.xephi.authme.TempFolder;
-import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
 import static fr.xephi.authme.settings.properties.AuthMeSettingsRetriever.buildConfigurationData;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -68,8 +62,7 @@ import static org.mockito.Mockito.verify;
  * with the {@link Injector}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class AuthMeInitializationTest {
+class AuthMeInitializationTest {
 
     @Mock
     private Server server;
@@ -78,12 +71,12 @@ public class AuthMeInitializationTest {
     private PluginManager pluginManager;
 
     private AuthMe authMe;
-    private File dataFolder;
-    public TempFolder temporaryFolder = new TempFolder();
+
+    @TempDir
+    File dataFolder;
 
     @BeforeEach
-    public void initAuthMe() throws IOException {
-        dataFolder = temporaryFolder.newFolder();
+    void initAuthMe() throws IOException {
         File settingsFile = new File(dataFolder, "config.yml");
         given(server.getLogger()).willReturn(Logger.getAnonymousLogger());
         JavaPluginLoader pluginLoader = new JavaPluginLoader(server);
@@ -101,19 +94,19 @@ public class AuthMeInitializationTest {
     }
 
     @Test
-    public void shouldInitializeAllServices() {
+    void shouldInitializeAllServices() {
         // given
         PropertyReader reader = mock(PropertyReader.class);
         PropertyResource resource = mock(PropertyResource.class);
         given(resource.createReader()).willReturn(reader);
         Settings settings = new Settings(dataFolder, resource, null, buildConfigurationData());
 
+        given(server.getPluginManager()).willReturn(pluginManager);
         TestHelper.setupLogger();
 
         Injector injector = new InjectorBuilder()
             .addDefaultHandlers("fr.xephi.authme")
             .create();
-        given(server.getPluginManager()).willReturn(pluginManager);
         injector.provide(DataFolder.class, dataFolder);
         injector.register(Server.class, server);
         injector.register(PluginManager.class, pluginManager);
@@ -152,7 +145,7 @@ public class AuthMeInitializationTest {
     }
 
     @Test
-    public void shouldRegisterPlatformListenersFromAdapter() {
+    void shouldRegisterPlatformListenersFromAdapter() {
         // given
         Injector injector = mock(Injector.class);
         PlatformAdapter platformAdapter = mock(PlatformAdapter.class);
@@ -180,7 +173,7 @@ public class AuthMeInitializationTest {
     }
 
     @Test
-    public void shouldHandlePrematureShutdownGracefully() {
+    void shouldHandlePrematureShutdownGracefully() {
         // given
         BukkitScheduler scheduler = mock(BukkitScheduler.class);
         given(server.getScheduler()).willReturn(scheduler);
@@ -195,5 +188,3 @@ public class AuthMeInitializationTest {
         verify(scheduler).getActiveWorkers(); // via TaskCloser
     }
 }
-
-

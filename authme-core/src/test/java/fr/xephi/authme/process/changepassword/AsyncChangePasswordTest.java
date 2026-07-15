@@ -1,9 +1,5 @@
 package fr.xephi.authme.process.changepassword;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
@@ -15,8 +11,10 @@ import fr.xephi.authme.service.bungeecord.BungeeSender;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -27,8 +25,7 @@ import static org.mockito.Mockito.verify;
  * Test for {@link AsyncChangePassword}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class AsyncChangePasswordTest {
+class AsyncChangePasswordTest {
 
     @InjectMocks
     private AsyncChangePassword asyncChangePassword;
@@ -45,12 +42,12 @@ public class AsyncChangePasswordTest {
     private BungeeSender bungeeSender;
 
     @BeforeEach
-    public void setUpLogger() {
+    void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldRejectCommandForUnknownUser() {
+    void shouldRejectCommandForUnknownUser() {
         // given
         CommandSender sender = mock(CommandSender.class);
         String player = "player";
@@ -67,7 +64,7 @@ public class AsyncChangePasswordTest {
     }
 
     @Test
-    public void shouldUpdatePasswordOfLoggedInUser() {
+    void shouldUpdatePasswordOfLoggedInUser() {
         // given
         CommandSender sender = mock(CommandSender.class);
         String player = "my_user12";
@@ -88,7 +85,7 @@ public class AsyncChangePasswordTest {
     }
 
     @Test
-    public void shouldUpdatePasswordOfOfflineUser() {
+    void shouldUpdatePasswordOfOfflineUser() {
         // given
         CommandSender sender = mock(CommandSender.class);
         String player = "my_user12";
@@ -110,7 +107,7 @@ public class AsyncChangePasswordTest {
     }
 
     @Test
-    public void shouldReportWhenSaveFailed() {
+    void shouldReportWhenSaveFailed() {
         // given
         CommandSender sender = mock(CommandSender.class);
         String player = "my_user12";
@@ -131,5 +128,3 @@ public class AsyncChangePasswordTest {
     }
 
 }
-
-

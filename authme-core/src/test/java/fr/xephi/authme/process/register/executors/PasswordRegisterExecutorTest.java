@@ -1,9 +1,5 @@
 package fr.xephi.authme.process.register.executors;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.message.MessageKey;
@@ -19,16 +15,18 @@ import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static fr.xephi.authme.AuthMeMatchers.equalToHash;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
-import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay;
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithEntityAndDelay;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -39,8 +37,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link PasswordRegisterExecutor}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class PasswordRegisterExecutorTest {
+class PasswordRegisterExecutorTest {
 
     @InjectMocks
     private PasswordRegisterExecutor executor;
@@ -59,7 +56,7 @@ public class PasswordRegisterExecutorTest {
     private AsynchronousLogin asynchronousLogin;
 
     @Test
-    public void shouldCheckPasswordValidity() {
+    void shouldCheckPasswordValidity() {
         // given
         String password = "myPass";
         String name = "player040";
@@ -76,7 +73,7 @@ public class PasswordRegisterExecutorTest {
     }
 
     @Test
-    public void shouldDetectInvalidPasswordAndInformPlayer() {
+    void shouldDetectInvalidPasswordAndInformPlayer() {
         // given
         String password = "myPass";
         String name = "player040";
@@ -95,7 +92,7 @@ public class PasswordRegisterExecutorTest {
     }
 
     @Test
-    public void shouldCreatePlayerAuth() {
+    void shouldCreatePlayerAuth() {
         // given
         given(passwordSecurity.computeHash(anyString(), anyString())).willAnswer(
             invocation -> new HashedPassword(invocation.getArgument(0)));
@@ -114,13 +111,13 @@ public class PasswordRegisterExecutorTest {
     }
 
     @Test
-    public void shouldLogPlayerIn() {
+    void shouldLogPlayerIn() {
         // given
         given(commonService.getProperty(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER)).willReturn(false);
         given(commonService.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(false);
         Player player = mock(Player.class);
         PasswordRegisterParams params = PasswordRegisterParams.of(player, "pass", "mail@example.org");
-        setBukkitServiceToScheduleSyncDelayedTaskWithDelay(bukkitService);
+        setBukkitServiceToScheduleSyncDelayedTaskWithEntityAndDelay(bukkitService);
 
         // when
         executor.executePostPersistAction(params);
@@ -131,7 +128,7 @@ public class PasswordRegisterExecutorTest {
     }
 
     @Test
-    public void shouldNotLogPlayerIn() {
+    void shouldNotLogPlayerIn() {
         // given
         given(commonService.getProperty(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER)).willReturn(true);
         Player player = mock(Player.class);
@@ -155,5 +152,3 @@ public class PasswordRegisterExecutorTest {
         assertThat(Math.abs(value1 - value2), not(greaterThan(tolerance)));
     }
 }
-
-

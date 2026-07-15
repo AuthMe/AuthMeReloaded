@@ -1,9 +1,5 @@
 package fr.xephi.authme.task.purge;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.permission.PermissionNode;
@@ -17,10 +13,11 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
@@ -32,10 +29,10 @@ import java.util.Set;
 import java.util.UUID;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -51,8 +48,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link PurgeTask}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class PurgeTaskTest {
+class PurgeTaskTest {
 
     private static final PermissionNode BYPASS_NODE = PlayerStatePermission.BYPASS_PURGE;
 
@@ -71,12 +67,12 @@ public class PurgeTaskTest {
     private ArgumentCaptor<Collection<String>> namesCaptor;
 
     @BeforeAll
-    public static void initLogger() {
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldRunTask() {
+    void shouldRunTask() {
         // given
         Set<String> names =
             newHashSet("alpha", "bravo", "charlie", "delta", "echo", "foxtrot", "golf", "hotel", "india");
@@ -114,8 +110,9 @@ public class PurgeTaskTest {
         // given (3)
         // Third round: no more OfflinePlayer objects, but some names remain
         reset(purgeService, permissionsManager);
+        // TODO LJ given(permissionsManager.hasPermissionOffline(anyString(), eq(BYPASS_NODE))).willReturn(false);
         given(permissionsManager.hasPermissionOffline("india", BYPASS_NODE)).willReturn(true);
-        given(permissionsManager.hasPermissionOffline("foxtrot", BYPASS_NODE)).willReturn(false);
+        given(permissionsManager.hasPermissionOffline("foxtrot", BYPASS_NODE)).willReturn(false); // TODO LJ ^ instead of above possible?
 
         // when (3)
         task.run();
@@ -131,7 +128,7 @@ public class PurgeTaskTest {
      * #1008: OfflinePlayer#getName may return null.
      */
     @Test
-    public void shouldHandleOfflinePlayerWithNullName() {
+    void shouldHandleOfflinePlayerWithNullName() {
         // given
         Set<String> names = newHashSet("name1", "name2");
         OfflinePlayer[] players = asArray(
@@ -149,7 +146,7 @@ public class PurgeTaskTest {
     }
 
     @Test
-    public void shouldStopTaskAndInformSenderUponCompletion() {
+    void shouldStopTaskAndInformSenderUponCompletion() {
         // given
         Set<String> names = newHashSet("name1", "name2");
         Player sender = mock(Player.class);
@@ -174,7 +171,7 @@ public class PurgeTaskTest {
     }
 
     @Test
-    public void shouldStopTaskAndInformConsoleUser() {
+    void shouldStopTaskAndInformConsoleUser() {
         // given
         Set<String> names = newHashSet("name1", "name2");
         PurgeTask task = new PurgeTask(purgeService, permissionsManager, null, names, new OfflinePlayer[0]);
@@ -239,5 +236,3 @@ public class PurgeTaskTest {
     }
 
 }
-
-

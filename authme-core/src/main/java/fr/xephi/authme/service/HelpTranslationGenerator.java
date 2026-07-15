@@ -29,18 +29,19 @@ import java.util.Map;
  */
 public class HelpTranslationGenerator {
 
-    @Inject
-    private CommandInitializer commandInitializer;
+    private final CommandInitializer commandInitializer;
+    private final HelpMessagesService helpMessagesService;
+    private final Settings settings;
+    private final File dataFolder;
 
     @Inject
-    private HelpMessagesService helpMessagesService;
-
-    @Inject
-    private Settings settings;
-
-    @DataFolder
-    @Inject
-    private File dataFolder;
+    HelpTranslationGenerator(CommandInitializer commandInitializer, HelpMessagesService helpMessagesService,
+                             Settings settings, @DataFolder File dataFolder) {
+        this.commandInitializer = commandInitializer;
+        this.helpMessagesService = helpMessagesService;
+        this.settings = settings;
+        this.dataFolder = dataFolder;
+    }
 
     /**
      * Updates the help file to contain entries for all commands.

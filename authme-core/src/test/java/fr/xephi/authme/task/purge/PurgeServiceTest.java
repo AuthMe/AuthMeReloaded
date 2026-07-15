@@ -1,9 +1,5 @@
 package fr.xephi.authme.task.purge;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.DataSource;
@@ -16,10 +12,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -29,12 +26,12 @@ import java.util.Set;
 import java.util.UUID;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -49,8 +46,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
  * Test for {@link PurgeService}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class PurgeServiceTest {
+class PurgeServiceTest {
 
     @InjectMocks
     private PurgeService purgeService;
@@ -65,18 +61,14 @@ public class PurgeServiceTest {
     private PermissionsManager permissionsManager;
     @Mock
     private PurgeExecutor executor;
-    @Captor
-    private ArgumentCaptor<Long> longCaptor;
-    @Captor
-    private ArgumentCaptor<Runnable> purgeTaskCaptor;
 
     @BeforeAll
-    public static void initLogger() {
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
     @Test
-    public void shouldNotRunAutoPurge() {
+    void shouldNotRunAutoPurge() {
         // given
         given(settings.getProperty(PurgeSettings.USE_AUTO_PURGE)).willReturn(false);
         given(settings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER)).willReturn(60);
@@ -89,7 +81,7 @@ public class PurgeServiceTest {
     }
 
     @Test
-    public void shouldNotRunAutoPurgeForInvalidInterval() {
+    void shouldNotRunAutoPurgeForInvalidInterval() {
         // given
         given(settings.getProperty(PurgeSettings.USE_AUTO_PURGE)).willReturn(true);
         given(settings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER)).willReturn(0);
@@ -102,7 +94,7 @@ public class PurgeServiceTest {
     }
 
     @Test
-    public void shouldRunAutoPurge() {
+    void shouldRunAutoPurge() {
         // given
         given(settings.getProperty(PurgeSettings.USE_AUTO_PURGE)).willReturn(true);
         given(settings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER)).willReturn(60);
@@ -113,15 +105,16 @@ public class PurgeServiceTest {
         purgeService.runAutoPurge();
 
         // then
-        verify(dataSource).getRecordsToPurge(longCaptor.capture());
-        assertCorrectPurgeTimestamp(longCaptor.getValue(), 60);
+        ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
+        verify(dataSource).getRecordsToPurge(captor.capture());
+        assertCorrectPurgeTimestamp(captor.getValue(), 60);
         assertThat(Boolean.TRUE, equalTo(
             ReflectionTestUtils.getFieldValue(PurgeService.class, purgeService, "isPurging")));
         verifyScheduledPurgeTask(null, playerNames);
     }
 
     @Test
-    public void shouldRecognizeNoPlayersToPurge() {
+    void shouldRecognizeNoPlayersToPurge() {
         // given
         final long delay = 123012301L;
         given(dataSource.getRecordsToPurge(delay)).willReturn(Collections.emptySet());
@@ -138,7 +131,7 @@ public class PurgeServiceTest {
     }
 
     @Test
-    public void shouldRunPurge() {
+    void shouldRunPurge() {
         // given
         final long delay = 1809714L;
         Set<String> playerNames = newHashSet("charlie", "delta", "echo", "foxtrot");
@@ -156,7 +149,7 @@ public class PurgeServiceTest {
     }
 
     @Test
-    public void shouldNotRunPurgeIfProcessIsAlreadyRunning() {
+    void shouldNotRunPurgeIfProcessIsAlreadyRunning() {
         // given
         purgeService.setPurging(true);
         CommandSender sender = mock(CommandSender.class);
@@ -171,7 +164,7 @@ public class PurgeServiceTest {
     }
 
     @Test
-    public void shouldExecutePurgeActions() {
+    void shouldExecutePurgeActions() {
         // given
         List<String> names = Arrays.asList("alpha", "bravo", "foxtrot");
         List<OfflinePlayer> offlinePlayers = Arrays.asList(
@@ -195,8 +188,9 @@ public class PurgeServiceTest {
     }
 
     private void verifyScheduledPurgeTask(UUID senderUuid, Set<String> names) {
-        verify(bukkitService).runTaskTimerAsynchronously(purgeTaskCaptor.capture(), eq(0L), eq(1L));
-        PurgeTask task = (PurgeTask) purgeTaskCaptor.getValue();
+        ArgumentCaptor<PurgeTask> captor = ArgumentCaptor.forClass(PurgeTask.class);
+        verify(bukkitService).runTaskTimerAsynchronously(captor.capture(), eq(0L), eq(1L));
+        PurgeTask task = captor.getValue();
 
         Object senderInTask = ReflectionTestUtils.getFieldValue(PurgeTask.class, task, "sender");
         Set<String> namesInTask = ReflectionTestUtils.getFieldValue(PurgeTask.class, task, "toPurge");
@@ -204,5 +198,3 @@ public class PurgeServiceTest {
         assertThat(namesInTask, containsInAnyOrder(names.toArray()));
     }
 }
-
-

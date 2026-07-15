@@ -1,39 +1,33 @@
 package fr.xephi.authme.command.executable.email;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-import fr.xephi.authme.DelayedInjectionExtension;
 import ch.jalu.datasourcecolumns.data.DataSourceValueImpl;
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.mail.EmailService;
 import fr.xephi.authme.message.MessageKey;
-import fr.xephi.authme.message.Messages;
-import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.PasswordRecoveryService;
 import fr.xephi.authme.service.RecoveryCodeService;
 import fr.xephi.authme.service.ValidationService;
-import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.Locale;
 
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskAsynchronously;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -41,16 +35,13 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 /**
  * Test for {@link RecoverEmailCommand}.
  */
-@ExtendWith(DelayedInjectionExtension.class)
-public class RecoverEmailCommandTest {
+@ExtendWith(MockitoExtension.class)
+class RecoverEmailCommandTest {
 
     private static final String DEFAULT_EMAIL = "your@email.com";
 
-    @InjectDelayed
+    @InjectMocks
     private RecoverEmailCommand command;
-
-    @Mock
-    private PasswordSecurity passwordSecurity;
 
     @Mock
     private CommonService commonService;
@@ -76,26 +67,13 @@ public class RecoverEmailCommandTest {
     @Mock
     private ValidationService validationService;
 
-    @Mock
-    private Messages messages;
-
     @BeforeAll
-    public static void initLogger() {
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
-    @BeforeInjecting
-    public void initSettings() {
-        given(commonService.getProperty(SecuritySettings.EMAIL_RECOVERY_COOLDOWN_SECONDS)).willReturn(40);
-    }
-
-    @BeforeEach
-    public void allowValidEmailsByDefault() {
-        lenient().when(validationService.validateEmail(anyString())).thenReturn(true);
-    }
-
     @Test
-    public void shouldHandleMissingMailProperties() {
+    void shouldHandleMissingMailProperties() {
         // given
         given(emailService.hasAllInformation()).willReturn(false);
         Player sender = mock(Player.class);
@@ -105,11 +83,11 @@ public class RecoverEmailCommandTest {
 
         // then
         verify(commonService).send(sender, MessageKey.INCOMPLETE_EMAIL_SETTINGS);
-        verifyNoInteractions(dataSource, passwordSecurity);
+        verifyNoInteractions(dataSource);
     }
 
     @Test
-    public void shouldShowErrorForAuthenticatedUser() {
+    void shouldShowErrorForAuthenticatedUser() {
         // given
         String name = "Bobby";
         Player sender = mock(Player.class);
@@ -127,7 +105,7 @@ public class RecoverEmailCommandTest {
     }
 
     @Test
-    public void shouldRejectInvalidEmailFormat() {
+    void shouldRejectInvalidEmailFormat() {
         // given
         String name = "SomePlayer";
         Player sender = mock(Player.class);
@@ -145,100 +123,93 @@ public class RecoverEmailCommandTest {
     }
 
     @Test
-    public void shouldShowRegisterMessageForUnregisteredPlayer() {
+    void shouldShowRegisterMessageForUnregisteredPlayer() {
         // given
         String name = "Player123";
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(name);
         given(emailService.hasAllInformation()).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
+        given(validationService.validateEmail("someone@example.com")).willReturn(true);
         given(dataSource.getEmail(name)).willReturn(DataSourceValueImpl.unknownRow());
 
         // when
         command.executeCommand(sender, Collections.singletonList("someone@example.com"));
 
         // then
-        verify(emailService).hasAllInformation();
-        verify(dataSource).getEmail(name);
         verifyNoMoreInteractions(dataSource);
         verify(commonService).send(sender, MessageKey.USAGE_REGISTER);
     }
 
     @Test
-    public void shouldHandleDefaultEmail() {
+    void shouldHandleDefaultEmail() {
         // given
         String name = "Tract0r";
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(name);
         given(emailService.hasAllInformation()).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
+        given(validationService.validateEmail(DEFAULT_EMAIL)).willReturn(true);
         given(dataSource.getEmail(name)).willReturn(DataSourceValueImpl.of(DEFAULT_EMAIL));
 
         // when
         command.executeCommand(sender, Collections.singletonList(DEFAULT_EMAIL));
 
         // then
-        verify(emailService).hasAllInformation();
-        verify(dataSource).getEmail(name);
         verifyNoMoreInteractions(dataSource);
         verify(commonService).send(sender, MessageKey.INVALID_EMAIL);
     }
 
     @Test
-    public void shouldHandleInvalidEmailInput() {
+    void shouldHandleInvalidEmailInput() {
         // given
         String name = "Rapt0r";
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(name);
         given(emailService.hasAllInformation()).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
+        given(validationService.validateEmail("wrong-email@example.com")).willReturn(true);
         given(dataSource.getEmail(name)).willReturn(DataSourceValueImpl.of("raptor@example.org"));
 
         // when
         command.executeCommand(sender, Collections.singletonList("wrong-email@example.com"));
 
         // then
-        verify(emailService).hasAllInformation();
-        verify(dataSource).getEmail(name);
         verifyNoMoreInteractions(dataSource);
         verify(commonService).send(sender, MessageKey.INVALID_EMAIL);
     }
 
     @Test
-    public void shouldGenerateRecoveryCode() {
+    void shouldGenerateRecoveryCode() {
         // given
         String name = "Vultur3";
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(name);
         given(emailService.hasAllInformation()).willReturn(true);
-        given(emailService.sendRecoveryCode(anyString(), anyString(), anyString())).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         String email = "v@example.com";
+        given(validationService.validateEmail("V@EXAMPLE.COM")).willReturn(true);
         given(dataSource.getEmail(name)).willReturn(DataSourceValueImpl.of(email));
-        String code = "a94f37";
         given(recoveryCodeService.isRecoveryCodeNeeded()).willReturn(true);
-        given(recoveryCodeService.generateCode(name)).willReturn(code);
         setBukkitServiceToRunTaskAsynchronously(bukkitService);
 
         // when
         command.executeCommand(sender, Collections.singletonList(email.toUpperCase(Locale.ROOT)));
 
         // then
-        verify(emailService).hasAllInformation();
-        verify(dataSource).getEmail(name);
-        verify(recoveryService).createAndSendRecoveryCode(sender, email);
+        verify(recoveryService, only()).createAndSendRecoveryCode(sender, email);
     }
 
     @Test
-    public void shouldGenerateNewPasswordWithoutRecoveryCode() {
+    void shouldGenerateNewPasswordWithoutRecoveryCode() {
         // given
         String name = "Vultur3";
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(name);
         given(emailService.hasAllInformation()).willReturn(true);
-        given(emailService.sendPasswordMail(anyString(), anyString(), anyString())).willReturn(true);
         given(playerCache.isAuthenticated(name)).willReturn(false);
         String email = "vulture@example.com";
+        given(validationService.validateEmail(email)).willReturn(true);
         given(dataSource.getEmail(name)).willReturn(DataSourceValueImpl.of(email));
         given(recoveryCodeService.isRecoveryCodeNeeded()).willReturn(false);
         setBukkitServiceToRunTaskAsynchronously(bukkitService);
@@ -247,16 +218,12 @@ public class RecoverEmailCommandTest {
         command.executeCommand(sender, Collections.singletonList(email));
 
         // then
-        verify(emailService).hasAllInformation();
-        verify(dataSource).getEmail(name);
-        verify(recoveryService).generateAndSendNewPassword(sender, email);
+        verify(recoveryService, only()).generateAndSendNewPassword(sender, email);
     }
 
     @Test
-    public void shouldDefineArgumentMismatchMessage() {
+    void shouldDefineArgumentMismatchMessage() {
         // given / when / then
         assertThat(command.getArgumentsMismatchMessage(), equalTo(MessageKey.USAGE_RECOVER_EMAIL));
     }
 }
-
-

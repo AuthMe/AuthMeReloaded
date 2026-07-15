@@ -1,9 +1,5 @@
 package fr.xephi.authme.service;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-import fr.xephi.authme.DelayedInjectionExtension;
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
@@ -12,13 +8,16 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.function.Function;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -31,10 +30,9 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 /**
  * Test for {@link SessionService}.
  */
-@ExtendWith(DelayedInjectionExtension.class)
-public class SessionServiceTest {
+@ExtendWith(MockitoExtension.class)
+class SessionServiceTest {
 
-    @InjectDelayed
     private SessionService sessionService;
 
     @Mock
@@ -45,17 +43,18 @@ public class SessionServiceTest {
     private BukkitService bukkitService;
 
     @BeforeAll
-    public static void initLogger() {
+    static void initLogger() {
         TestHelper.setupLogger();
     }
 
-    @BeforeInjecting
-    public void setUpEnabledProperty() {
+    @BeforeEach
+    void createSessionService() {
         given(commonService.getProperty(PluginSettings.SESSIONS_ENABLED)).willReturn(true);
+        sessionService = new SessionService(commonService, bukkitService, dataSource);
     }
 
     @Test
-    public void shouldCheckSessionsEnabledSetting() {
+    void shouldCheckSessionsEnabledSetting() {
         // given
         Player player = mock(Player.class);
         given(commonService.getProperty(PluginSettings.SESSIONS_ENABLED)).willReturn(false);
@@ -70,7 +69,7 @@ public class SessionServiceTest {
     }
 
     @Test
-    public void shouldCheckIfUserHasSession() {
+    void shouldCheckIfUserHasSession() {
         // given
         String name = "Bobby";
         Player player = mock(Player.class);
@@ -87,7 +86,7 @@ public class SessionServiceTest {
     }
 
     @Test
-    public void shouldCheckLastLoginDate() {
+    void shouldCheckLastLoginDate() {
         // given
         String name = "Bobby";
         String ip = "127.3.12.15";
@@ -105,19 +104,16 @@ public class SessionServiceTest {
 
         // then
         assertThat(result, equalTo(false));
-        verify(commonService).getProperty(PluginSettings.SESSIONS_ENABLED);
-        verify(dataSource).hasSession(name);
         verify(dataSource).setUnlogged(name);
         verify(dataSource).revokeSession(name);
     }
 
     @Test
-    public void shouldRefuseSessionForAuthWithNullLastLoginTimestamp() {
+    void shouldRefuseSessionForAuthWithNullLastLoginTimestamp() {
         // given
         String name = "Bobby";
         String ip = "127.3.12.15";
         Player player = mockPlayerWithNameAndIp(name, ip);
-        given(commonService.getProperty(PluginSettings.SESSIONS_TIMEOUT)).willReturn(8);
         given(dataSource.hasSession(name)).willReturn(true);
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
@@ -130,14 +126,12 @@ public class SessionServiceTest {
 
         // then
         assertThat(result, equalTo(false));
-        verify(commonService).getProperty(PluginSettings.SESSIONS_ENABLED);
-        verify(dataSource).hasSession(name);
         verify(dataSource).setUnlogged(name);
         verify(dataSource).revokeSession(name);
     }
 
     @Test
-    public void shouldCheckLastLoginIp() {
+    void shouldCheckLastLoginIp() {
         // given
         String name = "Bobby";
         String ip = "127.3.12.15";
@@ -155,15 +149,13 @@ public class SessionServiceTest {
 
         // then
         assertThat(result, equalTo(false));
-        verify(commonService).getProperty(PluginSettings.SESSIONS_ENABLED);
         verify(commonService).send(player, MessageKey.SESSION_EXPIRED);
-        verify(dataSource).hasSession(name);
         verify(dataSource).setUnlogged(name);
         verify(dataSource).revokeSession(name);
     }
 
     @Test
-    public void shouldEmitEventForValidSession() {
+    void shouldEmitEventForValidSession() {
         // given
         String name = "Bobby";
         String ip = "127.3.12.15";
@@ -186,14 +178,13 @@ public class SessionServiceTest {
         verify(commonService).getProperty(PluginSettings.SESSIONS_ENABLED);
         verify(commonService).getProperty(PluginSettings.SESSIONS_TIMEOUT);
         verifyNoMoreInteractions(commonService);
-        verify(dataSource).hasSession(name);
         verify(dataSource).setUnlogged(name);
         verify(dataSource).revokeSession(name);
         verify(event).isCancelled();
     }
 
     @Test
-    public void shouldHandleNullPlayerAuth() {
+    void shouldHandleNullPlayerAuth() {
         // given
         String name = "Bobby";
         Player player = mockPlayerWithNameAndIp(name, "127.3.12.15");
@@ -205,15 +196,12 @@ public class SessionServiceTest {
 
         // then
         assertThat(result, equalTo(false));
-        verify(commonService).getProperty(PluginSettings.SESSIONS_ENABLED);
-        verify(dataSource).hasSession(name);
         verify(dataSource).setUnlogged(name);
         verify(dataSource).revokeSession(name);
-        verify(dataSource).getAuth(name);
     }
 
     @Test
-    public void shouldHandlePlayerAuthWithNullLastIp() {
+    void shouldHandlePlayerAuthWithNullLastIp() {
         // given
         String name = "Charles";
         Player player = mockPlayerWithNameAndIp(name, "144.117.118.145");
@@ -222,7 +210,7 @@ public class SessionServiceTest {
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
             .lastIp(null)
-            .lastLogin(System.currentTimeMillis()).build();
+            .lastLogin(System.currentTimeMillis() - 2).build();
         given(dataSource.getAuth(name)).willReturn(auth);
 
         // when
@@ -230,11 +218,8 @@ public class SessionServiceTest {
 
         // then
         assertThat(result, equalTo(false));
-        verify(commonService).getProperty(PluginSettings.SESSIONS_ENABLED);
-        verify(dataSource).hasSession(name);
         verify(dataSource).setUnlogged(name);
         verify(dataSource).revokeSession(name);
-        verify(dataSource).getAuth(name);
     }
 
     private static Player mockPlayerWithNameAndIp(String name, String ip) {
@@ -244,5 +229,3 @@ public class SessionServiceTest {
         return player;
     }
 }
-
-
