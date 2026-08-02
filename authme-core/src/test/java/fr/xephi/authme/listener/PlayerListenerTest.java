@@ -73,7 +73,7 @@ import java.util.UUID;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static fr.xephi.authme.listener.EventCancelVerifier.withServiceMock;
-import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay;
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithEntityAndDelay;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
@@ -1039,7 +1039,7 @@ class PlayerListenerTest {
         InventoryOpenEvent event = new InventoryOpenEvent(transaction);
         given(event.getPlayer()).willReturn(player);
         given(listenerService.shouldCancelEvent(player)).willReturn(true);
-        setBukkitServiceToScheduleSyncDelayedTaskWithDelay(bukkitService);
+        setBukkitServiceToScheduleSyncDelayedTaskWithEntityAndDelay(bukkitService);
 
         // when
         listener.onPlayerInventoryOpen(event);

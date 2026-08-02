@@ -3,9 +3,9 @@ package fr.xephi.authme.security.crypts;
 /**
  * Test for {@link DoubleMd5}.
  */
-public class DoubleMd5Test extends AbstractEncryptionMethodTest {
+class DoubleMd5Test extends AbstractEncryptionMethodTest {
 
-    public DoubleMd5Test() {
+    DoubleMd5Test() {
         super(new DoubleMd5(),
             "696d29e0940a4957748fe3fc9efd22a3",  // password
             "c77aa2024d9fb7233a2872452d601aba",  // PassWord1

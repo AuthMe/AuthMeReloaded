@@ -13,8 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -25,9 +23,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
+/**
+ * Test for {@link DialogWindowService}.
+ */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class DialogWindowServiceTest {
+class DialogWindowServiceTest {
 
     @InjectMocks
     private DialogWindowService dialogWindowService;
@@ -42,7 +42,7 @@ public class DialogWindowServiceTest {
     private EmailService emailService;
 
     @Test
-    public void shouldBuildPostJoinLoginDialogWithForgotPasswordButtonWhenEmailServiceConfigured() {
+    void shouldBuildPostJoinLoginDialogWithForgotPasswordButtonWhenEmailServiceConfigured() {
         // given
         Player player = org.mockito.Mockito.mock(Player.class);
         given(commonService.retrieveSingleMessage(eq(player), any(MessageKey.class)))
@@ -66,7 +66,7 @@ public class DialogWindowServiceTest {
     }
 
     @Test
-    public void shouldNotShowForgotPasswordButtonWhenEmailServiceNotConfigured() {
+    void shouldNotShowForgotPasswordButtonWhenEmailServiceNotConfigured() {
         // given
         Player player = org.mockito.Mockito.mock(Player.class);
         given(commonService.retrieveSingleMessage(eq(player), any(MessageKey.class)))
@@ -85,14 +85,13 @@ public class DialogWindowServiceTest {
     }
 
     @Test
-    public void shouldBuildPostJoinLoginDialogWithoutForgotPasswordButtonWhenDisabledByConfig() {
+    void shouldBuildPostJoinLoginDialogWithoutForgotPasswordButtonWhenDisabledByConfig() {
         // given
         Player player = org.mockito.Mockito.mock(Player.class);
         given(commonService.retrieveSingleMessage(eq(player), any(MessageKey.class)))
             .willAnswer(invocation -> invocation.getArgument(1, MessageKey.class).getKey());
         given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_FORGOT_PASSWORD_BUTTON)).willReturn(false);
         given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_BODY)).willReturn(false);
-        given(emailService.hasAllInformation()).willReturn(true);
 
         // when — disabled by config even when email service is available
         DialogWindowSpec dialog = dialogWindowService.createLoginDialog(player);
@@ -105,7 +104,7 @@ public class DialogWindowServiceTest {
     }
 
     @Test
-    public void shouldBuildPostJoinRegisterDialogWithEmailBeforePasswordForMandatoryEmailFlow() {
+    void shouldBuildPostJoinRegisterDialogWithEmailBeforePasswordForMandatoryEmailFlow() {
         // given
         Player player = org.mockito.Mockito.mock(Player.class);
         given(commonService.retrieveSingleMessage(eq(player), any(MessageKey.class)))
@@ -121,7 +120,7 @@ public class DialogWindowServiceTest {
     }
 
     @Test
-    public void shouldBuildPostJoinRegisterDialogForOptionalEmailFlow() {
+    void shouldBuildPostJoinRegisterDialogForOptionalEmailFlow() {
         // given
         Player player = org.mockito.Mockito.mock(Player.class);
         given(commonService.retrieveSingleMessage(eq(player), any(MessageKey.class)))
@@ -141,7 +140,7 @@ public class DialogWindowServiceTest {
     }
 
     @Test
-    public void shouldBuildPreJoinLoginDialogWithCancelButtonWhenEmailServiceNotConfigured() {
+    void shouldBuildPreJoinLoginDialogWithCancelButtonWhenEmailServiceNotConfigured() {
         // given
         given(messages.retrieveSingle(eq("Bobby"), any(MessageKey.class)))
             .willAnswer(invocation -> invocation.getArgument(1, MessageKey.class).getKey());
@@ -166,7 +165,7 @@ public class DialogWindowServiceTest {
     }
 
     @Test
-    public void shouldBuildPreJoinLoginDialogWithRecoveryButtonWhenEmailServiceConfigured() {
+    void shouldBuildPreJoinLoginDialogWithRecoveryButtonWhenEmailServiceConfigured() {
         // given
         given(messages.retrieveSingle(eq("Bobby"), any(MessageKey.class)))
             .willAnswer(invocation -> invocation.getArgument(1, MessageKey.class).getKey());

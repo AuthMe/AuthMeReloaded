@@ -1,9 +1,5 @@
 package fr.xephi.authme.service;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.events.FailedLoginEvent;
@@ -22,15 +18,15 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
@@ -40,8 +36,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link BukkitService}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class BukkitServiceTest {
+class BukkitServiceTest {
 
     private BukkitService bukkitService;
 
@@ -59,16 +54,14 @@ public class BukkitServiceTest {
     private SchedulingAdapter schedulingAdapter;
 
     @BeforeEach
-    public void constructBukkitService() {
+    void constructBukkitService() {
         ReflectionTestUtils.setField(Bukkit.class, null, "server", server);
-        lenient().when(server.getScheduler()).thenReturn(scheduler);
-        lenient().when(server.getPluginManager()).thenReturn(pluginManager);
-        lenient().when(settings.getProperty(PluginSettings.USE_ASYNC_TASKS)).thenReturn(true);
+        given(settings.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(true);
         bukkitService = new BukkitService(authMe, settings, schedulingAdapter);
     }
 
     @Test
-    public void shouldDispatchCommand() {
+    void shouldDispatchCommand() {
         // given
         CommandSender sender = mock(CommandSender.class);
         String command = "help test abc";
@@ -81,7 +74,7 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldDispatchConsoleCommand() {
+    void shouldDispatchConsoleCommand() {
         // given
         ConsoleCommandSender consoleSender = mock(ConsoleCommandSender.class);
         given(server.getConsoleSender()).willReturn(consoleSender);
@@ -95,10 +88,11 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldScheduleSyncDelayedTask() {
+    void shouldScheduleSyncDelayedTask() {
         // given
         Runnable task = () -> {/* noop */};
         given(scheduler.scheduleSyncDelayedTask(authMe, task)).willReturn(123);
+        given(server.getScheduler()).willReturn(scheduler);
 
         // when
         int taskId = bukkitService.scheduleSyncDelayedTask(task);
@@ -109,11 +103,12 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldScheduleSyncDelayedTaskWithDelay() {
+    void shouldScheduleSyncDelayedTaskWithDelay() {
         // given
         Runnable task = () -> {/* noop */};
         int delay = 3;
         given(scheduler.scheduleSyncDelayedTask(authMe, task, delay)).willReturn(44);
+        given(server.getScheduler()).willReturn(scheduler);
 
         // when
         int taskId = bukkitService.scheduleSyncDelayedTask(task, delay);
@@ -124,7 +119,7 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldScheduleSyncTask() {
+    void shouldScheduleSyncTask() {
         // given
         Runnable task = mock(Runnable.class);
         given(schedulingAdapter.isGlobalThread()).willReturn(false);
@@ -138,7 +133,7 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldRunTaskDirectly() {
+    void shouldRunTaskDirectly() {
         // given
         given(schedulingAdapter.isGlobalThread()).willReturn(true);
         bukkitService.reload(settings);
@@ -153,7 +148,7 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldScheduleEntityTask() {
+    void shouldScheduleEntityTask() {
         // given
         Entity entity = mock(Player.class);
         Runnable task = mock(Runnable.class);
@@ -168,7 +163,7 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldRunEntityTaskDirectly() {
+    void shouldRunEntityTaskDirectly() {
         // given
         Entity entity = mock(Player.class);
         Runnable task = mock(Runnable.class);
@@ -182,11 +177,12 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldRunTask() {
+    void shouldRunTask() {
         // given
         Runnable task = () -> {/* noop */};
         BukkitTask bukkitTask = mock(BukkitTask.class);
         given(scheduler.runTask(authMe, task)).willReturn(bukkitTask);
+        given(server.getScheduler()).willReturn(scheduler);
 
         // when
         BukkitTask resultingTask = bukkitService.runTask(task);
@@ -197,12 +193,13 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldRunTaskLater() {
+    void shouldRunTaskLater() {
         // given
         Runnable task = () -> {/* noop */};
         BukkitTask bukkitTask = mock(BukkitTask.class);
         long delay = 400;
         given(scheduler.runTaskLater(authMe, task, delay)).willReturn(bukkitTask);
+        given(server.getScheduler()).willReturn(scheduler);
 
         // when
         BukkitTask resultingTask = bukkitService.runTaskLater(task, delay);
@@ -213,7 +210,7 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldRunTaskInAsync() {
+    void shouldRunTaskInAsync() {
         // given
         Runnable task = mock(Runnable.class);
         BukkitService spy = Mockito.spy(bukkitService);
@@ -228,7 +225,7 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldRunTaskDirectlyIfConfigured() {
+    void shouldRunTaskDirectlyIfConfigured() {
         // given
         given(settings.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(false);
         bukkitService.reload(settings);
@@ -244,7 +241,7 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldRunTaskAsynchronously() {
+    void shouldRunTaskAsynchronously() {
         // given
         Runnable task = () -> {/* noop */};
         CancellableTask cancellableTask = mock(CancellableTask.class);
@@ -259,7 +256,7 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldRunTaskTimerAsynchronously() {
+    void shouldRunTaskTimerAsynchronously() {
         // given
         Runnable task = mock(Runnable.class);
         long delay = 20L;
@@ -276,7 +273,7 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldRunTaskTimer() {
+    void shouldRunTaskTimer() {
         // given
         BukkitRunnable bukkitRunnable = mock(BukkitRunnable.class);
         long delay = 20;
@@ -293,7 +290,7 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldBroadcastMessage() {
+    void shouldBroadcastMessage() {
         // given
         String message = "Important message to all";
         given(server.broadcastMessage(message)).willReturn(24);
@@ -307,11 +304,12 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldCreateAndEmitSyncEvent() {
+    void shouldCreateAndEmitSyncEvent() {
         // given
         given(settings.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(false);
         bukkitService.reload(settings);
         Player player = mock(Player.class);
+        given(server.getPluginManager()).willReturn(pluginManager);
 
         // when
         FailedLoginEvent event = bukkitService.createAndCallEvent(isAsync -> new FailedLoginEvent(player, isAsync));
@@ -323,9 +321,10 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldCreateAndEmitAsyncEvent() {
+    void shouldCreateAndEmitAsyncEvent() {
         // given
         Player player = mock(Player.class);
+        given(server.getPluginManager()).willReturn(pluginManager);
 
         // when
         FailedLoginEvent event = bukkitService.createAndCallEvent(isAsync -> new FailedLoginEvent(player, isAsync));
@@ -337,7 +336,7 @@ public class BukkitServiceTest {
     }
 
     @Test
-    public void shouldReturnServerIp() {
+    void shouldReturnServerIp() {
         // given
         String ip = "99.99.99.99";
         given(server.getIp()).willReturn(ip);
@@ -349,5 +348,3 @@ public class BukkitServiceTest {
         assertThat(result, equalTo(ip));
     }
 }
-
-

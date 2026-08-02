@@ -17,21 +17,22 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicesManager;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
 import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static fr.xephi.authme.permission.PermissionsSystemType.LUCK_PERMS;
 import static fr.xephi.authme.permission.PermissionsSystemType.VAULT;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
@@ -40,7 +41,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Tests the initialization of {@link PermissionHandler} in {@link PermissionsManager}.
  */
-public class PermissionsManagerInitializationTest {
+class PermissionsManagerInitializationTest {
 
     private Settings settings = mock(Settings.class);
     private ServicesManager servicesManager = mock(ServicesManager.class);
@@ -49,19 +50,19 @@ public class PermissionsManagerInitializationTest {
     private PermissionsManager permissionsManager = new PermissionsManager(server, pluginManager, settings);
 
     @BeforeAll
-    public static void setUpLogger() {
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         ReflectionTestUtils.setField(Bukkit.class, null, "server", server);
         given(server.getServicesManager()).willReturn(servicesManager);
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("createParameters")
-    public void shouldInitializeHandler(PermissionsSystemType permissionsSystemType, Class<?> expectedHandlerType) {
+    void shouldInitializeHandler(PermissionsSystemType permissionsSystemType, Class<?> expectedHandlerType) {
         // given
         setUpForPermissionSystemTest(permissionsSystemType);
         given(settings.getProperty(PluginSettings.FORCE_VAULT_HOOK)).willReturn(false);
@@ -80,8 +81,7 @@ public class PermissionsManagerInitializationTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("createParameters")
-    public void shouldInitializeToVaultIfSoConfigured(PermissionsSystemType permissionsSystemType,
-                                                      Class<?> expectedHandlerType) {
+    void shouldInitializeToVaultIfSoConfigured(PermissionsSystemType permissionsSystemType, Class<?> expectedHandlerType) {
         // given
         setUpForVault();
         given(settings.getProperty(PluginSettings.FORCE_VAULT_HOOK)).willReturn(true);
@@ -100,8 +100,7 @@ public class PermissionsManagerInitializationTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("createParameters")
-    public void shouldNotHookIntoDisabledPlugin(PermissionsSystemType permissionsSystemType,
-                                                Class<?> expectedHandlerType) {
+    void shouldNotHookIntoDisabledPlugin(PermissionsSystemType permissionsSystemType, Class<?> expectedHandlerType) {
         // given
         given(settings.getProperty(PluginSettings.FORCE_VAULT_HOOK)).willReturn(false);
         Plugin plugin = mock(Plugin.class);
@@ -117,8 +116,7 @@ public class PermissionsManagerInitializationTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("createParameters")
-    public void shouldCatchInitializationException(PermissionsSystemType permissionsSystemType,
-                                                   Class<?> expectedHandlerType) {
+    void shouldCatchInitializationException(PermissionsSystemType permissionsSystemType, Class<?> expectedHandlerType) {
         // given
         given(settings.getProperty(PluginSettings.FORCE_VAULT_HOOK)).willReturn(false);
         Plugin plugin = mock(Plugin.class);
@@ -133,7 +131,7 @@ public class PermissionsManagerInitializationTest {
         assertThat(getHandlerFieldValue(), nullValue());
     }
 
-    public static Stream<Arguments> createParameters() {
+    static Stream<Arguments> createParameters() {
         Map<PermissionsSystemType, Class<?>> handlersByPermissionSystemType = ImmutableMap.of(
             LUCK_PERMS, LuckPermsHandler.class,
             VAULT, VaultHandler.class);
@@ -144,7 +142,6 @@ public class PermissionsManagerInitializationTest {
                 + PermissionsSystemType.class.getSimpleName() + " entries");
         }
 
-        // Wrap the above map in a Collection<Object[]> to satisfy JUnit
         return handlersByPermissionSystemType.entrySet().stream()
             .map(e -> Arguments.of(e.getKey(), e.getValue()));
     }
@@ -171,4 +168,3 @@ public class PermissionsManagerInitializationTest {
         return ReflectionTestUtils.getFieldValue(PermissionsManager.class, permissionsManager, "handler");
     }
 }
-

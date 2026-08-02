@@ -19,7 +19,6 @@ import java.util.logging.Logger;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.lenient;
 
 /**
  * AuthMe test utilities.
@@ -104,7 +103,7 @@ public final class TestHelper {
         try {
             InetAddress inetAddress = InetAddress.getByName(ip);
             InetSocketAddress inetSocketAddress = new InetSocketAddress(inetAddress, 8093);
-            lenient().when(player.getAddress()).thenReturn(inetSocketAddress);
+            given(player.getAddress()).willReturn(inetSocketAddress);
         } catch (UnknownHostException e) {
             throw new IllegalStateException("Invalid IP address: " + ip, e);
         }

@@ -12,9 +12,9 @@ import static org.mockito.Mockito.mock;
 /**
  * Test for {@link Pbkdf2Base64}.
  */
-public class Pbkdf2Base64Test extends AbstractEncryptionMethodTest {
+class Pbkdf2Base64Test extends AbstractEncryptionMethodTest {
 
-    public Pbkdf2Base64Test() {
+    Pbkdf2Base64Test() {
         super(new Pbkdf2Base64(mockSettings()),
             "pbkdf2$4128$JddgMm9rNhbYNfEmf4pOKA==$9Q7QyaEDhqAj8KfF7FdPRq6f9uAWhMwioKvzAWMxSu8=",  // password
             "pbkdf2$4128$obLD1OX2p7jJ0OHyo7TF1g==$dyEnM1cYBRhXl0bDgxfQ3p7Jecj4VerT1Vsag5HJTmo=",  // PassWord1
@@ -23,7 +23,7 @@ public class Pbkdf2Base64Test extends AbstractEncryptionMethodTest {
     }
 
     @Test
-    public void shouldMatchHashWithDifferentRoundNumber() {
+    void shouldMatchHashWithDifferentRoundNumber() {
         // given / when / then — verifies that stored iterations override the configured value
         Pbkdf2Base64 pbkdf2Base64 = new Pbkdf2Base64(mockSettings());
         String hash = "pbkdf2$120000$JddgMm9rNhbYNfEmf4pOKA==$RcAMtgm/KnKFxfNOpg95tb7s5OzB2Fv4Wj1HOAI/TWY=";

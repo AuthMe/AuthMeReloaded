@@ -3,9 +3,9 @@ package fr.xephi.authme.security.crypts;
 /**
  * Test for {@link Wbb3}.
  */
-public class Wbb3Test extends AbstractEncryptionMethodTest {
+class Wbb3Test extends AbstractEncryptionMethodTest {
 
-    public Wbb3Test() {
+    Wbb3Test() {
         super(new Wbb3(),
             new HashedPassword("8df818ef7d56075ab2744f74b98ad68a375ccac4", "b7415b355492ea60314f259a35733a3092c03e3f"),  // password
             new HashedPassword("106da5cf5df92cb845e12cf62cbdb5235b6dc693", "6110f19b2b52910dccf592a19c59126873f42e69"),  // PassWord1
