@@ -165,7 +165,7 @@ class BungeeReceiverTest {
 
         // then
         verify(proxySessionManager).processProxySessionMessage(playerName, null);
-        verify(management, never()).forceLoginFromProxy(any());
+        verify(management, never()).forceLoginFromProxy(any(Player.class));
         verify(bungeeSender, never()).sendAuthMeBungeecordMessage(any(), any());
     }
 
@@ -234,7 +234,7 @@ class BungeeReceiverTest {
 
         // then
         verify(proxySessionManager).removeLoginRequest(playerName);
-        verify(management, never()).forceLoginFromProxy(any());
+        verify(management, never()).forceLoginFromProxy(any(Player.class));
         verify(bungeeSender, never()).sendAuthMeBungeecordMessage(any(), any());
     }
 
@@ -261,7 +261,7 @@ class BungeeReceiverTest {
         // then
         assertThat(result, equalTo("bobby"));
         verify(proxySessionManager).processProxySessionMessage(playerName, null);
-        verify(management, never()).forceLoginFromProxy(any());
+        verify(management, never()).forceLoginFromProxy(any(Player.class));
     }
 
     @Test
