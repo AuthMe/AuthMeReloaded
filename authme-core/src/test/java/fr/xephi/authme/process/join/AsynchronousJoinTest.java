@@ -327,6 +327,25 @@ public class AsynchronousJoinTest {
     }
 
     @Test
+    public void shouldFallThroughToSessionOrLimboWhenProxyValidationFails() {
+        // given — proxy sends perform.login with a premium UUID, but the player just ran /freemium,
+        // so the proxy login request cannot be validated. Must fall through to session/limbo flow
+        // instead of leaving the player stuck with no authentication and no dialog.
+        Player player = mockPlayer("Bobby");
+        setUpRegisteredJoin(player);
+        given(proxySessionManager.consumeLoginRequest("bobby"))
+            .willReturn(new ProxySessionManager.ProxyLoginRequest("bobby", UUID.randomUUID()));
+        given(proxyLoginRequestValidator.validate(eq(player), any())).willReturn(false);
+
+        // when
+        asynchronousJoin.processJoin(player);
+
+        // then — falls through to session check; session is not valid so limbo + dialog
+        verify(limboService).createLimboPlayer(player, true);
+        verify(asynchronousLogin, never()).forceLoginFromProxy(player);
+    }
+
+    @Test
     public void shouldForceLoginPlayerApprovedViaPreJoinDialog() {
         // given
         Player player = mockPlayer("Bobby");
