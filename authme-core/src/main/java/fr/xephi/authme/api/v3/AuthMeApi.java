@@ -4,6 +4,8 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.events.LoginEvent;
+import fr.xephi.authme.events.RestoreSessionEvent;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.process.register.executors.ApiPasswordRegisterParams;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
