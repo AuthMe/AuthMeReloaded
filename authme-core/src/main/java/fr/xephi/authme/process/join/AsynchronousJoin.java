@@ -60,7 +60,7 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_IN
  * Asynchronous process for when a player joins.
  */
 public class AsynchronousJoin implements AsynchronousProcess {
-    
+
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(AsynchronousJoin.class);
 
     @Inject
@@ -214,23 +214,25 @@ public class AsynchronousJoin implements AsynchronousProcess {
             } else {
                 ProxySessionManager.ProxyLoginRequest proxyLoginRequest = proxySessionManager.consumeLoginRequest(name);
                 if (proxyLoginRequest != null) {
-                    if (!proxyLoginRequestValidator.validate(player, proxyLoginRequest.verifiedPremiumUuid())) {
+                    if (proxyLoginRequestValidator.validate(player, proxyLoginRequest.verifiedPremiumUuid())) {
+                        if (playerCache.isAuthenticated(name)) {
+                            return;
+                        }
+                        service.send(player, MessageKey.SESSION_RECONNECTION);
+                        // Run commands
+                        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player,
+                            () -> commandManager.runCommandsOnSessionLogin(player));
+                        // Use forceLoginFromProxy (quiet=true, no BungeeCord redirect) so that if
+                        // BungeeReceiver.performLogin() concurrently already completed the login, this
+                        // call is a no-op rather than sending an "already logged in" error.
+                        bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLoginFromProxy(player));
+                        logger.info("The user " + player.getName() + " has been automatically logged in, "
+                            + "as present in autologin queue.");
                         return;
                     }
-                    if (playerCache.isAuthenticated(name)) {
-                        return;
-                    }
-                    service.send(player, MessageKey.SESSION_RECONNECTION);
-                    // Run commands
-                    bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player,
-                        () -> commandManager.runCommandsOnSessionLogin(player));
-                    // Use forceLoginFromProxy (quiet=true, no BungeeCord redirect) so that if
-                    // BungeeReceiver.performLogin() concurrently already completed the login, this
-                    // call is a no-op rather than sending an "already logged in" error.
-                    bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLoginFromProxy(player));
-                    logger.info("The user " + player.getName() + " has been automatically logged in, "
-                        + "as present in autologin queue.");
-                    return;
+                    // Validation failed (e.g. premium UUID mismatch after /freemium).
+                    // Fall through to session check / limbo flow below to avoid leaving the
+                    // player stuck: not authenticated, no dialog, no movement allowed.
                 }
             }
             if (sessionService.canResumeSession(player)) {
