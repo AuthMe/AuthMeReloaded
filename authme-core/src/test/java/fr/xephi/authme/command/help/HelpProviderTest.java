@@ -7,6 +7,7 @@ import fr.xephi.authme.command.TestCommandsUtil;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.platform.BukkitCompatibilityAdapter;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.ChatColor;
@@ -68,6 +69,8 @@ class HelpProviderTest {
     @Mock
     private Settings settings;
     @Mock
+    private BukkitCompatibilityAdapter compatibilityAdapter;
+    @Mock
     private CommandSender sender;
 
     @BeforeAll
@@ -78,7 +81,7 @@ class HelpProviderTest {
     @BeforeEach
     void initializeHelpProvider() {
         setDefaultHelpMessages(helpMessagesService);
-        helpProvider = new HelpProvider(permissionsManager, helpMessagesService, settings);
+        helpProvider = new HelpProvider(permissionsManager, helpMessagesService, settings, compatibilityAdapter);
     }
 
     @Test

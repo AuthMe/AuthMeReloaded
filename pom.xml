@@ -57,6 +57,7 @@
     <modules>
         <module>authme-core</module>
         <module>authme-tools</module>
+        <module>authme-spigot-1.8</module>
         <module>authme-spigot-legacy</module>
     </modules>
 
@@ -68,6 +69,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <revision>6.0.1-SNAPSHOT</revision>
+        <core.java.version>8</core.java.version>
         <module.java.version>17</module.java.version>
         <maven.minimumVersion>3.8.8</maven.minimumVersion>
 

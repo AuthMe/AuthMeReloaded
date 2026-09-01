@@ -222,7 +222,8 @@ public class CacheDataSource implements DataSource, SqlConnectionSource {
 
     @Override
     public Connection getConnection() throws SQLException {
-        if (source instanceof SqlConnectionSource sqlSource) {
+        if (source instanceof SqlConnectionSource) {
+            SqlConnectionSource sqlSource = (SqlConnectionSource) source;
             return sqlSource.getConnection();
         }
         throw new SQLException("The configured data source does not support raw SQL connections");

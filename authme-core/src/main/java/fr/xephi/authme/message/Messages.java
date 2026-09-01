@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.mail.EmailService;
+import fr.xephi.authme.platform.BukkitCompatibilityAdapter;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.expiring.Duration;
@@ -46,19 +47,26 @@ public class Messages {
     private final BukkitService bukkitService;
     private final MessagesFileHandler messagesFileHandler;
     private final Settings settings;
+    private final BukkitCompatibilityAdapter compatibilityAdapter;
 
     /*
      * Constructor.
      */
     @Inject
-    Messages(MessagesFileHandler messagesFileHandler, BukkitService bukkitService, Settings settings) {
+    Messages(MessagesFileHandler messagesFileHandler, BukkitService bukkitService, Settings settings,
+             BukkitCompatibilityAdapter compatibilityAdapter) {
         this.messagesFileHandler = messagesFileHandler;
         this.bukkitService = bukkitService;
         this.settings = settings;
+        this.compatibilityAdapter = compatibilityAdapter;
+    }
+
+    Messages(MessagesFileHandler messagesFileHandler, BukkitService bukkitService, Settings settings) {
+        this(messagesFileHandler, bukkitService, settings, null);
     }
 
     Messages(MessagesFileHandler messagesFileHandler) {
-        this(messagesFileHandler, null, null);
+        this(messagesFileHandler, null, null, null);
     }
 
     /**
@@ -134,9 +142,9 @@ public class Messages {
      * @return The message from the file
      */
     private String retrieveMessage(MessageKey key, CommandSender sender) {
-        String language = PlayerLocaleResolver.resolveLanguage(settings, sender);
+        String language = PlayerLocaleResolver.resolveLanguage(settings, sender, compatibilityAdapter);
         String message = messagesFileHandler.getMessage(key.getKey(), language);
-        String displayName = sender instanceof Player p ? p.getDisplayName() : sender.getName();
+        String displayName = sender instanceof Player ? ((Player) sender).getDisplayName() : sender.getName();
         return ChatColor.translateAlternateColorCodes('&', message)
                 .replace(NEWLINE_TAG, "\n")
                 .replace(USERNAME_TAG, sender.getName())
@@ -206,8 +214,8 @@ public class Messages {
     }
 
     private void runOnSenderThread(CommandSender sender, Runnable action) {
-        if (sender instanceof Player player && bukkitService != null) {
-            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player, action);
+        if (sender instanceof Player && bukkitService != null) {
+            bukkitService.scheduleSyncTaskFromOptionallyAsyncTask((Player) sender, action);
         } else {
             action.run();
         }

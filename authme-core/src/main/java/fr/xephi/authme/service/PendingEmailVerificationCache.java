@@ -2,6 +2,7 @@ package fr.xephi.authme.service;
 
 import javax.inject.Inject;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -86,5 +87,36 @@ public class PendingEmailVerificationCache {
         pending.entrySet().removeIf(e -> now > e.getValue().expiresAt());
     }
 
-    public record PendingEntry(String email, String code, long expiresAt) {}
+    public static final class PendingEntry {
+        private final String email;
+        private final String code;
+        private final long expiresAt;
+
+        public PendingEntry(String email, String code, long expiresAt) {
+            this.email = Objects.requireNonNull(email, "email");
+            this.code = Objects.requireNonNull(code, "code");
+            this.expiresAt = expiresAt;
+        }
+
+        public String email() { return email; }
+        public String code() { return code; }
+        public long expiresAt() { return expiresAt; }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            PendingEntry that = (PendingEntry) o;
+            return expiresAt == that.expiresAt && Objects.equals(email, that.email)
+                && Objects.equals(code, that.code);
+        }
+
+        @Override
+        public int hashCode() { return Objects.hash(email, code, expiresAt); }
+
+        @Override
+        public String toString() {
+            return "PendingEntry[email=" + email + ", code=" + code + ", expiresAt=" + expiresAt + "]";
+        }
+    }
 }

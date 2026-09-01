@@ -1,11 +1,14 @@
 package fr.xephi.authme.platform;
 
 import fr.xephi.authme.listener.BlockListener;
+import fr.xephi.authme.listener.EntityAirChangeListener;
 import fr.xephi.authme.listener.EntityListener;
+import fr.xephi.authme.listener.EntityPickupItemListener;
 import fr.xephi.authme.listener.LegacyPlayerLoginListener;
 import fr.xephi.authme.listener.LegacyPlayerSpawnLocationListener;
 import fr.xephi.authme.listener.PlayerListener;
 import fr.xephi.authme.listener.PlayerSignOpenListener;
+import fr.xephi.authme.listener.PlayerSwapHandItemsListener;
 import fr.xephi.authme.listener.ServerListener;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
@@ -61,7 +64,18 @@ public class SpigotPlatformAdapterTest {
             ServerListener.class,
             LegacyPlayerLoginListener.class,
             LegacyPlayerSpawnLocationListener.class,
+            PlayerSwapHandItemsListener.class,
+            EntityAirChangeListener.class,
+            EntityPickupItemListener.class,
             PlayerSignOpenListener.class));
+    }
+
+    @Test
+    public void getListenersRetainsAllModernEventProtections() {
+        List<Class<? extends Listener>> listeners = adapter.getListeners();
+        assertThat(listeners, org.hamcrest.Matchers.hasItem(PlayerSwapHandItemsListener.class));
+        assertThat(listeners, org.hamcrest.Matchers.hasItem(EntityAirChangeListener.class));
+        assertThat(listeners, org.hamcrest.Matchers.hasItem(EntityPickupItemListener.class));
     }
 
     @Test
@@ -100,4 +114,3 @@ public class SpigotPlatformAdapterTest {
         verify(player).showDialog(any(MultiActionDialog.class));
     }
 }
-

@@ -5,6 +5,7 @@ import fr.xephi.authme.util.expiring.ExpiringMap;
 
 import javax.inject.Inject;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -87,6 +88,36 @@ public class ProxySessionManager implements HasCleanup {
         activeProxySessions.removeExpiredEntries();
     }
 
-    public record ProxyLoginRequest(String playerName, UUID verifiedPremiumUuid) {
+    public static final class ProxyLoginRequest {
+        private final String playerName;
+        private final UUID verifiedPremiumUuid;
+
+        public ProxyLoginRequest(String playerName, UUID verifiedPremiumUuid) {
+            this.playerName = Objects.requireNonNull(playerName, "playerName");
+            this.verifiedPremiumUuid = verifiedPremiumUuid;
+        }
+
+        public String playerName() { return playerName; }
+        public UUID verifiedPremiumUuid() { return verifiedPremiumUuid; }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ProxyLoginRequest that = (ProxyLoginRequest) o;
+            return Objects.equals(playerName, that.playerName)
+                && Objects.equals(verifiedPremiumUuid, that.verifiedPremiumUuid);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(playerName, verifiedPremiumUuid);
+        }
+
+        @Override
+        public String toString() {
+            return "ProxyLoginRequest[playerName=" + playerName
+                + ", verifiedPremiumUuid=" + verifiedPremiumUuid + "]";
+        }
     }
 }
