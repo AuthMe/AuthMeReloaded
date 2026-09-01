@@ -11,6 +11,7 @@ import fr.xephi.authme.message.PlayerLocaleResolver;
 import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.platform.BukkitCompatibilityAdapter;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -52,14 +53,21 @@ public class HelpProvider implements Reloadable {
     private final PermissionsManager permissionsManager;
     private final HelpMessagesService helpMessagesService;
     private final Settings settings;
+    private final BukkitCompatibilityAdapter compatibilityAdapter;
     /** int with bit flags set corresponding to the above constants for enabled sections. */
     private Integer enabledSections;
 
     @Inject
-    HelpProvider(PermissionsManager permissionsManager, HelpMessagesService helpMessagesService, Settings settings) {
+    HelpProvider(PermissionsManager permissionsManager, HelpMessagesService helpMessagesService, Settings settings,
+                 BukkitCompatibilityAdapter compatibilityAdapter) {
         this.permissionsManager = permissionsManager;
         this.helpMessagesService = helpMessagesService;
         this.settings = settings;
+        this.compatibilityAdapter = compatibilityAdapter;
+    }
+
+    HelpProvider(PermissionsManager permissionsManager, HelpMessagesService helpMessagesService, Settings settings) {
+        this(permissionsManager, helpMessagesService, settings, null);
     }
 
     /**
@@ -81,7 +89,7 @@ public class HelpProvider implements Reloadable {
             // Return directly if no options are enabled so we don't include the help header
             return lines;
         }
-        String language = PlayerLocaleResolver.resolveLanguage(settings, sender);
+        String language = PlayerLocaleResolver.resolveLanguage(settings, sender, compatibilityAdapter);
         String header = helpMessagesService.getMessage(HelpMessage.HEADER, language);
         if (!header.isEmpty()) {
             lines.add(ChatColor.GOLD + header);

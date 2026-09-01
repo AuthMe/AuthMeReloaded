@@ -7,6 +7,7 @@ import fr.xephi.authme.AuthMe;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
@@ -149,7 +150,7 @@ public class BungeeSender implements SettingsDependent {
         }
         List<String> normalizedUsernames = premiumUsernames.stream()
             .map(name -> name.toLowerCase(Locale.ROOT))
-            .toList();
+            .collect(Collectors.toList());
         int chunkSize = 1000;
         int total = normalizedUsernames.size();
         if (total == 0) {

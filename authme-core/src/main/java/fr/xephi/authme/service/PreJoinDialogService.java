@@ -1,6 +1,7 @@
 package fr.xephi.authme.service;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -136,6 +137,41 @@ public class PreJoinDialogService {
         unregisterPreJoinFuture(playerId);
     }
 
-    public record PendingRegistration(String primaryValue, String secondaryValue, boolean isEmailRegistration) {
+    public static final class PendingRegistration {
+        private final String primaryValue;
+        private final String secondaryValue;
+        private final boolean isEmailRegistration;
+
+        public PendingRegistration(String primaryValue, String secondaryValue, boolean isEmailRegistration) {
+            this.primaryValue = primaryValue;
+            this.secondaryValue = secondaryValue;
+            this.isEmailRegistration = isEmailRegistration;
+        }
+
+        public String primaryValue() { return primaryValue; }
+        public String secondaryValue() { return secondaryValue; }
+        public boolean isEmailRegistration() { return isEmailRegistration; }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            PendingRegistration that = (PendingRegistration) o;
+            return isEmailRegistration == that.isEmailRegistration
+                && Objects.equals(primaryValue, that.primaryValue)
+                && Objects.equals(secondaryValue, that.secondaryValue);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(primaryValue, secondaryValue, isEmailRegistration);
+        }
+
+        @Override
+        public String toString() {
+            return "PendingRegistration[primaryValue=" + primaryValue
+                + ", secondaryValue=" + secondaryValue
+                + ", isEmailRegistration=" + isEmailRegistration + "]";
+        }
     }
 }

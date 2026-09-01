@@ -7,6 +7,8 @@ import fr.xephi.authme.listener.ServerListener;
 import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,11 +25,11 @@ public interface EventRegistrationAdapter {
      * Returns the core listeners shared by all platforms.
      */
     static List<Class<? extends Listener>> getCommonListeners() {
-        return List.of(
+        return Collections.unmodifiableList(Arrays.asList(
             PlayerListener.class,
             BlockListener.class,
             EntityListener.class,
-            ServerListener.class);
+            ServerListener.class));
     }
 
     @SafeVarargs
@@ -36,6 +38,6 @@ public interface EventRegistrationAdapter {
         for (List<Class<? extends Listener>> listenerGroup : listenerGroups) {
             listeners.addAll(listenerGroup);
         }
-        return List.copyOf(listeners);
+        return Collections.unmodifiableList(new ArrayList<Class<? extends Listener>>(listeners));
     }
 }
