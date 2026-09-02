@@ -5,6 +5,8 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.PremiumSettings;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link ProxyLoginRequestValidator}.
@@ -48,6 +51,9 @@ class ProxyLoginRequestValidatorTest {
     private Messages messages;
 
     @Mock
+    private Settings settings;
+
+    @Mock
     private Player player;
 
     @Test
@@ -55,6 +61,7 @@ class ProxyLoginRequestValidatorTest {
         UUID premiumUuid = UUID.randomUUID();
         PlayerAuth auth = PlayerAuth.builder().name("bobby").premiumUuid(premiumUuid).build();
         given(player.getName()).willReturn("Bobby");
+        given(settings.getProperty(PremiumSettings.ENABLE_PREMIUM)).willReturn(true);
         given(playerCache.getAuth("Bobby")).willReturn(auth);
 
         assertTrue(validator.validate(player, premiumUuid));
@@ -67,6 +74,7 @@ class ProxyLoginRequestValidatorTest {
         UUID forwardedUuid = UUID.randomUUID();
         PlayerAuth auth = PlayerAuth.builder().name("bobby").premiumUuid(storedUuid).build();
         given(player.getName()).willReturn("Bobby");
+        given(settings.getProperty(PremiumSettings.ENABLE_PREMIUM)).willReturn(true);
         given(playerCache.getAuth("Bobby")).willReturn(auth);
 
         assertFalse(validator.validate(player, forwardedUuid));
@@ -78,6 +86,7 @@ class ProxyLoginRequestValidatorTest {
         UUID pendingUuid = UUID.randomUUID();
         PlayerAuth auth = PlayerAuth.builder().name("bobby").build();
         given(player.getName()).willReturn("Bobby");
+        given(settings.getProperty(PremiumSettings.ENABLE_PREMIUM)).willReturn(true);
         given(playerCache.getAuth("Bobby")).willReturn(auth);
         given(pendingPremiumCache.removePending("Bobby")).willReturn(pendingUuid);
 
@@ -92,6 +101,7 @@ class ProxyLoginRequestValidatorTest {
         UUID forwardedUuid = UUID.randomUUID();
         PlayerAuth auth = PlayerAuth.builder().name("bobby").build();
         given(player.getName()).willReturn("Bobby");
+        given(settings.getProperty(PremiumSettings.ENABLE_PREMIUM)).willReturn(true);
         given(playerCache.getAuth("Bobby")).willReturn(auth);
         given(pendingPremiumCache.removePending("Bobby")).willReturn(null);
 
@@ -107,6 +117,7 @@ class ProxyLoginRequestValidatorTest {
         UUID forwardedUuid = UUID.randomUUID();
         PlayerAuth auth = PlayerAuth.builder().name("bobby").build();
         given(player.getName()).willReturn("Bobby");
+        given(settings.getProperty(PremiumSettings.ENABLE_PREMIUM)).willReturn(true);
         given(playerCache.getAuth("Bobby")).willReturn(auth);
         given(pendingPremiumCache.removePending("Bobby")).willReturn(pendingUuid);
 
@@ -114,5 +125,17 @@ class ProxyLoginRequestValidatorTest {
         verify(bungeeSender).sendPremiumUnset("Bobby");
         verify(messages).send(player, MessageKey.PREMIUM_PENDING_FAIL);
         verify(premiumService, never()).finalizePendingPremium(player, forwardedUuid);
+    }
+
+    @Test
+    void shouldRejectProxyPremiumClaimAndNotifyProxyWhenPremiumIsDisabled() {
+        UUID forwardedUuid = UUID.randomUUID();
+        given(player.getName()).willReturn("Bobby");
+        given(settings.getProperty(PremiumSettings.ENABLE_PREMIUM)).willReturn(false);
+
+        assertFalse(validator.validate(player, forwardedUuid));
+        verify(bungeeSender).sendPremiumUnset("Bobby");
+        verify(messages, never()).send(player, MessageKey.PREMIUM_PENDING_FAIL);
+        verifyNoInteractions(playerCache, dataSource, pendingPremiumCache, premiumService);
     }
 }
