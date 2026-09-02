@@ -14,6 +14,7 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.ProxyLoginRequestValidator;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.settings.properties.PremiumSettings;
 import fr.xephi.authme.util.UuidUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.Messenger;
@@ -42,6 +43,7 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
     private static final long MAX_AGE_MILLIS = 30_000L;
 
     private boolean isEnabled;
+    private boolean premiumEnabled;
     private String proxySharedSecret;
     private boolean channelRegistered;
 
@@ -63,6 +65,7 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
     public void reload(Settings settings) {
         this.proxySharedSecret = settings.getProperty(HooksSettings.PROXY_SHARED_SECRET);
         this.isEnabled = settings.getProperty(HooksSettings.BUNGEECORD);
+        this.premiumEnabled = settings.getProperty(PremiumSettings.ENABLE_PREMIUM);
         final Messenger messenger = plugin.getServer().getMessenger();
         if (messenger == null) {
             return;
@@ -112,22 +115,23 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
             logger.info("Proxy plugin '" + argument + "' has started and registered the authme:main channel");
             final String proxyName = argument;
             bukkitService.runTaskAsynchronously(() -> {
-                List<String> premiumNames = dataSource.getPremiumUsernames();
-                if (!premiumNames.isEmpty()) {
-                    bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
-                        // Re-fetch a carrier at send-time: the original player may have gone offline
-                        // during the async DB query.
-                        Player freshCarrier = bukkitService.getOnlinePlayers().stream()
-                            .findFirst().orElse(null);
-                        if (freshCarrier != null) {
-                            bungeeSender.sendPremiumList(freshCarrier, premiumNames);
-                            logger.info("Sent premium list (" + premiumNames.size() + " player(s)) to proxy '" + proxyName + "'");
-                        } else {
-                            logger.warning("Cannot send premium list to proxy '" + proxyName
-                                + "': no online player available as carrier.");
-                        }
-                    });
-                }
+                // Always send the list, even when it is empty: an empty list is authoritative and
+                // lets the proxy replace a stale premium cache. With premium disabled, stored
+                // premium names must not reach the proxy, or it keeps verifying those players.
+                List<String> premiumNames = premiumEnabled ? dataSource.getPremiumUsernames() : List.of();
+                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
+                    // Re-fetch a carrier at send-time: the original player may have gone offline
+                    // during the async DB query.
+                    Player freshCarrier = bukkitService.getOnlinePlayers().stream()
+                        .findFirst().orElse(null);
+                    if (freshCarrier != null) {
+                        bungeeSender.sendPremiumList(freshCarrier, premiumNames);
+                        logger.info("Sent premium list (" + premiumNames.size() + " player(s)) to proxy '" + proxyName + "'");
+                    } else {
+                        logger.warning("Cannot send premium list to proxy '" + proxyName
+                            + "': no online player available as carrier.");
+                    }
+                });
             });
             return;
         }
