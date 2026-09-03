@@ -85,14 +85,14 @@ class AuthMeApiTest {
     void shouldReturnIfPlayerIsAuthenticated() {
         // given
         String name = "Bobby";
-        Player player = mockPlayerWithName(name);
-        given(playerCache.isAuthenticated(name)).willReturn(true);
+        Player player = mock(Player.class);
+        given(playerCache.isAuthenticated(player)).willReturn(true);
 
         // when
         boolean result = api.isAuthenticated(player);
 
         // then
-        verify(playerCache).isAuthenticated(name);
+        verify(playerCache).isAuthenticated(player);
         assertThat(result, equalTo(true));
     }
 
@@ -129,7 +129,7 @@ class AuthMeApiTest {
     void shouldGetLastLocation() {
         // given
         String name = "Gary";
-        Player player = mockPlayerWithName(name);
+        Player player = mock(Player.class);
         PlayerAuth auth = PlayerAuth.builder().name(name)
             .locWorld("world")
             .locX(12.4)
@@ -138,7 +138,7 @@ class AuthMeApiTest {
             .locYaw(3.41f)
             .locPitch(0.29f)
             .build();
-        given(playerCache.getAuth(name)).willReturn(auth);
+        given(playerCache.getAuth(player)).willReturn(auth);
         Server server = mock(Server.class);
         ReflectionTestUtils.setField(Bukkit.class, null, "server", server);
         World world = mock(World.class);
@@ -272,8 +272,8 @@ class AuthMeApiTest {
     void shouldReturnNullForUnavailablePlayer() {
         // given
         String name = "Numan";
-        Player player = mockPlayerWithName(name);
-        given(playerCache.getAuth(name)).willReturn(null);
+        Player player = mock(Player.class);
+        given(playerCache.getAuth(player)).willReturn(null);
 
         // when
         Location result = api.getLastLocation(player);

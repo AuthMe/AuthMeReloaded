@@ -103,13 +103,13 @@ class AsynchronousLoginTest {
         // given
         String name = "bobby";
         Player player = mockPlayer(name);
-        given(playerCache.isAuthenticated(name)).willReturn(true);
+        given(playerCache.isAuthenticated(player)).willReturn(true);
 
         // when
         asynchronousLogin.forceLogin(player);
 
         // then
-        verify(playerCache, only()).isAuthenticated(name);
+        verify(playerCache, only()).isAuthenticated(player);
         verify(commonService).send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
         verifyNoInteractions(dataSource);
     }
@@ -119,14 +119,14 @@ class AsynchronousLoginTest {
         // given
         String name = "oscar";
         Player player = mockPlayer(name);
-        given(playerCache.isAuthenticated(name)).willReturn(false);
+        given(playerCache.isAuthenticated(player)).willReturn(false);
         given(dataSource.getAuth(name)).willReturn(null);
 
         // when
         asynchronousLogin.forceLogin(player);
 
         // then
-        verify(playerCache, only()).isAuthenticated(name);
+        verify(playerCache, only()).isAuthenticated(player);
         verify(commonService).send(player, MessageKey.UNKNOWN_USER);
         verify(dataSource, only()).getAuth(name);
     }
@@ -136,7 +136,7 @@ class AsynchronousLoginTest {
         // given
         String name = "oscar";
         Player player = mockPlayer(name);
-        given(playerCache.isAuthenticated(name)).willReturn(false);
+        given(playerCache.isAuthenticated(player)).willReturn(false);
         int groupId = 13;
         PlayerAuth auth = PlayerAuth.builder().name(name).groupId(groupId).build();
         given(dataSource.getAuth(name)).willReturn(auth);
@@ -147,7 +147,7 @@ class AsynchronousLoginTest {
         asynchronousLogin.forceLogin(player);
 
         // then
-        verify(playerCache, only()).isAuthenticated(name);
+        verify(playerCache, only()).isAuthenticated(player);
         verify(commonService).send(player, MessageKey.ACCOUNT_NOT_ACTIVATED);
         verify(dataSource, only()).getAuth(name);
     }
@@ -159,7 +159,7 @@ class AsynchronousLoginTest {
         String ip = "1.1.1.245";
         Player player = mockPlayer(name);
         TestHelper.mockIpAddressToPlayer(player, ip);
-        given(playerCache.isAuthenticated(name)).willReturn(false);
+        given(playerCache.isAuthenticated(player)).willReturn(false);
         PlayerAuth auth = PlayerAuth.builder().name(name).build();
         given(dataSource.getAuth(name)).willReturn(auth);
         given(commonService.getProperty(DatabaseSettings.MYSQL_COL_GROUP)).willReturn("");
@@ -169,7 +169,7 @@ class AsynchronousLoginTest {
         asynchronousLogin.forceLogin(player);
 
         // then
-        verify(playerCache, only()).isAuthenticated(name);
+        verify(playerCache, only()).isAuthenticated(player);
         verify(commonService).send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
         verify(dataSource, only()).getAuth(name);
         verify(asynchronousLogin).hasReachedMaxLoggedInPlayersForIp(player, ip);
@@ -182,7 +182,7 @@ class AsynchronousLoginTest {
         String ip = "1.1.1.245";
         Player player = mockPlayer(name);
         TestHelper.mockIpAddressToPlayer(player, ip);
-        given(playerCache.isAuthenticated(name)).willReturn(false);
+        given(playerCache.isAuthenticated(player)).willReturn(false);
         PlayerAuth auth = PlayerAuth.builder().name(name).build();
         given(dataSource.getAuth(name)).willReturn(auth);
         given(commonService.getProperty(DatabaseSettings.MYSQL_COL_GROUP)).willReturn("");
@@ -197,7 +197,7 @@ class AsynchronousLoginTest {
         asynchronousLogin.forceLogin(player);
 
         // then
-        verify(playerCache, only()).isAuthenticated(name);
+        verify(playerCache, only()).isAuthenticated(player);
         verify(dataSource, only()).getAuth(name);
         verify(asynchronousLogin).hasReachedMaxLoggedInPlayersForIp(player, ip);
     }
@@ -273,7 +273,7 @@ class AsynchronousLoginTest {
         TestHelper.mockIpAddressToPlayer(player, "203.0.113.5");
         PlayerAuth auth = PlayerAuth.builder().name("bobby").totpKey("secret").build();
         LimboPlayer limboPlayer = mock(LimboPlayer.class);
-        given(playerCache.isAuthenticated("bobby")).willReturn(false, false);
+        given(playerCache.isAuthenticated(player)).willReturn(false, false);
         given(dataSource.getAuth("bobby")).willReturn(auth);
         given(commonService.getProperty(DatabaseSettings.MYSQL_COL_GROUP)).willReturn("");
         given(commonService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(0);
@@ -307,7 +307,7 @@ class AsynchronousLoginTest {
         TestHelper.mockIpAddressToPlayer(player, "203.0.113.5");
         PlayerAuth auth = PlayerAuth.builder().name("bobby").totpKey("secret").build();
         LimboPlayer limboPlayer = mock(LimboPlayer.class);
-        given(playerCache.isAuthenticated("bobby")).willReturn(false);
+        given(playerCache.isAuthenticated(player)).willReturn(false);
         given(dataSource.getAuth("bobby")).willReturn(auth);
         given(commonService.getProperty(DatabaseSettings.MYSQL_COL_GROUP)).willReturn("");
         given(commonService.getProperty(RestrictionSettings.MAX_LOGIN_PER_IP)).willReturn(0);

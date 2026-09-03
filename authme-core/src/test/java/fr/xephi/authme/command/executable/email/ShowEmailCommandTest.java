@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import java.util.Collections;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -44,7 +45,7 @@ public class ShowEmailCommandTest {
         // given
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(USERNAME);
-        given(playerCache.getAuth(USERNAME)).willReturn(newAuthWithEmail(CURRENT_EMAIL));
+        given(playerCache.getAuth(any(Player.class))).willReturn(newAuthWithEmail(CURRENT_EMAIL));
         given(commonService.getProperty(SecuritySettings.USE_EMAIL_MASKING)).willReturn(false);
 
         // when
@@ -59,7 +60,7 @@ public class ShowEmailCommandTest {
         // given
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(USERNAME);
-        given(playerCache.getAuth(USERNAME)).willReturn(newAuthWithEmail(CURRENT_EMAIL));
+        given(playerCache.getAuth(any(Player.class))).willReturn(newAuthWithEmail(CURRENT_EMAIL));
         given(commonService.getProperty(SecuritySettings.USE_EMAIL_MASKING)).willReturn(true);
 
         // when
@@ -74,7 +75,7 @@ public class ShowEmailCommandTest {
         // given
         Player sender = mock(Player.class);
         given(sender.getName()).willReturn(USERNAME);
-        given(playerCache.getAuth(USERNAME)).willReturn(newAuthWithNoEmail());
+        given(playerCache.getAuth(any(Player.class))).willReturn(newAuthWithNoEmail());
 
         // when
         command.executeCommand(sender, Collections.emptyList());
@@ -96,5 +97,3 @@ public class ShowEmailCommandTest {
             .build();
     }
 }
-
-

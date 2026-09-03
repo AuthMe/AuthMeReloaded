@@ -43,7 +43,7 @@ public class AddTotpCommandTest {
     public void shouldHandleNonLoggedInUser() {
         // given
         Player player = mockPlayerWithName("bob");
-        given(playerCache.getAuth("bob")).willReturn(null);
+        given(playerCache.getAuth(player)).willReturn(null);
 
         // when
         addTotpCommand.runCommand(player, Collections.emptyList());
@@ -59,7 +59,7 @@ public class AddTotpCommandTest {
         Player player = mockPlayerWithName("arend");
         PlayerAuth auth = PlayerAuth.builder().name("arend")
             .totpKey("TOTP2345").build();
-        given(playerCache.getAuth("arend")).willReturn(auth);
+        given(playerCache.getAuth(player)).willReturn(auth);
 
         // when
         addTotpCommand.runCommand(player, Collections.emptyList());
@@ -74,7 +74,7 @@ public class AddTotpCommandTest {
         // given
         Player player = mockPlayerWithName("charles");
         PlayerAuth auth = PlayerAuth.builder().name("charles").build();
-        given(playerCache.getAuth("charles")).willReturn(auth);
+        given(playerCache.getAuth(player)).willReturn(auth);
 
         TotpGenerationResult generationResult = new TotpGenerationResult(
             "777Key214", "http://example.org/qr-code/link");
@@ -94,5 +94,4 @@ public class AddTotpCommandTest {
         return player;
     }
 }
-
 

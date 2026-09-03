@@ -62,7 +62,7 @@ public class ConfirmTotpCommandTest {
         String playerName = "George";
         given(player.getName()).willReturn(playerName);
         PlayerAuth auth = PlayerAuth.builder().name(playerName).build();
-        given(playerCache.getAuth(playerName)).willReturn(auth);
+        given(playerCache.getAuth(player)).willReturn(auth);
         String generatedTotpKey = "totp-key";
         given(generateTotpService.getGeneratedTotpKey(player)).willReturn(new TotpGenerationResult(generatedTotpKey, "url-not-relevant"));
         String totpCode = "954321";
@@ -88,7 +88,7 @@ public class ConfirmTotpCommandTest {
         String playerName = "George";
         given(player.getName()).willReturn(playerName);
         PlayerAuth auth = PlayerAuth.builder().name(playerName).build();
-        given(playerCache.getAuth(playerName)).willReturn(auth);
+        given(playerCache.getAuth(player)).willReturn(auth);
         given(generateTotpService.getGeneratedTotpKey(player)).willReturn(new TotpGenerationResult("totp-key", "url-not-relevant"));
         String totpCode = "754321";
         given(generateTotpService.isTotpCodeCorrectForGeneratedTotpKey(player, totpCode)).willReturn(false);
@@ -99,7 +99,7 @@ public class ConfirmTotpCommandTest {
         // then
         verify(generateTotpService).isTotpCodeCorrectForGeneratedTotpKey(player, totpCode);
         verify(generateTotpService, never()).removeGenerateTotpKey(any(Player.class));
-        verify(playerCache, only()).getAuth(playerName);
+        verify(playerCache, only()).getAuth(player);
         verify(messages).send(player, MessageKey.TWO_FACTOR_ENABLE_ERROR_WRONG_CODE);
         verifyNoInteractions(dataSource);
     }
@@ -111,7 +111,7 @@ public class ConfirmTotpCommandTest {
         String playerName = "George";
         given(player.getName()).willReturn(playerName);
         PlayerAuth auth = PlayerAuth.builder().name(playerName).build();
-        given(playerCache.getAuth(playerName)).willReturn(auth);
+        given(playerCache.getAuth(player)).willReturn(auth);
         given(generateTotpService.getGeneratedTotpKey(player)).willReturn(null);
 
         // when
@@ -119,7 +119,7 @@ public class ConfirmTotpCommandTest {
 
         // then
         verify(generateTotpService, only()).getGeneratedTotpKey(player);
-        verify(playerCache, only()).getAuth(playerName);
+        verify(playerCache, only()).getAuth(player);
         verify(messages).send(player, MessageKey.TWO_FACTOR_ENABLE_ERROR_NO_CODE);
         verifyNoInteractions(dataSource);
     }
@@ -131,13 +131,13 @@ public class ConfirmTotpCommandTest {
         String playerName = "George";
         given(player.getName()).willReturn(playerName);
         PlayerAuth auth = PlayerAuth.builder().name(playerName).totpKey("A987234").build();
-        given(playerCache.getAuth(playerName)).willReturn(auth);
+        given(playerCache.getAuth(player)).willReturn(auth);
 
         // when
         command.runCommand(player, Collections.singletonList("871634"));
 
         // then
-        verify(playerCache, only()).getAuth(playerName);
+        verify(playerCache, only()).getAuth(player);
         verifyNoInteractions(generateTotpService, dataSource);
         verify(messages).send(player, MessageKey.TWO_FACTOR_ALREADY_ENABLED);
     }
@@ -148,16 +148,14 @@ public class ConfirmTotpCommandTest {
         Player player = mock(Player.class);
         String playerName = "George";
         given(player.getName()).willReturn(playerName);
-        given(playerCache.getAuth(playerName)).willReturn(null);
+        given(playerCache.getAuth(player)).willReturn(null);
 
         // when
         command.runCommand(player, Collections.singletonList("984685"));
 
         // then
-        verify(playerCache, only()).getAuth(playerName);
+        verify(playerCache, only()).getAuth(player);
         verifyNoInteractions(generateTotpService, dataSource);
         verify(messages).send(player, MessageKey.NOT_LOGGED_IN);
     }
 }
-
-

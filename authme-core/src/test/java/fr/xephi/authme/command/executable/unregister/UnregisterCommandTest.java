@@ -59,13 +59,13 @@ public class UnregisterCommandTest {
         String name = "player77";
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
-        given(playerCache.isAuthenticated(name)).willReturn(false);
+        given(playerCache.isAuthenticated(player)).willReturn(false);
 
         // when
         command.executeCommand(player, Collections.singletonList(password));
 
         // then
-        verify(playerCache).isAuthenticated(name);
+        verify(playerCache).isAuthenticated(player);
         verify(commonService).send(player, MessageKey.NOT_LOGGED_IN);
         verifyNoInteractions(management);
     }
@@ -76,14 +76,14 @@ public class UnregisterCommandTest {
         String name = "asldjf";
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
-        given(playerCache.isAuthenticated(name)).willReturn(true);
+        given(playerCache.isAuthenticated(player)).willReturn(true);
         given(codeManager.isVerificationRequired(player)).willReturn(true);
 
         // when
         command.executeCommand(player, Collections.singletonList("blergh"));
 
         // then
-        verify(playerCache).isAuthenticated(name);
+        verify(playerCache).isAuthenticated(player);
         verify(codeManager).codeExistOrGenerateNew(name);
         verify(commonService).send(player, MessageKey.VERIFICATION_CODE_REQUIRED);
         verifyNoInteractions(management);
@@ -96,14 +96,14 @@ public class UnregisterCommandTest {
         String name = "jas0n_";
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
-        given(playerCache.isAuthenticated(name)).willReturn(true);
+        given(playerCache.isAuthenticated(player)).willReturn(true);
         given(codeManager.isVerificationRequired(player)).willReturn(false);
 
         // when
         command.executeCommand(player, Collections.singletonList(password));
 
         // then
-        verify(playerCache).isAuthenticated(name);
+        verify(playerCache).isAuthenticated(player);
         verify(management).performUnregister(player, password);
         verify(codeManager).isVerificationRequired(player);
     }
@@ -127,5 +127,3 @@ public class UnregisterCommandTest {
         assertThat(command.getArgumentsMismatchMessage(), equalTo(MessageKey.USAGE_UNREGISTER));
     }
 }
-
-

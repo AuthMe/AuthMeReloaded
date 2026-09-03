@@ -125,7 +125,7 @@ public class AsynchronousJoinTest {
         // given
         Player player = mockPlayer("Bobby");
         setUpRegisteredJoin(player);
-        given(playerCache.isAuthenticated("Bobby")).willReturn(false);
+        given(playerCache.isAuthenticated(player)).willReturn(false);
         given(service.getProperty(RegistrationSettings.USE_DIALOG_UI)).willReturn(true);
         given(dialogAdapter.isDialogSupported()).willReturn(true);
         given(dialogWindowService.createLoginDialog(player)).willReturn(createDialogSpec("Login", "Login"));
@@ -144,7 +144,7 @@ public class AsynchronousJoinTest {
         // given — player is already authenticated when the sync limbo task fires
         Player player = mockPlayer("Bobby");
         setUpRegisteredJoin(player);
-        given(playerCache.isAuthenticated("Bobby")).willReturn(true);
+        given(playerCache.isAuthenticated(player)).willReturn(true);
 
         // when
         asynchronousJoin.processJoin(player);
@@ -165,7 +165,7 @@ public class AsynchronousJoinTest {
         Player player = mockPlayer("Bobby");
         setUpRegisteredJoin(player);
         given(player.isOnline()).willReturn(true);
-        given(playerCache.isAuthenticated("Bobby")).willReturn(false, false, true);
+        given(playerCache.isAuthenticated(player)).willReturn(false, false, false, true);
         given(service.getProperty(RegistrationSettings.USE_DIALOG_UI)).willReturn(true);
         given(dialogAdapter.isDialogSupported()).willReturn(true);
         given(dialogWindowService.createLoginDialog(player)).willReturn(createDialogSpec("Login", "Login"));
@@ -256,7 +256,7 @@ public class AsynchronousJoinTest {
         given(player.getUniqueId()).willReturn(playerId);
         given(preJoinDialogService.consumePendingLoginPassword(playerId)).willReturn("hunter2");
         given(preJoinDialogService.consumeSkipPostJoinDialog(playerId)).willReturn(false);
-        given(playerCache.isAuthenticated("Bobby")).willReturn(false);
+        given(playerCache.isAuthenticated(player)).willReturn(false);
 
         // when
         asynchronousJoin.processJoin(player);
@@ -372,7 +372,7 @@ public class AsynchronousJoinTest {
         java.util.UUID playerId = java.util.UUID.randomUUID();
         given(player.getUniqueId()).willReturn(playerId);
         given(preJoinDialogService.consumeSkipPostJoinDialog(playerId)).willReturn(true);
-        given(playerCache.isAuthenticated("Bobby")).willReturn(false);
+        given(playerCache.isAuthenticated(player)).willReturn(false);
         given(service.getProperty(RegistrationSettings.USE_DIALOG_UI)).willReturn(true);
         given(dialogAdapter.isDialogSupported()).willReturn(true);
 
