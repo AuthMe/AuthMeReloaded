@@ -16,6 +16,7 @@ import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.DialogWindowService;
+import fr.xephi.authme.service.PendingConnectionRegistry;
 import fr.xephi.authme.service.PendingPremiumCache;
 import fr.xephi.authme.service.PreJoinDialogService;
 import fr.xephi.authme.service.PremiumLoginVerifier;
@@ -30,6 +31,7 @@ import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.dialog.DialogResponseView;
 import io.papermc.paper.event.connection.configuration.AsyncPlayerConnectionConfigureEvent;
 import io.papermc.paper.event.player.PlayerCustomClickEvent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -51,6 +53,8 @@ import java.util.concurrent.ConcurrentMap;
  * Handles Paper/Folia dialog flows that happen during the configuration phase.
  */
 public class PaperDialogFlowListener implements Listener {
+
+    private static final LegacyComponentSerializer LEGACY_SERIALIZER = LegacyComponentSerializer.legacySection();
 
     private final ConcurrentMap<UUID, CompletableFuture<String>> pendingLoginResponses = new ConcurrentHashMap<>();
     private final ConcurrentMap<UUID, CompletableFuture<String>> pendingRegisterResponses = new ConcurrentHashMap<>();
@@ -75,6 +79,9 @@ public class PaperDialogFlowListener implements Listener {
 
     @Inject
     private PreJoinDialogService preJoinDialogService;
+
+    @Inject
+    private PendingConnectionRegistry pendingConnectionRegistry;
 
     @Inject
     private PendingPremiumCache pendingPremiumCache;
@@ -102,6 +109,13 @@ public class PaperDialogFlowListener implements Listener {
         UUID playerId = profile.getId();
         String playerName = profile.getName();
         if (playerId == null || playerName == null) {
+            return;
+        }
+
+        // Clearing the state here would hand this connection the pending login of the one in the dialog
+        if (hasDialogInFlight(playerId)) {
+            connection.disconnect(LEGACY_SERIALIZER.deserialize(
+                messages.retrieveSingle(playerName, MessageKey.USERNAME_ALREADY_ONLINE_ERROR)));
             return;
         }
 
@@ -192,6 +206,12 @@ public class PaperDialogFlowListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerConnectionClose(PlayerConnectionCloseEvent event) {
+        // Offline UUIDs are derived from the name, so a refused duplicate closing must not wipe the state
+        String playerName = event.getPlayerName();
+        if (playerName != null && pendingConnectionRegistry.hasLiveClaim(playerName)) {
+            return;
+        }
+
         UUID playerId = event.getPlayerUniqueId();
         pendingLoginResponses.remove(playerId);
         pendingRegisterResponses.remove(playerId);
@@ -396,6 +416,15 @@ public class PaperDialogFlowListener implements Listener {
         if (registerResponse != null) {
             registerResponse.complete(kickMessage);
         }
+    }
+
+    private boolean hasDialogInFlight(UUID playerId) {
+        return isInFlight(pendingLoginResponses.get(playerId))
+            || isInFlight(pendingRegisterResponses.get(playerId));
+    }
+
+    private static boolean isInFlight(CompletableFuture<String> response) {
+        return response != null && !response.isDone();
     }
 
     private boolean shouldSkipPreJoinDialogForPremium(PlayerAuth auth, String playerName, UUID playerId) {

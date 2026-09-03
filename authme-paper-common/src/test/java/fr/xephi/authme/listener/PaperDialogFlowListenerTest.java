@@ -1,5 +1,6 @@
 package fr.xephi.authme.listener;
 
+import com.destroystokyo.paper.event.player.PlayerConnectionCloseEvent;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import fr.xephi.authme.data.ProxySessionManager;
 import fr.xephi.authme.data.auth.PlayerCache;
@@ -15,6 +16,7 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.DialogWindowService;
+import fr.xephi.authme.service.PendingConnectionRegistry;
 import fr.xephi.authme.service.PreJoinDialogService;
 import fr.xephi.authme.service.PremiumLoginVerifier;
 import fr.xephi.authme.service.SessionService;
@@ -28,9 +30,14 @@ import io.papermc.paper.event.connection.configuration.AsyncPlayerConnectionConf
 import io.papermc.paper.event.player.PlayerCustomClickEvent;
 import fr.xephi.authme.platform.PaperDialogHelper;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -546,6 +553,109 @@ public class PaperDialogFlowListenerTest {
             .getDeclaredMethod("shouldSkipPreJoinDialogForPremium", PlayerAuth.class, String.class, UUID.class);
         method.setAccessible(true);
         return (boolean) method.invoke(listener, auth, playerName, playerId);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"pendingLoginResponses", "pendingRegisterResponses"})
+    @SuppressWarnings("unchecked")
+    public void shouldRefuseSecondConnectionWhileDialogOfFirstOneIsInFlight(String pendingFieldName)
+        throws Exception {
+        PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        CommonService commonService = mock(CommonService.class);
+        Messages messages = mock(Messages.class);
+        PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
+        PlayerCache playerCache = mock(PlayerCache.class);
+        setField(listener, "commonService", commonService);
+        setField(listener, "messages", messages);
+        setField(listener, "preJoinDialogService", preJoinDialogService);
+        setField(listener, "playerCache", playerCache);
+
+        given(commonService.getProperty(RegistrationSettings.USE_PREJOIN_DIALOG_UI)).willReturn(true);
+        given(messages.retrieveSingle("Bobby", MessageKey.USERNAME_ALREADY_ONLINE_ERROR))
+            .willReturn("Already online");
+        // Only reached if the guard stops firing, so that a regression fails on the assertion below
+        given(commonService.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(Set.of());
+        given(playerCache.isAuthenticated("bobby")).willReturn(true);
+
+        // Offline UUIDs are derived from the name, so both connections resolve to the same profile id
+        UUID playerId = UUID.randomUUID();
+        CompletableFuture<String> inFlight = new CompletableFuture<>();
+        Field pendingField = PaperDialogFlowListener.class.getDeclaredField(pendingFieldName);
+        pendingField.setAccessible(true);
+        ConcurrentMap<UUID, CompletableFuture<String>> pendingResponses =
+            (ConcurrentMap<UUID, CompletableFuture<String>>) pendingField.get(listener);
+        pendingResponses.put(playerId, inFlight);
+
+        PlayerProfile profile = mock(PlayerProfile.class);
+        given(profile.getId()).willReturn(playerId);
+        given(profile.getName()).willReturn("Bobby");
+
+        PlayerConfigurationConnection connection = mock(PlayerConfigurationConnection.class);
+        given(connection.getProfile()).willReturn(profile);
+
+        AsyncPlayerConnectionConfigureEvent event = mock(AsyncPlayerConnectionConfigureEvent.class);
+        given(event.getConnection()).willReturn(connection);
+
+        listener.onPlayerConfigure(event);
+
+        ArgumentCaptor<Component> kickMessage = ArgumentCaptor.forClass(Component.class);
+        verify(connection).disconnect(kickMessage.capture());
+        assertThat(LegacyComponentSerializer.legacySection().serialize(kickMessage.getValue()),
+            is("Already online"));
+        assertThat(pendingResponses.get(playerId), is(inFlight));
+        assertThat(inFlight.isDone(), is(false));
+        verifyNoInteractions(preJoinDialogService);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldKeepDialogStateWhenAnotherConnectionOnTheSameNameCloses() throws Exception {
+        PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
+        PendingConnectionRegistry pendingConnectionRegistry = mock(PendingConnectionRegistry.class);
+        setField(listener, "preJoinDialogService", preJoinDialogService);
+        setField(listener, "pendingConnectionRegistry", pendingConnectionRegistry);
+        given(pendingConnectionRegistry.hasLiveClaim("Bobby")).willReturn(true);
+
+        UUID playerId = UUID.randomUUID();
+        CompletableFuture<String> inFlight = new CompletableFuture<>();
+        ConcurrentMap<UUID, CompletableFuture<String>> pendingLoginResponses = pendingLoginResponses(listener);
+        pendingLoginResponses.put(playerId, inFlight);
+
+        listener.onPlayerConnectionClose(new PlayerConnectionCloseEvent(
+            playerId, "Bobby", InetAddress.getLoopbackAddress(), false));
+
+        assertThat(pendingLoginResponses.get(playerId), is(inFlight));
+        verifyNoInteractions(preJoinDialogService);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldClearDialogStateWhenNoConnectionHoldsTheNameAnymore() throws Exception {
+        PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
+        PendingConnectionRegistry pendingConnectionRegistry = mock(PendingConnectionRegistry.class);
+        setField(listener, "preJoinDialogService", preJoinDialogService);
+        setField(listener, "pendingConnectionRegistry", pendingConnectionRegistry);
+        given(pendingConnectionRegistry.hasLiveClaim("Bobby")).willReturn(false);
+
+        UUID playerId = UUID.randomUUID();
+        ConcurrentMap<UUID, CompletableFuture<String>> pendingLoginResponses = pendingLoginResponses(listener);
+        pendingLoginResponses.put(playerId, new CompletableFuture<>());
+
+        listener.onPlayerConnectionClose(new PlayerConnectionCloseEvent(
+            playerId, "Bobby", InetAddress.getLoopbackAddress(), false));
+
+        assertThat(pendingLoginResponses.containsKey(playerId), is(false));
+        verify(preJoinDialogService).clear(playerId);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static ConcurrentMap<UUID, CompletableFuture<String>> pendingLoginResponses(PaperDialogFlowListener listener)
+        throws ReflectiveOperationException {
+        Field field = PaperDialogFlowListener.class.getDeclaredField("pendingLoginResponses");
+        field.setAccessible(true);
+        return (ConcurrentMap<UUID, CompletableFuture<String>>) field.get(listener);
     }
 
     private static void setField(Object target, String fieldName, Object value) throws ReflectiveOperationException {
