@@ -38,7 +38,7 @@ public class ChangePasswordCommand extends PlayerCommand {
     public void runCommand(Player player, List<String> arguments) {
         String name = player.getName().toLowerCase(Locale.ROOT);
 
-        if (!playerCache.isAuthenticated(name)) {
+        if (!playerCache.isAuthenticated(player)) {
             commonService.send(player, MessageKey.NOT_LOGGED_IN);
             return;
         }

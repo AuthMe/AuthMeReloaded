@@ -82,7 +82,7 @@ public class PacketEventsService implements SettingsDependent {
                 inventoryProtectionRegistered = true;
                 // Send blank packets to online unauthenticated players (reload scenario)
                 for (Player player : bukkitService.getOnlinePlayers()) {
-                    if (!playerCache.isAuthenticated(player.getName())
+                    if (!playerCache.isAuthenticated(player)
                             && dataSource.isAuthAvailable(player.getName())) {
                         packetInterceptionAdapter.sendBlankInventoryPacket(player);
                     }
@@ -158,7 +158,7 @@ public class PacketEventsService implements SettingsDependent {
             packetInterceptionAdapter.unregisterInventoryProtection();
             inventoryProtectionRegistered = false;
             for (Player onlinePlayer : bukkitService.getOnlinePlayers()) {
-                if (!playerCache.isAuthenticated(onlinePlayer.getName())) {
+                if (!playerCache.isAuthenticated(onlinePlayer)) {
                     onlinePlayer.updateInventory();
                 }
             }

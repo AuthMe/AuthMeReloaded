@@ -27,7 +27,7 @@ public class TimeoutTask implements Runnable {
 
     @Override
     public void run() {
-        if (!playerCache.isAuthenticated(player.getName())) {
+        if (!playerCache.isAuthenticated(player)) {
             player.kickPlayer(message);
         }
     }

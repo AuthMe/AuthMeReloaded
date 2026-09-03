@@ -45,7 +45,7 @@ public class InventoryPacketListener extends PacketListenerAbstract {
 
     private void cancelIfShouldHide(PacketSendEvent event) {
         Player player = event.getPlayer();
-        if (player != null && !playerCache.isAuthenticated(player.getName())
+        if (player != null && !playerCache.isAuthenticated(player)
                 && dataSource.isAuthAvailable(player.getName())) {
             event.setCancelled(true);
         }

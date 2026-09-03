@@ -45,7 +45,7 @@ public class TotpCodeCommand extends PlayerCommand {
 
     @Override
     protected void runCommand(Player player, List<String> arguments) {
-        if (playerCache.isAuthenticated(player.getName())) {
+        if (playerCache.isAuthenticated(player)) {
             messages.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
             return;
         }
