@@ -48,6 +48,7 @@ import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceTo
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskOptionallyAsync;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doAnswer;
@@ -118,6 +119,8 @@ public class AsynchronousJoinTest {
         setBukkitServiceToRunTaskOptionallyAsync(bukkitService);
         setBukkitServiceToRunTaskLater(bukkitService);
         given(service.getProperty(PremiumSettings.ENABLE_PREMIUM)).willReturn(false);
+        given(preJoinDialogService.consumeSession(anyString()))
+            .willReturn(PreJoinDialogService.PendingDialogState.NONE);
     }
 
     @Test
@@ -231,9 +234,8 @@ public class AsynchronousJoinTest {
         // but by the time processJoin() runs the proxy session is available; the kick must be discarded.
         Player player = mockPlayer("Bobby");
         setUpRegisteredJoin(player);
-        UUID playerId = UUID.randomUUID();
-        given(player.getUniqueId()).willReturn(playerId);
-        given(preJoinDialogService.consumePendingKickMessage(playerId)).willReturn("You have canceled the login.");
+        givenPendingDialogState(new PreJoinDialogService.PendingDialogState(
+            null, null, null, false, false, "You have canceled the login."));
         given(proxySessionManager.consumeLoginRequest("bobby"))
             .willReturn(new ProxySessionManager.ProxyLoginRequest("bobby", null));
         given(proxyLoginRequestValidator.validate(player, null)).willReturn(true);
@@ -252,10 +254,8 @@ public class AsynchronousJoinTest {
         // given
         Player player = mockPlayer("Bobby");
         setUpRegisteredJoin(player);
-        java.util.UUID playerId = java.util.UUID.randomUUID();
-        given(player.getUniqueId()).willReturn(playerId);
-        given(preJoinDialogService.consumePendingLoginPassword(playerId)).willReturn("hunter2");
-        given(preJoinDialogService.consumeSkipPostJoinDialog(playerId)).willReturn(false);
+        givenPendingDialogState(new PreJoinDialogService.PendingDialogState(
+            "hunter2", null, null, false, false, null));
         given(playerCache.isAuthenticated("Bobby")).willReturn(false);
 
         // when
@@ -350,9 +350,8 @@ public class AsynchronousJoinTest {
         // given
         Player player = mockPlayer("Bobby");
         setUpRegisteredJoin(player);
-        java.util.UUID playerId = java.util.UUID.randomUUID();
-        given(player.getUniqueId()).willReturn(playerId);
-        given(preJoinDialogService.consumePendingForceLogin(playerId)).willReturn(true);
+        givenPendingDialogState(new PreJoinDialogService.PendingDialogState(
+            null, null, null, false, true, null));
 
         // when
         asynchronousJoin.processJoin(player);
@@ -369,9 +368,8 @@ public class AsynchronousJoinTest {
         // given
         Player player = mockPlayer("Bobby");
         setUpRegisteredJoin(player);
-        java.util.UUID playerId = java.util.UUID.randomUUID();
-        given(player.getUniqueId()).willReturn(playerId);
-        given(preJoinDialogService.consumeSkipPostJoinDialog(playerId)).willReturn(true);
+        givenPendingDialogState(new PreJoinDialogService.PendingDialogState(
+            null, null, null, true, false, null));
         given(playerCache.isAuthenticated("Bobby")).willReturn(false);
         given(service.getProperty(RegistrationSettings.USE_DIALOG_UI)).willReturn(true);
         given(dialogAdapter.isDialogSupported()).willReturn(true);
@@ -382,6 +380,10 @@ public class AsynchronousJoinTest {
         // then
         verify(limboService).createLimboPlayer(player, true);
         verify(dialogAdapter, never()).showLoginDialog(eq(player), any(DialogWindowSpec.class));
+    }
+
+    private void givenPendingDialogState(PreJoinDialogService.PendingDialogState state) {
+        given(preJoinDialogService.consumeSession("bobby")).willReturn(state);
     }
 
     private void setUpRegisteredJoin(Player player) {
