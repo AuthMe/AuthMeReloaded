@@ -33,11 +33,6 @@ public class PendingConnectionRegistry {
         return claim != null && !claim.isStale() && claim.isHeldBy(connectionKey(connection));
     }
 
-    public boolean hasLiveClaim(String name) {
-        Claim claim = claims.get(normalize(name));
-        return claim != null && !claim.isStale();
-    }
-
     public void release(String name) {
         claims.remove(normalize(name));
     }
