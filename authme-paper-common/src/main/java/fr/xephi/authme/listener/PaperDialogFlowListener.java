@@ -52,8 +52,13 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class PaperDialogFlowListener implements Listener {
 
-    private final ConcurrentMap<UUID, CompletableFuture<String>> pendingLoginResponses = new ConcurrentHashMap<>();
-    private final ConcurrentMap<UUID, CompletableFuture<String>> pendingRegisterResponses = new ConcurrentHashMap<>();
+    // Map session id (returned by PreJoinDialogService.registerPreJoinFuture) -> future
+    private final ConcurrentMap<Long, CompletableFuture<String>> pendingLoginResponses = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Long, CompletableFuture<String>> pendingRegisterResponses = new ConcurrentHashMap<>();
+    // Map connection object -> session id so event handlers can resolve the correct session
+    // Note: multiple concurrent connections for the same player name/UUID may exist (e.g. proxy), so we must
+    // track sessions by connection object
+    private final ConcurrentMap<PlayerConfigurationConnection, Long> connectionSessions = new ConcurrentHashMap<>();
 
     @Inject
     private CommonService commonService;
@@ -105,9 +110,10 @@ public class PaperDialogFlowListener implements Listener {
             return;
         }
 
-        pendingLoginResponses.remove(playerId);
-        pendingRegisterResponses.remove(playerId);
-        preJoinDialogService.clear(playerId);
+        // Clear any previous session for this specific connection (if any). Don'internal clear by UUID;
+        // that would affect other concurrent connections for the same player name/UUID
+        // but from different clients/connections.
+        cleanup(connection);
 
         String normalizedName = playerName.toLowerCase(Locale.ROOT);
         Set<String> unrestrictedNames = commonService.getProperty(RestrictionSettings.UNRESTRICTED_NAMES);
@@ -150,7 +156,7 @@ public class PaperDialogFlowListener implements Listener {
             String kickMessage = commonService.getProperty(RegistrationSettings.PRE_JOIN_LOGIN_CANCEL_KICKS)
                 ? messages.retrieveSingle(playerName, MessageKey.DIALOG_LOGIN_CANCELED)
                 : null;
-            completeLoginResponse(playerId, kickMessage);
+            completeLoginResponseForSession(connectionSessions.get(connection), kickMessage);
             return;
         }
 
@@ -160,7 +166,7 @@ public class PaperDialogFlowListener implements Listener {
         }
 
         if (PaperDialogActionKeys.PRE_JOIN_RECOVERY_SUBMIT.equals(event.getIdentifier())) {
-            processPreJoinRecoverySubmit(playerId, playerName, event.getDialogResponseView());
+            processPreJoinRecoverySubmit(connection, connectionSessions.get(connection), playerId, playerName, event.getDialogResponseView());
             return;
         }
 
@@ -168,12 +174,12 @@ public class PaperDialogFlowListener implements Listener {
             String kickMessage = commonService.getProperty(RegistrationSettings.PRE_JOIN_LOGIN_CANCEL_KICKS)
                 ? messages.retrieveSingle(playerName, MessageKey.DIALOG_LOGIN_CANCELED)
                 : null;
-            completeLoginResponse(playerId, kickMessage);
+            completeLoginResponseForSession(connectionSessions.get(connection), kickMessage);
             return;
         }
 
         if (PaperDialogActionKeys.PRE_JOIN_LOGIN_SUBMIT.equals(event.getIdentifier())) {
-            processPreJoinLogin(playerId, playerName, event.getDialogResponseView());
+            processPreJoinLoginForSession(connection, connectionSessions.get(connection), playerId, playerName, event.getDialogResponseView());
             return;
         }
 
@@ -186,16 +192,27 @@ public class PaperDialogFlowListener implements Listener {
             String kickMessage = commonService.getProperty(RegistrationSettings.PRE_JOIN_REGISTER_CANCEL_KICKS)
                 ? messages.retrieveSingle(playerName, MessageKey.DIALOG_REGISTER_CANCELED)
                 : null;
-            completeRegisterResponse(playerId, kickMessage);
+            completeRegisterResponseForSession(connectionSessions.get(connection), kickMessage);
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerConnectionClose(PlayerConnectionCloseEvent event) {
         UUID playerId = event.getPlayerUniqueId();
-        pendingLoginResponses.remove(playerId);
-        pendingRegisterResponses.remove(playerId);
-        preJoinDialogService.clear(playerId);
+
+        // remove all disconnected sessions
+        // pending map is likely very small, but we are still doing a heavy iteration here
+        connectionSessions.entrySet().removeIf(entry -> {
+            if (entry.getKey().isConnected()) {
+                return false;
+            }
+
+            Long sid = entry.getValue();
+            pendingLoginResponses.remove(sid);
+            pendingRegisterResponses.remove(sid);
+            preJoinDialogService.unregisterPreJoinFuture(sid);
+            return true;
+        });
     }
 
     private void handleBlockingLoginDialog(PlayerConfigurationConnection connection, UUID playerId, String playerName) {
@@ -204,8 +221,9 @@ public class PaperDialogFlowListener implements Listener {
         loginResponse.completeOnTimeout(
             messages.retrieveSingle(playerName, MessageKey.LOGIN_TIMEOUT_ERROR), timeoutSeconds, TimeUnit.SECONDS);
         String normalizedName = playerName.toLowerCase(Locale.ROOT);
-        pendingLoginResponses.put(playerId, loginResponse);
-        preJoinDialogService.registerPreJoinFuture(normalizedName, playerId, loginResponse);
+        long sid = preJoinDialogService.registerPreJoinFuture(normalizedName, playerId, loginResponse);
+        pendingLoginResponses.put(sid, loginResponse);
+        connectionSessions.put(connection, sid);
 
         // Close the race with a proxy auto-login (perform.login) that arrived during the configuration
         // phase between the shouldSkipDialogs() check and now: if a proxy session has been queued,
@@ -214,7 +232,7 @@ public class PaperDialogFlowListener implements Listener {
             ProxySessionManager.ProxyLoginRequest req = proxySessionManager.getLoginRequest(normalizedName);
             if (req != null && (req.verifiedPremiumUuid() == null
                 || isProxyPremiumRequestValid(normalizedName, req))) {
-                preJoinDialogService.approvePreJoinForceLogin(normalizedName);
+                preJoinDialogService.approvePreJoinForceLoginForSession(sid);
             }
         }
 
@@ -223,8 +241,9 @@ public class PaperDialogFlowListener implements Listener {
                 PaperDialogHelper.createPreJoinLoginDialog(dialogWindowService.createPreJoinLoginDialog(playerName)));
         }
         String kickMessage = loginResponse.join();
-        pendingLoginResponses.remove(playerId);
-        preJoinDialogService.unregisterPreJoinFuture(playerId);
+        pendingLoginResponses.remove(sid);
+        connectionSessions.remove(connection, sid);
+        preJoinDialogService.unregisterPreJoinFuture(sid);
 
         if (kickMessage != null) {
             preJoinDialogService.storePendingKickMessage(playerId, kickMessage);
@@ -232,24 +251,24 @@ public class PaperDialogFlowListener implements Listener {
         connection.getAudience().closeDialog();
     }
 
-    private void processPreJoinLogin(UUID playerId, String playerName, DialogResponseView dialogResponseView) {
+    private void processPreJoinLoginForSession(PlayerConfigurationConnection commonConnection, Long sid, UUID playerId, String playerName, DialogResponseView dialogResponseView) {
         String password = dialogResponseView == null ? null : dialogResponseView.getText("password");
         if (password == null || password.isBlank()) {
-            completeLoginResponse(playerId, messages.retrieveSingle(playerName, MessageKey.LOGIN_TIMEOUT_ERROR));
+            completeLoginResponseForSession(sid, messages.retrieveSingle(playerName, MessageKey.LOGIN_TIMEOUT_ERROR));
             return;
         }
 
         PlayerAuth auth = dataSource.getAuth(playerName.toLowerCase(Locale.ROOT));
         if (auth == null) {
-            completeLoginResponse(playerId, messages.retrieveSingle(playerName, MessageKey.UNKNOWN_USER));
+            completeLoginResponseForSession(sid, messages.retrieveSingle(playerName, MessageKey.UNKNOWN_USER));
             return;
         }
 
         if (passwordSecurity.comparePassword(password, auth.getPassword(), playerName)) {
-            preJoinDialogService.storePendingLoginPassword(playerId, password);
-            completeLoginResponse(playerId, null);
+            preJoinDialogService.storePendingLoginPassword(commonConnection.getClientAddress(), playerId, password);
+            completeLoginResponseForSession(sid, null);
         } else {
-            completeLoginResponse(playerId, messages.retrieveSingle(playerName, MessageKey.WRONG_PASSWORD));
+            completeLoginResponseForSession(sid, messages.retrieveSingle(playerName, MessageKey.WRONG_PASSWORD));
         }
     }
 
@@ -259,13 +278,14 @@ public class PaperDialogFlowListener implements Listener {
         connection.getAudience().showDialog(PaperDialogHelper.createPreJoinRecoveryDialog(recoverySpec));
     }
 
-    private void processPreJoinRecoverySubmit(UUID playerId, String playerName, DialogResponseView dialogResponseView) {
+    private void processPreJoinRecoverySubmit(PlayerConfigurationConnection connection, Long sid, UUID playerId, String playerName, DialogResponseView dialogResponseView) {
         String email = dialogResponseView == null ? null : dialogResponseView.getText("email");
         if (email != null && !email.isBlank()) {
-            preJoinDialogService.storePendingRecoveryEmail(playerId, email);
+            preJoinDialogService.storePendingRecoveryEmail(connection.getClientAddress(), playerId, email);
         }
+
         // Let the player join; AsynchronousJoin will execute the recovery and kick on failure
-        completeLoginResponse(playerId, null);
+        completeLoginResponseForSession(sid, null);
     }
 
     private void handleBlockingRegisterDialog(PlayerConfigurationConnection connection, UUID playerId, String playerName, Dialog dialog) {
@@ -273,11 +293,15 @@ public class PaperDialogFlowListener implements Listener {
         long timeoutSeconds = Math.max(commonService.getProperty(RestrictionSettings.REGISTER_TIMEOUT), 1);
         registerResponse.completeOnTimeout(
             messages.retrieveSingle(playerName, MessageKey.LOGIN_TIMEOUT_ERROR), timeoutSeconds, TimeUnit.SECONDS);
-        pendingRegisterResponses.put(playerId, registerResponse);
+        long sid = preJoinDialogService.registerPreJoinFuture(playerName.toLowerCase(Locale.ROOT), playerId, registerResponse);
+        pendingRegisterResponses.put(sid, registerResponse);
+        connectionSessions.put(connection, sid);
 
         connection.getAudience().showDialog(dialog);
         String kickMessage = registerResponse.join();
-        pendingRegisterResponses.remove(playerId);
+        pendingRegisterResponses.remove(sid);
+        connectionSessions.remove(connection, sid);
+        preJoinDialogService.unregisterPreJoinFuture(sid);
 
         if (kickMessage != null) {
             preJoinDialogService.storePendingKickMessage(playerId, kickMessage);
@@ -288,7 +312,7 @@ public class PaperDialogFlowListener implements Listener {
     private void storePendingRegistration(PlayerConfigurationConnection connection, UUID playerId, String playerName,
                                           DialogResponseView dialogResponseView) {
         if (dialogResponseView == null) {
-            completeRegisterResponse(playerId, null);
+            completeRegisterResponseForSession(connectionSessions.get(connection), null);
             return;
         }
 
@@ -302,7 +326,7 @@ public class PaperDialogFlowListener implements Listener {
                     String kickMessage = messages.retrieveSingle(playerName, MessageKey.MAX_REGISTER_EXCEEDED,
                         Integer.toString(maxRegPerIp), Integer.toString(otherAccounts.size()),
                         String.join(", ", otherAccounts));
-                    completeRegisterResponse(playerId, kickMessage);
+                    completeRegisterResponseForSession(connectionSessions.get(connection), kickMessage);
                     return;
                 }
             }
@@ -323,8 +347,8 @@ public class PaperDialogFlowListener implements Listener {
                     messages.retrieveSingle(playerName, MessageKey.PASSWORD_MATCH_ERROR));
                 return;
             }
-            preJoinDialogService.storePendingEmailRegistration(playerId, email);
-            completeRegisterResponse(playerId, null);
+            preJoinDialogService.storePendingEmailRegistration(connection.getClientAddress(), playerId, email);
+            completeRegisterResponseForSession(connectionSessions.get(connection), null);
             return;
         }
 
@@ -349,8 +373,8 @@ public class PaperDialogFlowListener implements Listener {
             return;
         }
         if (secondArg == RegisterSecondaryArgument.CONFIRMATION) {
-            preJoinDialogService.storePendingPasswordRegistration(playerId, password, null);
-            completeRegisterResponse(playerId, null);
+            preJoinDialogService.storePendingPasswordRegistration(connection.getClientAddress(), playerId, password, null);
+            completeRegisterResponseForSession(connectionSessions.get(connection), null);
             return;
         }
 
@@ -367,13 +391,11 @@ public class PaperDialogFlowListener implements Listener {
                     messages.retrieveSingle(playerName, MessageKey.INVALID_EMAIL));
                 return;
             }
-            preJoinDialogService.storePendingPasswordRegistration(playerId, password, email);
-            completeRegisterResponse(playerId, null);
+            completeRegisterResponseForSession(connectionSessions.get(connection), null);
             return;
         }
 
-        preJoinDialogService.storePendingPasswordRegistration(playerId, password, null);
-        completeRegisterResponse(playerId, null);
+        completeRegisterResponseForSession(connectionSessions.get(connection), null);
     }
 
     private void showRegisterDialogWithError(PlayerConfigurationConnection connection, String playerName,
@@ -384,15 +406,23 @@ public class PaperDialogFlowListener implements Listener {
         connection.getAudience().showDialog(PaperDialogHelper.createPreJoinRegisterDialog(spec.withBody(errorMessage)));
     }
 
-    private void completeLoginResponse(UUID playerId, String kickMessage) {
-        CompletableFuture<String> loginResponse = pendingLoginResponses.get(playerId);
+    private void completeLoginResponseForSession(Long sessionId, String kickMessage) {
+        if (sessionId == null) {
+            return;
+        }
+
+        CompletableFuture<String> loginResponse = pendingLoginResponses.get(sessionId);
         if (loginResponse != null) {
             loginResponse.complete(kickMessage);
         }
     }
 
-    private void completeRegisterResponse(UUID playerId, String kickMessage) {
-        CompletableFuture<String> registerResponse = pendingRegisterResponses.get(playerId);
+    private void completeRegisterResponseForSession(Long sessionId, String kickMessage) {
+        if (sessionId == null) {
+            return;
+        }
+
+        CompletableFuture<String> registerResponse = pendingRegisterResponses.get(sessionId);
         if (registerResponse != null) {
             registerResponse.complete(kickMessage);
         }
@@ -471,6 +501,15 @@ public class PaperDialogFlowListener implements Listener {
             return version >= DIALOG_MIN_PROTOCOL;
         } catch (Exception ignored) {
             return true;
+        }
+    }
+
+    private void cleanup(PlayerConfigurationConnection connection) {
+        Long sid = connectionSessions.remove(connection);
+        if (sid != null) {
+            pendingLoginResponses.remove(sid);
+            pendingRegisterResponses.remove(sid);
+            preJoinDialogService.unregisterPreJoinFuture(sid);
         }
     }
 }

@@ -122,7 +122,7 @@ public class PaperDialogFlowListenerTest {
 
             assertThat("future must stay open so the player can retry", future.isDone(), is(false));
             verify(connection).getAudience();
-            verify(preJoinDialogService, never()).storePendingPasswordRegistration(any(), any(), any());
+            verify(preJoinDialogService, never()).storePendingPasswordRegistration(any(), any(), any(), any());
         }
     }
 
@@ -468,7 +468,7 @@ public class PaperDialogFlowListenerTest {
         given(dataSource.getAuth("bobby")).willReturn(auth);
         given(premiumLoginVerifier.getVerifiedUuid("Bobby")).willReturn(null);  // not yet verified
 
-        // UUID v4 that doesn't match stored premium UUID → must return false (impostor or wrong account)
+        // UUID v4 that doesn'internal match stored premium UUID → must return false (impostor or wrong account)
         assertThat(invokeShouldSkipPreJoinDialogForPremium(listener, auth, "Bobby", playerId), is(false));
         verify(preJoinDialogService, never()).markSkipPostJoinDialog(playerId);
     }
@@ -476,7 +476,7 @@ public class PaperDialogFlowListenerTest {
     @Test
     public void shouldSkipPreJoinDialogForPremiumPlayerWithOfflineUuidInProxyMode() throws Exception {
         // When the PlayerProfile at the configuration phase still has an offline UUID (v3) because
-        // proxy forwarding hasn't been applied yet, the pre-join dialog must be skipped and the
+        // proxy forwarding hasn'internal been applied yet, the pre-join dialog must be skipped and the
         // final UUID check deferred to AsynchronousJoin.
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
         CommonService commonService = mock(CommonService.class);

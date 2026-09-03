@@ -153,11 +153,11 @@ public class AsynchronousJoin implements AsynchronousProcess {
         String name = player.getName().toLowerCase(Locale.ROOT);
         String ip = PlayerUtils.getPlayerIp(player);
         UUID playerId = player.getUniqueId();
-        String pendingLoginPassword = preJoinDialogService.consumePendingLoginPassword(playerId);
-        String pendingRecoveryEmail = preJoinDialogService.consumePendingRecoveryEmail(playerId);
+        String pendingLoginPassword = preJoinDialogService.consumePendingLoginPassword(player.getAddress(), playerId);
+        String pendingRecoveryEmail = preJoinDialogService.consumePendingRecoveryEmail(player.getAddress(),playerId);
         PreJoinDialogService.PendingRegistration pendingRegistration =
-            preJoinDialogService.consumePendingRegistration(playerId);
-        boolean shouldSkipPostJoinDialog = preJoinDialogService.consumeSkipPostJoinDialog(playerId);
+            preJoinDialogService.consumePendingRegistration(player.getAddress(), playerId);
+        boolean shouldSkipPostJoinDialog = preJoinDialogService.consumeSkipPostJoinDialog(player.getAddress(), playerId);
         boolean pendingForceLogin = preJoinDialogService.consumePendingForceLogin(playerId);
         String pendingKick = preJoinDialogService.consumePendingKickMessage(playerId);
         // pendingKick is applied below, after proxy/premium/session checks, which take priority:

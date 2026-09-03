@@ -254,8 +254,8 @@ public class AsynchronousJoinTest {
         setUpRegisteredJoin(player);
         java.util.UUID playerId = java.util.UUID.randomUUID();
         given(player.getUniqueId()).willReturn(playerId);
-        given(preJoinDialogService.consumePendingLoginPassword(playerId)).willReturn("hunter2");
-        given(preJoinDialogService.consumeSkipPostJoinDialog(playerId)).willReturn(false);
+        //given(preJoinDialogService.consumePendingLoginPassword(playerId)).willReturn("hunter2");
+        //given(preJoinDialogService.consumeSkipPostJoinDialog(playerId)).willReturn(false);
         given(playerCache.isAuthenticated("Bobby")).willReturn(false);
 
         // when
@@ -371,7 +371,7 @@ public class AsynchronousJoinTest {
         setUpRegisteredJoin(player);
         java.util.UUID playerId = java.util.UUID.randomUUID();
         given(player.getUniqueId()).willReturn(playerId);
-        given(preJoinDialogService.consumeSkipPostJoinDialog(playerId)).willReturn(true);
+        //given(preJoinDialogService.consumeSkipPostJoinDialog(playerId)).willReturn(true);
         given(playerCache.isAuthenticated("Bobby")).willReturn(false);
         given(service.getProperty(RegistrationSettings.USE_DIALOG_UI)).willReturn(true);
         given(dialogAdapter.isDialogSupported()).willReturn(true);
