@@ -2,35 +2,26 @@ package fr.xephi.authme.bungee;
 
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-import java.util.Locale;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 final class BungeeAuthenticationStore {
 
-    private final Set<String> authenticatedPlayers = ConcurrentHashMap.newKeySet();
+    private final Map<ProxiedPlayer, String> authenticatedPlayers = new IdentityHashMap<>();
 
-    void markAuthenticated(String playerName) {
-        authenticatedPlayers.add(normalizeName(playerName));
+    synchronized void markAuthenticated(ProxiedPlayer player) {
+        authenticatedPlayers.put(player, player.getName());
     }
 
-    void markLoggedOut(String playerName) {
-        authenticatedPlayers.remove(normalizeName(playerName));
+    synchronized void markLoggedOut(ProxiedPlayer player) {
+        authenticatedPlayers.remove(player);
     }
 
-    boolean isAuthenticated(ProxiedPlayer player) {
-        return isAuthenticated(player.getName());
-    }
-
-    boolean isAuthenticated(String playerName) {
-        return authenticatedPlayers.contains(normalizeName(playerName));
+    synchronized boolean isAuthenticated(ProxiedPlayer player) {
+        return authenticatedPlayers.containsKey(player);
     }
 
     void clear(ProxiedPlayer player) {
-        markLoggedOut(player.getName());
-    }
-
-    private static String normalizeName(String playerName) {
-        return playerName.toLowerCase(Locale.ROOT);
+        markLoggedOut(player);
     }
 }

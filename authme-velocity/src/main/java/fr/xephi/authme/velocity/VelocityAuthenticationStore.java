@@ -2,35 +2,26 @@ package fr.xephi.authme.velocity;
 
 import com.velocitypowered.api.proxy.Player;
 
-import java.util.Locale;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 final class VelocityAuthenticationStore {
 
-    private final Set<String> authenticatedPlayers = ConcurrentHashMap.newKeySet();
+    private final Map<Player, String> authenticatedPlayers = new IdentityHashMap<>();
 
-    void markAuthenticated(String playerName) {
-        authenticatedPlayers.add(normalizeName(playerName));
+    synchronized void markAuthenticated(Player player) {
+        authenticatedPlayers.put(player, player.getUsername());
     }
 
-    void markLoggedOut(String playerName) {
-        authenticatedPlayers.remove(normalizeName(playerName));
+    synchronized void markLoggedOut(Player player) {
+        authenticatedPlayers.remove(player);
     }
 
-    boolean isAuthenticated(Player player) {
-        return isAuthenticated(player.getUsername());
-    }
-
-    boolean isAuthenticated(String playerName) {
-        return authenticatedPlayers.contains(normalizeName(playerName));
+    synchronized boolean isAuthenticated(Player player) {
+        return authenticatedPlayers.containsKey(player);
     }
 
     void clear(Player player) {
-        markLoggedOut(player.getUsername());
-    }
-
-    private static String normalizeName(String playerName) {
-        return playerName.toLowerCase(Locale.ROOT);
+        markLoggedOut(player);
     }
 }
