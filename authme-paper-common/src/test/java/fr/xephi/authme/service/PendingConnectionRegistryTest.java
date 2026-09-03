@@ -54,6 +54,31 @@ public class PendingConnectionRegistryTest {
     }
 
     @Test
+    public void shouldReportNameClaimedByAnotherLiveConnection() {
+        PlayerConnection holder = newConnection(50_000);
+        PlayerConnection other = newConnection(50_001);
+        registry.tryClaim("Bobby", holder, TTL);
+
+        assertThat(registry.isClaimedByOtherConnection("Bobby", other), is(true));
+        assertThat(registry.isClaimedByOtherConnection("Bobby", holder), is(false));
+    }
+
+    @Test
+    public void shouldNotReportStaleOrMissingClaimAsHeldByAnotherConnection() {
+        PlayerConnection other = newConnection(50_001);
+
+        assertThat(registry.isClaimedByOtherConnection("Bobby", other), is(false));
+
+        PlayerConnection gone = newConnection(50_000);
+        registry.tryClaim("Bobby", gone, TTL);
+        given(gone.isConnected()).willReturn(false);
+        assertThat(registry.isClaimedByOtherConnection("Bobby", other), is(false));
+
+        registry.tryClaim("Alice", newConnection(50_002), -1L);
+        assertThat(registry.isClaimedByOtherConnection("Alice", other), is(false));
+    }
+
+    @Test
     public void shouldAllowSameConnectionToRenewItsClaim() {
         PlayerConnection connection = newConnection(50_000);
         registry.tryClaim("Bobby", connection, TTL);

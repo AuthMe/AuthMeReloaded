@@ -28,8 +28,8 @@ public class PaperLoginValidationListener implements Listener {
 
     private static final LegacyComponentSerializer LEGACY_SERIALIZER = LegacyComponentSerializer.legacySection();
 
-    /** Extra time a name stays claimed on top of the configured login / register timeout. */
-    private static final long CLAIM_GRACE_MILLIS = TimeUnit.SECONDS.toMillis(10);
+    /** Safety net for a connection that never reports itself as gone; not the release mechanism. */
+    private static final long CLAIM_GRACE_MILLIS = TimeUnit.SECONDS.toMillis(60);
 
     @Inject
     private OnJoinVerifier onJoinVerifier;
@@ -110,8 +110,18 @@ public class PaperLoginValidationListener implements Listener {
                                           PlayerConfigurationConnection connection) {
         PlayerProfile profile = connection.getProfile();
         String playerName = profile == null ? null : profile.getName();
-        // No claim means an online player being reconfigured, which must not be checked against itself
-        if (playerName == null || !pendingConnectionRegistry.holdsClaim(playerName, connection)) {
+        if (playerName == null) {
+            return;
+        }
+
+        // This connection held the name to get here, so losing it means another one took it over
+        if (pendingConnectionRegistry.isClaimedByOtherConnection(playerName, connection)) {
+            denyConnection(event, playerName, MessageKey.USERNAME_ALREADY_ONLINE_ERROR);
+            return;
+        }
+
+        // No claim at all means an online player being reconfigured, never checked against itself
+        if (!pendingConnectionRegistry.holdsClaim(playerName, connection)) {
             return;
         }
 
