@@ -33,6 +33,11 @@ public class PendingConnectionRegistry {
         return claim != null && !claim.isStale() && claim.isHeldBy(connectionKey(connection));
     }
 
+    public boolean isClaimedByOtherConnection(String name, PlayerConnection connection) {
+        Claim claim = claims.get(normalize(name));
+        return claim != null && !claim.isStale() && !claim.isHeldBy(connectionKey(connection));
+    }
+
     public void release(String name) {
         claims.remove(normalize(name));
     }

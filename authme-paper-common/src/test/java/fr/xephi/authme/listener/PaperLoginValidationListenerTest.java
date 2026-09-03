@@ -116,6 +116,20 @@ public class PaperLoginValidationListenerTest {
     }
 
     @Test
+    public void shouldKickWhenClaimWasTakenOverDuringConfiguration() {
+        PlayerConfigurationConnection connection = newConfigurationConnection("Bobby");
+        given(pendingConnectionRegistry.isClaimedByOtherConnection("Bobby", connection)).willReturn(true);
+        givenAlreadyOnlineMessage();
+        PlayerConnectionValidateLoginEvent event = new PlayerConnectionValidateLoginEvent(connection, null);
+
+        listener.onPlayerConnectionValidateLogin(event);
+
+        assertThat(event.isAllowed(), is(false));
+        assertThat(serialize(event.getKickMessage()), is("&cAlready online"));
+        verifyNoInteractions(onJoinVerifier);
+    }
+
+    @Test
     public void shouldVerifySingleSessionWhenFinishingConfiguration() throws FailedVerificationException {
         givenConfiguredTimeouts();
         PlayerConfigurationConnection connection = newConfigurationConnection("Bobby");
