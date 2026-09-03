@@ -57,7 +57,7 @@ public class CaptchaCommandTest {
         // given
         String name = "creeper011";
         Player player = mockPlayerWithName(name);
-        given(playerCache.isAuthenticated(name)).willReturn(true);
+        given(playerCache.isAuthenticated(player)).willReturn(true);
 
         // when
         command.executeCommand(player, Collections.singletonList("123"));
@@ -71,7 +71,7 @@ public class CaptchaCommandTest {
         // given
         String name = "bobby";
         Player player = mockPlayerWithName(name);
-        given(playerCache.isAuthenticated(name)).willReturn(false);
+        given(playerCache.isAuthenticated(player)).willReturn(false);
         given(loginCaptchaManager.isCaptchaRequired(name)).willReturn(false);
         given(dataSource.isAuthAvailable(name)).willReturn(true);
 
@@ -89,7 +89,7 @@ public class CaptchaCommandTest {
         // given
         String name = "smith";
         Player player = mockPlayerWithName(name);
-        given(playerCache.isAuthenticated(name)).willReturn(false);
+        given(playerCache.isAuthenticated(player)).willReturn(false);
         given(loginCaptchaManager.isCaptchaRequired(name)).willReturn(true);
         String captchaCode = "3991";
         given(loginCaptchaManager.checkCode(player, captchaCode)).willReturn(true);
@@ -112,7 +112,7 @@ public class CaptchaCommandTest {
         // given
         String name = "smith";
         Player player = mockPlayerWithName(name);
-        given(playerCache.isAuthenticated(name)).willReturn(false);
+        given(playerCache.isAuthenticated(player)).willReturn(false);
         given(loginCaptchaManager.isCaptchaRequired(name)).willReturn(true);
         String captchaCode = "2468";
         given(loginCaptchaManager.checkCode(player, captchaCode)).willReturn(false);
@@ -191,5 +191,4 @@ public class CaptchaCommandTest {
         return player;
     }
 }
-
 

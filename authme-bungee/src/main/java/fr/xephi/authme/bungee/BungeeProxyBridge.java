@@ -30,7 +30,9 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -64,7 +66,8 @@ public final class BungeeProxyBridge implements Listener {
     private final Logger logger;
     private BungeeProxyConfiguration configuration;
     private final BungeeAuthenticationStore authenticationStore;
-    private final Map<String, AtomicInteger> pendingAutoLogins = new ConcurrentHashMap<>();
+    private final Map<ProxiedPlayer, AtomicInteger> pendingAutoLogins =
+        Collections.synchronizedMap(new IdentityHashMap<>());
     private final Set<String> notifiedAuthServers = ConcurrentHashMap.newKeySet();
     private volatile Set<String> premiumUsernames = ConcurrentHashMap.newKeySet();
     private List<String> premiumListBuffer = new ArrayList<>();
@@ -234,7 +237,8 @@ public final class BungeeProxyBridge implements Listener {
         if (event.isCancelled() || !AUTHME_CHANNEL.equals(event.getTag())) {
             return;
         }
-        if (!(event.getSender() instanceof Server server)) {
+        if (!(event.getSender() instanceof Server server)
+            || !(event.getReceiver() instanceof ProxiedPlayer player)) {
             event.setCancelled(true);
             return;
         }
@@ -243,27 +247,33 @@ public final class BungeeProxyBridge implements Listener {
         if (parsedMessage.typeId() == null || parsedMessage.playerName() == null) {
             return;
         }
+        if (isPlayerSessionMessage(parsedMessage.typeId())
+            && !parsedMessage.playerName().equalsIgnoreCase(player.getName())) {
+            logger.warning("Ignoring AuthMe message for '" + parsedMessage.playerName()
+                + "' carried by player '" + player.getName() + "'");
+            return;
+        }
 
         if (LOGIN_MESSAGE.equals(parsedMessage.typeId())) {
             if (configuration.isAuthServer(server.getInfo())) {
                 logger.info("Player " + parsedMessage.playerName() + " authenticated on auth server '"
                     + server.getInfo().getName() + "'");
-                authenticationStore.markAuthenticated(parsedMessage.playerName());
-                sendAutoLoginIfAlreadySwitched(parsedMessage.playerName(), server.getInfo());
-                redirectToLoginServer(parsedMessage.playerName());
-            } else if (pendingAutoLogins.containsKey(parsedMessage.playerName())) {
+                authenticationStore.markAuthenticated(player);
+                sendAutoLoginIfAlreadySwitched(player, server.getInfo());
+                redirectToLoginServer(player);
+            } else if (pendingAutoLogins.containsKey(player)) {
                 // Implicit ACK: login from non-auth server confirms perform.login was processed
                 logger.info("Auto-login confirmed for " + parsedMessage.playerName()
                     + " via login from server '" + server.getInfo().getName() + "'");
-                cancelPendingLogin(parsedMessage.playerName());
+                cancelPendingLogin(player);
             }
         } else if (LOGOUT_MESSAGE.equals(parsedMessage.typeId())) {
-            authenticationStore.markLoggedOut(parsedMessage.playerName());
-            redirectLoggedOutPlayer(parsedMessage.playerName());
+            authenticationStore.markLoggedOut(player);
+            redirectLoggedOutPlayer(player);
         } else if (PERFORM_LOGIN_ACK_MESSAGE.equals(parsedMessage.typeId())) {
             logger.info("Auto-login ACK received for " + parsedMessage.playerName()
                 + " from server '" + server.getInfo().getName() + "'");
-            cancelPendingLogin(parsedMessage.playerName());
+            cancelPendingLogin(player);
         } else if (PREMIUM_SET_MESSAGE.equals(parsedMessage.typeId())) {
             premiumUsernames.add(parsedMessage.playerName());
             pendingPremiumUsernames.remove(parsedMessage.playerName());
@@ -353,9 +363,8 @@ public final class BungeeProxyBridge implements Listener {
 
         String serverName = currentServer.getInfo().getName();
         logger.info("Sending auto-login request to server '" + serverName + "' for player " + normalizedName);
-        currentServer.getInfo().sendData(
-            AUTHME_CHANNEL, createPerformLoginMessage(normalizedName, verifiedPremiumUuid), false);
-        initiatePendingLogin(normalizedName);
+        currentServer.sendData(AUTHME_CHANNEL, createPerformLoginMessage(normalizedName, verifiedPremiumUuid));
+        initiatePendingLogin(player);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -417,10 +426,10 @@ public final class BungeeProxyBridge implements Listener {
     @EventHandler
     public void onPlayerDisconnect(PlayerDisconnectEvent event) {
         String normalizedName = normalizeName(event.getPlayer().getName());
-        if (pendingAutoLogins.containsKey(normalizedName)) {
+        if (pendingAutoLogins.containsKey(event.getPlayer())) {
             logger.fine("Cancelling pending auto-login for " + normalizedName + " (player disconnected)");
         }
-        cancelPendingLogin(normalizedName);
+        cancelPendingLogin(event.getPlayer());
         authenticationStore.clear(event.getPlayer());
         premiumVerificationManager.clearVerifiedPremium(normalizedName);
     }
@@ -431,14 +440,11 @@ public final class BungeeProxyBridge implements Listener {
         retryScheduler.shutdownNow();
     }
 
-    private void sendAutoLoginIfAlreadySwitched(String normalizedName, ServerInfo authServer) {
+    private void sendAutoLoginIfAlreadySwitched(ProxiedPlayer player, ServerInfo authServer) {
         if (!configuration.autoLoginEnabled()) {
             return;
         }
-        ProxiedPlayer player = proxyServer.getPlayer(normalizedName);
-        if (player == null) {
-            return;
-        }
+        String normalizedName = normalizeName(player.getName());
         Server currentConn = player.getServer();
         if (currentConn == null) {
             return;
@@ -451,9 +457,8 @@ public final class BungeeProxyBridge implements Listener {
         logger.info("Player " + normalizedName + " already on server '" + currentServerName
             + "' when login message arrived — sending auto-login immediately");
         UUID verifiedPremiumUuid = premiumVerificationManager.getVerifiedPremiumUuid(normalizedName);
-        currentConn.getInfo().sendData(
-            AUTHME_CHANNEL, createPerformLoginMessage(normalizedName, verifiedPremiumUuid), false);
-        initiatePendingLogin(normalizedName);
+        currentConn.sendData(AUTHME_CHANNEL, createPerformLoginMessage(normalizedName, verifiedPremiumUuid));
+        initiatePendingLogin(player);
     }
 
     private void sendProxyStartedHandshakeIfPending(ServerInfo server) {
@@ -474,37 +479,37 @@ public final class BungeeProxyBridge implements Listener {
         }
     }
 
-    private void initiatePendingLogin(String normalizedName) {
-        pendingAutoLogins.put(normalizedName, new AtomicInteger(0));
-        scheduleRetry(normalizedName);
+    private void initiatePendingLogin(ProxiedPlayer player) {
+        pendingAutoLogins.put(player, new AtomicInteger(0));
+        scheduleRetry(player);
     }
 
-    private void cancelPendingLogin(String normalizedName) {
-        pendingAutoLogins.remove(normalizedName);
+    private void cancelPendingLogin(ProxiedPlayer player) {
+        pendingAutoLogins.remove(player);
     }
 
-    private void scheduleRetry(String normalizedName) {
+    private void scheduleRetry(ProxiedPlayer player) {
         retryScheduler.schedule(() -> {
-            AtomicInteger attempts = pendingAutoLogins.get(normalizedName);
+            AtomicInteger attempts = pendingAutoLogins.get(player);
             if (attempts == null) {
                 return;
             }
+            String normalizedName = normalizeName(player.getName());
             int current = attempts.getAndIncrement();
             if (current >= MAX_RETRIES) {
-                pendingAutoLogins.remove(normalizedName);
+                pendingAutoLogins.remove(player);
                 logger.warning("No auto-login ACK received for " + normalizedName
                     + " after " + MAX_RETRIES + " retries; giving up");
                 return;
             }
-            ProxiedPlayer player = proxyServer.getPlayer(normalizedName);
-            if (player == null) {
-                pendingAutoLogins.remove(normalizedName);
+            if (!player.isConnected()) {
+                pendingAutoLogins.remove(player);
                 logger.fine("Auto-login retry cancelled for " + normalizedName + " (player no longer online)");
                 return;
             }
             Server server = player.getServer();
             if (server == null) {
-                pendingAutoLogins.remove(normalizedName);
+                pendingAutoLogins.remove(player);
                 logger.fine("Auto-login retry cancelled for " + normalizedName + " (player has no active server)");
                 return;
             }
@@ -512,9 +517,8 @@ public final class BungeeProxyBridge implements Listener {
             logger.fine("Retrying auto-login for " + normalizedName + " on server '" + serverName
                 + "' (attempt " + (current + 1) + "/" + MAX_RETRIES + ")");
             UUID verifiedPremiumUuid = premiumVerificationManager.getVerifiedPremiumUuid(normalizedName);
-            server.getInfo().sendData(
-                AUTHME_CHANNEL, createPerformLoginMessage(normalizedName, verifiedPremiumUuid), false);
-            scheduleRetry(normalizedName);
+            server.sendData(AUTHME_CHANNEL, createPerformLoginMessage(normalizedName, verifiedPremiumUuid));
+            scheduleRetry(player);
         }, 1, TimeUnit.SECONDS);
     }
 
@@ -542,12 +546,17 @@ public final class BungeeProxyBridge implements Listener {
         }
     }
 
-    private void redirectToLoginServer(String normalizedPlayerName) {
+    private static boolean isPlayerSessionMessage(String typeId) {
+        return LOGIN_MESSAGE.equals(typeId) || LOGOUT_MESSAGE.equals(typeId)
+            || PERFORM_LOGIN_ACK_MESSAGE.equals(typeId);
+    }
+
+    private void redirectToLoginServer(ProxiedPlayer player) {
+        String normalizedPlayerName = normalizeName(player.getName());
         if (configuration.loginServer().isEmpty()) {
             return;
         }
-        ProxiedPlayer player = proxyServer.getPlayer(normalizedPlayerName);
-        if (player == null) {
+        if (!player.isConnected()) {
             logger.fine("Cannot redirect " + normalizedPlayerName + " to loginServer: player no longer on proxy");
             return;
         }
@@ -562,7 +571,8 @@ public final class BungeeProxyBridge implements Listener {
         player.connect(targetServer);
     }
 
-    private void redirectLoggedOutPlayer(String normalizedPlayerName) {
+    private void redirectLoggedOutPlayer(ProxiedPlayer player) {
+        String normalizedPlayerName = normalizeName(player.getName());
         if (!configuration.sendOnLogoutEnabled()) {
             return;
         }
@@ -572,8 +582,7 @@ public final class BungeeProxyBridge implements Listener {
             return;
         }
 
-        ProxiedPlayer player = proxyServer.getPlayer(normalizedPlayerName);
-        if (player == null) {
+        if (!player.isConnected()) {
             return;
         }
 

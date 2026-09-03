@@ -215,7 +215,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 ProxySessionManager.ProxyLoginRequest proxyLoginRequest = proxySessionManager.consumeLoginRequest(name);
                 if (proxyLoginRequest != null) {
                     if (proxyLoginRequestValidator.validate(player, proxyLoginRequest.verifiedPremiumUuid())) {
-                        if (playerCache.isAuthenticated(name)) {
+                        if (playerCache.isAuthenticated(player)) {
                             return;
                         }
                         service.send(player, MessageKey.SESSION_RECONNECTION);
@@ -262,7 +262,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
         // Guard: a proxy-initiated forceLoginFromProxy() may have already authenticated the player
         // (if the perform.login message arrived and was processed before this async task completes).
         // Scheduling a limbo in that case would freeze the player permanently.
-        if (playerCache.isAuthenticated(name)) {
+        if (playerCache.isAuthenticated(player)) {
             return;
         }
 
@@ -302,7 +302,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
         bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player, () -> {
             // Guard: proxy login may have completed between when this task was scheduled and now
-            if (playerCache.isAuthenticated(player.getName())) {
+            if (playerCache.isAuthenticated(player)) {
                 return;
             }
             limboService.createLimboPlayer(player, isAuthAvailable);
@@ -334,7 +334,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 return;
             }
             if (!shouldSkipPostJoinDialog
-                && !playerCache.isAuthenticated(player.getName())
+                && !playerCache.isAuthenticated(player)
                 && service.getProperty(RegistrationSettings.USE_DIALOG_UI)
                 && dialogAdapter.isDialogSupported()) {
                 bukkitService.runTaskLater(player, () -> showPostJoinDialogIfNecessary(player, isAuthAvailable), 1L);
@@ -344,7 +344,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
     private void showPostJoinDialogIfNecessary(Player player, boolean isAuthAvailable) {
         if (!player.isOnline()
-            || playerCache.isAuthenticated(player.getName())
+            || playerCache.isAuthenticated(player)
             || !service.getProperty(RegistrationSettings.USE_DIALOG_UI)
             || !dialogAdapter.isDialogSupported()) {
             return;

@@ -41,7 +41,7 @@ public class CaptchaCommand extends PlayerCommand {
     public void runCommand(Player player, List<String> arguments) {
         final String name = player.getName();
 
-        if (playerCache.isAuthenticated(name)) {
+        if (playerCache.isAuthenticated(player)) {
             // No captcha is relevant if the player is logged in
             commonService.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
             return;

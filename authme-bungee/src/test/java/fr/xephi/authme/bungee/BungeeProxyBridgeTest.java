@@ -14,6 +14,7 @@ import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -29,6 +30,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -88,6 +90,11 @@ class BungeeProxyBridgeTest {
     @Captor
     private ArgumentCaptor<byte[]> payloadCaptor;
 
+    @BeforeEach
+    void setPluginMessageReceiver() {
+        org.mockito.Mockito.lenient().when(pluginMessageEvent.getReceiver()).thenReturn(player);
+    }
+
     @Test
     void shouldTrackAuthenticatedPlayerAndForwardPerformLoginOnServerSwitch() {
         given(pluginMessageEvent.isCancelled()).willReturn(false);
@@ -105,8 +112,50 @@ class BungeeProxyBridgeTest {
         bridge.onPluginMessage(pluginMessageEvent);
         bridge.onServerSwitch(serverSwitchEvent);
 
-        verify(authServerInfo).sendData(eq(BungeeProxyBridge.AUTHME_CHANNEL), payloadCaptor.capture(), eq(false));
+        verify(currentServer).sendData(eq(BungeeProxyBridge.AUTHME_CHANNEL), payloadCaptor.capture());
         assertPerformLoginPayload(payloadCaptor.getValue(), "alice", "test-secret");
+    }
+
+    @Test
+    void shouldAuthenticateThePlayerCarryingTheLoginMessage() {
+        ProxiedPlayer olderPlayer = org.mockito.Mockito.mock(ProxiedPlayer.class);
+        given(olderPlayer.getName()).willReturn("Example");
+        given(player.getName()).willReturn("example");
+        given(pluginMessageEvent.isCancelled()).willReturn(false);
+        given(pluginMessageEvent.getTag()).willReturn(BungeeProxyBridge.AUTHME_CHANNEL);
+        given(pluginMessageEvent.getSender()).willReturn(sourceServer);
+        given(pluginMessageEvent.getReceiver()).willReturn(player);
+        given(pluginMessageEvent.getData()).willReturn(createAuthMePayload("login", "Example"));
+        given(sourceServer.getInfo()).willReturn(authServerInfo);
+        given(authServerInfo.getName()).willReturn("lobby");
+
+        BungeeAuthenticationStore store = new BungeeAuthenticationStore();
+        BungeeProxyBridge bridge = new BungeeProxyBridge(proxyServer, logger, createConfiguration(), store, null);
+        bridge.onPluginMessage(pluginMessageEvent);
+
+        assertFalse(store.isAuthenticated(olderPlayer));
+        assertTrue(store.isAuthenticated(player));
+        verify(proxyServer, never()).getPlayer(any(String.class));
+    }
+
+    @Test
+    void shouldRejectLoginForANameDifferentFromTheMessageReceiver() {
+        given(player.getName()).willReturn("Alice");
+        given(pluginMessageEvent.isCancelled()).willReturn(false);
+        given(pluginMessageEvent.getTag()).willReturn(BungeeProxyBridge.AUTHME_CHANNEL);
+        given(pluginMessageEvent.getSender()).willReturn(sourceServer);
+        given(pluginMessageEvent.getReceiver()).willReturn(player);
+        given(pluginMessageEvent.getData()).willReturn(createAuthMePayload("login", "Bob"));
+        given(sourceServer.getInfo()).willReturn(authServerInfo);
+        given(authServerInfo.getName()).willReturn("lobby");
+
+        BungeeAuthenticationStore store = new BungeeAuthenticationStore();
+        BungeeProxyBridge bridge = new BungeeProxyBridge(proxyServer, logger, createConfiguration(), store, null);
+        bridge.onPluginMessage(pluginMessageEvent);
+
+        assertFalse(store.isAuthenticated(player));
+        verify(player, never()).connect(any(ServerInfo.class));
+        verify(proxyServer, never()).getPlayer(any(String.class));
     }
 
     @Test
@@ -157,7 +206,10 @@ class BungeeProxyBridgeTest {
         given(pluginMessageEvent.getTag()).willReturn(BungeeProxyBridge.AUTHME_CHANNEL);
         given(pluginMessageEvent.getSender()).willReturn(sourceServer);
         given(pluginMessageEvent.getData()).willReturn(createAuthMePayload("logout", "Alice"));
-        given(proxyServer.getPlayer("alice")).willReturn(player);
+        given(sourceServer.getInfo()).willReturn(nonAuthServerInfo);
+        given(nonAuthServerInfo.getName()).willReturn("survival");
+        given(player.getName()).willReturn("Alice");
+        given(player.isConnected()).willReturn(true);
         given(proxyServer.getServerInfo("limbo")).willReturn(nonAuthServerInfo);
 
         BungeeProxyBridge bridge = new BungeeProxyBridge(
@@ -204,8 +256,7 @@ class BungeeProxyBridgeTest {
         given(pluginMessageEvent.getData()).willReturn(createAuthMePayload("perform.login.ack", "Alice"));
         bridge.onPluginMessage(pluginMessageEvent);
 
-        // getPlayer called exactly once by sendAutoLoginIfAlreadySwitched (on login), not by any retry
-        verify(proxyServer, org.mockito.Mockito.times(1)).getPlayer("alice");
+        verify(proxyServer, never()).getPlayer(any(String.class));
     }
 
     @Test
@@ -233,8 +284,7 @@ class BungeeProxyBridgeTest {
         given(sourceServer.getInfo()).willReturn(nonAuthServerInfo);
         bridge.onPluginMessage(pluginMessageEvent);
 
-        // getPlayer called exactly once by sendAutoLoginIfAlreadySwitched (on login from auth server), not by retries
-        verify(proxyServer, org.mockito.Mockito.times(1)).getPlayer("alice");
+        verify(proxyServer, never()).getPlayer(any(String.class));
     }
 
     @Test
@@ -370,7 +420,7 @@ class BungeeProxyBridgeTest {
         given(sourceServer.getInfo()).willReturn(authServerInfo);
         given(serverSwitchEvent.getPlayer()).willReturn(player);
         given(player.getName()).willReturn("Alice");
-        given(player.getServer()).willReturn(currentServer);
+        given(player.getServer()).willReturn(sourceServer, currentServer);
         given(currentServer.getInfo()).willReturn(nonAuthServerInfo);
         given(nonAuthServerInfo.getName()).willReturn("survival");
         given(serverSwitchEvent.getFrom()).willReturn(authServerInfo);
@@ -380,7 +430,7 @@ class BungeeProxyBridgeTest {
         bridge.onPluginMessage(pluginMessageEvent);
         bridge.onServerSwitch(serverSwitchEvent);
 
-        verify(nonAuthServerInfo).sendData(eq(BungeeProxyBridge.AUTHME_CHANNEL), payloadCaptor.capture(), eq(false));
+        verify(currentServer).sendData(eq(BungeeProxyBridge.AUTHME_CHANNEL), payloadCaptor.capture());
         assertPerformLoginPayload(payloadCaptor.getValue(), "alice", "test-secret");
     }
 
@@ -434,7 +484,7 @@ class BungeeProxyBridgeTest {
         given(sourceServer.getInfo()).willReturn(authServerInfo);
         given(authServerInfo.getName()).willReturn("lobby");
         // Player is already on a non-auth server when the login message arrives
-        given(proxyServer.getPlayer("alice")).willReturn(player);
+        given(player.getName()).willReturn("Alice");
         given(player.getServer()).willReturn(currentServer);
         given(currentServer.getInfo()).willReturn(nonAuthServerInfo);
         given(nonAuthServerInfo.getName()).willReturn("survival");
@@ -442,7 +492,7 @@ class BungeeProxyBridgeTest {
         BungeeProxyBridge bridge = new BungeeProxyBridge(proxyServer, logger, createConfiguration(), new BungeeAuthenticationStore(), null);
         bridge.onPluginMessage(pluginMessageEvent);
 
-        verify(nonAuthServerInfo).sendData(eq(BungeeProxyBridge.AUTHME_CHANNEL), payloadCaptor.capture(), eq(false));
+        verify(currentServer).sendData(eq(BungeeProxyBridge.AUTHME_CHANNEL), payloadCaptor.capture());
         assertPerformLoginPayload(payloadCaptor.getValue(), "alice", "test-secret");
     }
 

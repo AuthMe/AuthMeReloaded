@@ -131,9 +131,8 @@ public class ChangePasswordCommandTest {
     private Player initPlayerWithName(String name, boolean loggedIn) {
         Player player = mock(Player.class);
         when(player.getName()).thenReturn(name);
-        when(playerCache.isAuthenticated(name)).thenReturn(loggedIn);
+        when(playerCache.isAuthenticated(player)).thenReturn(loggedIn);
         return player;
     }
 }
-
 

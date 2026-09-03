@@ -69,7 +69,7 @@ public class AsynchronousUnregister implements AsynchronousProcess {
      */
     public void unregister(Player player, String password) {
         String name = player.getName();
-        PlayerAuth cachedAuth = playerCache.getAuth(name);
+        PlayerAuth cachedAuth = playerCache.getAuth(player);
         if (passwordSecurity.comparePassword(password, cachedAuth.getPassword(), name)) {
             if (dataSource.removeAuth(name)) {
                 performPostUnregisterActions(name, player);
@@ -115,11 +115,15 @@ public class AsynchronousUnregister implements AsynchronousProcess {
      * @param player the according Player object (nullable)
      */
     private void performPostUnregisterActions(String name, Player player) {
-        if (player != null && playerCache.isAuthenticated(name)) {
+        if (player != null && playerCache.isAuthenticated(player)) {
             bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player,
                 () -> bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.LOGOUT));
         }
-        playerCache.removePlayer(name);
+        if (player == null) {
+            playerCache.removePlayer(name);
+        } else {
+            playerCache.removePlayer(player);
+        }
 
         // TODO: send an update when a messaging service will be implemented (UNREGISTER)
 

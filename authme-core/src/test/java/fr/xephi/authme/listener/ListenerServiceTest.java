@@ -80,7 +80,7 @@ class ListenerServiceTest {
         // given
         String playerName = "Bobby";
         Player player = mockPlayerWithName(playerName);
-        given(playerCache.isAuthenticated(playerName)).willReturn(true);
+        given(playerCache.isAuthenticated(player)).willReturn(true);
         EntityEvent event = mock(EntityEvent.class);
         given(event.getEntity()).willReturn(player);
 
@@ -89,7 +89,7 @@ class ListenerServiceTest {
 
         // then
         assertThat(result, equalTo(false));
-        verify(playerCache).isAuthenticated(playerName);
+        verify(playerCache).isAuthenticated(player);
         verifyNoInteractions(dataSource);
     }
 
@@ -98,7 +98,7 @@ class ListenerServiceTest {
         // given
         String playerName = "Tester";
         Player player = mockPlayerWithName(playerName);
-        given(playerCache.isAuthenticated(playerName)).willReturn(false);
+        given(playerCache.isAuthenticated(player)).willReturn(false);
         EntityEvent event = mock(EntityEvent.class);
         given(event.getEntity()).willReturn(player);
 
@@ -107,7 +107,7 @@ class ListenerServiceTest {
 
         // then
         assertThat(result, equalTo(true));
-        verify(playerCache).isAuthenticated(playerName);
+        verify(playerCache).isAuthenticated(player);
         // makes sure the setting is checked first = avoid unnecessary DB operation
         verifyNoInteractions(dataSource);
     }
@@ -117,7 +117,7 @@ class ListenerServiceTest {
         // given
         String playerName = "myPlayer1";
         Player player = mockPlayerWithName(playerName);
-        given(playerCache.isAuthenticated(playerName)).willReturn(false);
+        given(playerCache.isAuthenticated(player)).willReturn(false);
         given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(false);
         EntityEvent event = mock(EntityEvent.class);
         given(event.getEntity()).willReturn(player);
@@ -128,7 +128,7 @@ class ListenerServiceTest {
 
         // then
         assertThat(result, equalTo(false));
-        verify(playerCache).isAuthenticated(playerName);
+        verify(playerCache).isAuthenticated(player);
         verify(dataSource).isAuthAvailable(playerName);
     }
 
@@ -173,14 +173,14 @@ class ListenerServiceTest {
         String playerName = "example";
         Player player = mockPlayerWithName(playerName);
         PlayerEvent event = new TestPlayerEvent(player);
-        given(playerCache.isAuthenticated(playerName)).willReturn(true);
+        given(playerCache.isAuthenticated(player)).willReturn(true);
 
         // when
         boolean result = listenerService.shouldCancelEvent(event);
 
         // then
         assertThat(result, equalTo(false));
-        verify(playerCache).isAuthenticated(playerName);
+        verify(playerCache).isAuthenticated(player);
         verifyNoInteractions(dataSource);
     }
 
@@ -208,7 +208,7 @@ class ListenerServiceTest {
 
         // then
         assertThat(result, equalTo(true));
-        verify(playerCache).isAuthenticated(playerName);
+        verify(playerCache).isAuthenticated(player);
         verifyNoInteractions(dataSource);
     }
 

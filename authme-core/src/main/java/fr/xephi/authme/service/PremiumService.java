@@ -66,7 +66,7 @@ public class PremiumService implements HasCleanup {
             return;
         }
 
-        PlayerAuth auth = playerCache.getAuth(player.getName());
+        PlayerAuth auth = playerCache.getAuth(player);
         if (auth == null) {
             messages.send(player, MessageKey.NOT_LOGGED_IN);
             return;
@@ -115,7 +115,7 @@ public class PremiumService implements HasCleanup {
             return;
         }
 
-        PlayerAuth auth = playerCache.getAuth(player.getName());
+        PlayerAuth auth = playerCache.getAuth(player);
         if (auth == null) {
             messages.send(player, MessageKey.NOT_LOGGED_IN);
             return;

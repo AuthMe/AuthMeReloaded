@@ -18,7 +18,7 @@ public class TabCompletePacketListener extends PacketListenerAbstract {
     public void onPacketReceive(PacketReceiveEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.TAB_COMPLETE) {
             Player player = event.getPlayer();
-            if (player != null && !playerCache.isAuthenticated(player.getName())) {
+            if (player != null && !playerCache.isAuthenticated(player)) {
                 event.setCancelled(true);
             }
         }

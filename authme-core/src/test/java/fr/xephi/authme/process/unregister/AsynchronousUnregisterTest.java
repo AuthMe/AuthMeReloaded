@@ -80,7 +80,7 @@ class AsynchronousUnregisterTest {
         String name = "Bobby";
         given(player.getName()).willReturn(name);
         PlayerAuth auth = mock(PlayerAuth.class);
-        given(playerCache.getAuth(name)).willReturn(auth);
+        given(playerCache.getAuth(player)).willReturn(auth);
         HashedPassword password = new HashedPassword("password", "in_auth_obj");
         given(auth.getPassword()).willReturn(password);
         String userPassword = "pass";
@@ -104,7 +104,7 @@ class AsynchronousUnregisterTest {
         given(player.getName()).willReturn(name);
         given(player.isOnline()).willReturn(true);
         PlayerAuth auth = mock(PlayerAuth.class);
-        given(playerCache.getAuth(name)).willReturn(auth);
+        given(playerCache.getAuth(player)).willReturn(auth);
         HashedPassword password = new HashedPassword("password", "in_auth_obj");
         given(auth.getPassword()).willReturn(password);
         String userPassword = "pass";
@@ -123,7 +123,7 @@ class AsynchronousUnregisterTest {
         verify(service).send(player, MessageKey.UNREGISTERED_SUCCESS);
         verify(passwordSecurity).comparePassword(userPassword, password, name);
         verify(dataSource).removeAuth(name);
-        verify(playerCache).removePlayer(name);
+        verify(playerCache).removePlayer(player);
         verify(teleportationService).teleportOnJoin(player);
         verifyCalledUnregisterEventFor(player);
         verify(commandManager).runCommandsOnUnregister(player);
@@ -137,7 +137,7 @@ class AsynchronousUnregisterTest {
         given(player.getName()).willReturn(name);
         given(player.isOnline()).willReturn(true);
         PlayerAuth auth = mock(PlayerAuth.class);
-        given(playerCache.getAuth(name)).willReturn(auth);
+        given(playerCache.getAuth(player)).willReturn(auth);
         HashedPassword password = new HashedPassword("password", "in_auth_obj");
         given(auth.getPassword()).willReturn(password);
         String userPassword = "pass";
@@ -154,7 +154,7 @@ class AsynchronousUnregisterTest {
         verify(service).send(player, MessageKey.UNREGISTERED_SUCCESS);
         verify(passwordSecurity).comparePassword(userPassword, password, name);
         verify(dataSource).removeAuth(name);
-        verify(playerCache).removePlayer(name);
+        verify(playerCache).removePlayer(player);
         verify(teleportationService).teleportOnJoin(player);
         verifyCalledUnregisterEventFor(player);
         verify(commandManager).runCommandsOnUnregister(player);
@@ -171,7 +171,7 @@ class AsynchronousUnregisterTest {
         String userPassword = "141$$5ad";
         HashedPassword password = new HashedPassword("ttt123");
         PlayerAuth auth = PlayerAuth.builder().name(name).password(password).build();
-        given(playerCache.getAuth(name)).willReturn(auth);
+        given(playerCache.getAuth(player)).willReturn(auth);
         given(passwordSecurity.comparePassword(userPassword, password, name)).willReturn(true);
         given(dataSource.removeAuth(name)).willReturn(true);
         given(service.getProperty(RegistrationSettings.FORCE)).willReturn(false);
@@ -184,7 +184,7 @@ class AsynchronousUnregisterTest {
         verify(service).send(player, MessageKey.UNREGISTERED_SUCCESS);
         verify(passwordSecurity).comparePassword(userPassword, password, name);
         verify(dataSource).removeAuth(name);
-        verify(playerCache).removePlayer(name);
+        verify(playerCache).removePlayer(player);
         verifyNoInteractions(teleportationService, limboService);
         verifyCalledUnregisterEventFor(player);
         verify(commandManager).runCommandsOnUnregister(player);
@@ -197,7 +197,7 @@ class AsynchronousUnregisterTest {
         String name = "Frank21";
         given(player.getName()).willReturn(name);
         PlayerAuth auth = mock(PlayerAuth.class);
-        given(playerCache.getAuth(name)).willReturn(auth);
+        given(playerCache.getAuth(player)).willReturn(auth);
         HashedPassword password = new HashedPassword("password", "in_auth_obj");
         given(auth.getPassword()).willReturn(password);
         String userPassword = "pass";
@@ -222,7 +222,7 @@ class AsynchronousUnregisterTest {
         given(player.getName()).willReturn(name);
         given(player.isOnline()).willReturn(false);
         PlayerAuth auth = mock(PlayerAuth.class);
-        given(playerCache.getAuth(name)).willReturn(auth);
+        given(playerCache.getAuth(player)).willReturn(auth);
         HashedPassword password = new HashedPassword("password", "in_auth_obj");
         given(auth.getPassword()).willReturn(password);
         String userPassword = "pass";
@@ -235,7 +235,7 @@ class AsynchronousUnregisterTest {
         // then
         verify(passwordSecurity).comparePassword(userPassword, password, name);
         verify(dataSource).removeAuth(name);
-        verify(playerCache).removePlayer(name);
+        verify(playerCache).removePlayer(player);
         verifyNoInteractions(teleportationService);
         verifyCalledUnregisterEventFor(player);
     }
@@ -260,7 +260,7 @@ class AsynchronousUnregisterTest {
         verify(service).send(player, MessageKey.UNREGISTERED_SUCCESS);
         verify(service).send(initiator, MessageKey.UNREGISTERED_SUCCESS);
         verify(dataSource).removeAuth(name);
-        verify(playerCache).removePlayer(name);
+        verify(playerCache).removePlayer(player);
         verify(teleportationService).teleportOnJoin(player);
         verifyCalledUnregisterEventFor(player);
         verify(commandManager).runCommandsOnUnregister(player);

@@ -137,7 +137,12 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
             if (verified == null) {
                 return;
             }
-            performLogin(verified.name, verified.verifiedPremiumUuid);
+            if (!verified.name.equalsIgnoreCase(player.getName())) {
+                logger.warning("Rejected perform.login for " + verified.name
+                    + ": message was carried by " + player.getName());
+                return;
+            }
+            performLogin(player, verified.verifiedPremiumUuid);
         }
     }
 
@@ -235,16 +240,16 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
         return playerName + ":" + timestamp + ":" + (verifiedPremiumUuid == null ? "" : verifiedPremiumUuid);
     }
 
-    private void performLogin(String name, UUID verifiedPremiumUuid) {
+    private void performLogin(Player player, UUID verifiedPremiumUuid) {
+        String name = player.getName();
         logger.debug("Received perform.login request for {0}", name);
         // Always queue in the proxy session manager so processJoin can consume it even when
         // the player is already online (PlayerJoinEvent fires before ServerSwitchEvent on the
         // proxy, so processJoin may run before perform.login arrives at this backend).
         proxySessionManager.processProxySessionMessage(name, verifiedPremiumUuid);
-        Player player = bukkitService.getPlayerExact(name);
         logger.info("performLogin: " + name + " verifiedPremiumUuid=" + verifiedPremiumUuid
-            + " playerOnline=" + (player != null && player.isOnline()));
-        if (player != null && player.isOnline()) {
+            + " playerOnline=" + player.isOnline());
+        if (player.isOnline()) {
             if (verifiedPremiumUuid == null) {
                 completeProxyLogin(player);
             } else {

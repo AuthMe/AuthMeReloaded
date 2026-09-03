@@ -35,7 +35,7 @@ public class RemoveTotpCommand extends PlayerCommand {
 
     @Override
     protected void runCommand(Player player, List<String> arguments) {
-        PlayerAuth auth = playerCache.getAuth(player.getName());
+        PlayerAuth auth = playerCache.getAuth(player);
         if (auth == null) {
             messages.send(player, MessageKey.NOT_LOGGED_IN);
         } else if (auth.getTotpKey() == null) {

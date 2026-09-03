@@ -1,6 +1,9 @@
 package fr.xephi.authme.data.auth;
 
+import org.bukkit.entity.Player;
 
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,6 +14,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PlayerCache {
 
     private final Map<String, PlayerAuth> cache = new ConcurrentHashMap<>();
+    private final Map<Player, PlayerAuth> playerCache = Collections.synchronizedMap(new IdentityHashMap<>());
+    private final Map<String, Player> owners = new ConcurrentHashMap<>();
 
     PlayerCache() {
     }
@@ -20,8 +25,19 @@ public class PlayerCache {
      *
      * @param auth the player auth object to save
      */
-    public void updatePlayer(PlayerAuth auth) {
-        cache.put(auth.getNickname().toLowerCase(Locale.ROOT), auth);
+    public synchronized void updatePlayer(PlayerAuth auth) {
+        String normalizedName = auth.getNickname().toLowerCase(Locale.ROOT);
+        cache.put(normalizedName, auth);
+        synchronized (playerCache) {
+            playerCache.replaceAll((player, current) -> player.getName().equalsIgnoreCase(normalizedName) ? auth : current);
+        }
+    }
+
+    public synchronized void updatePlayer(Player player, PlayerAuth auth) {
+        String normalizedName = auth.getNickname().toLowerCase(Locale.ROOT);
+        cache.put(normalizedName, auth);
+        owners.put(normalizedName, player);
+        playerCache.put(player, auth);
     }
 
     /**
@@ -29,8 +45,24 @@ public class PlayerCache {
      *
      * @param user name of the player to remove
      */
-    public void removePlayer(String user) {
-        cache.remove(user.toLowerCase(Locale.ROOT));
+    public synchronized void removePlayer(String user) {
+        String normalizedName = user.toLowerCase(Locale.ROOT);
+        cache.remove(normalizedName);
+        owners.remove(normalizedName);
+        synchronized (playerCache) {
+            playerCache.keySet().removeIf(player -> player.getName().equalsIgnoreCase(normalizedName));
+        }
+    }
+
+    public synchronized void removePlayer(Player player) {
+        PlayerAuth removed = playerCache.remove(player);
+        if (removed != null) {
+            String normalizedName = removed.getNickname().toLowerCase(Locale.ROOT);
+            if (owners.get(normalizedName) == player) {
+                owners.remove(normalizedName);
+                cache.remove(normalizedName);
+            }
+        }
     }
 
     /**
@@ -44,6 +76,11 @@ public class PlayerCache {
         return cache.containsKey(user.toLowerCase(Locale.ROOT));
     }
 
+    public synchronized boolean isAuthenticated(Player player) {
+        PlayerAuth auth = playerCache.get(player);
+        return auth != null && owners.get(auth.getNickname().toLowerCase(Locale.ROOT)) == player;
+    }
+
     /**
      * Returns the PlayerAuth associated with the given user, if available.
      *
@@ -53,6 +90,10 @@ public class PlayerCache {
      */
     public PlayerAuth getAuth(String user) {
         return cache.get(user.toLowerCase(Locale.ROOT));
+    }
+
+    public synchronized PlayerAuth getAuth(Player player) {
+        return isAuthenticated(player) ? playerCache.get(player) : null;
     }
 
     /**

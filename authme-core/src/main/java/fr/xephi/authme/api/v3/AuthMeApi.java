@@ -96,7 +96,7 @@ public class AuthMeApi {
      * @return true if the player is authenticated
      */
     public boolean isAuthenticated(Player player) {
-        return playerCache.isAuthenticated(player.getName());
+        return playerCache.isAuthenticated(player);
     }
 
     /**
@@ -128,7 +128,7 @@ public class AuthMeApi {
      * @return The location of the player
      */
     public Location getLastLocation(Player player) {
-        PlayerAuth auth = playerCache.getAuth(player.getName());
+        PlayerAuth auth = playerCache.getAuth(player);
         if (auth != null) {
             return new Location(Bukkit.getWorld(auth.getWorld()),
                 auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(), auth.getYaw(), auth.getPitch());

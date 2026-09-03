@@ -75,7 +75,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
         String name = player.getName().toLowerCase(Locale.ROOT);
         teleportationService.clearOriginalJoinLocation(name);
         dialogStateService.clearDialogOpen(player);
-        boolean wasLoggedIn = playerCache.isAuthenticated(name);
+        boolean wasLoggedIn = playerCache.isAuthenticated(player);
 
         if (wasLoggedIn) {
             if (service.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
@@ -99,7 +99,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
         }
 
         //always unauthenticate the player - use session only for auto logins on the same ip
-        playerCache.removePlayer(name);
+        playerCache.removePlayer(player);
         codeManager.unverify(name);
 
         //always update the database when the player quit the game (if sessions are disabled)

@@ -34,7 +34,7 @@ public class UnregisterCommand extends PlayerCommand {
         String playerName = player.getName();
 
         // Make sure the player is authenticated
-        if (!playerCache.isAuthenticated(playerName)) {
+        if (!playerCache.isAuthenticated(player)) {
             commonService.send(player, MessageKey.NOT_LOGGED_IN);
             return;
         }

@@ -123,7 +123,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
             restoreInventory(player);
         }
 
-        final PlayerAuth auth = playerCache.getAuth(name);
+        final PlayerAuth auth = playerCache.getAuth(player);
 
         if (isFirstLogin) { // Save quit location before login teleport
             auth.setQuitLocation(player.getLocation());

@@ -21,6 +21,7 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
@@ -55,7 +56,7 @@ public class RemoveTotpCommandTest {
         // given
         String name = "aws";
         PlayerAuth auth = PlayerAuth.builder().name(name).totpKey("some-totp-key").build();
-        given(playerCache.getAuth(name)).willReturn(auth);
+        given(playerCache.getAuth(any(Player.class))).willReturn(auth);
         String inputCode = "93847";
         given(totpAuthenticator.checkCode(auth, inputCode)).willReturn(true);
         given(dataSource.removeTotpKey(name)).willReturn(true);
@@ -77,7 +78,7 @@ public class RemoveTotpCommandTest {
         // given
         String name = "aws";
         PlayerAuth auth = PlayerAuth.builder().name(name).totpKey("some-totp-key").build();
-        given(playerCache.getAuth(name)).willReturn(auth);
+        given(playerCache.getAuth(any(Player.class))).willReturn(auth);
         String inputCode = "93847";
         given(totpAuthenticator.checkCode(auth, inputCode)).willReturn(true);
         given(dataSource.removeTotpKey(name)).willReturn(false);
@@ -90,7 +91,7 @@ public class RemoveTotpCommandTest {
         // then
         verify(dataSource).removeTotpKey(name);
         verify(messages, only()).send(player, MessageKey.ERROR);
-        verify(playerCache, only()).getAuth(name);
+        verify(playerCache, only()).getAuth(player);
     }
 
     @Test
@@ -98,7 +99,7 @@ public class RemoveTotpCommandTest {
         // given
         String name = "cesar";
         PlayerAuth auth = PlayerAuth.builder().name(name).totpKey("some-totp-key").build();
-        given(playerCache.getAuth(name)).willReturn(auth);
+        given(playerCache.getAuth(any(Player.class))).willReturn(auth);
         String inputCode = "93847";
         given(totpAuthenticator.checkCode(auth, inputCode)).willReturn(false);
         Player player = mock(Player.class);
@@ -110,7 +111,7 @@ public class RemoveTotpCommandTest {
         // then
         verifyNoInteractions(dataSource);
         verify(messages, only()).send(player, MessageKey.TWO_FACTOR_INVALID_CODE);
-        verify(playerCache, only()).getAuth(name);
+        verify(playerCache, only()).getAuth(player);
     }
 
     @Test
@@ -118,7 +119,7 @@ public class RemoveTotpCommandTest {
         // given
         String name = "cesar";
         PlayerAuth auth = PlayerAuth.builder().name(name).build();
-        given(playerCache.getAuth(name)).willReturn(auth);
+        given(playerCache.getAuth(any(Player.class))).willReturn(auth);
         String inputCode = "654684";
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
@@ -129,14 +130,14 @@ public class RemoveTotpCommandTest {
         // then
         verifyNoInteractions(dataSource, totpAuthenticator);
         verify(messages, only()).send(player, MessageKey.TWO_FACTOR_NOT_ENABLED_ERROR);
-        verify(playerCache, only()).getAuth(name);
+        verify(playerCache, only()).getAuth(player);
     }
 
     @Test
     public void shouldHandleNonLoggedInUser() {
         // given
         String name = "cesar";
-        given(playerCache.getAuth(name)).willReturn(null);
+        given(playerCache.getAuth(any(Player.class))).willReturn(null);
         String inputCode = "654684";
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
@@ -147,8 +148,6 @@ public class RemoveTotpCommandTest {
         // then
         verifyNoInteractions(dataSource, totpAuthenticator);
         verify(messages, only()).send(player, MessageKey.NOT_LOGGED_IN);
-        verify(playerCache, only()).getAuth(name);
+        verify(playerCache, only()).getAuth(player);
     }
 }
-
-

@@ -170,7 +170,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
      */
     private PlayerAuth getPlayerAuth(Player player, boolean quiet) {
         String name = player.getName().toLowerCase(Locale.ROOT);
-        if (playerCache.isAuthenticated(name)) {
+        if (playerCache.isAuthenticated(player)) {
             if (!quiet) {
                 service.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
             }
@@ -282,7 +282,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         }
 
         bukkitService.runTaskLater(player, () -> {
-            if (!player.isOnline() || playerCache.isAuthenticated(player.getName())) {
+            if (!player.isOnline() || playerCache.isAuthenticated(player)) {
                 return;
             }
             dialogAdapter.showTotpDialog(player, dialogWindowService.createTotpDialog(player));
@@ -343,7 +343,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             logger.fine(player.getName() + " logged in " + ip);
 
             // makes player loggedin
-            playerCache.updatePlayer(auth);
+            playerCache.updatePlayer(player, auth);
             dataSource.setLogged(name);
             sessionService.grantSession(name);
 

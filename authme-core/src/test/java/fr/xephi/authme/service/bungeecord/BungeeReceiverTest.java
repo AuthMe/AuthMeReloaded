@@ -121,8 +121,8 @@ class BungeeReceiverTest {
         given(messenger.isIncomingChannelRegistered(plugin, "authme:main")).willReturn(false);
 
         Player player = mock(Player.class);
+        given(player.getName()).willReturn(playerName);
         given(player.isOnline()).willReturn(true);
-        given(bukkitService.getPlayerExact(playerName)).willReturn(player);
         given(proxyLoginRequestValidator.validate(player, null)).willReturn(true);
 
         BungeeReceiver receiver =
@@ -141,7 +141,7 @@ class BungeeReceiverTest {
     }
 
     @Test
-    void shouldOnlyQueueSessionWhenPerformLoginReceivedForOfflinePlayer() {
+    void shouldRejectPerformLoginCarriedByAnotherPlayer() {
         // given
         String sharedSecret = "test-secret";
         String playerName = "Bobby";
@@ -151,20 +151,19 @@ class BungeeReceiverTest {
         given(settings.getProperty(HooksSettings.BUNGEECORD)).willReturn(true);
         given(settings.getProperty(HooksSettings.PROXY_SHARED_SECRET)).willReturn(sharedSecret);
         given(messenger.isIncomingChannelRegistered(plugin, "authme:main")).willReturn(false);
-        given(bukkitService.getPlayerExact(playerName)).willReturn(null);
-
         BungeeReceiver receiver =
             new BungeeReceiver(plugin, bukkitService, proxySessionManager, management, bungeeSender, dataSource,
                 proxyLoginRequestValidator, settings);
 
         Player carrier = mock(Player.class);
+        given(carrier.getName()).willReturn("Alice");
         byte[] payload = buildPerformLoginPayload(playerName, timestamp, hmac);
 
         // when
         receiver.onPluginMessageReceived("authme:main", carrier, payload);
 
         // then
-        verify(proxySessionManager).processProxySessionMessage(playerName, null);
+        verify(proxySessionManager, never()).processProxySessionMessage(any(), any());
         verify(management, never()).forceLoginFromProxy(any(Player.class));
         verify(bungeeSender, never()).sendAuthMeBungeecordMessage(any(), any());
     }
@@ -185,8 +184,8 @@ class BungeeReceiverTest {
         setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask(bukkitService);
 
         Player player = mock(Player.class);
+        given(player.getName()).willReturn(playerName);
         given(player.isOnline()).willReturn(true);
-        given(bukkitService.getPlayerExact(playerName)).willReturn(player);
         given(proxyLoginRequestValidator.validate(player, verifiedUuid)).willReturn(true);
 
         BungeeReceiver receiver =
@@ -219,8 +218,8 @@ class BungeeReceiverTest {
         setBukkitServiceToRunTaskAsynchronously(bukkitService);
 
         Player player = mock(Player.class);
+        given(player.getName()).willReturn(playerName);
         given(player.isOnline()).willReturn(true);
-        given(bukkitService.getPlayerExact(playerName)).willReturn(player);
         given(proxyLoginRequestValidator.validate(player, verifiedUuid)).willReturn(false);
 
         BungeeReceiver receiver =

@@ -78,7 +78,7 @@ public class TeleportationService implements Reloadable {
             && settings.getProperty(TELEPORT_UNAUTHED_TO_SPAWN)
             && !isUnregisteredWithOptionalAuth(player.getName())) {
             logger.debug("Teleport on join for player `{0}`", player.getName());
-            teleportToSpawn(player, playerCache.isAuthenticated(player.getName()));
+            teleportToSpawn(player, playerCache.isAuthenticated(player));
         }
     }
 
@@ -106,7 +106,7 @@ public class TeleportationService implements Reloadable {
             final Location location = spawnLoader.getSpawnLocation(player);
 
             SpawnTeleportEvent event = new SpawnTeleportEvent(player, location,
-                playerCache.isAuthenticated(player.getName()));
+                playerCache.isAuthenticated(player));
             bukkitService.callEvent(event);
             if (!isEventValid(event)) {
                 return null;
