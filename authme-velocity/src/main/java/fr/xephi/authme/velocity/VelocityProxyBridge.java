@@ -20,6 +20,8 @@ import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
 import com.velocitypowered.api.proxy.messages.LegacyChannelIdentifier;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
+import fr.xephi.authme.velocity.events.AuthMeVelocityLoginEvent;
+import fr.xephi.authme.velocity.events.AuthMeVelocityLogoutEvent;
 import fr.xephi.authme.velocity.premium.VelocityPremiumVerificationManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -243,11 +245,20 @@ final class VelocityProxyBridge {
             return;
         }
 
+        String normalizedName = normalizeName(parsedMessage.playerName());
         String serverName = serverConnection.getServer().getServerInfo().getName();
 
         if (LOGIN_MESSAGE.equals(parsedMessage.typeId())) {
             if (configuration.isAuthServer(serverConnection.getServer())) {
                 logger.info("Player {} authenticated on auth server '{}'", parsedMessage.playerName(), serverName);
+
+                proxyServer.getPlayer(normalizedName).ifPresent(player -> {
+                    boolean premium = requiresPremiumVerification(normalizedName);
+                    AuthMeVelocityLoginEvent loginEvent = new AuthMeVelocityLoginEvent(player, premium);
+
+                    proxyServer.getEventManager().fireAndForget(loginEvent);
+                });
+
                 authenticationStore.markAuthenticated(parsedMessage.playerName());
                 sendAutoLoginIfAlreadySwitched(parsedMessage.playerName(), serverConnection.getServer());
                 redirectToLoginServer(parsedMessage.playerName());
@@ -263,6 +274,11 @@ final class VelocityProxyBridge {
         } else if (LOGOUT_MESSAGE.equals(parsedMessage.typeId())) {
             logger.info("Player {} logged out (notified by server '{}')", parsedMessage.playerName(), serverName);
             authenticationStore.markLoggedOut(parsedMessage.playerName());
+            proxyServer.getPlayer(normalizedName).ifPresent(player -> {
+                AuthMeVelocityLogoutEvent loginEvent = new AuthMeVelocityLogoutEvent(player);
+                proxyServer.getEventManager().fireAndForget(loginEvent);
+            });
+
             redirectLoggedOutPlayer(parsedMessage.playerName());
         } else if (PERFORM_LOGIN_ACK_MESSAGE.equals(parsedMessage.typeId())) {
             logger.info("Auto-login ACK received for {} from server '{}'",
@@ -607,9 +623,11 @@ final class VelocityProxyBridge {
             String serverName = serverOpt.get().getServer().getServerInfo().getName();
             logger.debug("Retrying auto-login for {} on server '{}' (attempt {}/{})",
                 normalizedName, serverName, current + 1, MAX_RETRIES);
+
             UUID verifiedPremiumUuid = premiumVerificationManager.getVerifiedPremiumUuid(normalizedName);
             serverOpt.get().sendPluginMessage(AUTHME_CHANNEL,
                 createPerformLoginMessage(normalizedName, verifiedPremiumUuid));
+
             scheduleRetry(normalizedName);
         }, 1, TimeUnit.SECONDS);
     }
