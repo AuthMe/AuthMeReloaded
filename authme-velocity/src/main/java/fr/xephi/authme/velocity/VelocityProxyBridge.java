@@ -92,6 +92,7 @@ final class VelocityProxyBridge {
         this.premiumVerificationManager =
             new VelocityPremiumVerificationManager(logger,
                 this::requiresPremiumVerification, this::isPendingPremiumVerification,
+                this::clearPendingPremiumVerification,
                 () -> this.configuration.keepOfflineUuidCompatibility());
         this.cacheFile = dataDirectory != null ? dataDirectory.resolve("premium_names.cache") : null;
         if (cacheFile != null) {
