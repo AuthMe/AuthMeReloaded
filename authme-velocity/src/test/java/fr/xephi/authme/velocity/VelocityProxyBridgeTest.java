@@ -604,6 +604,32 @@ class VelocityProxyBridgeTest {
         assertEquals(PreLoginEvent.PreLoginComponentResult.forceOnlineMode().toString(), event.getResult().toString());
     }
 
+    @Test
+    void shouldCancelPendingPremiumVerificationWhenForcedOnlineLoginNeverCompletes() {
+        given(pluginMessageEvent.getResult()).willReturn(PluginMessageEvent.ForwardResult.forward());
+        given(pluginMessageEvent.getIdentifier()).willReturn(VelocityProxyBridge.AUTHME_CHANNEL);
+        given(pluginMessageEvent.getSource()).willReturn(sourceConnection);
+        given(pluginMessageEvent.getData()).willReturn(createAuthMePayload("premium.pending.set", "Alice"));
+        given(sourceConnection.getServer()).willReturn(authServer);
+        given(authServer.getServerInfo()).willReturn(authServerInfo);
+        given(authServerInfo.getName()).willReturn("lobby");
+
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
+        bridge.onPluginMessage(pluginMessageEvent);
+
+        PreLoginEvent firstAttempt = new PreLoginEvent(mock(InboundConnection.class), "Alice", null);
+        bridge.onPreLogin(firstAttempt);
+        // Mojang rejected the unlicensed client; Velocity fires no event for that, the player just reconnects
+        PreLoginEvent secondAttempt = new PreLoginEvent(mock(InboundConnection.class), "Alice", null);
+        bridge.onPreLogin(secondAttempt);
+        PreLoginEvent thirdAttempt = new PreLoginEvent(mock(InboundConnection.class), "Alice", null);
+        bridge.onPreLogin(thirdAttempt);
+
+        assertEquals(PreLoginEvent.PreLoginComponentResult.forceOnlineMode().toString(), firstAttempt.getResult().toString());
+        assertEquals(PreLoginEvent.PreLoginComponentResult.allowed().toString(), secondAttempt.getResult().toString());
+        assertEquals(PreLoginEvent.PreLoginComponentResult.allowed().toString(), thirdAttempt.getResult().toString());
+    }
+
     private static byte[] createChunkPayload(int seq, boolean last, String csv) {
         ByteArrayDataOutput output = ByteStreams.newDataOutput();
         output.writeUTF("premium.list.chunk");
