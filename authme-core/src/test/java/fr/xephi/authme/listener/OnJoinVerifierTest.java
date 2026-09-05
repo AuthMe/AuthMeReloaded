@@ -340,13 +340,13 @@ class OnJoinVerifierTest {
         // given
         String name = "bobby";
         given(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)).willReturn(true);
-        given(bukkitService.getPlayerExact("bobby")).willReturn(null);
+        given(bukkitService.getOnlinePlayers()).willReturn(Collections.emptyList());
 
         // when
         onJoinVerifier.checkSingleSession(name);
 
         // then
-        verify(bukkitService).getPlayerExact(name);
+        verify(bukkitService).getOnlinePlayers();
     }
 
     @Test
@@ -355,8 +355,8 @@ class OnJoinVerifierTest {
         String name = "Charlie";
 
         Player onlinePlayer = mock(Player.class);
-
-        given(bukkitService.getPlayerExact("Charlie")).willReturn(onlinePlayer);
+        given(onlinePlayer.getName()).willReturn("CHARLIE");
+        given(bukkitService.getOnlinePlayers()).willReturn(Collections.singletonList(onlinePlayer));
         given(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)).willReturn(true);
 
         // when / then

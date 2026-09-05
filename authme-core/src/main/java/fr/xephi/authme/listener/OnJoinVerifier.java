@@ -234,9 +234,10 @@ public class OnJoinVerifier implements Reloadable {
             return;
         }
 
-        Player onlinePlayer = bukkitService.getPlayerExact(name);
-        if (onlinePlayer != null) {
-            throw new FailedVerificationException(MessageKey.USERNAME_ALREADY_ONLINE_ERROR);
+        for (Player player : bukkitService.getOnlinePlayers()) {
+            if (player.getName().equalsIgnoreCase(name)) {
+                throw new FailedVerificationException(MessageKey.USERNAME_ALREADY_ONLINE_ERROR);
+            }
         }
     }
 
