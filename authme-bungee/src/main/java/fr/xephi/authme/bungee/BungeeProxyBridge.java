@@ -3,6 +3,8 @@ package fr.xephi.authme.bungee;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import fr.xephi.authme.bungee.events.AuthMeBungeeLoginEvent;
+import fr.xephi.authme.bungee.events.AuthMeBungeeLogoutEvent;
 import fr.xephi.authme.bungee.premium.BungeePremiumOnlineModeHandler;
 import fr.xephi.authme.bungee.premium.BungeePremiumVerificationManager;
 import net.md_5.bungee.api.ChatColor;
@@ -244,11 +246,21 @@ public final class BungeeProxyBridge implements Listener {
             return;
         }
 
+        String playerName = normalizeName(parsedMessage.playerName());
+
         if (LOGIN_MESSAGE.equals(parsedMessage.typeId())) {
             if (configuration.isAuthServer(server.getInfo())) {
                 logger.info("Player " + parsedMessage.playerName() + " authenticated on auth server '"
                     + server.getInfo().getName() + "'");
+
+                ProxiedPlayer player = proxyServer.getPlayer(playerName);
+                if (player != null) {
+                    boolean premium = requiresPremiumVerification(playerName);
+                    proxyServer.getPluginManager().callEvent(new AuthMeBungeeLoginEvent(player, premium));
+                }
+
                 authenticationStore.markAuthenticated(parsedMessage.playerName());
+
                 sendAutoLoginIfAlreadySwitched(parsedMessage.playerName(), server.getInfo());
                 redirectToLoginServer(parsedMessage.playerName());
             } else if (pendingAutoLogins.containsKey(parsedMessage.playerName())) {
@@ -259,6 +271,11 @@ public final class BungeeProxyBridge implements Listener {
             }
         } else if (LOGOUT_MESSAGE.equals(parsedMessage.typeId())) {
             authenticationStore.markLoggedOut(parsedMessage.playerName());
+            ProxiedPlayer player = proxyServer.getPlayer(playerName);
+            if (player != null) {
+                proxyServer.getPluginManager().callEvent(new AuthMeBungeeLogoutEvent(player));
+            }
+
             redirectLoggedOutPlayer(parsedMessage.playerName());
         } else if (PERFORM_LOGIN_ACK_MESSAGE.equals(parsedMessage.typeId())) {
             logger.info("Auto-login ACK received for " + parsedMessage.playerName()
@@ -350,7 +367,6 @@ public final class BungeeProxyBridge implements Listener {
             logger.fine("PacketEvents-verified premium player " + normalizedName
                 + " joining auth server — sending perform.login immediately");
         }
-
         String serverName = currentServer.getInfo().getName();
         logger.info("Sending auto-login request to server '" + serverName + "' for player " + normalizedName);
         currentServer.getInfo().sendData(
@@ -447,6 +463,7 @@ public final class BungeeProxyBridge implements Listener {
             // Still on auth server — normal flow, ServerSwitchEvent will handle it on switch
             return;
         }
+
         String currentServerName = currentConn.getInfo().getName();
         logger.info("Player " + normalizedName + " already on server '" + currentServerName
             + "' when login message arrived — sending auto-login immediately");
@@ -508,6 +525,7 @@ public final class BungeeProxyBridge implements Listener {
                 logger.fine("Auto-login retry cancelled for " + normalizedName + " (player has no active server)");
                 return;
             }
+
             String serverName = server.getInfo().getName();
             logger.fine("Retrying auto-login for " + normalizedName + " on server '" + serverName
                 + "' (attempt " + (current + 1) + "/" + MAX_RETRIES + ")");
