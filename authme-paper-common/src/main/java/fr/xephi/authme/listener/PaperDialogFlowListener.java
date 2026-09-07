@@ -214,9 +214,11 @@ public class PaperDialogFlowListener implements Listener {
 
     private void handleBlockingLoginDialog(PlayerConfigurationConnection connection, long sessionId, String playerName) {
         CompletableFuture<String> loginResponse = new CompletableFuture<>();
-        long timeoutSeconds = Math.max(commonService.getProperty(RestrictionSettings.LOGIN_TIMEOUT), 1);
-        loginResponse.completeOnTimeout(
-            messages.retrieveSingle(playerName, MessageKey.LOGIN_TIMEOUT_ERROR), timeoutSeconds, TimeUnit.SECONDS);
+        long timeoutSeconds = commonService.getProperty(RestrictionSettings.LOGIN_TIMEOUT);
+        if (timeoutSeconds > 0) {
+            loginResponse.completeOnTimeout(
+                messages.retrieveSingle(playerName, MessageKey.LOGIN_TIMEOUT_ERROR), timeoutSeconds, TimeUnit.SECONDS);
+        }
         String normalizedName = playerName.toLowerCase(Locale.ROOT);
         pendingLoginResponses.put(sessionId, loginResponse);
         preJoinDialogService.registerPreJoinFuture(sessionId, loginResponse);
@@ -284,9 +286,11 @@ public class PaperDialogFlowListener implements Listener {
     private void handleBlockingRegisterDialog(PlayerConfigurationConnection connection, long sessionId,
                                               String playerName, Dialog dialog) {
         CompletableFuture<String> registerResponse = new CompletableFuture<>();
-        long timeoutSeconds = Math.max(commonService.getProperty(RestrictionSettings.REGISTER_TIMEOUT), 1);
-        registerResponse.completeOnTimeout(
-            messages.retrieveSingle(playerName, MessageKey.LOGIN_TIMEOUT_ERROR), timeoutSeconds, TimeUnit.SECONDS);
+        long timeoutSeconds = commonService.getProperty(RestrictionSettings.REGISTER_TIMEOUT);
+        if (timeoutSeconds > 0) {
+            registerResponse.completeOnTimeout(
+                messages.retrieveSingle(playerName, MessageKey.LOGIN_TIMEOUT_ERROR), timeoutSeconds, TimeUnit.SECONDS);
+        }
         pendingRegisterResponses.put(sessionId, registerResponse);
 
         connection.getAudience().showDialog(dialog);
