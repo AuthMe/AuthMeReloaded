@@ -141,7 +141,8 @@ Minecraft login phase — no password prompt is ever shown.
 
 ##### Running requirements:
 >- Use the jar matching your server platform/version:
->  - Java 17+: `AuthMe-*-Spigot-Legacy.jar` — Spigot 1.16.x – 1.19.x
+>  - Java 8+: `AuthMe-*-Spigot-1.8.jar` — Bukkit/Spigot 1.8.8–1.15.2
+>  - Java 17+: `AuthMe-*-Spigot-Legacy.jar` — Spigot 1.16.x–1.19.x
 >  - Java 21+: `AuthMe-*-Spigot-1.21.jar` — Spigot 1.20.x – 1.21.x
 >  - Java 21+: `AuthMe-*-Paper.jar` — Paper 1.21+
 >  - Java 21+: `AuthMe-*-Folia.jar` — Folia 1.21+

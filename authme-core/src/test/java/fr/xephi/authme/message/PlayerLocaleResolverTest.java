@@ -1,5 +1,6 @@
 package fr.xephi.authme.message;
 
+import fr.xephi.authme.platform.BukkitCompatibilityAdapter;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.command.CommandSender;
@@ -9,6 +10,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -58,42 +61,83 @@ class PlayerLocaleResolverTest {
     void shouldResolveLanguageForPlayerWithPerPlayerLocaleEnabled() {
         // given
         Player player = mock(Player.class);
-        given(player.getLocale()).willReturn("fr_fr");
+        BukkitCompatibilityAdapter adapter = mock(BukkitCompatibilityAdapter.class);
+        given(adapter.getPlayerLocale(player)).willReturn(Optional.of("fr_fr"));
         Settings settings = mock(Settings.class);
         given(settings.getProperty(PluginSettings.PER_PLAYER_LOCALE)).willReturn(true);
 
         // when / then
-        assertThat(PlayerLocaleResolver.resolveLanguage(settings, player), equalTo("fr"));
+        assertThat(PlayerLocaleResolver.resolveLanguage(settings, player, adapter), equalTo("fr"));
+    }
+
+    @Test
+    void shouldResolveOverrideLocalePtBr() {
+        // given pt_br is mapped to "br" via LOCALE_OVERRIDES
+        Player player = mock(Player.class);
+        BukkitCompatibilityAdapter adapter = mock(BukkitCompatibilityAdapter.class);
+        given(adapter.getPlayerLocale(player)).willReturn(Optional.of("pt_br"));
+        Settings settings = mock(Settings.class);
+        given(settings.getProperty(PluginSettings.PER_PLAYER_LOCALE)).willReturn(true);
+
+        // when / then
+        assertThat(PlayerLocaleResolver.resolveLanguage(settings, player, adapter), equalTo("br"));
+    }
+
+    @Test
+    void shouldReturnNullWhenAdapterReturnsEmpty() {
+        // given adapter present but no locale available
+        Player player = mock(Player.class);
+        BukkitCompatibilityAdapter adapter = mock(BukkitCompatibilityAdapter.class);
+        given(adapter.getPlayerLocale(player)).willReturn(Optional.empty());
+        Settings settings = mock(Settings.class);
+        given(settings.getProperty(PluginSettings.PER_PLAYER_LOCALE)).willReturn(true);
+
+        // when / then
+        assertThat(PlayerLocaleResolver.resolveLanguage(settings, player, adapter), nullValue());
+    }
+
+    @Test
+    void shouldReturnNullWhenAdapterIsNull() {
+        // given per-player locale enabled but no adapter capability
+        Player player = mock(Player.class);
+        Settings settings = mock(Settings.class);
+        given(settings.getProperty(PluginSettings.PER_PLAYER_LOCALE)).willReturn(true);
+
+        // when / then
+        assertThat(PlayerLocaleResolver.resolveLanguage(settings, player, null), nullValue());
     }
 
     @Test
     void shouldReturnNullForPlayerWithPerPlayerLocaleDisabled() {
         // given
         Player player = mock(Player.class);
+        BukkitCompatibilityAdapter adapter = mock(BukkitCompatibilityAdapter.class);
         Settings settings = mock(Settings.class);
         given(settings.getProperty(PluginSettings.PER_PLAYER_LOCALE)).willReturn(false);
 
         // when / then
-        assertThat(PlayerLocaleResolver.resolveLanguage(settings, player), nullValue());
+        assertThat(PlayerLocaleResolver.resolveLanguage(settings, player, adapter), nullValue());
     }
 
     @Test
     void shouldReturnNullForNonPlayerSender() {
         // given
         CommandSender sender = mock(CommandSender.class);
+        BukkitCompatibilityAdapter adapter = mock(BukkitCompatibilityAdapter.class);
         Settings settings = mock(Settings.class);
         given(settings.getProperty(PluginSettings.PER_PLAYER_LOCALE)).willReturn(true);
 
         // when / then
-        assertThat(PlayerLocaleResolver.resolveLanguage(settings, sender), nullValue());
+        assertThat(PlayerLocaleResolver.resolveLanguage(settings, sender, adapter), nullValue());
     }
 
     @Test
     void shouldReturnNullForNullSettings() {
         // given
         Player player = mock(Player.class);
+        BukkitCompatibilityAdapter adapter = mock(BukkitCompatibilityAdapter.class);
 
         // when / then
-        assertThat(PlayerLocaleResolver.resolveLanguage(null, player), nullValue());
+        assertThat(PlayerLocaleResolver.resolveLanguage(null, player, adapter), nullValue());
     }
 }

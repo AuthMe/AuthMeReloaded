@@ -14,6 +14,7 @@ import fr.xephi.authme.listener.LegacyPlayerLoginListener;
 import fr.xephi.authme.listener.LegacyPlayerSpawnLocationListener;
 import fr.xephi.authme.listener.PlayerListener;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.platform.BukkitCompatibilityAdapter;
 import fr.xephi.authme.platform.ChatAdapter;
 import fr.xephi.authme.platform.CommandRegistrationAdapter;
 import fr.xephi.authme.platform.DialogAdapter;
@@ -53,6 +54,7 @@ import static fr.xephi.authme.settings.properties.AuthMeSettingsRetriever.buildC
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -118,6 +120,7 @@ class AuthMeInitializationTest {
         PlatformAdapter platformAdapter = mock(PlatformAdapter.class);
         given(platformAdapter.getListeners()).willReturn(EventRegistrationAdapter.getCommonListeners());
         injector.register(PlatformAdapter.class, platformAdapter);
+        injector.register(BukkitCompatibilityAdapter.class, platformAdapter);
         injector.register(TeleportAdapter.class, platformAdapter);
         injector.register(ChatAdapter.class, platformAdapter);
         injector.register(EventRegistrationAdapter.class, platformAdapter);
@@ -170,6 +173,33 @@ class AuthMeInitializationTest {
         verify(pluginManager).registerEvents(playerListener, authMe);
         verify(pluginManager).registerEvents(legacyLoginListener, authMe);
         verify(pluginManager).registerEvents(legacySpawnListener, authMe);
+    }
+
+    @Test
+    void shouldRegisterBukkitCompatibilityAdapterViaInitialize() throws Exception {
+        // given
+        given(server.getPluginManager()).willReturn(pluginManager);
+        given(server.getScheduler()).willReturn(mock(BukkitScheduler.class));
+        TestHelper.setupLogger();
+        PlatformAdapter platformAdapter = mock(PlatformAdapter.class, org.mockito.Mockito.withSettings().lenient());
+
+        // when - invoke private initialize(PlatformAdapter) - verify DI registration of BukkitCompatibilityAdapter
+        // We only need to verify that initialize registers platformAdapter under all expected keys before it fails
+        // on missing settings/DB. Stub getListeners leniently so we don't trigger unnecessary stubbing check.
+        org.mockito.BDDMockito.given(platformAdapter.getListeners()).willReturn(EventRegistrationAdapter.getCommonListeners());
+        java.lang.reflect.Method init = ReflectionTestUtils.getMethod(AuthMe.class, "initialize", PlatformAdapter.class);
+        try {
+            ReflectionTestUtils.invokeMethod(init, authMe, platformAdapter);
+        } catch (Exception e) {
+            // initialize will likely fail after DI registration (DB/settings); ignore as long as injector was created
+        }
+
+        // then - injector must have been created and contain BukkitCompatibilityAdapter
+        ch.jalu.injector.Injector injector = ReflectionTestUtils.getFieldValue(AuthMe.class, authMe, "injector");
+        assertThat(injector, not(nullValue()));
+        assertThat(injector.getIfAvailable(BukkitCompatibilityAdapter.class), not(nullValue()));
+        assertThat(injector.getIfAvailable(BukkitCompatibilityAdapter.class), sameInstance((BukkitCompatibilityAdapter) platformAdapter));
+        assertThat(injector.getIfAvailable(PlatformAdapter.class), sameInstance(platformAdapter));
     }
 
     @Test

@@ -14,6 +14,7 @@ import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -71,9 +72,14 @@ public class TotpAuthenticator implements HasCleanup {
         GoogleAuthenticatorKey credentials = authenticator.createCredentials();
         String otpAuthUrl = GoogleAuthenticatorQRGenerator.getOtpAuthTotpURL(
             settings.getProperty(PluginSettings.SERVER_NAME), player.getName(), credentials);
-        String qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?data="
-            + URLEncoder.encode(otpAuthUrl, StandardCharsets.UTF_8)
-            + "&size=200x200&ecc=M&margin=10";
+        String qrCodeUrl;
+        try {
+            qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?data="
+                + URLEncoder.encode(otpAuthUrl, StandardCharsets.UTF_8.name())
+                + "&size=200x200&ecc=M&margin=10";
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("UTF-8 encoding not supported", e);
+        }
         return new TotpGenerationResult(credentials.getKey(), qrCodeUrl);
     }
 

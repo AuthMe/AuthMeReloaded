@@ -6,6 +6,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.message.updater.MessageUpdater;
+import fr.xephi.authme.platform.BukkitCompatibilityAdapter;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.util.FileUtils;
@@ -23,6 +24,7 @@ import org.mockito.Mockito;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -307,14 +309,15 @@ class MessagesIntegrationTest {
         Settings settings = mock(Settings.class);
         given(settings.getProperty(PluginSettings.MESSAGES_LANGUAGE)).willReturn("en");
         given(settings.getProperty(PluginSettings.PER_PLAYER_LOCALE)).willReturn(true);
+        BukkitCompatibilityAdapter adapter = mock(BukkitCompatibilityAdapter.class);
 
         MessagesFileHandler fileHandler = createMessagesFileHandlerForLanguage("en", settings);
-        Messages messagesWithLocale = new Messages(fileHandler, null, settings);
+        Messages messagesWithLocale = new Messages(fileHandler, null, settings, adapter);
 
         Player player = mock(Player.class);
         given(player.getName()).willReturn("TestPlayer");
         given(player.getDisplayName()).willReturn("TestPlayer");
-        given(player.getLocale()).willReturn("ru_ru");
+        given(adapter.getPlayerLocale(player)).willReturn(Optional.of("ru_ru"));
 
         // when
         String[] result = messagesWithLocale.retrieve(MessageKey.LOGIN_SUCCESS, player);
@@ -330,14 +333,15 @@ class MessagesIntegrationTest {
         Settings settings = mock(Settings.class);
         given(settings.getProperty(PluginSettings.MESSAGES_LANGUAGE)).willReturn("en");
         given(settings.getProperty(PluginSettings.PER_PLAYER_LOCALE)).willReturn(true);
+        BukkitCompatibilityAdapter adapter = mock(BukkitCompatibilityAdapter.class);
 
         MessagesFileHandler fileHandler = createMessagesFileHandlerForLanguage("en", settings);
-        Messages messagesWithLocale = new Messages(fileHandler, null, settings);
+        Messages messagesWithLocale = new Messages(fileHandler, null, settings, adapter);
 
         Player player = mock(Player.class);
         given(player.getName()).willReturn("TestPlayer");
         given(player.getDisplayName()).willReturn("TestPlayer");
-        given(player.getLocale()).willReturn("xx_xx"); // no such language
+        given(adapter.getPlayerLocale(player)).willReturn(Optional.of("xx_xx")); // no such language
 
         // when
         String[] result = messagesWithLocale.retrieve(MessageKey.LOGIN_SUCCESS, player);

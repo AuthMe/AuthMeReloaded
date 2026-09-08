@@ -32,7 +32,8 @@ abstract class AbstractSqlPluginConverter implements Converter {
      * @throws SQLException if the data source does not support SQL connections (e.g. SQLite)
      */
     protected Connection openConnection() throws SQLException {
-        if (dataSource instanceof SqlConnectionSource sqlSource) {
+        if (dataSource instanceof SqlConnectionSource) {
+            SqlConnectionSource sqlSource = (SqlConnectionSource) dataSource;
             return sqlSource.getConnection();
         }
         throw new SQLException(

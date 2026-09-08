@@ -183,6 +183,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <release>${core.java.version}</release>
+                    <testRelease>${module.java.version}</testRelease>
+                </configuration>
             </plugin>
             <!-- Generate test coverage reports -->
             <plugin>

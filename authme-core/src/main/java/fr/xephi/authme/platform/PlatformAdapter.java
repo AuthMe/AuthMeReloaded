@@ -7,7 +7,8 @@ package fr.xephi.authme.platform;
  * and {@link PacketInterceptionAdapter} in the DI container.
  */
 public interface PlatformAdapter extends TeleportAdapter, ChatAdapter, EventRegistrationAdapter,
-    DialogAdapter, CommandRegistrationAdapter, SchedulingAdapter, PacketInterceptionAdapter {
+    DialogAdapter, CommandRegistrationAdapter, SchedulingAdapter, PacketInterceptionAdapter,
+    BukkitCompatibilityAdapter {
 
     /**
      * Returns a short identifier for logging, e.g. "spigot-legacy", "spigot-1.20", "paper-1.21".

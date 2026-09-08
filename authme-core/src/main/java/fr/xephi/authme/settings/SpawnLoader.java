@@ -4,6 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
+import fr.xephi.authme.platform.BukkitCompatibilityAdapter;
 import fr.xephi.authme.platform.TeleportAdapter;
 import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -11,10 +12,8 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -35,11 +34,12 @@ import java.util.Locale;
 public class SpawnLoader implements Reloadable {
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(SpawnLoader.class);
-    
+
     private final File authMeConfigurationFile;
     private final Settings settings;
     private final PluginHookService pluginHookService;
     private final TeleportAdapter teleportAdapter;
+    private final BukkitCompatibilityAdapter compatibilityAdapter;
     private FileConfiguration authMeConfiguration;
     private String[] spawnPriority;
     private Location essentialsSpawn;
@@ -55,13 +55,14 @@ public class SpawnLoader implements Reloadable {
      */
     @Inject
     SpawnLoader(@DataFolder File pluginFolder, Settings settings, PluginHookService pluginHookService,
-                TeleportAdapter teleportAdapter) {
+                TeleportAdapter teleportAdapter, BukkitCompatibilityAdapter compatibilityAdapter) {
         File spawnFile = new File(pluginFolder, "spawn.yml");
         FileUtils.copyFileFromResource(spawnFile, "spawn.yml");
         this.authMeConfigurationFile = spawnFile;
         this.settings = settings;
         this.pluginHookService = pluginHookService;
         this.teleportAdapter = teleportAdapter;
+        this.compatibilityAdapter = compatibilityAdapter;
         reload();
     }
 
@@ -255,8 +256,8 @@ public class SpawnLoader implements Reloadable {
      */
     private Location getServerSpawnLocation(World world) {
         Location worldSpawn = world.getSpawnLocation();
-        Integer radius = world.getGameRuleValue(GameRule.SPAWN_RADIUS);
-        if (radius == null || radius <= 0) {
+        int radius = compatibilityAdapter.getSpawnRadius(world);
+        if (radius <= 0) {
             return worldSpawn;
         }
         int dx = (int) (Math.random() * (radius * 2 + 1)) - radius;
@@ -285,7 +286,7 @@ public class SpawnLoader implements Reloadable {
             return baseY;
         }
         int margin = 10;
-        if (world.getBlockAt(x, baseY, z).isPassable()) {
+        if (compatibilityAdapter.isBlockPassable(world.getBlockAt(x, baseY, z))) {
             for (int dy = 1; dy <= margin; dy++) {
                 int y = baseY - dy;
                 if (isPassable(world, x, y, z) && isPassable(world, x, y + 1, z)) {
@@ -304,7 +305,7 @@ public class SpawnLoader implements Reloadable {
     }
 
     private boolean isPassable(World world, int x, int y, int z) {
-        return world.getBlockAt(x, y, z).isPassable();
+        return compatibilityAdapter.isBlockPassable(world.getBlockAt(x, y, z));
     }
 
     /**

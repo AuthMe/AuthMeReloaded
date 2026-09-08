@@ -1,7 +1,9 @@
 package fr.xephi.authme.platform;
 
 import fr.xephi.authme.listener.BlockListener;
+import fr.xephi.authme.listener.EntityAirChangeListener;
 import fr.xephi.authme.listener.EntityListener;
+import fr.xephi.authme.listener.EntityPickupItemListener;
 import fr.xephi.authme.listener.FoliaChatListener;
 import fr.xephi.authme.listener.FoliaPlayerSpawnLocationListener;
 import fr.xephi.authme.listener.PaperDialogFlowListener;
@@ -9,6 +11,7 @@ import fr.xephi.authme.listener.PaperProxyAutoLoginListener;
 import fr.xephi.authme.listener.PaperLoginValidationListener;
 import fr.xephi.authme.listener.PlayerListener;
 import fr.xephi.authme.listener.PlayerOpenSignListener;
+import fr.xephi.authme.listener.PlayerSwapHandItemsListener;
 import fr.xephi.authme.listener.ServerListener;
 import fr.xephi.authme.service.CancellableTask;
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
@@ -75,12 +78,23 @@ public class FoliaPlatformAdapterTest {
             BlockListener.class,
             EntityListener.class,
             ServerListener.class,
+            PlayerSwapHandItemsListener.class,
+            EntityAirChangeListener.class,
+            EntityPickupItemListener.class,
             FoliaChatListener.class,
             PaperDialogFlowListener.class,
             PaperProxyAutoLoginListener.class,
             FoliaPlayerSpawnLocationListener.class,
             PaperLoginValidationListener.class,
             PlayerOpenSignListener.class));
+    }
+
+    @Test
+    public void getListenersRetainsAllModernEventProtections() {
+        List<Class<? extends Listener>> listeners = adapter.getListeners();
+        assertThat(listeners, org.hamcrest.Matchers.hasItem(PlayerSwapHandItemsListener.class));
+        assertThat(listeners, org.hamcrest.Matchers.hasItem(EntityAirChangeListener.class));
+        assertThat(listeners, org.hamcrest.Matchers.hasItem(EntityPickupItemListener.class));
     }
 
     @Test
@@ -190,5 +204,4 @@ public class FoliaPlatformAdapterTest {
         verify(scheduledTask).cancel();
     }
 }
-
 

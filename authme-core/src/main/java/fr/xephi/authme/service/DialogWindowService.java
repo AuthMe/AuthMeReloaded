@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -61,7 +62,7 @@ public class DialogWindowService {
         // Password field only — email is collected on a separate recovery page if needed
         return new DialogWindowSpec(
             text.apply(MessageKey.DIALOG_LOGIN_TITLE),
-            List.of(new DialogInputSpec("password", text.apply(MessageKey.DIALOG_LOGIN_PASSWORD), DEFAULT_MAX_INPUT_LENGTH)),
+            Collections.singletonList(new DialogInputSpec("password", text.apply(MessageKey.DIALOG_LOGIN_PASSWORD), DEFAULT_MAX_INPUT_LENGTH)),
             text.apply(MessageKey.DIALOG_LOGIN_BUTTON),
             showRecovery ? text.apply(MessageKey.DIALOG_LOGIN_RECOVERY_BUTTON) : text.apply(MessageKey.DIALOG_CANCEL_BUTTON),
             showRecovery || showCancelButton,
@@ -76,7 +77,7 @@ public class DialogWindowService {
 
         return new DialogWindowSpec(
             text.apply(MessageKey.DIALOG_RECOVERY_TITLE),
-            List.of(new DialogInputSpec("email", text.apply(MessageKey.DIALOG_RECOVERY_EMAIL), DEFAULT_MAX_INPUT_LENGTH)),
+            Collections.singletonList(new DialogInputSpec("email", text.apply(MessageKey.DIALOG_RECOVERY_EMAIL), DEFAULT_MAX_INPUT_LENGTH)),
             text.apply(MessageKey.DIALOG_RECOVERY_BUTTON),
             text.apply(MessageKey.DIALOG_CANCEL_BUTTON),
             true,
@@ -91,7 +92,7 @@ public class DialogWindowService {
 
         return new DialogWindowSpec(
             text.apply(MessageKey.DIALOG_TWO_FACTOR_TITLE),
-            List.of(new DialogInputSpec("code",
+            Collections.singletonList(new DialogInputSpec("code",
                 text.apply(MessageKey.DIALOG_TWO_FACTOR_CODE),
                 TOTP_CODE_MAX_INPUT_LENGTH)),
             text.apply(MessageKey.DIALOG_TWO_FACTOR_BUTTON),
