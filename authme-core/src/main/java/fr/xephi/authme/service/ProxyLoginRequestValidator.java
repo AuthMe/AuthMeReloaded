@@ -8,6 +8,8 @@ import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.PremiumSettings;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -43,6 +45,9 @@ public class ProxyLoginRequestValidator {
     @Inject
     private Messages messages;
 
+    @Inject
+    private Settings settings;
+
     ProxyLoginRequestValidator() {
     }
 
@@ -60,6 +65,14 @@ public class ProxyLoginRequestValidator {
         }
 
         String playerName = player.getName();
+        if (!settings.getProperty(PremiumSettings.ENABLE_PREMIUM)) {
+            // The proxy still holds this name in its premium cache; tell it to drop the entry so the
+            // player is not forced through Mojang verification again while the feature is disabled.
+            logger.info("Rejected proxy premium login for " + playerName + ": premium is disabled");
+            bungeeSender.sendPremiumUnset(playerName);
+            return false;
+        }
+
         PlayerAuth auth = playerCache.getAuth(playerName);
         if (auth == null) {
             auth = dataSource.getAuth(playerName.toLowerCase(Locale.ROOT));

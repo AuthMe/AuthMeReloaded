@@ -1,5 +1,6 @@
 package fr.xephi.authme.listener;
 
+import com.destroystokyo.paper.event.player.PlayerConnectionCloseEvent;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import fr.xephi.authme.data.ProxySessionManager;
 import fr.xephi.authme.data.auth.PlayerCache;
@@ -45,6 +46,8 @@ import java.util.concurrent.ConcurrentMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -53,6 +56,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 public class PaperDialogFlowListenerTest {
+
+    private static final long SESSION_ID = 42L;
 
     @Test
     public void shouldListenLateOnPlayerConfigure() throws Exception {
@@ -65,7 +70,6 @@ public class PaperDialogFlowListenerTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void shouldShowErrorDialogAndKeepFutureOpenForEmptyPasswordSubmission() throws Exception {
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
         CommonService commonService = mock(CommonService.class);
@@ -88,22 +92,10 @@ public class PaperDialogFlowListenerTest {
             new DialogWindowSpec("Register", List.of(new DialogInputSpec("password", "Password", 100)),
                 "Register", "Cancel", false, false, null));
 
-        UUID playerId = UUID.randomUUID();
         CompletableFuture<String> future = new CompletableFuture<>();
-        Field pendingField = PaperDialogFlowListener.class.getDeclaredField("pendingRegisterResponses");
-        pendingField.setAccessible(true);
-        ConcurrentMap<UUID, CompletableFuture<String>> pendingRegisterResponses =
-            (ConcurrentMap<UUID, CompletableFuture<String>>) pendingField.get(listener);
-        pendingRegisterResponses.put(playerId, future);
-
-        PlayerProfile profile = mock(PlayerProfile.class);
-        given(profile.getId()).willReturn(playerId);
-        given(profile.getName()).willReturn("Bobby");
-
-        Audience audience = mock(Audience.class);
-        PlayerConfigurationConnection connection = mock(PlayerConfigurationConnection.class);
-        given(connection.getProfile()).willReturn(profile);
-        given(connection.getAudience()).willReturn(audience);
+        PlayerConfigurationConnection connection = mockConnection("Bobby");
+        given(connection.getAudience()).willReturn(mock(Audience.class));
+        seedSession(listener, connection, "pendingRegisterResponses", future);
 
         DialogResponseView responseView = mock(DialogResponseView.class);
         given(responseView.getText("password")).willReturn("");
@@ -122,32 +114,20 @@ public class PaperDialogFlowListenerTest {
 
             assertThat("future must stay open so the player can retry", future.isDone(), is(false));
             verify(connection).getAudience();
-            verify(preJoinDialogService, never()).storePendingPasswordRegistration(any(), any(), any());
+            verify(preJoinDialogService, never()).storePendingPasswordRegistration(anyLong(), any(), any());
         }
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void shouldFallbackToPostJoinDialogWhenPreJoinLoginIsCancelled() throws Exception {
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
         CommonService commonService = mock(CommonService.class);
         setField(listener, "commonService", commonService);
         given(commonService.getProperty(RegistrationSettings.PRE_JOIN_LOGIN_CANCEL_KICKS)).willReturn(false);
 
-        UUID playerId = UUID.randomUUID();
         CompletableFuture<String> future = new CompletableFuture<>();
-        Field pendingField = PaperDialogFlowListener.class.getDeclaredField("pendingLoginResponses");
-        pendingField.setAccessible(true);
-        ConcurrentMap<UUID, CompletableFuture<String>> pendingLoginResponses =
-            (ConcurrentMap<UUID, CompletableFuture<String>>) pendingField.get(listener);
-        pendingLoginResponses.put(playerId, future);
-
-        PlayerProfile profile = mock(PlayerProfile.class);
-        given(profile.getId()).willReturn(playerId);
-        given(profile.getName()).willReturn("Bobby");
-
-        PlayerConfigurationConnection connection = mock(PlayerConfigurationConnection.class);
-        given(connection.getProfile()).willReturn(profile);
+        PlayerConfigurationConnection connection = mockConnection("Bobby");
+        seedSession(listener, connection, "pendingLoginResponses", future);
 
         PlayerCustomClickEvent event = mock(PlayerCustomClickEvent.class);
         given(event.getCommonConnection()).willReturn(connection);
@@ -160,7 +140,6 @@ public class PaperDialogFlowListenerTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void shouldKickWhenPreJoinLoginIsCancelledAndSettingEnabled() throws Exception {
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
         CommonService commonService = mock(CommonService.class);
@@ -170,20 +149,9 @@ public class PaperDialogFlowListenerTest {
         given(commonService.getProperty(RegistrationSettings.PRE_JOIN_LOGIN_CANCEL_KICKS)).willReturn(true);
         given(messages.retrieveSingle("Bobby", MessageKey.DIALOG_LOGIN_CANCELED)).willReturn("Canceled!");
 
-        UUID playerId = UUID.randomUUID();
         CompletableFuture<String> future = new CompletableFuture<>();
-        Field pendingField = PaperDialogFlowListener.class.getDeclaredField("pendingLoginResponses");
-        pendingField.setAccessible(true);
-        ConcurrentMap<UUID, CompletableFuture<String>> pendingLoginResponses =
-            (ConcurrentMap<UUID, CompletableFuture<String>>) pendingField.get(listener);
-        pendingLoginResponses.put(playerId, future);
-
-        PlayerProfile profile = mock(PlayerProfile.class);
-        given(profile.getId()).willReturn(playerId);
-        given(profile.getName()).willReturn("Bobby");
-
-        PlayerConfigurationConnection connection = mock(PlayerConfigurationConnection.class);
-        given(connection.getProfile()).willReturn(profile);
+        PlayerConfigurationConnection connection = mockConnection("Bobby");
+        seedSession(listener, connection, "pendingLoginResponses", future);
 
         PlayerCustomClickEvent event = mock(PlayerCustomClickEvent.class);
         given(event.getCommonConnection()).willReturn(connection);
@@ -196,27 +164,15 @@ public class PaperDialogFlowListenerTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void shouldFallbackToPostJoinDialogWhenPreJoinRegisterIsCancelled() throws Exception {
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
         CommonService commonService = mock(CommonService.class);
         setField(listener, "commonService", commonService);
         given(commonService.getProperty(RegistrationSettings.PRE_JOIN_REGISTER_CANCEL_KICKS)).willReturn(false);
 
-        UUID playerId = UUID.randomUUID();
         CompletableFuture<String> future = new CompletableFuture<>();
-        Field pendingField = PaperDialogFlowListener.class.getDeclaredField("pendingRegisterResponses");
-        pendingField.setAccessible(true);
-        ConcurrentMap<UUID, CompletableFuture<String>> pendingRegisterResponses =
-            (ConcurrentMap<UUID, CompletableFuture<String>>) pendingField.get(listener);
-        pendingRegisterResponses.put(playerId, future);
-
-        PlayerProfile profile = mock(PlayerProfile.class);
-        given(profile.getId()).willReturn(playerId);
-        given(profile.getName()).willReturn("Bobby");
-
-        PlayerConfigurationConnection connection = mock(PlayerConfigurationConnection.class);
-        given(connection.getProfile()).willReturn(profile);
+        PlayerConfigurationConnection connection = mockConnection("Bobby");
+        seedSession(listener, connection, "pendingRegisterResponses", future);
 
         PlayerCustomClickEvent event = mock(PlayerCustomClickEvent.class);
         given(event.getCommonConnection()).willReturn(connection);
@@ -229,7 +185,6 @@ public class PaperDialogFlowListenerTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void shouldKickWhenPreJoinRegisterIsCancelledAndSettingEnabled() throws Exception {
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
         CommonService commonService = mock(CommonService.class);
@@ -239,20 +194,9 @@ public class PaperDialogFlowListenerTest {
         given(commonService.getProperty(RegistrationSettings.PRE_JOIN_REGISTER_CANCEL_KICKS)).willReturn(true);
         given(messages.retrieveSingle("Bobby", MessageKey.DIALOG_REGISTER_CANCELED)).willReturn("Canceled!");
 
-        UUID playerId = UUID.randomUUID();
         CompletableFuture<String> future = new CompletableFuture<>();
-        Field pendingField = PaperDialogFlowListener.class.getDeclaredField("pendingRegisterResponses");
-        pendingField.setAccessible(true);
-        ConcurrentMap<UUID, CompletableFuture<String>> pendingRegisterResponses =
-            (ConcurrentMap<UUID, CompletableFuture<String>>) pendingField.get(listener);
-        pendingRegisterResponses.put(playerId, future);
-
-        PlayerProfile profile = mock(PlayerProfile.class);
-        given(profile.getId()).willReturn(playerId);
-        given(profile.getName()).willReturn("Bobby");
-
-        PlayerConfigurationConnection connection = mock(PlayerConfigurationConnection.class);
-        given(connection.getProfile()).willReturn(profile);
+        PlayerConfigurationConnection connection = mockConnection("Bobby");
+        seedSession(listener, connection, "pendingRegisterResponses", future);
 
         PlayerCustomClickEvent event = mock(PlayerCustomClickEvent.class);
         given(event.getCommonConnection()).willReturn(connection);
@@ -298,7 +242,7 @@ public class PaperDialogFlowListenerTest {
 
         listener.onPlayerConfigure(event);
 
-        verify(preJoinDialogService).clear(playerId);
+        verify(preJoinDialogService, never()).openSession(anyString());
         verifyNoInteractions(audience);
     }
 
@@ -339,7 +283,7 @@ public class PaperDialogFlowListenerTest {
 
         listener.onPlayerConfigure(event);
 
-        verify(preJoinDialogService).clear(playerId);
+        verify(preJoinDialogService, never()).openSession(anyString());
         verifyNoInteractions(audience);
     }
 
@@ -379,7 +323,7 @@ public class PaperDialogFlowListenerTest {
 
         listener.onPlayerConfigure(event);
 
-        verify(preJoinDialogService).clear(playerId);
+        verify(preJoinDialogService, never()).openSession(anyString());
         verifyNoInteractions(audience);
         verifyNoInteractions(sessionService);
     }
@@ -419,6 +363,7 @@ public class PaperDialogFlowListenerTest {
         given(sessionService.hasValidSession("bobby", null)).willReturn(false);
         given(dataSource.getAuth("bobby")).willReturn(auth);
         given(premiumLoginVerifier.getVerifiedUuid("Bobby")).willReturn(premiumUuid);
+        given(preJoinDialogService.openSession("bobby")).willReturn(SESSION_ID);
 
         PlayerProfile profile = mock(PlayerProfile.class);
         given(profile.getId()).willReturn(playerId);
@@ -434,7 +379,7 @@ public class PaperDialogFlowListenerTest {
 
         listener.onPlayerConfigure(event);
 
-        verify(preJoinDialogService).markSkipPostJoinDialog(playerId);
+        verify(preJoinDialogService).markSkipPostJoinDialog(SESSION_ID);
         verifyNoInteractions(audience);
     }
 
@@ -470,7 +415,7 @@ public class PaperDialogFlowListenerTest {
 
         // UUID v4 that doesn't match stored premium UUID → must return false (impostor or wrong account)
         assertThat(invokeShouldSkipPreJoinDialogForPremium(listener, auth, "Bobby", playerId), is(false));
-        verify(preJoinDialogService, never()).markSkipPostJoinDialog(playerId);
+        verify(preJoinDialogService, never()).markSkipPostJoinDialog(anyLong());
     }
 
     @Test
@@ -546,6 +491,62 @@ public class PaperDialogFlowListenerTest {
             .getDeclaredMethod("shouldSkipPreJoinDialogForPremium", PlayerAuth.class, String.class, UUID.class);
         method.setAccessible(true);
         return (boolean) method.invoke(listener, auth, playerName, playerId);
+    }
+
+    @Test
+    public void shouldRetireSessionOfClosedConnectionOnly() throws Exception {
+        PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
+        setField(listener, "preJoinDialogService", preJoinDialogService);
+
+        PlayerConfigurationConnection gone = mockConnection("Bobby");
+        given(gone.isConnected()).willReturn(false);
+        PlayerConfigurationConnection live = mockConnection("Bobby");
+        given(live.isConnected()).willReturn(true);
+        CompletableFuture<String> liveFuture = new CompletableFuture<>();
+        connectionSessions(listener).put(gone, SESSION_ID);
+        connectionSessions(listener).put(live, SESSION_ID + 1);
+        pendingResponses(listener, "pendingLoginResponses").put(SESSION_ID, new CompletableFuture<>());
+        pendingResponses(listener, "pendingLoginResponses").put(SESSION_ID + 1, liveFuture);
+
+        listener.onPlayerConnectionClose(new PlayerConnectionCloseEvent(
+            UUID.randomUUID(), "Bobby", InetAddress.getLoopbackAddress(), false));
+
+        verify(preJoinDialogService).retireSession(SESSION_ID);
+        verify(preJoinDialogService, never()).retireSession(SESSION_ID + 1);
+        assertThat(connectionSessions(listener).containsKey(gone), is(false));
+        assertThat(connectionSessions(listener).get(live), is(SESSION_ID + 1));
+        assertThat(pendingResponses(listener, "pendingLoginResponses").get(SESSION_ID + 1), is(liveFuture));
+    }
+
+    private static PlayerConfigurationConnection mockConnection(String playerName) {
+        PlayerProfile profile = mock(PlayerProfile.class);
+        given(profile.getName()).willReturn(playerName);
+        PlayerConfigurationConnection connection = mock(PlayerConfigurationConnection.class);
+        given(connection.getProfile()).willReturn(profile);
+        return connection;
+    }
+
+    private static void seedSession(PaperDialogFlowListener listener, PlayerConfigurationConnection connection,
+                                    String responseField, CompletableFuture<String> future) throws Exception {
+        connectionSessions(listener).put(connection, SESSION_ID);
+        pendingResponses(listener, responseField).put(SESSION_ID, future);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static ConcurrentMap<PlayerConfigurationConnection, Long> connectionSessions(
+        PaperDialogFlowListener listener) throws ReflectiveOperationException {
+        Field field = PaperDialogFlowListener.class.getDeclaredField("connectionSessions");
+        field.setAccessible(true);
+        return (ConcurrentMap<PlayerConfigurationConnection, Long>) field.get(listener);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static ConcurrentMap<Long, CompletableFuture<String>> pendingResponses(
+        PaperDialogFlowListener listener, String responseField) throws ReflectiveOperationException {
+        Field field = PaperDialogFlowListener.class.getDeclaredField(responseField);
+        field.setAccessible(true);
+        return (ConcurrentMap<Long, CompletableFuture<String>>) field.get(listener);
     }
 
     private static void setField(Object target, String fieldName, Object value) throws ReflectiveOperationException {

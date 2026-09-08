@@ -6,8 +6,11 @@ import com.velocitypowered.api.util.UuidUtils;
 import org.slf4j.Logger;
 
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public final class VelocityPremiumVerificationManager {
@@ -15,17 +18,21 @@ public final class VelocityPremiumVerificationManager {
     private final Logger logger;
     private final Predicate<String> requiresVerification;
     private final Predicate<String> isPendingVerification;
+    private final Consumer<String> pendingVerificationFailureHandler;
     private final BooleanSupplier keepOfflineUuidCompatibility;
+    private final Set<String> pendingVerificationAttempted = ConcurrentHashMap.newKeySet();
     private final ProxyPremiumLoginVerifier loginVerifier;
     private boolean registered;
 
     public VelocityPremiumVerificationManager(Logger logger,
                                               Predicate<String> requiresVerification,
                                               Predicate<String> isPendingVerification,
+                                              Consumer<String> pendingVerificationFailureHandler,
                                               BooleanSupplier keepOfflineUuidCompatibility) {
         this.logger = logger;
         this.requiresVerification = requiresVerification;
         this.isPendingVerification = isPendingVerification;
+        this.pendingVerificationFailureHandler = pendingVerificationFailureHandler;
         this.keepOfflineUuidCompatibility = keepOfflineUuidCompatibility;
         this.loginVerifier = new ProxyPremiumLoginVerifier("authme-velocity-premium",
             message -> this.logger.warn(message));
@@ -41,6 +48,13 @@ public final class VelocityPremiumVerificationManager {
 
     public void onPreLogin(PreLoginEvent event) {
         String normalizedName = normalize(event.getUsername());
+        if (isPendingVerification.test(normalizedName) && !pendingVerificationAttempted.add(normalizedName)) {
+            // Velocity fires no event when Mojang rejects a forced online-mode login, so a pending
+            // player showing up again means the previous attempt failed: cancel the enrollment and
+            // let them log in with their password instead of forcing online mode forever.
+            pendingVerificationAttempted.remove(normalizedName);
+            pendingVerificationFailureHandler.accept(normalizedName);
+        }
         if (requiresVerification.test(normalizedName)) {
             event.setResult(PreLoginEvent.PreLoginComponentResult.forceOnlineMode());
         }
@@ -54,6 +68,7 @@ public final class VelocityPremiumVerificationManager {
 
         UUID verifiedPremiumUuid = event.getOriginalProfile().getId();
         loginVerifier.storeVerified(normalizedName, verifiedPremiumUuid);
+        pendingVerificationAttempted.remove(normalizedName);
         boolean rewrite = keepOfflineUuidCompatibility.getAsBoolean();
         logger.info("onGameProfileRequest: stored verified premium UUID {} for '{}' (keepOfflineUuidCompatibility={})",
             verifiedPremiumUuid, normalizedName, rewrite);
@@ -74,6 +89,7 @@ public final class VelocityPremiumVerificationManager {
 
     public void clearVerifiedPremium(String normalizedName) {
         loginVerifier.clearVerified(normalizedName);
+        pendingVerificationAttempted.remove(normalizedName);
     }
 
     public void shutdown() {

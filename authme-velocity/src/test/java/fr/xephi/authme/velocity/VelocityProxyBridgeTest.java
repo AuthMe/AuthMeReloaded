@@ -10,6 +10,7 @@ import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
+import com.velocitypowered.api.event.player.configuration.PlayerEnterConfigurationEvent;
 import com.velocitypowered.api.event.player.configuration.PlayerEnteredConfigurationEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -414,6 +415,36 @@ class VelocityProxyBridgeTest {
         verify(currentServer, never()).sendPluginMessage(any(), any(byte[].class));
     }
 
+    @Test
+    void shouldSendConfigPhaseAutoLoginWhenEnteringNonAuthServerOnServerSwitch() {
+        given(player.getUsername()).willReturn("Alice");
+        given(currentServer.getServer()).willReturn(nonAuthServer);
+        given(nonAuthServer.getServerInfo()).willReturn(nonAuthServerInfo);
+        given(nonAuthServerInfo.getName()).willReturn("survival");
+        given(currentServer.sendPluginMessage(eq(VelocityProxyBridge.AUTHME_CHANNEL), any(byte[].class)))
+            .willReturn(true);
+
+        VelocityAuthenticationStore store = new VelocityAuthenticationStore();
+        store.markAuthenticated("alice");
+
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), store, null);
+        bridge.onPlayerEnterConfiguration(new PlayerEnterConfigurationEvent(player, currentServer));
+
+        verify(currentServer).sendPluginMessage(eq(VelocityProxyBridge.AUTHME_CHANNEL), payloadCaptor.capture());
+        assertPerformLoginPayload(payloadCaptor.getValue(), "alice", "test-secret");
+    }
+
+    @Test
+    void shouldNotSendConfigPhaseAutoLoginWhenEnteredConfigurationWithoutServerConnection() {
+        VelocityAuthenticationStore store = new VelocityAuthenticationStore();
+        store.markAuthenticated("alice");
+
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), store, null);
+        bridge.onPlayerEnteredConfiguration(new PlayerEnteredConfigurationEvent(player, null));
+
+        verify(currentServer, never()).sendPluginMessage(any(), any(byte[].class));
+    }
+
     // --- Command blocking tests ---
 
     @Test
@@ -602,6 +633,32 @@ class VelocityProxyBridgeTest {
         bridge.onPreLogin(event);
 
         assertEquals(PreLoginEvent.PreLoginComponentResult.forceOnlineMode().toString(), event.getResult().toString());
+    }
+
+    @Test
+    void shouldCancelPendingPremiumVerificationWhenForcedOnlineLoginNeverCompletes() {
+        given(pluginMessageEvent.getResult()).willReturn(PluginMessageEvent.ForwardResult.forward());
+        given(pluginMessageEvent.getIdentifier()).willReturn(VelocityProxyBridge.AUTHME_CHANNEL);
+        given(pluginMessageEvent.getSource()).willReturn(sourceConnection);
+        given(pluginMessageEvent.getData()).willReturn(createAuthMePayload("premium.pending.set", "Alice"));
+        given(sourceConnection.getServer()).willReturn(authServer);
+        given(authServer.getServerInfo()).willReturn(authServerInfo);
+        given(authServerInfo.getName()).willReturn("lobby");
+
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
+        bridge.onPluginMessage(pluginMessageEvent);
+
+        PreLoginEvent firstAttempt = new PreLoginEvent(mock(InboundConnection.class), "Alice", null);
+        bridge.onPreLogin(firstAttempt);
+        // Mojang rejected the unlicensed client; Velocity fires no event for that, the player just reconnects
+        PreLoginEvent secondAttempt = new PreLoginEvent(mock(InboundConnection.class), "Alice", null);
+        bridge.onPreLogin(secondAttempt);
+        PreLoginEvent thirdAttempt = new PreLoginEvent(mock(InboundConnection.class), "Alice", null);
+        bridge.onPreLogin(thirdAttempt);
+
+        assertEquals(PreLoginEvent.PreLoginComponentResult.forceOnlineMode().toString(), firstAttempt.getResult().toString());
+        assertEquals(PreLoginEvent.PreLoginComponentResult.allowed().toString(), secondAttempt.getResult().toString());
+        assertEquals(PreLoginEvent.PreLoginComponentResult.allowed().toString(), thirdAttempt.getResult().toString());
     }
 
     private static byte[] createChunkPayload(int seq, boolean last, String csv) {
