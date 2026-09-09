@@ -114,6 +114,7 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
         if (type.get() == MessageType.PROXY_STARTED) {
             logger.info("Proxy plugin '" + argument + "' has started and registered the authme:main channel");
             final String proxyName = argument;
+            final Player triggeringPlayer = player;
             bukkitService.runTaskAsynchronously(() -> {
                 // Always send the list, even when it is empty: an empty list is authoritative and
                 // lets the proxy replace a stale premium cache. With premium disabled, stored
@@ -121,11 +122,14 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
                 List<String> premiumNames = premiumEnabled ? dataSource.getPremiumUsernames() : List.of();
                 bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(() -> {
                     // Re-fetch a carrier at send-time: the original player may have gone offline
-                    // during the async DB query.
+                    // during the async DB query. Fall back to the triggering player so the list
+                    // still goes out when no fully-joined player exists yet (first join during
+                    // the login phase) or the single online player disconnected mid-query.
                     Player freshCarrier = bukkitService.getOnlinePlayers().stream()
                         .findFirst().orElse(null);
-                    if (freshCarrier != null) {
-                        bungeeSender.sendPremiumList(freshCarrier, premiumNames);
+                    Player carrier = freshCarrier != null ? freshCarrier : triggeringPlayer;
+                    if (carrier != null) {
+                        bungeeSender.sendPremiumList(carrier, premiumNames);
                         logger.info("Sent premium list (" + premiumNames.size() + " player(s)) to proxy '" + proxyName + "'");
                     } else {
                         logger.warning("Cannot send premium list to proxy '" + proxyName
