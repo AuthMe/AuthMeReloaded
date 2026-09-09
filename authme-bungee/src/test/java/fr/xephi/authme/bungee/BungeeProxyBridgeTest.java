@@ -14,6 +14,7 @@ import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -26,6 +27,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -484,6 +487,44 @@ class BungeeProxyBridgeTest {
         ByteArrayDataOutput output = ByteStreams.newDataOutput();
         output.writeUTF("premium.list.chunk");
         output.writeUTF(seq + ":" + (last ? "1" : "0") + ":" + csv);
+        return output.toByteArray();
+    }
+
+    @Test
+    void shouldPersistNonChunkedPremiumListToCache(@TempDir Path tempDir) throws Exception {
+        given(pluginMessageEvent.isCancelled()).willReturn(false);
+        given(pluginMessageEvent.getTag()).willReturn(BungeeProxyBridge.AUTHME_CHANNEL);
+        given(pluginMessageEvent.getSender()).willReturn(sourceServer);
+        given(pluginMessageEvent.getData()).willReturn(createListPayload("Alice"));
+
+        BungeeProxyBridge bridge = new BungeeProxyBridge(proxyServer, logger, createConfiguration(), new BungeeAuthenticationStore(), tempDir);
+        bridge.onPluginMessage(pluginMessageEvent);
+
+        Path cacheFile = tempDir.resolve("premium_names.cache");
+        long deadline = System.currentTimeMillis() + 5000;
+        while (System.currentTimeMillis() < deadline) {
+            if (Files.exists(cacheFile) && Files.readString(cacheFile).contains("alice")) {
+                break;
+            }
+            Thread.sleep(50);
+        }
+        assertTrue(Files.exists(cacheFile), "premium cache file should be written");
+        bridge.shutdown();
+
+        BungeeProxyBridge restarted = new BungeeProxyBridge(proxyServer, logger, createConfiguration(), new BungeeAuthenticationStore(), tempDir);
+        given(playerHandshakeEvent.getConnection()).willReturn(pendingConnection);
+        given(pendingConnection.getName()).willReturn("Alice");
+        given(pendingConnection.isOnlineMode()).willReturn(false);
+        restarted.onPlayerHandshake(playerHandshakeEvent);
+        restarted.shutdown();
+
+        verify(pendingConnection).setOnlineMode(true);
+    }
+
+    private static byte[] createListPayload(String csv) {
+        ByteArrayDataOutput output = ByteStreams.newDataOutput();
+        output.writeUTF("premium.list");
+        output.writeUTF(csv);
         return output.toByteArray();
     }
 

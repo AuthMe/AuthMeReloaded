@@ -337,6 +337,28 @@ class BungeeReceiverTest {
         verify(bungeeSender).sendPremiumList(carrier, List.of());
     }
 
+    @Test
+    void shouldSendPremiumListViaTriggeringPlayerWhenNoOnlinePlayers() {
+        // given
+        given(settings.getProperty(HooksSettings.BUNGEECORD)).willReturn(true);
+        given(dataSource.getPremiumUsernames()).willReturn(List.of("Alice"));
+        setBukkitServiceToRunTaskAsynchronously(bukkitService);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+        given(bukkitService.getOnlinePlayers()).willReturn(List.of());
+
+        Player triggeringPlayer = mock(Player.class);
+
+        BungeeReceiver receiver =
+            new BungeeReceiver(plugin, bukkitService, proxySessionManager, management, bungeeSender, dataSource,
+                proxyLoginRequestValidator, settings);
+
+        // when
+        receiver.onPluginMessageReceived("authme:main", triggeringPlayer, buildProxyStartedPayload("velocity"));
+
+        // then
+        verify(bungeeSender).sendPremiumList(triggeringPlayer, List.of("Alice"));
+    }
+
     private static byte[] buildProxyStartedPayload(String proxyName) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(MessageType.PROXY_STARTED.getId());
