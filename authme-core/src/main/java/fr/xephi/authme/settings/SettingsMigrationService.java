@@ -15,6 +15,7 @@ import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.settings.properties.PremiumSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.StringUtils;
@@ -93,6 +94,7 @@ public class SettingsMigrationService extends PlainMigrationService {
             | moveSaltColumnConfigWithOtherColumnConfigs(reader, configurationData)
             | migrateTimeoutToLoginAndRegisterTimeout(reader, configurationData)
             | migrateDialogSettings(reader, configurationData)
+            | migratePremiumSetting(reader, configurationData)
             || hasDeprecatedProperties(reader);
     }
 
@@ -152,6 +154,23 @@ public class SettingsMigrationService extends PlainMigrationService {
             | moveProperty(
                 newProperty("settings.registration.preJoinDialog.loginCancelKicks", true),
                 RegistrationSettings.PRE_JOIN_LOGIN_CANCEL_KICKS, reader, configData);
+    }
+
+    /**
+     * Migrates the old {@code settings.enablePremium} setting to the new
+     * {@code settings.premium.enabled} path.
+     *
+     * @param reader The property reader
+     * @param configData Configuration data
+     * @return True if the configuration has changed, false otherwise
+     */
+    private static boolean migratePremiumSetting(PropertyReader reader, ConfigurationData configData) {
+        return moveProperty(
+            newProperty("settings.enablePremium", false),
+            PremiumSettings.ENABLE_PREMIUM,
+            reader,
+            configData
+        );
     }
 
     private static boolean hasDeprecatedProperties(PropertyReader reader) {
