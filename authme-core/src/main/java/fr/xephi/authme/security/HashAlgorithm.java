@@ -34,6 +34,7 @@ public enum HashAlgorithm {
     WBB3(fr.xephi.authme.security.crypts.Wbb3.class),
     WBB4(fr.xephi.authme.security.crypts.Wbb4.class),
     WORDPRESS(fr.xephi.authme.security.crypts.Wordpress.class),
+    WORDPRESS68(fr.xephi.authme.security.crypts.Wordpress68.class),
     XFBCRYPT(fr.xephi.authme.security.crypts.XfBCrypt.class),
     CUSTOM(null),
 
