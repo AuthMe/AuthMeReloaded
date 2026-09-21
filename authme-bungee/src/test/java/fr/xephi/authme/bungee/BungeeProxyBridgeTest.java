@@ -13,6 +13,9 @@ import net.md_5.bungee.api.event.PlayerHandshakeEvent;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
+import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.plugin.PluginManager;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -85,8 +88,20 @@ class BungeeProxyBridgeTest {
     @Mock
     private PendingConnection pendingConnection;
 
+    @Mock
+    private PluginManager pluginManager;
+
+    @Mock
+    private Plugin packetEventsPlugin;
+
     @Captor
     private ArgumentCaptor<byte[]> payloadCaptor;
+
+    @BeforeEach
+    void registerPacketEventsOnTheProxy() {
+        given(proxyServer.getPluginManager()).willReturn(pluginManager);
+        given(pluginManager.getPlugin("packetevents")).willReturn(packetEventsPlugin);
+    }
 
     @Test
     void shouldTrackAuthenticatedPlayerAndForwardPerformLoginOnServerSwitch() {

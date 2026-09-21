@@ -4,7 +4,8 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.bungee.premium.BungeePremiumOnlineModeHandler;
-import fr.xephi.authme.bungee.premium.BungeePremiumVerificationManager;
+import fr.xephi.authme.bungee.premium.PremiumVerificationManager;
+import fr.xephi.authme.bungee.premium.PremiumVerificationManagers;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.ProxyServer;
@@ -71,7 +72,7 @@ public final class BungeeProxyBridge implements Listener {
     // Players with a pending premium verification (ran /premium but not yet confirmed via reconnect)
     private volatile Set<String> pendingPremiumUsernames = ConcurrentHashMap.newKeySet();
     private final BungeePremiumOnlineModeHandler premiumOnlineModeHandler;
-    private final BungeePremiumVerificationManager premiumVerificationManager;
+    private final PremiumVerificationManager premiumVerificationManager;
     private final ScheduledExecutorService retryScheduler = Executors.newSingleThreadScheduledExecutor(r -> {
         Thread t = new Thread(r, "authme-bungee-retry");
         t.setDaemon(true);
@@ -87,7 +88,7 @@ public final class BungeeProxyBridge implements Listener {
         this.authenticationStore = authenticationStore;
         this.premiumOnlineModeHandler = new BungeePremiumOnlineModeHandler(this::requiresPremiumVerification);
         this.premiumVerificationManager =
-            new BungeePremiumVerificationManager(proxyServer, logger,
+            PremiumVerificationManagers.create(proxyServer, logger,
                 this::requiresPremiumVerification, this::isPendingPremiumVerification,
                 this::clearPendingPremiumVerification,
                 () -> this.configuration.keepOfflineUuidCompatibility());
