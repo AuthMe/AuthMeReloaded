@@ -37,6 +37,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import fr.xephi.authme.platform.BukkitCompatibilityAdapter;
 import fr.xephi.authme.platform.ChatAdapter;
 import fr.xephi.authme.platform.CommandRegistrationAdapter;
 import fr.xephi.authme.platform.DialogAdapter;
@@ -217,6 +218,7 @@ public class AuthMe extends JavaPlugin {
         injector.registerProvider(DataSource.class, DataSourceProvider.class);
 
         injector.register(PlatformAdapter.class, platformAdapter);
+        injector.register(BukkitCompatibilityAdapter.class, platformAdapter);
         injector.register(TeleportAdapter.class, platformAdapter);
         injector.register(ChatAdapter.class, platformAdapter);
         injector.register(EventRegistrationAdapter.class, platformAdapter);
@@ -252,10 +254,13 @@ public class AuthMe extends JavaPlugin {
     }
 
     private PlatformAdapter loadPlatformAdapter() {
-        return ServiceLoader.load(PlatformAdapter.class, getClass().getClassLoader())
-            .findFirst()
-            .orElseThrow(() -> new IllegalStateException(
-                "No PlatformAdapter found. Ensure you are using a version-specific AuthMe jar."));
+        java.util.Iterator<PlatformAdapter> it =
+            ServiceLoader.load(PlatformAdapter.class, getClass().getClassLoader()).iterator();
+        if (it.hasNext()) {
+            return it.next();
+        }
+        throw new IllegalStateException(
+            "No PlatformAdapter found. Ensure you are using a version-specific AuthMe jar.");
     }
 
     /**

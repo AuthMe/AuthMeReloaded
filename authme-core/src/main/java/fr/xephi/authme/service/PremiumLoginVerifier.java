@@ -16,6 +16,7 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -203,7 +204,73 @@ public class PremiumLoginVerifier {
     // Internal record types
     // ---------------------------------------------------------------------------
 
-    record PendingVerification(String username, UUID playerUUID, byte[] verifyToken, long startedAt) {}
+    static final class PendingVerification {
+        private final String username;
+        private final UUID playerUUID;
+        private final byte[] verifyToken;
+        private final long startedAt;
 
-    record VerifiedSession(UUID mojangUuid, long verifiedAt) {}
+        PendingVerification(String username, UUID playerUUID, byte[] verifyToken, long startedAt) {
+            this.username = Objects.requireNonNull(username, "username");
+            this.verifyToken = Objects.requireNonNull(verifyToken, "verifyToken");
+            this.playerUUID = playerUUID;
+            this.startedAt = startedAt;
+        }
+
+        String username() { return username; }
+        UUID playerUUID() { return playerUUID; }
+        byte[] verifyToken() { return verifyToken; }
+        long startedAt() { return startedAt; }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            PendingVerification that = (PendingVerification) o;
+            return startedAt == that.startedAt && Objects.equals(username, that.username)
+                && Objects.equals(playerUUID, that.playerUUID)
+                && Arrays.equals(verifyToken, that.verifyToken);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = Objects.hash(username, playerUUID, startedAt);
+            return 31 * result + Arrays.hashCode(verifyToken);
+        }
+
+        @Override
+        public String toString() {
+            return "PendingVerification[username=" + username + ", playerUUID=" + playerUUID
+                + ", verifyToken=" + Arrays.toString(verifyToken) + ", startedAt=" + startedAt + "]";
+        }
+    }
+
+    static final class VerifiedSession {
+        private final UUID mojangUuid;
+        private final long verifiedAt;
+
+        VerifiedSession(UUID mojangUuid, long verifiedAt) {
+            this.mojangUuid = mojangUuid;
+            this.verifiedAt = verifiedAt;
+        }
+
+        UUID mojangUuid() { return mojangUuid; }
+        long verifiedAt() { return verifiedAt; }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            VerifiedSession that = (VerifiedSession) o;
+            return verifiedAt == that.verifiedAt && Objects.equals(mojangUuid, that.mojangUuid);
+        }
+
+        @Override
+        public int hashCode() { return Objects.hash(mojangUuid, verifiedAt); }
+
+        @Override
+        public String toString() {
+            return "VerifiedSession[mojangUuid=" + mojangUuid + ", verifiedAt=" + verifiedAt + "]";
+        }
+    }
 }

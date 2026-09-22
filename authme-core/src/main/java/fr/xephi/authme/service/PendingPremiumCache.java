@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -104,5 +105,32 @@ public class PendingPremiumCache {
         return evicted;
     }
 
-    private record PendingEntry(UUID mojangUuid, long expiresAt) {}
+    private static final class PendingEntry {
+        private final UUID mojangUuid;
+        private final long expiresAt;
+
+        PendingEntry(UUID mojangUuid, long expiresAt) {
+            this.mojangUuid = mojangUuid;
+            this.expiresAt = expiresAt;
+        }
+
+        UUID mojangUuid() { return mojangUuid; }
+        long expiresAt() { return expiresAt; }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            PendingEntry that = (PendingEntry) o;
+            return expiresAt == that.expiresAt && Objects.equals(mojangUuid, that.mojangUuid);
+        }
+
+        @Override
+        public int hashCode() { return Objects.hash(mojangUuid, expiresAt); }
+
+        @Override
+        public String toString() {
+            return "PendingEntry[mojangUuid=" + mojangUuid + ", expiresAt=" + expiresAt + "]";
+        }
+    }
 }

@@ -2,11 +2,11 @@ package fr.xephi.authme.settings;
 
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
+import fr.xephi.authme.platform.BukkitCompatibilityAdapter;
 import fr.xephi.authme.platform.TeleportAdapter;
 import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Bukkit;
-import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -54,6 +54,9 @@ class SpawnLoaderTest {
     @Mock
     private TeleportAdapter teleportAdapter;
 
+    @Mock
+    private BukkitCompatibilityAdapter compatibilityAdapter;
+
     @TempDir
     File testFolder;
 
@@ -72,7 +75,7 @@ class SpawnLoaderTest {
         // Create a settings mock with default values
         given(settings.getProperty(RestrictionSettings.SPAWN_PRIORITY))
             .willReturn("authme, essentials, multiverse, default");
-        spawnLoader = new SpawnLoader(testFolder, settings, pluginHookService, teleportAdapter);
+        spawnLoader = new SpawnLoader(testFolder, settings, pluginHookService, teleportAdapter, compatibilityAdapter);
     }
 
     @Test
@@ -140,7 +143,7 @@ class SpawnLoaderTest {
         World world = mock(World.class);
         Location worldSpawn = new Location(world, 10.0, 64.0, -5.0);
         given(world.getSpawnLocation()).willReturn(worldSpawn);
-        given(world.getGameRuleValue(GameRule.SPAWN_RADIUS)).willReturn(0);
+        given(compatibilityAdapter.getSpawnRadius(world)).willReturn(0);
 
         // when
         Location result = spawnLoader.getSpawnLocation(world);
@@ -159,11 +162,10 @@ class SpawnLoaderTest {
         // worldSpawn at (100, 64, 200); place the result due east (+X) so the expected yaw is -90°
         Location worldSpawn = new Location(world, 100.0, 64.0, 200.0);
         given(world.getSpawnLocation()).willReturn(worldSpawn);
-        // radius=0 forces dx=dz=0 → exact worldSpawn → returned as-is (no yaw recalculation)
-        given(world.getGameRuleValue(GameRule.SPAWN_RADIUS)).willReturn(10);
+        given(compatibilityAdapter.getSpawnRadius(world)).willReturn(10);
 
         Block passable = mock(Block.class);
-        given(passable.isPassable()).willReturn(true);
+        given(compatibilityAdapter.isBlockPassable(passable)).willReturn(true);
         given(world.getBlockAt(anyInt(), eq(64), anyInt()))
             .willReturn(passable);
         given(world.getBlockAt(anyInt(), eq(65), anyInt()))
@@ -191,12 +193,12 @@ class SpawnLoaderTest {
         World world = mock(World.class);
         Location worldSpawn = new Location(world, 0.0, 70.0, 0.0);
         given(world.getSpawnLocation()).willReturn(worldSpawn);
-        given(world.getGameRuleValue(GameRule.SPAWN_RADIUS)).willReturn(5);
+        given(compatibilityAdapter.getSpawnRadius(world)).willReturn(5);
 
         Block passable = mock(Block.class);
-        given(passable.isPassable()).willReturn(true);
+        given(compatibilityAdapter.isBlockPassable(passable)).willReturn(true);
         Block solid = mock(Block.class);
-        given(solid.isPassable()).willReturn(false);
+        given(compatibilityAdapter.isBlockPassable(solid)).willReturn(false);
 
         // y=70 passable, y=71 solid → initial check fails; foot is passable → search downward
         given(world.getBlockAt(anyInt(), eq(70), anyInt()))
@@ -223,12 +225,12 @@ class SpawnLoaderTest {
         World world = mock(World.class);
         Location worldSpawn = new Location(world, 0.0, 60.0, 0.0);
         given(world.getSpawnLocation()).willReturn(worldSpawn);
-        given(world.getGameRuleValue(GameRule.SPAWN_RADIUS)).willReturn(5);
+        given(compatibilityAdapter.getSpawnRadius(world)).willReturn(5);
 
         Block passable = mock(Block.class);
-        given(passable.isPassable()).willReturn(true);
+        given(compatibilityAdapter.isBlockPassable(passable)).willReturn(true);
         Block solid = mock(Block.class);
-        given(solid.isPassable()).willReturn(false);
+        given(compatibilityAdapter.isBlockPassable(solid)).willReturn(false);
 
         // y=60 is solid → search upward
         given(world.getBlockAt(anyInt(), eq(60), anyInt()))
@@ -259,10 +261,10 @@ class SpawnLoaderTest {
         World world = mock(World.class);
         Location worldSpawn = new Location(world, 12.0, 64.0, -34.0);
         given(world.getSpawnLocation()).willReturn(worldSpawn);
-        given(world.getGameRuleValue(GameRule.SPAWN_RADIUS)).willReturn(5);
+        given(compatibilityAdapter.getSpawnRadius(world)).willReturn(5);
 
         Block solid = mock(Block.class);
-        given(solid.isPassable()).willReturn(false);
+        given(compatibilityAdapter.isBlockPassable(solid)).willReturn(false);
         given(world.getBlockAt(anyInt(), anyInt(), anyInt()))
             .willReturn(solid);
 
