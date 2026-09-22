@@ -22,6 +22,7 @@ import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import net.kyori.adventure.text.Component;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -33,6 +34,8 @@ import org.slf4j.Logger;
 
 import java.util.Optional;
 import java.util.Set;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -665,6 +668,45 @@ class VelocityProxyBridgeTest {
         ByteArrayDataOutput output = ByteStreams.newDataOutput();
         output.writeUTF("premium.list.chunk");
         output.writeUTF(seq + ":" + (last ? "1" : "0") + ":" + csv);
+        return output.toByteArray();
+    }
+
+    @Test
+    void shouldPersistNonChunkedPremiumListToCache(@TempDir Path tempDir) throws Exception {
+        given(pluginMessageEvent.getResult()).willReturn(PluginMessageEvent.ForwardResult.forward());
+        given(pluginMessageEvent.getIdentifier()).willReturn(VelocityProxyBridge.AUTHME_CHANNEL);
+        given(pluginMessageEvent.getSource()).willReturn(sourceConnection);
+        given(pluginMessageEvent.getData()).willReturn(createListPayload("Alice"));
+        given(sourceConnection.getServer()).willReturn(authServer);
+        given(authServer.getServerInfo()).willReturn(authServerInfo);
+        given(authServerInfo.getName()).willReturn("lobby");
+
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), tempDir);
+        bridge.onPluginMessage(pluginMessageEvent);
+
+        Path cacheFile = tempDir.resolve("premium_names.cache");
+        long deadline = System.currentTimeMillis() + 5000;
+        while (System.currentTimeMillis() < deadline) {
+            if (Files.exists(cacheFile) && Files.readString(cacheFile).contains("alice")) {
+                break;
+            }
+            Thread.sleep(50);
+        }
+        assertTrue(Files.exists(cacheFile), "premium cache file should be written");
+        bridge.shutdown();
+
+        VelocityProxyBridge restarted = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), tempDir);
+        PreLoginEvent event = new PreLoginEvent(mock(InboundConnection.class), "Alice", null);
+        restarted.onPreLogin(event);
+        restarted.shutdown();
+
+        assertEquals(PreLoginEvent.PreLoginComponentResult.forceOnlineMode().toString(), event.getResult().toString());
+    }
+
+    private static byte[] createListPayload(String csv) {
+        ByteArrayDataOutput output = ByteStreams.newDataOutput();
+        output.writeUTF("premium.list");
+        output.writeUTF(csv);
         return output.toByteArray();
     }
 
