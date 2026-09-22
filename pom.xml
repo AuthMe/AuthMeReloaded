@@ -94,7 +94,7 @@
         <dependencies.datasourcecolumns.version>0.1.2</dependencies.datasourcecolumns.version>
         <dependencies.mysql-connector-j.version>9.3.0</dependencies.mysql-connector-j.version>
         <dependencies.mariadb-java-client.version>3.5.7</dependencies.mariadb-java-client.version>
-        <dependencies.postgresql.version>42.7.11</dependencies.postgresql.version>
+        <dependencies.postgresql.version>42.7.12</dependencies.postgresql.version>
         <dependencies.bcprov.version>1.79</dependencies.bcprov.version>
         <dependencies.googleauth.version>1.5.0</dependencies.googleauth.version>
         <dependencies.configme.version>1.3.1</dependencies.configme.version>
