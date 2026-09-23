@@ -9,9 +9,9 @@ import static org.mockito.Mockito.mock;
 /**
  * Test for {@link Salted2Md5}.
  */
-public class Salted2Md5Test extends AbstractEncryptionMethodTest {
+class Salted2Md5Test extends AbstractEncryptionMethodTest {
 
-    public Salted2Md5Test() {
+    Salted2Md5Test() {
         super(new Salted2Md5(mockSettings()),
             new HashedPassword("9f3d13dc01a6fe61fd669954174399f3", "9b5f5749"),  // password
             new HashedPassword("b28c32f624a4eb161d6adc9acb5bfc5b", "f750ba32"),  // PassWord1

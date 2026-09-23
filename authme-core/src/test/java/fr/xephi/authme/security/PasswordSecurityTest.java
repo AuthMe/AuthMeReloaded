@@ -1,12 +1,8 @@
 package fr.xephi.authme.security;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-import fr.xephi.authme.DelayedInjectionExtension;
 import ch.jalu.injector.Injector;
 import ch.jalu.injector.InjectorBuilder;
 import ch.jalu.injector.factory.Factory;
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.InjectDelayed;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.DataSource;
@@ -21,9 +17,13 @@ import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 
 import java.util.Collections;
@@ -31,10 +31,10 @@ import java.util.Locale;
 import java.util.Set;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -48,10 +48,10 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 /**
  * Test for {@link PasswordSecurity}.
  */
-@ExtendWith(DelayedInjectionExtension.class)
-public class PasswordSecurityTest {
+@ExtendWith(MockitoExtension.class)
+class PasswordSecurityTest {
 
-    @InjectDelayed
+    @InjectMocks
     private PasswordSecurity passwordSecurity;
 
     @Mock
@@ -64,7 +64,7 @@ public class PasswordSecurityTest {
     private DataSource dataSource;
 
     @Mock
-    private Factory<HashAlgorithm> hashAlgorithmFactory;
+    private Factory<EncryptionMethod> encryptionMethodFactory;
 
     @Mock
     private EncryptionMethod method;
@@ -72,12 +72,12 @@ public class PasswordSecurityTest {
     private Class<?> caughtClassInEvent;
 
     @BeforeAll
-    public static void setUpTest() {
+    static void setUpTest() {
         TestHelper.setupLogger();
     }
 
-    @BeforeInjecting
-    public void setUpMocks() {
+    @BeforeEach
+    void setUpMocks() {
         caughtClassInEvent = null;
 
         // When the password encryption event is emitted, replace the encryption method with our mock.
@@ -103,18 +103,20 @@ public class PasswordSecurityTest {
             .create();
         injector.register(Settings.class, settings);
 
-        given(hashAlgorithmFactory.newInstance(any(Class.class))).willAnswer(invocation -> {
-                Object o = injector.createIfHasDependencies(invocation.getArgument(0));
-                if (o == null) {
-                    throw new IllegalArgumentException("Cannot create object of class '" + invocation.getArgument(0)
-                        + "': missing class that needs to be provided?");
-                }
-                return o;
+        given(encryptionMethodFactory.newInstance(any(Class.class))).willAnswer(invocation -> {
+            Object o = injector.createIfHasDependencies(invocation.getArgument(0));
+            if (o == null) {
+                throw new IllegalArgumentException("Cannot create object of class '" + invocation.getArgument(0)
+                    + "': missing class that needs to be provided?");
+            }
+            return o;
         });
+
+        ReflectionTestUtils.invokePostConstructMethods(passwordSecurity);
     }
 
     @Test
-    public void shouldReturnPasswordMatch() {
+    void shouldReturnPasswordMatch() {
         // given
         HashedPassword password = new HashedPassword("$TEST$10$SOME_HASH", null);
         String playerName = "Tester";
@@ -136,7 +138,7 @@ public class PasswordSecurityTest {
     }
 
     @Test
-    public void shouldReturnPasswordMismatch() {
+    void shouldReturnPasswordMismatch() {
         // given
         HashedPassword password = new HashedPassword("$TEST$10$SOME_HASH", null);
         String playerName = "My_PLayer";
@@ -157,7 +159,7 @@ public class PasswordSecurityTest {
     }
 
     @Test
-    public void shouldReturnFalseIfPlayerDoesNotExist() {
+    void shouldReturnFalseIfPlayerDoesNotExist() {
         // given
         String playerName = "bobby";
         String clearTextPass = "tables";
@@ -173,7 +175,7 @@ public class PasswordSecurityTest {
     }
 
     @Test
-    public void shouldTryOtherMethodsForFailedPassword() {
+    void shouldTryOtherMethodsForFailedPassword() {
         // given
         // BCRYPT hash for "Test"
         HashedPassword password =
@@ -206,7 +208,7 @@ public class PasswordSecurityTest {
     }
 
     @Test
-    public void shouldTryLegacyMethodsAndFail() {
+    void shouldTryLegacyMethodsAndFail() {
         // given
         HashedPassword password = new HashedPassword("hashNotMatchingAnyMethod", "someBogusSalt");
         String playerName = "asfd";
@@ -227,7 +229,7 @@ public class PasswordSecurityTest {
     }
 
     @Test
-    public void shouldHashPassword() {
+    void shouldHashPassword() {
         // given
         String password = "MyP@ssword";
         String username = "theUserInTest";
@@ -248,7 +250,7 @@ public class PasswordSecurityTest {
     }
 
     @Test
-    public void shouldSkipCheckIfMandatorySaltIsUnavailable() {
+    void shouldSkipCheckIfMandatorySaltIsUnavailable() {
         // given
         String password = "?topSecretPass\\";
         String username = "someone12";
@@ -269,7 +271,7 @@ public class PasswordSecurityTest {
     }
 
     @Test
-    public void shouldReloadSettings() {
+    void shouldReloadSettings() {
         // given
         given(settings.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.MD5);
         given(settings.getProperty(SecuritySettings.LEGACY_HASHES))
@@ -287,5 +289,3 @@ public class PasswordSecurityTest {
             equalTo(legacyHashesSet));
     }
 }
-
-

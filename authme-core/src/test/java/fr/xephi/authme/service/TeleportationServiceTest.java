@@ -1,9 +1,5 @@
 package fr.xephi.authme.service;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboPlayer;
@@ -20,24 +16,23 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 
-import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask;
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -45,8 +40,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link TeleportationService}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class TeleportationServiceTest {
+class TeleportationServiceTest {
 
     @InjectMocks
     private TeleportationService teleportationService;
@@ -68,24 +62,21 @@ public class TeleportationServiceTest {
 
     @Mock
     private PlatformAdapter platformAdapter;
-    @Captor
-    private ArgumentCaptor<Location> locationCaptor;
 
     @BeforeEach
-    public void setUpForcedWorlds() {
-        lenient().when(settings.getProperty(RestrictionSettings.FORCE_SPAWN_ON_WORLDS))
-            .thenReturn(Arrays.asList("forced1", "OtherForced"));
+    void setUpForcedWorlds() {
+        given(settings.getProperty(RestrictionSettings.FORCE_SPAWN_ON_WORLDS))
+            .willReturn(Arrays.asList("forced1", "OtherForced"));
         teleportationService.reload();
 
-        lenient().when(settings.getProperty(RestrictionSettings.NO_TELEPORT)).thenReturn(false);
-        lenient().when(settings.getProperty(RegistrationSettings.FORCE)).thenReturn(true);
+        given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(false);
     }
 
     // -----------
     // JOINING
     // -----------
     @Test
-    public void shouldNotTeleportPlayerOnJoin() {
+    void shouldNotTeleportPlayerOnJoin() {
         // given
         given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(true);
         Player player = mock(Player.class);
@@ -99,14 +90,14 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldTeleportPlayerToFirstSpawn() {
+    void shouldTeleportPlayerToFirstSpawn() {
         // given
         Player player = mock(Player.class);
         given(player.hasPlayedBefore()).willReturn(false);
         given(player.isOnline()).willReturn(true);
         Location firstSpawn = mockLocation();
         given(spawnLoader.getFirstSpawn()).willReturn(firstSpawn);
-        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+        setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         teleportationService.teleportNewPlayerToFirstSpawn(player);
@@ -119,14 +110,15 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldTeleportPlayerToSpawn() {
+    void shouldTeleportPlayerToSpawn() {
         // given
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
+        given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
         Player player = mock(Player.class);
         given(player.isOnline()).willReturn(true);
         Location spawn = mockLocation();
         given(spawnLoader.getSpawnLocation(player)).willReturn(spawn);
-        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+        setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         teleportationService.teleportOnJoin(player);
@@ -139,7 +131,7 @@ public class TeleportationServiceTest {
 
     @Test
     // No first spawn defined, no teleport settings enabled
-    public void shouldNotTeleportNewPlayer() {
+    void shouldNotTeleportNewPlayer() {
         // given
         Player player = mock(Player.class);
         given(spawnLoader.getFirstSpawn()).willReturn(null);
@@ -155,7 +147,7 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldNotTeleportPlayerToFirstSpawnIfNoTeleportEnabled() {
+    void shouldNotTeleportPlayerToFirstSpawnIfNoTeleportEnabled() {
         // given
         Player player = mock(Player.class);
         given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(true);
@@ -169,7 +161,7 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldNotTeleportNotNewPlayerToFirstSpawn() {
+    void shouldNotTeleportNotNewPlayerToFirstSpawn() {
         // given
         Player player = mock(Player.class);
         given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(false);
@@ -183,19 +175,20 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldNotTeleportPlayerForRemovedLocationInEvent() {
+    void shouldNotTeleportPlayerForRemovedLocationInEvent() {
         // given
         final Player player = mock(Player.class);
         Location spawn = mockLocation();
         given(spawnLoader.getSpawnLocation(player)).willReturn(spawn);
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
+        given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
         doAnswer(invocation -> {
             SpawnTeleportEvent event = (SpawnTeleportEvent) invocation.getArguments()[0];
             assertThat(event.getPlayer(), equalTo(player));
             event.setTo(null);
             return null;
         }).when(bukkitService).callEvent(any(SpawnTeleportEvent.class));
-        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+        setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         teleportationService.teleportOnJoin(player);
@@ -206,19 +199,20 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldNotTeleportPlayerForCanceledEvent() {
+    void shouldNotTeleportPlayerForCanceledEvent() {
         // given
         final Player player = mock(Player.class);
         Location spawn = mockLocation();
         given(spawnLoader.getSpawnLocation(player)).willReturn(spawn);
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
+        given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
         doAnswer(invocation -> {
             SpawnTeleportEvent event = (SpawnTeleportEvent) invocation.getArguments()[0];
             assertThat(event.getPlayer(), equalTo(player));
             event.setCancelled(true);
             return null;
         }).when(bukkitService).callEvent(any(SpawnTeleportEvent.class));
-        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+        setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         teleportationService.teleportOnJoin(player);
@@ -262,9 +256,10 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldPrepareCustomSpawnLocationWithoutPlayerInstance() {
+    void shouldPrepareCustomSpawnLocationWithoutPlayerInstance() {
         // given
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
+        given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
         World world = mock(World.class);
         Location spawn = mockLocation();
         given(spawnLoader.getSpawnLocation(world)).willReturn(spawn);
@@ -279,9 +274,10 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldRememberOriginalJoinLocationForAsyncJoinEvent() {
+    void shouldRememberOriginalJoinLocationForAsyncJoinEvent() {
         // given
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
+        given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
         World world = mock(World.class);
         Location originalSpawn = new Location(world, 1.0, 64.0, 1.0);
         Location spawn = mockLocation();
@@ -296,9 +292,10 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldUseModifiedSpawnLocationFromJoinEvent() {
+    void shouldUseModifiedSpawnLocationFromJoinEvent() {
         // given
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
+        given(settings.getProperty(RegistrationSettings.FORCE)).willReturn(true);
         Player player = mock(Player.class);
         given(player.getName()).willReturn("Bobby");
         Location originalSpawn = mockLocation();
@@ -321,7 +318,7 @@ public class TeleportationServiceTest {
     // LOGIN
     // ---------
     @Test
-    public void shouldNotTeleportUponLogin() {
+    void shouldNotTeleportUponLogin() {
         // given
         given(settings.getProperty(RestrictionSettings.NO_TELEPORT)).willReturn(true);
         Player player = mock(Player.class);
@@ -336,7 +333,7 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldTeleportPlayerToSpawnAfterLogin() {
+    void shouldTeleportPlayerToSpawnAfterLogin() {
         // given
         given(settings.getProperty(RestrictionSettings.FORCE_SPAWN_LOCATION_AFTER_LOGIN)).willReturn(true);
         Player player = mock(Player.class);
@@ -348,7 +345,7 @@ public class TeleportationServiceTest {
         Location limboLocation = mockLocation();
         given(limboLocation.getWorld().getName()).willReturn("forced1");
         given(limbo.getLocation()).willReturn(limboLocation);
-        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+        setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
@@ -357,9 +354,9 @@ public class TeleportationServiceTest {
         verify(platformAdapter).teleportPlayer(player, spawn);
     }
 
-    @Test
     // Check that the worlds for "force spawn loc after login" are case-sensitive
-    public void shouldNotTeleportToSpawnForOtherCaseInWorld() {
+    @Test
+    void shouldNotTeleportToSpawnForOtherCaseInWorld() {
         // given
         given(settings.getProperty(RestrictionSettings.FORCE_SPAWN_LOCATION_AFTER_LOGIN)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(false);
@@ -380,7 +377,7 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldTeleportBackToPlayerAuthLocation() {
+    void shouldTeleportBackToPlayerAuthLocation() {
         // given
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(true);
@@ -395,18 +392,19 @@ public class TeleportationServiceTest {
         LimboPlayer limbo = mock(LimboPlayer.class);
         Location limboLocation = mockLocation();
         given(limbo.getLocation()).willReturn(limboLocation);
-        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+        setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
 
         // then
+        ArgumentCaptor<Location> locationCaptor = ArgumentCaptor.forClass(Location.class);
         verify(platformAdapter).teleportPlayer(eq(player), locationCaptor.capture());
         assertCorrectLocation(locationCaptor.getValue(), auth, world);
     }
 
     @Test
-    public void shouldTeleportAccordingToPlayerAuthAndPlayerWorldAsFallback() {
+    void shouldTeleportAccordingToPlayerAuthAndPlayerWorldAsFallback() {
         // given
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(true);
@@ -422,18 +420,19 @@ public class TeleportationServiceTest {
         LimboPlayer limbo = mock(LimboPlayer.class);
         Location limboLocation = mockLocation();
         given(limbo.getLocation()).willReturn(limboLocation);
-        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+        setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
 
         // then
+        ArgumentCaptor<Location> locationCaptor = ArgumentCaptor.forClass(Location.class);
         verify(platformAdapter).teleportPlayer(eq(player), locationCaptor.capture());
         assertCorrectLocation(locationCaptor.getValue(), auth, world);
     }
 
     @Test
-    public void shouldNotTeleportIfPlayerIsAlreadyAtQuitLocation() {
+    void shouldNotTeleportIfPlayerIsAlreadyAtQuitLocation() {
         // given
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(true);
@@ -457,7 +456,7 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldUseRememberedJoinLocationIfQuitLocationIsStillAtSchemaDefaults() {
+    void shouldUseRememberedJoinLocationIfQuitLocationIsStillAtSchemaDefaults() {
         // given
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(true);
@@ -471,19 +470,20 @@ public class TeleportationServiceTest {
         World world = mock(World.class);
         Location rememberedJoinLocation = new Location(world, 12.0, 70.0, -8.0);
         teleportationService.rememberOriginalJoinLocation("Bobby", rememberedJoinLocation);
-        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+        setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         teleportationService.teleportOnLogin(player, auth, null);
 
         // then
+        ArgumentCaptor<Location> locationCaptor = ArgumentCaptor.forClass(Location.class);
         verify(platformAdapter).teleportPlayer(eq(player), locationCaptor.capture());
         assertThat(locationCaptor.getValue(), equalTo(rememberedJoinLocation));
         verifyNoInteractions(spawnLoader);
     }
 
     @Test
-    public void shouldUseLimboLocationIfQuitLocationIsStillAtSchemaDefaults() {
+    void shouldUseLimboLocationIfQuitLocationIsStillAtSchemaDefaults() {
         // given
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(true);
@@ -496,7 +496,7 @@ public class TeleportationServiceTest {
         LimboPlayer limbo = mock(LimboPlayer.class);
         Location limboLocation = mockLocation();
         given(limbo.getLocation()).willReturn(limboLocation);
-        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+        setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
@@ -507,7 +507,7 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldTeleportWithLimboPlayerIfSaveQuitLocIsDisabled() {
+    void shouldTeleportWithLimboPlayerIfSaveQuitLocIsDisabled() {
         // given
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
         given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(false);
@@ -518,7 +518,7 @@ public class TeleportationServiceTest {
         LimboPlayer limbo = mock(LimboPlayer.class);
         Location location = mockLocation();
         given(limbo.getLocation()).willReturn(location);
-        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+        setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         teleportationService.teleportOnLogin(player, auth, limbo);
@@ -528,7 +528,7 @@ public class TeleportationServiceTest {
     }
 
     @Test
-    public void shouldNotTeleportForNullLocationInLimboPlayer() {
+    void shouldNotTeleportForNullLocationInLimboPlayer() {
         // given
         given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(false);
         given(settings.getProperty(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN)).willReturn(true);
@@ -541,7 +541,7 @@ public class TeleportationServiceTest {
         teleportationService.teleportOnLogin(player, auth, limbo);
 
         // then
-        verify(player).getName();
+        verifyNoInteractions(platformAdapter);
         verify(limbo).getLocation();
     }
 
@@ -563,7 +563,4 @@ public class TeleportationServiceTest {
             .locX(123.45).locY(23.4).locZ(-4.567)
             .build();
     }
-
 }
-
-

@@ -14,7 +14,7 @@ import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.properties.AuthMeSettingsRetriever;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import fr.xephi.authme.TempFolder;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,28 +36,29 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.FORCE_SPAW
 import static fr.xephi.authme.settings.properties.RestrictionSettings.FORCE_SPAWN_ON_WORLDS;
 import static fr.xephi.authme.settings.properties.SecuritySettings.LEGACY_HASHES;
 import static fr.xephi.authme.settings.properties.SecuritySettings.PASSWORD_HASH;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Test for {@link SettingsMigrationService}.
  */
-public class SettingsMigrationServiceTest {
+class SettingsMigrationServiceTest {
 
     private static final String OLD_CONFIG_FILE = TestHelper.PROJECT_ROOT + "settings/config-old.yml";
-    public TempFolder temporaryFolder = new TempFolder();
+
+    @TempDir
+    File dataFolder;
 
     @BeforeAll
-    public static void setUpLogger() {
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
     /* When settings are loaded, test that migrations are applied and immediately available in memory. */
     @Test
-    public void shouldPerformMigrationsInMemory() throws IOException {
+    void shouldPerformMigrationsInMemory() throws IOException {
         // given
-        File dataFolder = temporaryFolder.newFolder();
         File configFile = new File(dataFolder, "config.yml");
         Files.copy(getJarFile(OLD_CONFIG_FILE), configFile);
         PropertyResource resource = new YamlFileResource(configFile);
@@ -76,9 +77,8 @@ public class SettingsMigrationServiceTest {
      * i.e. when the settings are loaded again from the file, no migrations should be necessary.
      */
     @Test
-    public void shouldPerformMigrationsAndPersistToDisk() throws IOException {
+    void shouldPerformMigrationsAndPersistToDisk() throws IOException {
         // given
-        File dataFolder = temporaryFolder.newFolder();
         File configFile = new File(dataFolder, "config.yml");
         Files.copy(getJarFile(OLD_CONFIG_FILE), configFile);
         PropertyResource resource = new YamlFileResource(configFile);
@@ -96,9 +96,8 @@ public class SettingsMigrationServiceTest {
     }
 
     @Test
-    public void shouldKeepOldOtherAccountsSettings() throws IOException {
+    void shouldKeepOldOtherAccountsSettings() throws IOException {
         // given
-        File dataFolder = temporaryFolder.newFolder();
         File configFile = new File(dataFolder, "config.yml");
         Files.copy(getJarFile(OLD_CONFIG_FILE), configFile);
         PropertyResource resource = new YamlFileResource(configFile);
@@ -150,5 +149,3 @@ public class SettingsMigrationServiceTest {
         }
     }
 }
-
-

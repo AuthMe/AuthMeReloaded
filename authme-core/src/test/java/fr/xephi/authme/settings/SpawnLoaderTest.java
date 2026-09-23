@@ -1,39 +1,38 @@
 package fr.xephi.authme.settings;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-import fr.xephi.authme.DelayedInjectionExtension;
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.InjectDelayed;
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.platform.TeleportAdapter;
 import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Bukkit;
+import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-import org.mockito.ArgumentMatchers;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import fr.xephi.authme.TempFolder;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.bukkit.GameRule;
-
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -41,10 +40,9 @@ import static org.mockito.Mockito.mockStatic;
 /**
  * Test for {@link SpawnLoader}.
  */
-@ExtendWith(DelayedInjectionExtension.class)
-public class SpawnLoaderTest {
+@ExtendWith(MockitoExtension.class)
+class SpawnLoaderTest {
 
-    @InjectDelayed
     private SpawnLoader spawnLoader;
 
     @Mock
@@ -55,17 +53,18 @@ public class SpawnLoaderTest {
 
     @Mock
     private TeleportAdapter teleportAdapter;
-    public TempFolder temporaryFolder = new TempFolder();
 
-    @DataFolder
-    private File testFolder;
+    @TempDir
+    File testFolder;
 
-    @BeforeInjecting
-    public void setup() throws IOException {
+    @BeforeAll
+    static void setUpLogger() {
         TestHelper.setupLogger();
+    }
 
+    @BeforeEach
+    void setup() throws IOException {
         // Copy test config into a new temporary folder
-        testFolder = temporaryFolder.newFolder();
         File source = TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "settings/spawn-firstspawn.yml");
         File destination = new File(testFolder, "spawn.yml");
         Files.copy(source, destination);
@@ -73,10 +72,11 @@ public class SpawnLoaderTest {
         // Create a settings mock with default values
         given(settings.getProperty(RestrictionSettings.SPAWN_PRIORITY))
             .willReturn("authme, essentials, multiverse, default");
+        spawnLoader = new SpawnLoader(testFolder, settings, pluginHookService, teleportAdapter);
     }
 
     @Test
-    public void shouldSetSpawn() {
+    void shouldSetSpawn() {
         // given
         World world = mock(World.class);
         given(world.getName()).willReturn("new_world");
@@ -95,7 +95,7 @@ public class SpawnLoaderTest {
     }
 
     @Test
-    public void shouldReturnBedSpawnLocationForDeadPlayer() {
+    void shouldReturnBedSpawnLocationForDeadPlayer() {
         // given
         Player player = mock(Player.class);
         given(player.getHealth()).willReturn(0.0);
@@ -111,7 +111,7 @@ public class SpawnLoaderTest {
     }
 
     @Test
-    public void shouldFallbackToConfiguredSpawnIfDeadPlayerHasNoRespawnLocation() {
+    void shouldFallbackToConfiguredSpawnIfDeadPlayerHasNoRespawnLocation() {
         // given
         given(settings.getProperty(RestrictionSettings.SPAWN_PRIORITY)).willReturn("default");
         spawnLoader.reload();
@@ -132,7 +132,7 @@ public class SpawnLoaderTest {
     }
 
     @Test
-    public void shouldReturnExactWorldSpawnForServerPriorityWithZeroRadius() {
+    void shouldReturnExactWorldSpawnForServerPriorityWithZeroRadius() {
         // given
         given(settings.getProperty(RestrictionSettings.SPAWN_PRIORITY)).willReturn("server");
         spawnLoader.reload();
@@ -150,7 +150,7 @@ public class SpawnLoaderTest {
     }
 
     @Test
-    public void shouldReturnExactYAndFaceTowardCenterWhenBaseYIsAlreadySafe() {
+    void shouldReturnExactYAndFaceTowardCenterWhenBaseYIsAlreadySafe() {
         // given
         given(settings.getProperty(RestrictionSettings.SPAWN_PRIORITY)).willReturn("server");
         spawnLoader.reload();
@@ -164,9 +164,9 @@ public class SpawnLoaderTest {
 
         Block passable = mock(Block.class);
         given(passable.isPassable()).willReturn(true);
-        given(world.getBlockAt(ArgumentMatchers.anyInt(), ArgumentMatchers.eq(64), ArgumentMatchers.anyInt()))
+        given(world.getBlockAt(anyInt(), eq(64), anyInt()))
             .willReturn(passable);
-        given(world.getBlockAt(ArgumentMatchers.anyInt(), ArgumentMatchers.eq(65), ArgumentMatchers.anyInt()))
+        given(world.getBlockAt(anyInt(), eq(65), anyInt()))
             .willReturn(passable);
 
         // when
@@ -183,7 +183,7 @@ public class SpawnLoaderTest {
     }
 
     @Test
-    public void shouldSearchDownwardWhenBaseYIsInAVoid() {
+    void shouldSearchDownwardWhenBaseYIsInAVoid() {
         // given – foot at baseY is passable but head (baseY+1) is solid (1-block-high gap, e.g. near Nether ceiling)
         given(settings.getProperty(RestrictionSettings.SPAWN_PRIORITY)).willReturn("server");
         spawnLoader.reload();
@@ -199,12 +199,12 @@ public class SpawnLoaderTest {
         given(solid.isPassable()).willReturn(false);
 
         // y=70 passable, y=71 solid → initial check fails; foot is passable → search downward
-        given(world.getBlockAt(ArgumentMatchers.anyInt(), ArgumentMatchers.eq(70), ArgumentMatchers.anyInt()))
+        given(world.getBlockAt(anyInt(), eq(70), anyInt()))
             .willReturn(passable);
-        given(world.getBlockAt(ArgumentMatchers.anyInt(), ArgumentMatchers.eq(71), ArgumentMatchers.anyInt()))
+        given(world.getBlockAt(anyInt(), eq(71), anyInt()))
             .willReturn(solid);
         // y=69 passable → isPassable(69) && isPassable(70) = true → safe at y=69
-        given(world.getBlockAt(ArgumentMatchers.anyInt(), ArgumentMatchers.eq(69), ArgumentMatchers.anyInt()))
+        given(world.getBlockAt(anyInt(), eq(69), anyInt()))
             .willReturn(passable);
 
         // when
@@ -215,7 +215,7 @@ public class SpawnLoaderTest {
     }
 
     @Test
-    public void shouldSearchUpwardWhenBaseYIsInsideASolidBlock() {
+    void shouldSearchUpwardWhenBaseYIsInsideASolidBlock() {
         // given – baseY is inside a solid block (e.g. underground)
         given(settings.getProperty(RestrictionSettings.SPAWN_PRIORITY)).willReturn("server");
         spawnLoader.reload();
@@ -231,16 +231,16 @@ public class SpawnLoaderTest {
         given(solid.isPassable()).willReturn(false);
 
         // y=60 is solid → search upward
-        given(world.getBlockAt(ArgumentMatchers.anyInt(), ArgumentMatchers.eq(60), ArgumentMatchers.anyInt()))
+        given(world.getBlockAt(anyInt(), eq(60), anyInt()))
             .willReturn(solid);
         // y=61 solid, y=62 solid, y=63 passable, y=64 passable → safe at y=63
-        given(world.getBlockAt(ArgumentMatchers.anyInt(), ArgumentMatchers.eq(61), ArgumentMatchers.anyInt()))
+        given(world.getBlockAt(anyInt(), eq(61), anyInt()))
             .willReturn(solid);
-        given(world.getBlockAt(ArgumentMatchers.anyInt(), ArgumentMatchers.eq(62), ArgumentMatchers.anyInt()))
+        given(world.getBlockAt(anyInt(), eq(62), anyInt()))
             .willReturn(solid);
-        given(world.getBlockAt(ArgumentMatchers.anyInt(), ArgumentMatchers.eq(63), ArgumentMatchers.anyInt()))
+        given(world.getBlockAt(anyInt(), eq(63), anyInt()))
             .willReturn(passable);
-        given(world.getBlockAt(ArgumentMatchers.anyInt(), ArgumentMatchers.eq(64), ArgumentMatchers.anyInt()))
+        given(world.getBlockAt(anyInt(), eq(64), anyInt()))
             .willReturn(passable);
 
         // when
@@ -251,7 +251,7 @@ public class SpawnLoaderTest {
     }
 
     @Test
-    public void shouldFallbackToExactWorldSpawnWhenNoSafeSpotFoundWithinMargin() {
+    void shouldFallbackToExactWorldSpawnWhenNoSafeSpotFoundWithinMargin() {
         // given
         given(settings.getProperty(RestrictionSettings.SPAWN_PRIORITY)).willReturn("server");
         spawnLoader.reload();
@@ -263,7 +263,7 @@ public class SpawnLoaderTest {
 
         Block solid = mock(Block.class);
         given(solid.isPassable()).willReturn(false);
-        given(world.getBlockAt(ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt()))
+        given(world.getBlockAt(anyInt(), anyInt(), anyInt()))
             .willReturn(solid);
 
         // when
@@ -274,7 +274,7 @@ public class SpawnLoaderTest {
     }
 
     @Test
-    public void shouldIgnoreNullCandidateWorldSpawnLocations() {
+    void shouldIgnoreNullCandidateWorldSpawnLocations() {
         // given
         given(settings.getProperty(RestrictionSettings.SPAWN_PRIORITY)).willReturn("default");
         spawnLoader.reload();
@@ -298,5 +298,3 @@ public class SpawnLoaderTest {
     }
 
 }
-
-

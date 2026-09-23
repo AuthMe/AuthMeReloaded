@@ -60,7 +60,7 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_IN
  * Asynchronous process for when a player joins.
  */
 public class AsynchronousJoin implements AsynchronousProcess {
-    
+
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(AsynchronousJoin.class);
 
     @Inject
@@ -152,14 +152,13 @@ public class AsynchronousJoin implements AsynchronousProcess {
     public void processJoin(Player player) {
         String name = player.getName().toLowerCase(Locale.ROOT);
         String ip = PlayerUtils.getPlayerIp(player);
-        UUID playerId = player.getUniqueId();
-        String pendingLoginPassword = preJoinDialogService.consumePendingLoginPassword(playerId);
-        String pendingRecoveryEmail = preJoinDialogService.consumePendingRecoveryEmail(playerId);
-        PreJoinDialogService.PendingRegistration pendingRegistration =
-            preJoinDialogService.consumePendingRegistration(playerId);
-        boolean shouldSkipPostJoinDialog = preJoinDialogService.consumeSkipPostJoinDialog(playerId);
-        boolean pendingForceLogin = preJoinDialogService.consumePendingForceLogin(playerId);
-        String pendingKick = preJoinDialogService.consumePendingKickMessage(playerId);
+        PreJoinDialogService.PendingDialogState dialogState = preJoinDialogService.consumeSession(name);
+        String pendingLoginPassword = dialogState.loginPassword();
+        String pendingRecoveryEmail = dialogState.recoveryEmail();
+        PreJoinDialogService.PendingRegistration pendingRegistration = dialogState.registration();
+        boolean shouldSkipPostJoinDialog = dialogState.skipPostJoinDialog();
+        boolean pendingForceLogin = dialogState.forceLogin();
+        String pendingKick = dialogState.kickMessage();
         // pendingKick is applied below, after proxy/premium/session checks, which take priority:
         // a Velocity perform.login arriving just after the player cancelled the pre-join dialog
         // must win over the dialog cancel kick.
@@ -214,23 +213,25 @@ public class AsynchronousJoin implements AsynchronousProcess {
             } else {
                 ProxySessionManager.ProxyLoginRequest proxyLoginRequest = proxySessionManager.consumeLoginRequest(name);
                 if (proxyLoginRequest != null) {
-                    if (!proxyLoginRequestValidator.validate(player, proxyLoginRequest.verifiedPremiumUuid())) {
+                    if (proxyLoginRequestValidator.validate(player, proxyLoginRequest.verifiedPremiumUuid())) {
+                        if (playerCache.isAuthenticated(name)) {
+                            return;
+                        }
+                        service.send(player, MessageKey.SESSION_RECONNECTION);
+                        // Run commands
+                        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player,
+                            () -> commandManager.runCommandsOnSessionLogin(player));
+                        // Use forceLoginFromProxy (quiet=true, no BungeeCord redirect) so that if
+                        // BungeeReceiver.performLogin() concurrently already completed the login, this
+                        // call is a no-op rather than sending an "already logged in" error.
+                        bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLoginFromProxy(player));
+                        logger.info("The user " + player.getName() + " has been automatically logged in, "
+                            + "as present in autologin queue.");
                         return;
                     }
-                    if (playerCache.isAuthenticated(name)) {
-                        return;
-                    }
-                    service.send(player, MessageKey.SESSION_RECONNECTION);
-                    // Run commands
-                    bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player,
-                        () -> commandManager.runCommandsOnSessionLogin(player));
-                    // Use forceLoginFromProxy (quiet=true, no BungeeCord redirect) so that if
-                    // BungeeReceiver.performLogin() concurrently already completed the login, this
-                    // call is a no-op rather than sending an "already logged in" error.
-                    bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLoginFromProxy(player));
-                    logger.info("The user " + player.getName() + " has been automatically logged in, "
-                        + "as present in autologin queue.");
-                    return;
+                    // Validation failed (e.g. premium UUID mismatch after /freemium).
+                    // Fall through to session check / limbo flow below to avoid leaving the
+                    // player stuck: not authenticated, no dialog, no movement allowed.
                 }
             }
             if (sessionService.canResumeSession(player)) {

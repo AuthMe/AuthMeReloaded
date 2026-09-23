@@ -1,16 +1,12 @@
 package fr.xephi.authme.service;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-import fr.xephi.authme.DelayedInjectionExtension;
-import ch.jalu.injector.testing.BeforeInjecting;
-import ch.jalu.injector.testing.InjectDelayed;
 import com.google.common.io.Files;
+import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.CommandInitializer;
 import fr.xephi.authme.command.help.HelpMessage;
 import fr.xephi.authme.command.help.HelpMessagesService;
 import fr.xephi.authme.command.help.HelpSection;
-import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.message.HelpMessagesFileHandler;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
@@ -18,60 +14,60 @@ import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import fr.xephi.authme.TempFolder;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.BDDMockito.given;
 
 /**
  * Integration test for {@link HelpTranslationGenerator}.
  */
-@ExtendWith(DelayedInjectionExtension.class)
-public class HelpTranslationGeneratorIntegrationTest {
+@ExtendWith(MockitoExtension.class)
+class HelpTranslationGeneratorIntegrationTest {
 
-    @InjectDelayed
     private HelpTranslationGenerator helpTranslationGenerator;
-    @InjectDelayed
-    private HelpMessagesService helpMessagesService;
-    @InjectDelayed
-    private HelpMessagesFileHandler helpMessagesFileHandler;
-    @InjectDelayed
-    private CommandInitializer commandInitializer;
 
-    @DataFolder
-    private File dataFolder;
+    @TempDir
+    File dataFolder;
     private File helpMessagesFile;
 
     @Mock
     private Settings settings;
-    public TempFolder temporaryFolder = new TempFolder();
 
     @BeforeAll
-    public static void setUpLogger() {
+    static void setUpLogger() {
         TestHelper.setupLogger();
     }
 
-    @BeforeInjecting
-    public void setUpClasses() throws IOException {
-        dataFolder = temporaryFolder.newFolder();
+    @BeforeEach
+    void setUpClasses() throws IOException {
         File messagesFolder = new File(dataFolder, "messages");
         messagesFolder.mkdir();
         helpMessagesFile = new File(messagesFolder, "help_test.yml");
         Files.copy(TestHelper.getJarFile(TestHelper.PROJECT_ROOT + "message/help_test.yml"), helpMessagesFile);
         given(settings.getProperty(PluginSettings.MESSAGES_LANGUAGE)).willReturn("test");
+
+        CommandInitializer commandInitializer = new CommandInitializer();
+        HelpMessagesFileHandler helpMessagesFileHandler = new HelpMessagesFileHandler(dataFolder, settings);
+        HelpMessagesService helpMessagesService = new HelpMessagesService(helpMessagesFileHandler);
+        helpTranslationGenerator = new HelpTranslationGenerator(commandInitializer, helpMessagesService, settings, dataFolder);
+        ReflectionTestUtils.invokePostConstructMethods(helpMessagesFileHandler);
     }
 
     @Test
-    public void shouldUpdateCurrentHelpFile() throws IOException {
+    void shouldUpdateCurrentHelpFile() throws IOException {
         // given / when
         helpTranslationGenerator.updateHelpFile();
 
@@ -181,5 +177,3 @@ public class HelpTranslationGeneratorIntegrationTest {
         }
     }
 }
-
-

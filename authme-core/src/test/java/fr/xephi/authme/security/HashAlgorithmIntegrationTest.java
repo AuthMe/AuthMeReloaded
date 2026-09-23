@@ -19,8 +19,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -28,12 +28,12 @@ import static org.mockito.Mockito.mock;
 /**
  * Integration test for {@link HashAlgorithm}.
  */
-public class HashAlgorithmIntegrationTest {
+class HashAlgorithmIntegrationTest {
 
     private static Injector injector;
 
     @BeforeAll
-    public static void setUpConfigAndInjector() {
+    static void setUpConfigAndInjector() {
         Settings settings = mock(Settings.class);
         given(settings.getProperty(HooksSettings.BCRYPT_LOG2_ROUND)).willReturn(8);
         given(settings.getProperty(SecuritySettings.DOUBLE_MD5_SALT_LENGTH)).willReturn(16);
@@ -44,7 +44,7 @@ public class HashAlgorithmIntegrationTest {
     }
 
     @Test
-    public void shouldHaveUniqueClassForEntries() {
+    void shouldHaveUniqueClassForEntries() {
         // given
         Set<Class<? extends EncryptionMethod>> classes = new HashSet<>();
 
@@ -59,7 +59,7 @@ public class HashAlgorithmIntegrationTest {
     }
 
     @Test
-    public void shouldBeAbleToInstantiateEncryptionAlgorithms() {
+    void shouldBeAbleToInstantiateEncryptionAlgorithms() {
         // given / when / then
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
             if (!HashAlgorithm.CUSTOM.equals(algorithm) && !HashAlgorithm.PLAINTEXT.equals(algorithm)) {
@@ -77,7 +77,7 @@ public class HashAlgorithmIntegrationTest {
     }
 
     @Test
-    public void shouldBeDeprecatedIfEncryptionClassIsDeprecated() throws NoSuchFieldException {
+    void shouldBeDeprecatedIfEncryptionClassIsDeprecated() throws NoSuchFieldException {
         // given
         List<String> failedEntries = new LinkedList<>();
 
@@ -102,4 +102,3 @@ public class HashAlgorithmIntegrationTest {
         }
     }
 }
-

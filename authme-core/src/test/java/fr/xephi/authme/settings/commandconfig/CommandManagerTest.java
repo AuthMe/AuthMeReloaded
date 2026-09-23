@@ -1,9 +1,5 @@
 package fr.xephi.authme.settings.commandconfig;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import com.google.common.io.Files;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.service.BukkitService;
@@ -13,19 +9,21 @@ import fr.xephi.authme.settings.SettingsMigrationService;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import fr.xephi.authme.TempFolder;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithEntityAndDelay;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.times;
@@ -37,8 +35,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * Test for {@link CommandManager}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class CommandManagerTest {
+class CommandManagerTest {
 
     private static final String TEST_FILES_FOLDER = "/fr/xephi/authme/settings/commandconfig/";
 
@@ -54,22 +51,23 @@ public class CommandManagerTest {
     private GeoIpService geoIpService;
     @Mock
     private SettingsMigrationService settingsMigrationService;
-    public TempFolder temporaryFolder = new TempFolder();
 
-    private File testFolder;
+    @TempDir
+    File temporaryFolder;
 
     @BeforeEach
-    public void setup() throws IOException {
-        testFolder = temporaryFolder.newFolder();
-        player = mockPlayer();
-        BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay(bukkitService);
+    void setup() {
+        player = mock(Player.class);
+        given(player.getName()).willReturn("Bobby");
     }
 
     @Test
-    public void shouldExecuteCommandsOnLogin() {
+    void shouldExecuteCommandsOnLogin() {
         // given
+        TestHelper.mockIpAddressToPlayer(player, "127.0.0.3");
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
         initManager();
+        setBukkitServiceToScheduleSyncDelayedTaskWithEntityAndDelay(bukkitService);
 
         // when
         manager.runCommandsOnLogin(player, Collections.emptyList());
@@ -85,10 +83,12 @@ public class CommandManagerTest {
     }
 
     @Test
-    public void shouldExecuteCommandsOnLoginWithTwoAlts() {
+    void shouldExecuteCommandsOnLoginWithTwoAlts() {
         // given
+        TestHelper.mockIpAddressToPlayer(player, "127.0.0.3");
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
         initManager();
+        setBukkitServiceToScheduleSyncDelayedTaskWithEntityAndDelay(bukkitService);
 
         // when
         manager.runCommandsOnLogin(player, Arrays.asList("willy", "nilly", "billy", "silly"));
@@ -106,10 +106,12 @@ public class CommandManagerTest {
     }
 
     @Test
-    public void shouldExecuteCommandsOnLoginWithFifteenAlts() {
+    void shouldExecuteCommandsOnLoginWithFifteenAlts() {
         // given
+        TestHelper.mockIpAddressToPlayer(player, "127.0.0.3");
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
         initManager();
+        setBukkitServiceToScheduleSyncDelayedTaskWithEntityAndDelay(bukkitService);
 
         // when
         manager.runCommandsOnLogin(player, Collections.nCopies(15, "swag"));
@@ -129,10 +131,12 @@ public class CommandManagerTest {
     }
 
     @Test
-    public void shouldExecuteCommandsOnLoginWithTwentyFiveAlts() {
+    void shouldExecuteCommandsOnLoginWithTwentyFiveAlts() {
         // given
+        TestHelper.mockIpAddressToPlayer(player, "127.0.0.3");
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
         initManager();
+        setBukkitServiceToScheduleSyncDelayedTaskWithEntityAndDelay(bukkitService);
 
         // when
         manager.runCommandsOnLogin(player, Collections.nCopies(25, "yolo"));
@@ -150,11 +154,12 @@ public class CommandManagerTest {
     }
 
     @Test
-    public void shouldExecuteCommandsOnLoginWithIncompleteConfig() {
+    void shouldExecuteCommandsOnLoginWithIncompleteConfig() {
         // given
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.incomplete.yml");
         initManager();
-        BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithDelay(bukkitService);
+        BukkitServiceTestHelper.setBukkitServiceToScheduleSyncDelayedTaskWithEntityAndDelay(bukkitService);
+        given(player.getDisplayName()).willReturn("bob");
 
         // when
         manager.runCommandsOnLogin(player, Collections.emptyList());
@@ -168,7 +173,7 @@ public class CommandManagerTest {
     }
 
     @Test
-    public void shouldExecuteCommandsOnSessionLogin() {
+    void shouldExecuteCommandsOnSessionLogin() {
         // given
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
         initManager();
@@ -183,7 +188,7 @@ public class CommandManagerTest {
     }
 
     @Test
-    public void shouldExecuteCommandsOnFirstLogin() {
+    void shouldExecuteCommandsOnFirstLogin() {
         // given
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
         initManager();
@@ -198,7 +203,7 @@ public class CommandManagerTest {
     }
 
     @Test
-    public void shouldNotExecuteFirstLoginCommandWhoseThresholdIsNotMet() {
+    void shouldNotExecuteFirstLoginCommandWhoseThresholdIsNotMet() {
         // given
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
         initManager();
@@ -211,10 +216,12 @@ public class CommandManagerTest {
     }
 
     @Test
-    public void shouldExecuteCommandsOnJoin() {
+    void shouldExecuteCommandsOnJoin() {
         // given
+        player.getName(); // Prevent UnnecessaryStubbingException as the name is not needed
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
         initManager();
+        given(player.getDisplayName()).willReturn("bob");
 
         // when
         manager.runCommandsOnJoin(player);
@@ -225,7 +232,7 @@ public class CommandManagerTest {
     }
 
     @Test
-    public void shouldExecuteCommandsOnJoinWithIncompleteConfig() {
+    void shouldExecuteCommandsOnJoinWithIncompleteConfig() {
         // given
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.incomplete.yml");
         initManager();
@@ -239,10 +246,13 @@ public class CommandManagerTest {
     }
 
     @Test
-    public void shouldExecuteCommandsOnRegister() {
+    void shouldExecuteCommandsOnRegister() {
         // given
+        TestHelper.mockIpAddressToPlayer(player, "127.0.0.3");
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
         initManager();
+        setBukkitServiceToScheduleSyncDelayedTaskWithEntityAndDelay(bukkitService);
+        given(geoIpService.getCountryName("127.0.0.3")).willReturn("Syldavia");
 
         // when
         manager.runCommandsOnRegister(player);
@@ -255,8 +265,9 @@ public class CommandManagerTest {
     }
 
     @Test
-    public void shouldExecuteCommandOnLogout() {
+    void shouldExecuteCommandOnLogout() {
         // given
+        TestHelper.mockIpAddressToPlayer(player, "127.0.0.3");
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.complete.yml");
         initManager();
 
@@ -270,8 +281,9 @@ public class CommandManagerTest {
     }
 
     @Test
-    public void shouldExecuteCommandsOnRegisterWithIncompleteConfig() {
+    void shouldExecuteCommandsOnRegisterWithIncompleteConfig() {
         // given
+        player.getName(); // Prevent UnnecessaryStubbingException as the name is not needed
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.incomplete.yml");
         initManager();
 
@@ -283,7 +295,7 @@ public class CommandManagerTest {
     }
 
     @Test
-    public void shouldExecuteCommandOnUnregister() {
+    void shouldExecuteCommandOnUnregister() {
         // given
         copyJarFileAsCommandsYml(TEST_FILES_FOLDER + "commands.incomplete.yml");
         initManager();
@@ -296,28 +308,16 @@ public class CommandManagerTest {
     }
 
     private void initManager() {
-        manager = new CommandManager(testFolder, bukkitService, geoIpService, commandMigrationService);
+        manager = new CommandManager(temporaryFolder, bukkitService, geoIpService, commandMigrationService);
     }
 
     private void copyJarFileAsCommandsYml(String path) {
         File source = TestHelper.getJarFile(path);
-        File destination = new File(testFolder, "commands.yml");
+        File destination = new File(temporaryFolder, "commands.yml");
         try {
             Files.copy(source, destination);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
     }
-
-    private Player mockPlayer() {
-        Player player = mock(Player.class);
-        lenient().when(player.getName()).thenReturn("Bobby");
-        lenient().when(player.getDisplayName()).thenReturn("bob");
-        String ip = "127.0.0.3";
-        TestHelper.mockIpAddressToPlayer(player, ip);
-        lenient().when(geoIpService.getCountryName(ip)).thenReturn("Syldavia");
-        return player;
-    }
 }
-
-

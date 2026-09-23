@@ -19,6 +19,9 @@ public final class AuthMeBungeePlugin extends AbstractAuthMeBungeePlugin {
 
     @Override
     public void onDisable() {
-        proxyBridge.shutdown();
+        // BungeeCord also calls onDisable when onEnable failed, so proxyBridge may be null
+        if (proxyBridge != null) {
+            proxyBridge.shutdown();
+        }
     }
 }

@@ -12,6 +12,7 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.ProxyLoginRequestValidator;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.settings.properties.PremiumSettings;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.Messenger;
@@ -24,9 +25,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.util.List;
 import java.util.UUID;
 
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskAsynchronously;
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -81,6 +84,7 @@ class BungeeReceiverTest {
     void setUp() {
         given(plugin.getServer()).willReturn(server);
         given(server.getMessenger()).willReturn(messenger);
+        given(settings.getProperty(PremiumSettings.ENABLE_PREMIUM)).willReturn(true);
     }
 
     @Test
@@ -165,7 +169,7 @@ class BungeeReceiverTest {
 
         // then
         verify(proxySessionManager).processProxySessionMessage(playerName, null);
-        verify(management, never()).forceLoginFromProxy(any());
+        verify(management, never()).forceLoginFromProxy(any(Player.class));
         verify(bungeeSender, never()).sendAuthMeBungeecordMessage(any(), any());
     }
 
@@ -182,7 +186,7 @@ class BungeeReceiverTest {
         given(settings.getProperty(HooksSettings.PROXY_SHARED_SECRET)).willReturn(sharedSecret);
         given(messenger.isIncomingChannelRegistered(plugin, "authme:main")).willReturn(false);
         setBukkitServiceToRunTaskAsynchronously(bukkitService);
-        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+        setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask(bukkitService);
 
         Player player = mock(Player.class);
         given(player.isOnline()).willReturn(true);
@@ -234,7 +238,7 @@ class BungeeReceiverTest {
 
         // then
         verify(proxySessionManager).removeLoginRequest(playerName);
-        verify(management, never()).forceLoginFromProxy(any());
+        verify(management, never()).forceLoginFromProxy(any(Player.class));
         verify(bungeeSender, never()).sendAuthMeBungeecordMessage(any(), any());
     }
 
@@ -261,7 +265,7 @@ class BungeeReceiverTest {
         // then
         assertThat(result, equalTo("bobby"));
         verify(proxySessionManager).processProxySessionMessage(playerName, null);
-        verify(management, never()).forceLoginFromProxy(any());
+        verify(management, never()).forceLoginFromProxy(any(Player.class));
     }
 
     @Test
@@ -286,6 +290,58 @@ class BungeeReceiverTest {
         // then
         assertThat(result, nullValue());
         verify(proxySessionManager, never()).processProxySessionMessage(any(), any());
+    }
+
+    @Test
+    void shouldSendEmptyPremiumListOnProxyStartedWhenPremiumIsDisabled() {
+        // given
+        given(settings.getProperty(HooksSettings.BUNGEECORD)).willReturn(true);
+        given(settings.getProperty(PremiumSettings.ENABLE_PREMIUM)).willReturn(false);
+        setBukkitServiceToRunTaskAsynchronously(bukkitService);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+
+        Player carrier = mock(Player.class);
+        given(bukkitService.getOnlinePlayers()).willReturn(List.of(carrier));
+
+        BungeeReceiver receiver =
+            new BungeeReceiver(plugin, bukkitService, proxySessionManager, management, bungeeSender, dataSource,
+                proxyLoginRequestValidator, settings);
+
+        // when
+        receiver.onPluginMessageReceived("authme:main", carrier, buildProxyStartedPayload("velocity"));
+
+        // then
+        verify(dataSource, never()).getPremiumUsernames();
+        verify(bungeeSender).sendPremiumList(carrier, List.of());
+    }
+
+    @Test
+    void shouldSendEmptyPremiumListOnProxyStartedWhenNoPremiumUsersAreStored() {
+        // given
+        given(settings.getProperty(HooksSettings.BUNGEECORD)).willReturn(true);
+        given(dataSource.getPremiumUsernames()).willReturn(List.of());
+        setBukkitServiceToRunTaskAsynchronously(bukkitService);
+        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+
+        Player carrier = mock(Player.class);
+        given(bukkitService.getOnlinePlayers()).willReturn(List.of(carrier));
+
+        BungeeReceiver receiver =
+            new BungeeReceiver(plugin, bukkitService, proxySessionManager, management, bungeeSender, dataSource,
+                proxyLoginRequestValidator, settings);
+
+        // when
+        receiver.onPluginMessageReceived("authme:main", carrier, buildProxyStartedPayload("velocity"));
+
+        // then
+        verify(bungeeSender).sendPremiumList(carrier, List.of());
+    }
+
+    private static byte[] buildProxyStartedPayload(String proxyName) {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF(MessageType.PROXY_STARTED.getId());
+        out.writeUTF(proxyName);
+        return out.toByteArray();
     }
 
     private static byte[] buildPerformLoginPayload(String playerName, long timestamp, String hmac) {

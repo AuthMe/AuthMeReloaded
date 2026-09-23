@@ -1,32 +1,28 @@
 package fr.xephi.authme.security.totp;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.security.totp.TotpAuthenticator.TotpGenerationResult;
 import fr.xephi.authme.util.expiring.ExpiringMap;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Test for {@link GenerateTotpService}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class GenerateTotpServiceTest {
+class GenerateTotpServiceTest {
 
     @InjectMocks
     private GenerateTotpService generateTotpService;
@@ -35,7 +31,7 @@ public class GenerateTotpServiceTest {
     private TotpAuthenticator totpAuthenticator;
 
     @Test
-    public void shouldGenerateTotpKey() {
+    void shouldGenerateTotpKey() {
         // given
         TotpGenerationResult givenGenerationResult = new TotpGenerationResult("1234", "http://example.com/link/to/chart");
         Player player = mockPlayerWithName("Spencer");
@@ -50,7 +46,7 @@ public class GenerateTotpServiceTest {
     }
 
     @Test
-    public void shouldRemoveGeneratedTotpKey() {
+    void shouldRemoveGeneratedTotpKey() {
         // given
         TotpGenerationResult givenGenerationResult = new TotpGenerationResult("1234", "http://example.com/link/to/chart");
         Player player = mockPlayerWithName("Hanna");
@@ -65,7 +61,7 @@ public class GenerateTotpServiceTest {
     }
 
     @Test
-    public void shouldCheckGeneratedTotpKey() {
+    void shouldCheckGeneratedTotpKey() {
         // given
         String generatedKey = "ASLO43KDF2J";
         TotpGenerationResult givenGenerationResult = new TotpGenerationResult(generatedKey, "url");
@@ -73,8 +69,8 @@ public class GenerateTotpServiceTest {
         given(totpAuthenticator.generateTotpKey(player)).willReturn(givenGenerationResult);
         generateTotpService.generateTotpKey(player);
         String validCode = "928374";
-        given(totpAuthenticator.checkCode("Aria", generatedKey, "000000")).willReturn(false);
         given(totpAuthenticator.checkCode("Aria", generatedKey, validCode)).willReturn(true);
+        given(totpAuthenticator.checkCode("Aria", generatedKey, "000000")).willReturn(false);
 
         // when
         boolean invalidCodeResult = generateTotpService.isTotpCodeCorrectForGeneratedTotpKey(player, "000000");
@@ -85,12 +81,10 @@ public class GenerateTotpServiceTest {
         assertThat(invalidCodeResult, equalTo(false));
         assertThat(validCodeResult, equalTo(true));
         assertThat(unknownPlayerResult, equalTo(false));
-        verify(totpAuthenticator).checkCode("Aria", generatedKey, "000000");
-        verify(totpAuthenticator).checkCode("Aria", generatedKey, validCode);
     }
 
     @Test
-    public void shouldRemoveExpiredEntries() throws InterruptedException {
+    void shouldRemoveExpiredEntries() throws InterruptedException {
         // given
         TotpGenerationResult generationResult = new TotpGenerationResult("key", "url");
         ExpiringMap<String, TotpGenerationResult> generatedKeys =
@@ -115,5 +109,3 @@ public class GenerateTotpServiceTest {
         return player;
     }
 }
-
-

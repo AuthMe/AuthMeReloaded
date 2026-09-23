@@ -4,8 +4,8 @@ import ch.jalu.configme.properties.Property;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import fr.xephi.authme.data.captcha.CaptchaCodeStorage;
 import fr.xephi.authme.command.PlayerCommand;
+import fr.xephi.authme.data.captcha.CaptchaCodeStorage;
 import fr.xephi.authme.datasource.AbstractSqlDataSource;
 import fr.xephi.authme.datasource.Columns;
 import fr.xephi.authme.datasource.columnshandler.DataSourceColumn;
@@ -14,7 +14,6 @@ import fr.xephi.authme.datasource.mysqlextensions.MySqlExtension;
 import fr.xephi.authme.security.crypts.AbstractPbkdf2;
 import fr.xephi.authme.initialization.HasCleanup;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
-
 import fr.xephi.authme.util.expiring.ExpiringMap;
 import fr.xephi.authme.util.expiring.ExpiringSet;
 import fr.xephi.authme.util.expiring.TimedCounter;
@@ -34,14 +33,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Contains consistency tests across all AuthMe classes.
  */
-public class ClassesConsistencyTest {
+class ClassesConsistencyTest {
 
     /** Contains all production classes. */
     private static final List<Class<?>> ALL_CLASSES =
@@ -74,7 +73,7 @@ public class ClassesConsistencyTest {
      * Checks that there aren't two classes with the same name; this is confusing and should be avoided.
      */
     @Test
-    public void shouldNotHaveSameName() {
+    void shouldNotHaveSameName() {
         // given
         Set<String> names = new HashSet<>();
 
@@ -90,7 +89,7 @@ public class ClassesConsistencyTest {
      * Checks that fields of classes are either private or static final fields of an immutable type.
      */
     @Test
-    public void shouldHaveNonPrivateConstantsOnly() {
+    void shouldHaveNonPrivateConstantsOnly() {
         // given / when
         Set<String> invalidFields = ALL_CLASSES.stream()
             .filter(clz -> !CLASSES_EXCLUDED_FROM_VISIBILITY_TEST.contains(clz))
@@ -123,7 +122,7 @@ public class ClassesConsistencyTest {
             Object value = ReflectionTestUtils.getFieldValue(field, null);
             valueType = value.getClass();
         } else {
-             valueType = field.getType();
+            valueType = field.getType();
         }
 
         // Field is static, final, and not private -> check that it is immutable type
@@ -148,7 +147,7 @@ public class ClassesConsistencyTest {
      * interface to regularly clean up expired data.
      */
     @Test
-    public void shouldImplementHasCleanup() {
+    void shouldImplementHasCleanup() {
         // given / when / then
         for (Class<?> clazz : ALL_CLASSES) {
             if (hasExpiringCollectionAsField(clazz) && !EXPIRING_STRUCTURES.contains(clazz)) {
@@ -174,4 +173,3 @@ public class ClassesConsistencyTest {
         return Collections.unmodifiableList(new ArrayList<>()).getClass();
     }
 }
-

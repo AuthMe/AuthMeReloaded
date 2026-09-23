@@ -6,7 +6,8 @@ import com.google.common.io.ByteStreams;
 import fr.xephi.authme.bungee.events.AuthMeBungeeLoginEvent;
 import fr.xephi.authme.bungee.events.AuthMeBungeeLogoutEvent;
 import fr.xephi.authme.bungee.premium.BungeePremiumOnlineModeHandler;
-import fr.xephi.authme.bungee.premium.BungeePremiumVerificationManager;
+import fr.xephi.authme.bungee.premium.PremiumVerificationManager;
+import fr.xephi.authme.bungee.premium.PremiumVerificationManagers;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.ProxyServer;
@@ -15,7 +16,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
-import net.md_5.bungee.api.event.PlayerHandshakeEvent;
+import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
@@ -73,7 +74,7 @@ public final class BungeeProxyBridge implements Listener {
     // Players with a pending premium verification (ran /premium but not yet confirmed via reconnect)
     private volatile Set<String> pendingPremiumUsernames = ConcurrentHashMap.newKeySet();
     private final BungeePremiumOnlineModeHandler premiumOnlineModeHandler;
-    private final BungeePremiumVerificationManager premiumVerificationManager;
+    private final PremiumVerificationManager premiumVerificationManager;
     private final ScheduledExecutorService retryScheduler = Executors.newSingleThreadScheduledExecutor(r -> {
         Thread t = new Thread(r, "authme-bungee-retry");
         t.setDaemon(true);
@@ -89,7 +90,7 @@ public final class BungeeProxyBridge implements Listener {
         this.authenticationStore = authenticationStore;
         this.premiumOnlineModeHandler = new BungeePremiumOnlineModeHandler(this::requiresPremiumVerification);
         this.premiumVerificationManager =
-            new BungeePremiumVerificationManager(proxyServer, logger,
+            PremiumVerificationManagers.create(proxyServer, logger,
                 this::requiresPremiumVerification, this::isPendingPremiumVerification,
                 this::clearPendingPremiumVerification,
                 () -> this.configuration.keepOfflineUuidCompatibility());
@@ -176,8 +177,10 @@ public final class BungeeProxyBridge implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerHandshake(PlayerHandshakeEvent event) {
+    public void onPreLogin(PreLoginEvent event) {
         if (!configuration.keepOfflineUuidCompatibility()) {
+            // PlayerHandshakeEvent runs before LOGIN_START, so the connection name is still null there.
+            // PreLoginEvent runs after LOGIN_START and before Bungee chooses the encryption path.
             premiumOnlineModeHandler.enableOnlineModeIfRequired(event.getConnection());
         }
     }

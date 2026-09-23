@@ -1,12 +1,15 @@
 package fr.xephi.authme.message;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.FileUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
@@ -21,8 +24,9 @@ public class HelpMessagesFileHandler extends AbstractMessageFileHandler {
 
     private FileConfiguration defaultConfiguration;
 
-    @Inject // Trigger injection in the superclass
-    HelpMessagesFileHandler() {
+    @Inject
+    public HelpMessagesFileHandler(@DataFolder File dataFolder, Settings settings) {
+        super(dataFolder, settings);
     }
 
     /**

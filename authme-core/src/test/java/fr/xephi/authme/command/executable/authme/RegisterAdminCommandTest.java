@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.Locale;
 
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskOptionallyAsync;
-import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask;
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
@@ -163,7 +163,7 @@ class RegisterAdminCommandTest {
         String kickForAdminRegister = "Admin registered you -- log in again";
         given(commandService.retrieveSingleMessage(player, MessageKey.KICK_FOR_ADMIN_REGISTER)).willReturn(kickForAdminRegister);
         CommandSender sender = mock(CommandSender.class);
-        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+        setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask(bukkitService);
         setBukkitServiceToRunTaskOptionallyAsync(bukkitService);
 
         // when

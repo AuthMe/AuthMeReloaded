@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunOnGlobalRegion;
-import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask;
+import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
@@ -154,7 +154,7 @@ class TempbanManagerTest {
         Settings settings = mockSettings(2, 100, "");
         TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
         setBukkitServiceToRunOnGlobalRegion(bukkitService);
-        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+        setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         manager.tempbanPlayer(player);
@@ -204,7 +204,7 @@ class TempbanManagerTest {
         manager.increaseCount(ip, "name2");
         manager.increaseCount(ip, "user");
         setBukkitServiceToRunOnGlobalRegion(bukkitService);
-        setBukkitServiceToScheduleSyncTaskFromOptionallyAsyncTask(bukkitService);
+        setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask(bukkitService);
 
         // when
         manager.tempbanPlayer(player);

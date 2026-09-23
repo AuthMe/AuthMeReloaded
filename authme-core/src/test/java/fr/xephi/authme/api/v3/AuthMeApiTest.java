@@ -416,6 +416,18 @@ class AuthMeApiTest {
     }
 
     @Test
+    void shouldForceLoginFromProxyByName() {
+        // given
+        String playerName = "Connor";
+
+        // when
+        api.forceLoginFromProxy(playerName);
+
+        // then
+        verify(management).forceLoginFromProxy(playerName);
+    }
+
+    @Test
     void shouldForceLogout() {
         // given
         Player player = mock(Player.class);

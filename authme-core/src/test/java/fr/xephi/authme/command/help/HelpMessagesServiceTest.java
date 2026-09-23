@@ -5,7 +5,6 @@ import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.TestCommandsUtil;
-import fr.xephi.authme.message.AbstractMessageFileHandler;
 import fr.xephi.authme.message.HelpMessagesFileHandler;
 import fr.xephi.authme.message.MessagePathHelper;
 import fr.xephi.authme.permission.DefaultPermission;
@@ -148,9 +147,7 @@ class HelpMessagesServiceTest {
         Settings settings = mock(Settings.class);
         given(settings.getProperty(PluginSettings.MESSAGES_LANGUAGE)).willReturn("test");
 
-        HelpMessagesFileHandler messagesFileHandler = ReflectionTestUtils.newInstance(HelpMessagesFileHandler.class);
-        ReflectionTestUtils.setField(AbstractMessageFileHandler.class, messagesFileHandler, "settings", settings);
-        ReflectionTestUtils.setField(AbstractMessageFileHandler.class, messagesFileHandler, "dataFolder", dataFolder);
+        HelpMessagesFileHandler messagesFileHandler = new HelpMessagesFileHandler(dataFolder, settings);
         ReflectionTestUtils.invokePostConstructMethods(messagesFileHandler);
         return messagesFileHandler;
     }

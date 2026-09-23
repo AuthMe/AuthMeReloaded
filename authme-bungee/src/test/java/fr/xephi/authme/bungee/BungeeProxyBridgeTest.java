@@ -11,11 +11,13 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
-import net.md_5.bungee.api.event.PlayerHandshakeEvent;
+import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
+import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -85,7 +87,7 @@ class BungeeProxyBridgeTest {
     private ServerConnectEvent serverConnectEvent;
 
     @Mock
-    private PlayerHandshakeEvent playerHandshakeEvent;
+    private PreLoginEvent preLoginEvent;
 
     @Mock
     private PendingConnection pendingConnection;
@@ -93,8 +95,17 @@ class BungeeProxyBridgeTest {
     @Mock
     private PluginManager pluginManager;
 
+    @Mock
+    private Plugin packetEventsPlugin;
+
     @Captor
     private ArgumentCaptor<byte[]> payloadCaptor;
+
+    @BeforeEach
+    void registerPacketEventsOnTheProxy() {
+        given(proxyServer.getPluginManager()).willReturn(pluginManager);
+        given(pluginManager.getPlugin("packetevents")).willReturn(packetEventsPlugin);
+    }
 
     @Test
     void shouldTrackAuthenticatedPlayerAndForwardPerformLoginOnServerSwitch() {
@@ -461,13 +472,30 @@ class BungeeProxyBridgeTest {
         given(pluginMessageEvent.getTag()).willReturn(BungeeProxyBridge.AUTHME_CHANNEL);
         given(pluginMessageEvent.getSender()).willReturn(sourceServer);
         given(pluginMessageEvent.getData()).willReturn(createAuthMePayload("premium.set", "Alice"));
-        given(playerHandshakeEvent.getConnection()).willReturn(pendingConnection);
+        given(preLoginEvent.getConnection()).willReturn(pendingConnection);
         given(pendingConnection.getName()).willReturn("Alice");
         given(pendingConnection.isOnlineMode()).willReturn(false);
 
         BungeeProxyBridge bridge = new BungeeProxyBridge(proxyServer, logger, createConfiguration(), new BungeeAuthenticationStore(), null);
         bridge.onPluginMessage(pluginMessageEvent);
-        bridge.onPlayerHandshake(playerHandshakeEvent);
+        bridge.onPreLogin(preLoginEvent);
+
+        verify(pendingConnection).setOnlineMode(true);
+    }
+
+    @Test
+    void shouldForceOnlineModeForPendingPremiumEnrollmentAtPreLogin() {
+        given(pluginMessageEvent.isCancelled()).willReturn(false);
+        given(pluginMessageEvent.getTag()).willReturn(BungeeProxyBridge.AUTHME_CHANNEL);
+        given(pluginMessageEvent.getSender()).willReturn(sourceServer);
+        given(pluginMessageEvent.getData()).willReturn(createAuthMePayload("premium.pending.set", "Alice"));
+        given(preLoginEvent.getConnection()).willReturn(pendingConnection);
+        given(pendingConnection.getName()).willReturn("Alice");
+        given(pendingConnection.isOnlineMode()).willReturn(false);
+
+        BungeeProxyBridge bridge = new BungeeProxyBridge(proxyServer, logger, createConfiguration(), new BungeeAuthenticationStore(), null);
+        bridge.onPluginMessage(pluginMessageEvent);
+        bridge.onPreLogin(preLoginEvent);
 
         verify(pendingConnection).setOnlineMode(true);
     }
@@ -478,13 +506,13 @@ class BungeeProxyBridgeTest {
         given(pluginMessageEvent.getTag()).willReturn(BungeeProxyBridge.AUTHME_CHANNEL);
         given(pluginMessageEvent.getSender()).willReturn(sourceServer);
         given(pluginMessageEvent.getData()).willReturn(createChunkPayload(0, true, "Alice"));
-        given(playerHandshakeEvent.getConnection()).willReturn(pendingConnection);
+        given(preLoginEvent.getConnection()).willReturn(pendingConnection);
         given(pendingConnection.getName()).willReturn("Alice");
         given(pendingConnection.isOnlineMode()).willReturn(false);
 
         BungeeProxyBridge bridge = new BungeeProxyBridge(proxyServer, logger, createConfiguration(), new BungeeAuthenticationStore(), null);
         bridge.onPluginMessage(pluginMessageEvent);
-        bridge.onPlayerHandshake(playerHandshakeEvent);
+        bridge.onPreLogin(preLoginEvent);
 
         verify(pendingConnection).setOnlineMode(true);
     }

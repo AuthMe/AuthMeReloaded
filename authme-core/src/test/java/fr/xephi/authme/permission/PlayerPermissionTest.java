@@ -3,7 +3,7 @@ package fr.xephi.authme.permission;
 /**
  * Test for {@link PlayerPermission}.
  */
-public class PlayerPermissionTest extends AbstractPermissionsEnumTest {
+class PlayerPermissionTest extends AbstractPermissionsEnumTest {
 
     @Override
     protected PermissionNode[] getPermissionNodes() {

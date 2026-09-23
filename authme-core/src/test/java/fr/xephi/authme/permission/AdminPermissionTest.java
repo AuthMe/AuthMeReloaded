@@ -3,7 +3,7 @@ package fr.xephi.authme.permission;
 /**
  * Test for {@link AdminPermission}.
  */
-public class AdminPermissionTest extends AbstractPermissionsEnumTest {
+class AdminPermissionTest extends AbstractPermissionsEnumTest {
 
     @Override
     protected PermissionNode[] getPermissionNodes() {

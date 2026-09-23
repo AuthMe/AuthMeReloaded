@@ -11,10 +11,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * Test for {@link PlayerStatePermission}.
  */
-public class PlayerStatePermissionTest extends AbstractPermissionsEnumTest {
+class PlayerStatePermissionTest extends AbstractPermissionsEnumTest {
 
     @Test
-    public void shouldNotStartWithOtherPrefixes() {
+    void shouldNotStartWithOtherPrefixes() {
         // given
         Set<String> forbiddenPrefixes = newHashSet("authme.player", "authme.admin", "authme.debug");
 
@@ -45,4 +45,3 @@ public class PlayerStatePermissionTest extends AbstractPermissionsEnumTest {
         return false;
     }
 }
-

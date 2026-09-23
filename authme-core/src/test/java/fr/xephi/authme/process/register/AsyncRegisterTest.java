@@ -1,9 +1,5 @@
 package fr.xephi.authme.process.register;
 
-import org.mockito.quality.Strictness;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import ch.jalu.injector.factory.SingletonStore;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerCache;
@@ -20,8 +16,10 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.function.Function;
 
@@ -36,8 +34,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Test for {@link AsyncRegister}.
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class AsyncRegisterTest {
+class AsyncRegisterTest {
 
     @InjectMocks
     private AsyncRegister asyncRegister;
@@ -54,7 +51,7 @@ public class AsyncRegisterTest {
     private SingletonStore<RegistrationExecutor> registrationExecutorStore;
 
     @Test
-    public void shouldDetectAlreadyLoggedInPlayer() {
+    void shouldDetectAlreadyLoggedInPlayer() {
         // given
         String name = "robert";
         Player player = mockPlayerWithName(name);
@@ -65,11 +62,11 @@ public class AsyncRegisterTest {
 
         // then
         verify(commonService).send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
-        verifyNoInteractions(dataSource);
+        verifyNoInteractions(dataSource, registrationExecutorStore);
     }
 
     @Test
-    public void shouldStopForDisabledRegistration() {
+    void shouldStopForDisabledRegistration() {
         // given
         String name = "albert";
         Player player = mockPlayerWithName(name);
@@ -81,11 +78,11 @@ public class AsyncRegisterTest {
 
         // then
         verify(commonService).send(player, MessageKey.REGISTRATION_DISABLED);
-        verifyNoInteractions(dataSource);
+        verifyNoInteractions(dataSource, registrationExecutorStore);
     }
 
     @Test
-    public void shouldStopForAlreadyRegisteredName() {
+    void shouldStopForAlreadyRegisteredName() {
         // given
         String name = "dilbert";
         Player player = mockPlayerWithName(name);
@@ -99,11 +96,12 @@ public class AsyncRegisterTest {
         // then
         verify(commonService).send(player, MessageKey.NAME_ALREADY_REGISTERED);
         verify(dataSource, only()).isAuthAvailable(name);
+        verifyNoInteractions(registrationExecutorStore);
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldStopForCanceledEvent() {
+    void shouldStopForCanceledEvent() {
         // given
         String name = "edbert";
         Player player = mockPlayerWithName(name);
@@ -121,11 +119,12 @@ public class AsyncRegisterTest {
 
         // then
         verify(dataSource, only()).isAuthAvailable(name);
+        verifyNoInteractions(registrationExecutorStore);
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldStopForFailedExecutorCheck() {
+    void shouldStopForFailedExecutorCheck() {
         // given
         String name = "edbert";
         Player player = mockPlayerWithName(name);
@@ -162,5 +161,3 @@ public class AsyncRegisterTest {
         given(store.getSingleton(any(Class.class))).willReturn(mock);
     }
 }
-
-

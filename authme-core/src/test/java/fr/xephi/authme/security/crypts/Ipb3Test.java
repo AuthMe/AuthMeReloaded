@@ -3,9 +3,9 @@ package fr.xephi.authme.security.crypts;
 /**
  * Test for {@link Ipb3}.
  */
-public class Ipb3Test extends AbstractEncryptionMethodTest {
+class Ipb3Test extends AbstractEncryptionMethodTest {
 
-    public Ipb3Test() {
+    Ipb3Test() {
         super(new Ipb3(),
             new HashedPassword("f8ecea1ce42b5babef369ff7692dbe3f", "1715b"),  //password
             new HashedPassword("40a93731a931352e0619cdf09b975040", "ba91c"),  //PassWord1

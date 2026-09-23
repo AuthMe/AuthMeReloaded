@@ -3,9 +3,9 @@ package fr.xephi.authme.security.crypts;
 /**
  * Test for {@link Wordpress}.
  */
-public class WordpressTest extends AbstractEncryptionMethodTest {
+class WordpressTest extends AbstractEncryptionMethodTest {
 
-    public WordpressTest() {
+    WordpressTest() {
         super(new Wordpress(),
             "$P$B9wyjxuU4yrfjnnHNGSzH9ti9CC0Os1",  // password
             "$P$BjzPjjzPjjkRzvGGRTyYu0sNqcz6Ci0",  // PassWord1

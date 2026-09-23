@@ -19,6 +19,10 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 
+import fr.xephi.authme.data.ProxySessionManager;
+import fr.xephi.authme.service.PreJoinDialogService;
+import java.util.Locale;
+
 /**
  * Performs auth actions, e.g. when a player joins, registers or wants to change his password.
  */
@@ -26,6 +30,12 @@ public class Management {
 
     @Inject
     private BukkitService bukkitService;
+
+    @Inject
+    private ProxySessionManager proxySessionManager;
+
+    @Inject
+    private PreJoinDialogService preJoinDialogService;
 
     // Processes
     @Inject
@@ -63,6 +73,17 @@ public class Management {
 
     public void forceLoginFromProxy(Player player) {
         runTask(() -> asynchronousLogin.forceLoginFromProxy(player));
+    }
+
+    public void forceLoginFromProxy(String playerName) {
+        String normalizedName = playerName.toLowerCase(Locale.ROOT);
+        proxySessionManager.processProxySessionMessage(playerName);
+        Player player = bukkitService.getPlayerExact(playerName);
+        if (player != null && player.isOnline()) {
+            forceLoginFromProxy(player);
+        } else {
+            preJoinDialogService.approvePreJoinForceLogin(normalizedName);
+        }
     }
 
     public void performLogout(Player player) {

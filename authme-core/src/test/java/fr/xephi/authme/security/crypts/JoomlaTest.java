@@ -3,9 +3,9 @@ package fr.xephi.authme.security.crypts;
 /**
  * Test for {@link Joomla}.
  */
-public class JoomlaTest extends AbstractEncryptionMethodTest {
+class JoomlaTest extends AbstractEncryptionMethodTest {
 
-    public JoomlaTest() {
+    JoomlaTest() {
         super(new Joomla(),
             "b18c99813cd96df3a706652f47177490:377c4aaf92c5ed57711306909e6065ca", // password
             "c5af71da91a8841d95937ba24a5b7fdb:07068e5850930b794526a614438cafc7", // PassWord1
