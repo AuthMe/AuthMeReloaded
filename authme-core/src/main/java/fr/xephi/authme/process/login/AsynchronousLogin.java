@@ -345,7 +345,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             // makes player loggedin
             playerCache.updatePlayer(auth);
             dataSource.setLogged(name);
-            sessionService.grantSession(name);
+            sessionService.grantSession(player);
 
             if (bungeeSender.isEnabled()) {
                 // As described at https://www.spigotmc.org/wiki/bukkit-bungee-plugin-messaging-channel/

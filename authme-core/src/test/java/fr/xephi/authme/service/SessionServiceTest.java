@@ -5,6 +5,8 @@ import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.RestoreSessionEvent;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeAll;
@@ -41,6 +43,8 @@ class SessionServiceTest {
     private CommonService commonService;
     @Mock
     private BukkitService bukkitService;
+    @Mock
+    private PermissionsManager permissionsManager;
 
     @BeforeAll
     static void initLogger() {
@@ -50,7 +54,7 @@ class SessionServiceTest {
     @BeforeEach
     void createSessionService() {
         given(commonService.getProperty(PluginSettings.SESSIONS_ENABLED)).willReturn(true);
-        sessionService = new SessionService(commonService, bukkitService, dataSource);
+        sessionService = new SessionService(commonService, bukkitService, dataSource, permissionsManager);
     }
 
     @Test
@@ -81,7 +85,8 @@ class SessionServiceTest {
 
         // then
         assertThat(result, equalTo(false));
-        verify(commonService, only()).getProperty(PluginSettings.SESSIONS_ENABLED);
+        verify(commonService).getProperty(PluginSettings.SESSIONS_ENABLED);
+        verifyNoMoreInteractions(commonService);
         verify(dataSource, only()).hasSession(name);
     }
 
@@ -220,6 +225,110 @@ class SessionServiceTest {
         assertThat(result, equalTo(false));
         verify(dataSource).setUnlogged(name);
         verify(dataSource).revokeSession(name);
+    }
+
+    @Test
+    void shouldNotResumeSessionForPlayerWithDisabledSessionPermission() {
+        // given
+        String name = "Bobby";
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn(name);
+        given(dataSource.hasSession(name)).willReturn(true);
+        given(permissionsManager.hasPermission(player, PlayerStatePermission.DISABLE_SESSION)).willReturn(true);
+
+        // when
+        boolean result = sessionService.canResumeSession(player);
+
+        // then
+        assertThat(result, equalTo(false));
+        verify(dataSource).hasSession(name);
+        verify(dataSource).setUnlogged(name);
+        verify(dataSource).revokeSession(name);
+        verifyNoMoreInteractions(dataSource);
+        verifyNoInteractions(bukkitService);
+    }
+
+    @Test
+    void shouldResumeSessionForPlayerWithoutDisabledSessionPermission() {
+        // given
+        String name = "Bobby";
+        String ip = "127.3.12.15";
+        Player player = mockPlayerWithNameAndIp(name, ip);
+        given(commonService.getProperty(PluginSettings.SESSIONS_TIMEOUT)).willReturn(8);
+        given(dataSource.hasSession(name)).willReturn(true);
+        PlayerAuth auth = PlayerAuth.builder()
+            .name(name)
+            .lastLogin(System.currentTimeMillis() - 60 * 1000)
+            .lastIp(ip).build();
+        given(dataSource.getAuth(name)).willReturn(auth);
+        given(bukkitService.createAndCallEvent(any(Function.class))).willReturn(new RestoreSessionEvent(player, false));
+
+        // when
+        boolean result = sessionService.canResumeSession(player);
+
+        // then
+        assertThat(result, equalTo(true));
+    }
+
+    @Test
+    void shouldNotReportValidSessionForPlayerWithDisabledSessionPermission() {
+        // given
+        given(dataSource.hasSession("Bobby")).willReturn(true);
+        given(permissionsManager.hasPermissionOffline("Bobby", PlayerStatePermission.DISABLE_SESSION))
+            .willReturn(true);
+
+        // when
+        boolean result = sessionService.hasValidSession("Bobby", "127.3.12.15");
+
+        // then
+        assertThat(result, equalTo(false));
+        verify(dataSource, only()).hasSession("Bobby");
+    }
+
+    @Test
+    void shouldReportValidSessionForPlayerWithoutDisabledSessionPermission() {
+        // given
+        String name = "Bobby";
+        String ip = "127.3.12.15";
+        given(dataSource.hasSession(name)).willReturn(true);
+        given(commonService.getProperty(PluginSettings.SESSIONS_TIMEOUT)).willReturn(8);
+        given(dataSource.getAuth(name)).willReturn(PlayerAuth.builder()
+            .name(name)
+            .lastLogin(System.currentTimeMillis() - 60 * 1000)
+            .lastIp(ip).build());
+
+        // when
+        boolean result = sessionService.hasValidSession(name, ip);
+
+        // then
+        assertThat(result, equalTo(true));
+        verify(permissionsManager).hasPermissionOffline(name, PlayerStatePermission.DISABLE_SESSION);
+    }
+
+    @Test
+    void shouldNotGrantSessionToPlayerWithDisabledSessionPermission() {
+        // given
+        Player player = mock(Player.class);
+        given(permissionsManager.hasPermission(player, PlayerStatePermission.DISABLE_SESSION)).willReturn(true);
+
+        // when
+        sessionService.grantSession(player);
+
+        // then
+        verifyNoInteractions(dataSource);
+    }
+
+    @Test
+    void shouldGrantSessionToPlayerWithoutDisabledSessionPermission() {
+        // given
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn("bobby");
+
+        // when
+        sessionService.grantSession(player);
+
+        // then
+        verify(dataSource, only()).grantSession("bobby");
     }
 
     private static Player mockPlayerWithNameAndIp(String name, String ip) {

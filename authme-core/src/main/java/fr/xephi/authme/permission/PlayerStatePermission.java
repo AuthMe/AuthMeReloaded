@@ -32,6 +32,11 @@ public enum PlayerStatePermission implements PermissionNode {
     ALLOW_MULTIPLE_ACCOUNTS("authme.allowmultipleaccounts", DefaultPermission.OP_ONLY),
 
     /**
+     * Disables sessions for the player, requiring authentication on every join.
+     */
+    DISABLE_SESSION("authme.session.disable", DefaultPermission.NOT_ALLOWED),
+
+    /**
      * Permission to bypass the purging process.
      */
     BYPASS_PURGE("authme.bypasspurge", DefaultPermission.NOT_ALLOWED),

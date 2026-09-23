@@ -7,6 +7,8 @@ import fr.xephi.authme.events.RestoreSessionEvent;
 import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.util.PlayerUtils;
 import org.bukkit.entity.Player;
@@ -24,14 +26,17 @@ public class SessionService implements Reloadable {
     private final CommonService service;
     private final BukkitService bukkitService;
     private final DataSource database;
+    private final PermissionsManager permissionsManager;
 
     private boolean isEnabled;
 
     @Inject
-    SessionService(CommonService service, BukkitService bukkitService, DataSource database) {
+    SessionService(CommonService service, BukkitService bukkitService, DataSource database,
+                   PermissionsManager permissionsManager) {
         this.service = service;
         this.bukkitService = bukkitService;
         this.database = database;
+        this.permissionsManager = permissionsManager;
         reload();
     }
 
@@ -46,6 +51,9 @@ public class SessionService implements Reloadable {
         if (isEnabled && database.hasSession(name)) {
             database.setUnlogged(name);
             database.revokeSession(name);
+            if (permissionsManager.hasPermission(player, PlayerStatePermission.DISABLE_SESSION)) {
+                return false;
+            }
             SessionState state = fetchSessionStatus(name, database.getAuth(name), PlayerUtils.getPlayerIp(player));
             if (state.equals(SessionState.VALID)) {
                 RestoreSessionEvent event = bukkitService.createAndCallEvent(
@@ -61,13 +69,15 @@ public class SessionService implements Reloadable {
     /**
      * Returns whether the given player name has a valid resumable session for the supplied IP address.
      * This check is side-effect free and can be used before a Bukkit {@link Player} instance exists.
+     * The permission is checked again against the player in {@link #canResumeSession(Player)} before login.
      *
      * @param playerName the player name
      * @param ipAddress the player's IP address
      * @return true if the player's session is currently valid, false otherwise
      */
     public boolean hasValidSession(String playerName, String ipAddress) {
-        if (!isEnabled || ipAddress == null || !database.hasSession(playerName)) {
+        if (!isEnabled || ipAddress == null || !database.hasSession(playerName)
+            || permissionsManager.hasPermissionOffline(playerName, PlayerStatePermission.DISABLE_SESSION)) {
             return false;
         }
 
@@ -103,9 +113,9 @@ public class SessionService implements Reloadable {
         return SessionState.OUTDATED;
     }
 
-    public void grantSession(String name) {
-        if (isEnabled) {
-            database.grantSession(name);
+    public void grantSession(Player player) {
+        if (isEnabled && !permissionsManager.hasPermission(player, PlayerStatePermission.DISABLE_SESSION)) {
+            database.grantSession(player.getName());
         }
     }
 
