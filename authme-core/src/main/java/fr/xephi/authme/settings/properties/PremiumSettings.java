@@ -19,7 +19,15 @@ public final class PremiumSettings implements SettingsHolder {
         "Players must use /premium to opt in."
     })
     public static final Property<Boolean> ENABLE_PREMIUM =
-        newProperty("settings.enablePremium", false);
+        newProperty("settings.premium.enabled", false);
+
+    @Comment("Profile url used for premium verification.")
+    public static final Property<String> ACCOUNT_SERVER =
+        newProperty("settings.premium.accountServer", "https://api.mojang.com/users/profiles/minecraft/");
+
+    @Comment("Session server used for premium verification.")
+    public static final Property<String> SESSION_SERVER =
+        newProperty("settings.premium.sessionServer", "https://sessionserver.mojang.com");
 
     private PremiumSettings() {
     }
