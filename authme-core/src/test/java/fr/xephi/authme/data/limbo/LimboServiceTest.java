@@ -4,6 +4,7 @@ import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.limbo.persistence.LimboPersistence;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
@@ -13,6 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.EnderPearl;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -20,11 +22,13 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -78,6 +82,9 @@ class LimboServiceTest {
 
     @Mock
     private TeleportationService teleportationService;
+
+    @Mock
+    private BukkitService bukkitService;
 
     @BeforeAll
     public static void initLogger() {
@@ -295,6 +302,7 @@ class LimboServiceTest {
         World pearlWorld = mock(World.class);
         given(pearlWorld.spawnEntity(any(Location.class), eq(EntityType.ENDER_PEARL))).willReturn(recreatedPearl);
         Location pearlLocation = new Location(pearlWorld, 5.0, 64.0, -2.5, 15.0f, 30.0f);
+        given(bukkitService.isOwnedByCurrentThread(pearlLocation)).willReturn(true);
         Vector pearlVelocity = new Vector(0.01, 0.2, -0.03);
         UUID pearlUuid = UUID.nameUUIDFromBytes("missing-pearl".getBytes());
 
@@ -344,6 +352,66 @@ class LimboServiceTest {
     }
 
     @Test
+    void shouldNotCaptureOperatorInEntitySnapshot() {
+        // given - an OP player with flight quits with a pearl in flight and no existing disk limbo
+        Player player = newPlayer("Opped", true, 0.5f, true, 0.6f);
+        given(limboPersistence.getLimboPlayer(player)).willReturn(null);
+        EnderPearlRestoreData pearl =
+            new EnderPearlRestoreData(UUID.nameUUIDFromBytes("snapshot-pearl".getBytes()), null, null);
+
+        // when
+        limboService.saveEnderPearlsForPlayer(player, Collections.singletonList(pearl));
+
+        // then - the snapshot carries the pearl but NOT the OP flag, so merge() at the next login cannot
+        // re-grant OP (e.g. after an admin ran /deop while the player was offline). Flight and speeds are
+        // kept because they are restored after a session/premium auto-login.
+        ArgumentCaptor<LimboPlayer> captor = ArgumentCaptor.forClass(LimboPlayer.class);
+        verify(limboPersistence).saveLimboPlayer(eq(player), captor.capture());
+        LimboPlayer saved = captor.getValue();
+        assertThat(saved.isOperator(), equalTo(false));
+        assertThat(saved.isCanFly(), equalTo(true));
+        assertThat(saved.getWalkSpeed(), equalTo(0.5f));
+        assertThat(saved.getFlySpeed(), equalTo(0.6f));
+        assertThat(saved.getEnderPearls(), hasSize(1));
+    }
+
+    @Test
+    void shouldNotAccessEntitiesNorRecreatePearlsOutsideOfCurrentRegion() {
+        // given
+        Player player = newPlayer("Pearlie");
+        Server server = mock(Server.class);
+        World world = mock(World.class);
+        EnderPearl foreignPearl = mock(EnderPearl.class);
+        Entity vehicle = mock(Entity.class);
+        UUID vehicleUuid = UUID.nameUUIDFromBytes("vehicle".getBytes());
+        given(player.getServer()).willReturn(server);
+        given(server.getWorlds()).willReturn(Collections.singletonList(world));
+        given(world.getEntities()).willReturn(Arrays.asList(foreignPearl, vehicle));
+        given(bukkitService.isOwnedByCurrentThread(foreignPearl)).willReturn(false);
+        given(bukkitService.isOwnedByCurrentThread(vehicle)).willReturn(true);
+        given(vehicle.getUniqueId()).willReturn(vehicleUuid);
+
+        World pearlWorld = mock(World.class);
+        Location pearlLocation = new Location(pearlWorld, 5.0, 64.0, -2.5, 15.0f, 30.0f);
+        given(bukkitService.isOwnedByCurrentThread(pearlLocation)).willReturn(false);
+        UUID pearlUuid = UUID.nameUUIDFromBytes("foreign-pearl".getBytes());
+
+        LimboPlayer limbo = new LimboPlayer(null, false, Collections.emptyList(), false, 0.0f, 0.0f);
+        limbo.setEnderPearls(
+            Collections.singletonList(new EnderPearlRestoreData(pearlUuid, pearlLocation, new Vector())));
+        limbo.setVehicle(vehicleUuid, EntityType.PIG);
+        getLimboMap().put("pearlie", limbo);
+        given(settings.getProperty(LimboSettings.RECREATE_ENDER_PEARLS)).willReturn(true);
+
+        // when
+        limboService.restoreEntities(player);
+
+        // then - the pearl may still exist in its region: it must be neither touched nor duplicated
+        verifyNoInteractions(foreignPearl, pearlWorld);
+        verify(vehicle).addPassenger(player);
+    }
+
+    @Test
     void shouldHandleMissingLimboForReplaceTasks() {
         // given
         Player player = newPlayer("ghost");
@@ -390,6 +458,7 @@ class LimboServiceTest {
         World pearlWorld = mock(World.class);
         given(pearlWorld.spawnEntity(any(Location.class), eq(EntityType.ENDER_PEARL))).willReturn(recreatedPearl);
         Location pearlLocation = new Location(pearlWorld, 5.0, 64.0, -2.5, 15.0f, 30.0f);
+        given(bukkitService.isOwnedByCurrentThread(pearlLocation)).willReturn(true);
         Vector pearlVelocity = new Vector(0.01, 0.2, -0.03);
         UUID pearlUuid = UUID.nameUUIDFromBytes("premium-pearl".getBytes());
 

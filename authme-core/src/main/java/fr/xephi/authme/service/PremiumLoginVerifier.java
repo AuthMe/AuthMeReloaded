@@ -184,6 +184,17 @@ public class PremiumLoginVerifier {
         return session.mojangUuid();
     }
 
+    /**
+     * Discards any stored verified session for the given username. Called when the player disconnects so
+     * that a Mojang verification earned by one connection cannot be consumed by a later connection using
+     * the same (offline-mode, freely chosen) name.
+     *
+     * @param username the username whose verified session should be dropped
+     */
+    public void removeVerified(String username) {
+        verified.remove(username.toLowerCase(Locale.ROOT));
+    }
+
     private byte[] rsaDecrypt(byte[] encrypted) throws GeneralSecurityException {
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.DECRYPT_MODE, rsaKeyPair.getPrivate());

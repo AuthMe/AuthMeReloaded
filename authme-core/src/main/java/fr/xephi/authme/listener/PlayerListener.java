@@ -1,12 +1,15 @@
 package fr.xephi.authme.listener;
 
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.QuickCommandsProtectionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.EnderPearlRestoreData;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.platform.ChatAdapter;
@@ -52,10 +55,13 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.player.PlayerPickupArrowEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.InventoryView;
 
 import javax.inject.Inject;
@@ -71,6 +77,8 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOW_UNAU
  * Listener class for player events.
  */
 public class PlayerListener implements Listener {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(PlayerListener.class);
 
     @Inject
     private Settings settings;
@@ -106,14 +114,18 @@ public class PlayerListener implements Listener {
     private ChatAdapter chatAdapter;
     @Inject
     private TeleportAdapter teleportAdapter;
+    @Inject
+    private PlayerCache playerCache;
 
     // Lowest priority to apply fast protection checks
     @EventHandler(priority = EventPriority.LOWEST)
     public void onAsyncPlayerPreLoginEventLowest(AsyncPlayerPreLoginEvent event) {
+        final String name = event.getName();
+        removeStaleAuthentication(name);
+
         if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
             return;
         }
-        final String name = event.getName();
 
         // NOTE: getAddress() sometimes returning null, we don't want to handle this race condition
         if (event.getAddress() == null) {
@@ -133,6 +145,30 @@ public class PlayerListener implements Listener {
             event.setKickMessage(messages.retrieveSingle(name, e.getReason(), e.getArgs()));
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
         }
+    }
+
+    /**
+     * Discards the authentication cached for the given name if no player with that name is online. Such an
+     * entry can only be a leftover, e.g. of a quit that was not processed, and it must never be inherited by
+     * a new connection: the connecting player would be considered logged in without providing any password.
+     *
+     * @param name the name of the connecting player
+     */
+    private void removeStaleAuthentication(String name) {
+        if (playerCache.isAuthenticated(name) && !isPlayerOnline(name)) {
+            playerCache.removePlayer(name);
+            logger.warning("Discarded the stale authentication of '" + name + "': no player with this name is "
+                + "online, their previous quit has not been processed");
+        }
+    }
+
+    private boolean isPlayerOnline(String name) {
+        for (Player player : bukkitService.getOnlinePlayers()) {
+            if (player.getName().equalsIgnoreCase(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /*
@@ -234,25 +270,32 @@ public class PlayerListener implements Listener {
             }
         }
 
-        if (antiBotService.wasPlayerKicked(player.getName())) {
-            return;
-        }
+        try {
+            // Antibot-kicked names were denied at pre-login and never held a real session, so we skip the
+            // state save and speed restore for them, but performQuit below must still run (see the finally).
+            if (!antiBotService.wasPlayerKicked(player.getName())) {
+                // Save in-flight ender pearls and vehicle state to disk so they can be restored on reconnect.
+                // Only authenticated players can throw pearls or ride vehicles, so we skip unauthenticated ones.
+                if (!listenerService.shouldCancelEvent(player)) {
+                    saveStateBeforeQuit(player);
+                }
 
-        // Save in-flight ender pearls and vehicle state to disk so they can be restored on reconnect.
-        // Only authenticated players can throw pearls or ride vehicles, so we skip unauthenticated ones.
-        if (!listenerService.shouldCancelEvent(player)) {
-            saveStateBeforeQuit(player);
+                // Restore speed synchronously before the async quit, so the player's
+                // .dat file is saved with the correct speed (not 0.0f).
+                limboService.restoreSpeedSync(player);
+            }
+        } finally {
+            // Must run even if the steps above fail or are skipped: the quit process removes the player from
+            // the PlayerCache, and a leftover entry would let anyone joining with this name in without logging in
+            management.performQuit(player);
         }
-
-        // Restore speed synchronously before the async quit, so the player's
-        // .dat file is saved with the correct speed (not 0.0f).
-        limboService.restoreSpeedSync(player);
-        management.performQuit(player);
     }
 
     private void saveStateBeforeQuit(Player player) {
         Set<EnderPearlRestoreData> pearls = player.getServer().getWorlds().stream()
             .flatMap(world -> world.getEntitiesByClass(EnderPearl.class).stream())
+            // On Folia, pearls in other regions cannot be accessed from the quitting player's thread
+            .filter(bukkitService::isOwnedByCurrentThread)
             .filter(pearl -> player.equals(pearl.getShooter()))
             .map(pearl -> new EnderPearlRestoreData(pearl.getUniqueId(), pearl.getLocation(), pearl.getVelocity()))
             .collect(Collectors.toSet());
@@ -275,13 +318,10 @@ public class PlayerListener implements Listener {
         if (settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)
             && chatAdapter.getKickReason(event).contains("You logged in from another location")) {
             event.setCancelled(true);
-            return;
         }
-
-        final Player player = event.getPlayer();
-        if (!antiBotService.wasPlayerKicked(player.getName())) {
-            management.performQuit(player);
-        }
+        // The quit itself is processed in onPlayerQuit, which is also fired for kicked players. Processing it
+        // here as well ran it twice, and ran it even when a later listener cancelled the kick, leaving the
+        // player online but logged out and without any limbo restrictions.
     }
 
     /*
@@ -404,11 +444,50 @@ public class PlayerListener implements Listener {
         bukkitService.runTaskLater(player, () -> limboService.reapplyLimboRestrictions(player), 1L);
     }
 
+    // PlayerTeleportEvent has its own handler list, so onPlayerMove never sees teleports: block the ones that are
+    // not initiated by a plugin or command (AuthMe's own spawn/login teleports use the PLUGIN cause).
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        if (isUnauthorizedTeleportCause(event.getCause()) && listenerService.shouldCancelEvent(event)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerPortal(PlayerPortalEvent event) {
+        if (listenerService.shouldCancelEvent(event)) {
+            event.setCancelled(true);
+        }
+    }
+
+    /**
+     * Returns whether a teleport with the given cause moves a player on their own (ender pearls, chorus fruit,
+     * portals, spectator teleports) and must therefore not happen before they log in. Compared by name because
+     * the constants differ across the supported versions (CHORUS_FRUIT was renamed CONSUMABLE_EFFECT in 1.21.2).
+     */
+    private static boolean isUnauthorizedTeleportCause(PlayerTeleportEvent.TeleportCause cause) {
+        switch (cause.name()) {
+            case "ENDER_PEARL":
+            case "CHORUS_FRUIT":
+            case "CONSUMABLE_EFFECT":
+            case "NETHER_PORTAL":
+            case "END_PORTAL":
+            case "END_GATEWAY":
+            case "SPECTATE":
+                return true;
+            default:
+                return false;
+        }
+    }
+
     /*
      * Entity/block interaction events
      */
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    // Not ignoreCancelled: Bukkit fires clicks on air already cancelled (no block to use), so an ignoreCancelled
+    // handler would never see them and the item in hand would still be used (buckets, spawn eggs, ...).
+    // Cancelling here denies both the block interaction and the use of the item in hand.
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
@@ -489,6 +568,14 @@ public class PlayerListener implements Listener {
             return;
         }
         if (listenerService.shouldCancelEvent((Player) event.getEntity())) {
+            event.setCancelled(true);
+        }
+    }
+
+    // Arrows and tridents are picked up through their own event, not EntityPickupItemEvent
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerPickupArrow(PlayerPickupArrowEvent event) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }

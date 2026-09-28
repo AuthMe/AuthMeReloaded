@@ -3,6 +3,7 @@ package fr.xephi.authme.data.limbo;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.limbo.persistence.LimboPersistence;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
@@ -60,6 +61,9 @@ public class LimboService {
 
     @Inject
     private TeleportationService teleportationService;
+
+    @Inject
+    private BukkitService bukkitService;
 
     LimboService() {
     }
@@ -287,15 +291,34 @@ public class LimboService {
      * @param pearls tracked ender pearls of the player's in-flight ender pearls
      */
     public void saveEnderPearlsForPlayer(Player player, Collection<EnderPearlRestoreData> pearls) {
-        LimboPlayer limbo = persistence.getLimboPlayer(player);
-        if (limbo == null) {
-            limbo = new LimboPlayer(null, player.isOp(), Collections.emptyList(), player.getAllowFlight(),
-                player.getWalkSpeed(), player.getFlySpeed());
-        }
+        LimboPlayer limbo = getOrCreateEntityCarrierLimbo(player);
         limbo.setEnderPearls(pearls);
         persistence.saveLimboPlayer(player, limbo);
         logger.debug("Saved {0} ender pearl(s) to disk for `{1}`",
             pearls.size(), player.getName().toLowerCase(Locale.ROOT));
+    }
+
+    /**
+     * Returns the on-disk limbo record to attach in-flight ender pearl / vehicle data to when an
+     * authenticated player quits, creating one if none exists.
+     * <p>
+     * The fallback must NOT capture the quitting player's operator status: this record is read back and
+     * {@link LimboServiceHelper#merge merged} into the next limbo at join, and the merge ORs the operator
+     * flag. The player is logged in here, so AuthMe has not revoked anything and ops.json is authoritative;
+     * recording {@code player.isOp()} would re-grant OP on the next login even after an admin ran
+     * {@code /deop} while the player was offline. Flight and speeds are kept: they are the player's real
+     * values and {@link #restoreSpeedsForAutoLogin} restores them after a session or premium auto-login.
+     *
+     * @param player the authenticated player who is quitting
+     * @return the limbo record to store the entity data on
+     */
+    private LimboPlayer getOrCreateEntityCarrierLimbo(Player player) {
+        LimboPlayer limbo = persistence.getLimboPlayer(player);
+        if (limbo == null) {
+            limbo = new LimboPlayer(null, false, Collections.emptyList(), player.getAllowFlight(),
+                player.getWalkSpeed(), player.getFlySpeed());
+        }
+        return limbo;
     }
 
     /**
@@ -320,11 +343,7 @@ public class LimboService {
      * @param vehicleType the entity type of the vehicle
      */
     public void saveVehicleForPlayer(Player player, UUID vehicleUuid, EntityType vehicleType) {
-        LimboPlayer limbo = persistence.getLimboPlayer(player);
-        if (limbo == null) {
-            limbo = new LimboPlayer(null, player.isOp(), Collections.emptyList(), player.getAllowFlight(),
-                player.getWalkSpeed(), player.getFlySpeed());
-        }
+        LimboPlayer limbo = getOrCreateEntityCarrierLimbo(player);
         limbo.setVehicle(vehicleUuid, vehicleType);
         persistence.saveLimboPlayer(player, limbo);
         logger.debug("Saved vehicle {0} ({1}) to disk for `{2}`",
@@ -369,6 +388,10 @@ public class LimboService {
         outer:
         for (World world : player.getServer().getWorlds()) {
             for (Entity entity : world.getEntities()) {
+                // On Folia, entities in other regions cannot be accessed from the player's thread
+                if (!bukkitService.isOwnedByCurrentThread(entity)) {
+                    continue;
+                }
                 if (!pendingPearls.isEmpty() && entity instanceof EnderPearl
                         && pendingPearls.containsKey(entity.getUniqueId())) {
                     ((EnderPearl) entity).setShooter(player);
@@ -415,6 +438,13 @@ public class LimboService {
     private boolean recreateEnderPearl(Player player, EnderPearlRestoreData pearl) {
         if (!pearl.canBeRecreated()) {
             logger.debug("Unable to recreate ender pearl {0} for `{1}` because its saved location is unavailable",
+                pearl.getUuid(), player.getName().toLowerCase(Locale.ROOT));
+            return false;
+        }
+        // On Folia, a pearl saved in another region may still exist there without being visible from this
+        // thread, and entities cannot be spawned outside the current region anyway
+        if (!bukkitService.isOwnedByCurrentThread(pearl.getLocation())) {
+            logger.debug("Unable to recreate ender pearl {0} for `{1}` because its saved location is in another region",
                 pearl.getUuid(), player.getName().toLowerCase(Locale.ROOT));
             return false;
         }

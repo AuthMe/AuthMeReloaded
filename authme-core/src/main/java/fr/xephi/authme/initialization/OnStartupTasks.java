@@ -99,7 +99,8 @@ public class OnStartupTasks {
         }
         bukkitService.runTaskTimerAsynchronously(() -> {
             List<String> loggedPlayersWithEmptyMail = dataSource.getLoggedPlayersWithEmptyMail();
-            bukkitService.runTask(() -> {
+            // Not runTask: the Bukkit scheduler is unsupported on Folia and would throw on every run
+            bukkitService.runOnGlobalRegion(() -> {
                 for (String playerWithoutMail : loggedPlayersWithEmptyMail) {
                     Player player = bukkitService.getPlayerExact(playerWithoutMail);
                     if (player != null) {

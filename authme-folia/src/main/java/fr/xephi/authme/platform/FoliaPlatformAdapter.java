@@ -9,6 +9,7 @@ import fr.xephi.authme.listener.PaperProxyAutoLoginListener;
 import fr.xephi.authme.listener.PlayerOpenSignListener;
 import fr.xephi.authme.service.CancellableTask;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.Listener;
 import org.bukkit.Bukkit;
@@ -29,6 +30,11 @@ public class FoliaPlatformAdapter extends AbstractPaperPlatformAdapter {
     @Override
     public boolean isOwnedByCurrentThread(Entity entity) {
         return Bukkit.isOwnedByCurrentRegion(entity);
+    }
+
+    @Override
+    public boolean isOwnedByCurrentThread(Location location) {
+        return Bukkit.isOwnedByCurrentRegion(location);
     }
 
     @Override

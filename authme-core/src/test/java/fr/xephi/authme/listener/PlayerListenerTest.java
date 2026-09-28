@@ -1,7 +1,9 @@
 package fr.xephi.authme.listener;
 
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.QuickCommandsProtectionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
@@ -48,12 +50,16 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPickupArrowEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.InventoryView;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -80,6 +86,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -139,6 +146,13 @@ class PlayerListenerTest {
     private ChatAdapter chatAdapter;
     @Mock
     private TeleportAdapter teleportAdapter;
+    @Mock
+    private PlayerCache playerCache;
+
+    @BeforeAll
+    static void initLogger() {
+        TestHelper.setupLogger();
+    }
 
     @AfterEach
     void resetSpawnLocationTracker() throws ReflectiveOperationException {
@@ -171,18 +185,15 @@ class PlayerListenerTest {
     void shouldNotCancelKick() {
         // given
         given(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)).willReturn(false);
-        String name = "Bobby";
-        Player player = mockPlayerWithName(name);
+        Player player = mock(Player.class);
         PlayerKickEvent event = new PlayerKickEvent(player, "You logged in from another location", "");
-        given(antiBotService.wasPlayerKicked(name)).willReturn(false);
 
         // when
         listener.onPlayerKick(event);
 
-        // then
+        // then - the quit is processed by onPlayerQuit, which Bukkit fires for kicked players as well
         assertThat(event.isCancelled(), equalTo(false));
-        verify(antiBotService).wasPlayerKicked(name);
-        verify(management).performQuit(player);
+        verifyNoInteractions(management, antiBotService);
     }
 
     @Test
@@ -190,18 +201,15 @@ class PlayerListenerTest {
         // given
         given(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)).willReturn(true);
         given(chatAdapter.getKickReason(any())).willAnswer(inv -> inv.getArgument(0, PlayerKickEvent.class).getReason());
-        String name = "Bobby";
-        Player player = mockPlayerWithName(name);
+        Player player = mock(Player.class);
         PlayerKickEvent event = new PlayerKickEvent(player, "No longer desired here!", "");
-        given(antiBotService.wasPlayerKicked(name)).willReturn(true);
 
         // when
         listener.onPlayerKick(event);
 
-        // then
+        // then - no quit processing here: a later listener could still cancel the kick
         assertThat(event.isCancelled(), equalTo(false));
-        verify(antiBotService).wasPlayerKicked(name);
-        verifyNoInteractions(management);
+        verifyNoInteractions(management, antiBotService);
     }
 
     @Test
@@ -217,7 +225,51 @@ class PlayerListenerTest {
             .check(listener::onPlayerConsumeItem, PlayerItemConsumeEvent.class)
             .check(listener::onPlayerInteract, PlayerInteractEvent.class)
             .check(listener::onPlayerInteractEntity, PlayerInteractEntityEvent.class)
-            .check(listener::onPlayerHeldItem, PlayerItemHeldEvent.class);
+            .check(listener::onPlayerHeldItem, PlayerItemHeldEvent.class)
+            .check(listener::onPlayerPortal, PlayerPortalEvent.class)
+            .check(listener::onPlayerPickupArrow, PlayerPickupArrowEvent.class);
+    }
+
+    @Test
+    void shouldCancelSelfInitiatedTeleportOfUnauthenticatedPlayer() {
+        // given
+        PlayerTeleportEvent event = new PlayerTeleportEvent(mock(Player.class), mock(Location.class),
+            mock(Location.class), PlayerTeleportEvent.TeleportCause.ENDER_PEARL);
+        given(listenerService.shouldCancelEvent(event)).willReturn(true);
+
+        // when
+        listener.onPlayerTeleport(event);
+
+        // then
+        assertThat(event.isCancelled(), equalTo(true));
+    }
+
+    @Test
+    void shouldAllowPluginTeleportOfUnauthenticatedPlayer() {
+        // given - AuthMe's own spawn and login teleports use the PLUGIN cause
+        PlayerTeleportEvent event = new PlayerTeleportEvent(mock(Player.class), mock(Location.class),
+            mock(Location.class), PlayerTeleportEvent.TeleportCause.PLUGIN);
+
+        // when
+        listener.onPlayerTeleport(event);
+
+        // then
+        assertThat(event.isCancelled(), equalTo(false));
+        verifyNoInteractions(listenerService);
+    }
+
+    @Test
+    void shouldNotCancelTeleportOfAuthenticatedPlayer() {
+        // given
+        PlayerTeleportEvent event = new PlayerTeleportEvent(mock(Player.class), mock(Location.class),
+            mock(Location.class), PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
+        given(listenerService.shouldCancelEvent(event)).willReturn(false);
+
+        // when
+        listener.onPlayerTeleport(event);
+
+        // then
+        assertThat(event.isCancelled(), equalTo(false));
     }
 
     @Test
@@ -886,7 +938,10 @@ class PlayerListenerTest {
         // then
         assertThat(event.getQuitMessage(), nullValue());
         verify(antiBotService).wasPlayerKicked(name);
-        verifyNoInteractions(management);
+        // The state save and speed restore are skipped for an antibot-kicked name...
+        verifyNoInteractions(limboService);
+        // ...but performQuit must still run so no stale authentication is left behind
+        verify(management).performQuit(player);
     }
 
     @Test
@@ -930,6 +985,7 @@ class PlayerListenerTest {
         given(player.getServer()).willReturn(server);
         given(server.getWorlds()).willReturn(Collections.singletonList(world));
         given(world.getEntitiesByClass(EnderPearl.class)).willReturn(Collections.singletonList(pearl));
+        given(bukkitService.isOwnedByCurrentThread(pearl)).willReturn(true);
         given(pearl.getShooter()).willReturn(player);
         given(pearl.getUniqueId()).willReturn(UUID.nameUUIDFromBytes("quit-pearl".getBytes()));
         given(pearl.getLocation()).willReturn(pearlLocation);
@@ -950,6 +1006,105 @@ class PlayerListenerTest {
         assertThat(savedPearl.getLocation(), equalTo(pearlLocation));
         assertThat(savedPearl.getVelocity(), equalTo(pearlVelocity));
         verify(management).performQuit(player);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldNotAccessEnderPearlsOwnedByOtherRegionsOnQuit() {
+        // given
+        String name = "Pearlie";
+        Player player = mockPlayerWithName(name);
+        Server server = mock(Server.class);
+        World world = mock(World.class);
+        EnderPearl foreignPearl = mock(EnderPearl.class);
+        EnderPearl ownPearl = mock(EnderPearl.class);
+
+        given(settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)).willReturn(false);
+        given(settings.getProperty(RegistrationSettings.REMOVE_UNLOGGED_LEAVE_MESSAGE)).willReturn(false);
+        given(antiBotService.wasPlayerKicked(name)).willReturn(false);
+        given(listenerService.shouldCancelEvent(player)).willReturn(false);
+        given(player.getServer()).willReturn(server);
+        given(server.getWorlds()).willReturn(Collections.singletonList(world));
+        given(world.getEntitiesByClass(EnderPearl.class)).willReturn(Arrays.asList(foreignPearl, ownPearl));
+        given(bukkitService.isOwnedByCurrentThread(foreignPearl)).willReturn(false);
+        given(bukkitService.isOwnedByCurrentThread(ownPearl)).willReturn(true);
+        given(ownPearl.getShooter()).willReturn(player);
+        given(ownPearl.getUniqueId()).willReturn(UUID.nameUUIDFromBytes("own-pearl".getBytes()));
+
+        PlayerQuitEvent event = new PlayerQuitEvent(player, "quit");
+        org.mockito.ArgumentCaptor<Collection<fr.xephi.authme.data.limbo.EnderPearlRestoreData>> captor =
+            org.mockito.ArgumentCaptor.forClass(Collection.class);
+
+        // when
+        listener.onPlayerQuit(event);
+
+        // then
+        verifyNoInteractions(foreignPearl);
+        verify(limboService).saveEnderPearlsForPlayer(eq(player), captor.capture());
+        assertThat(captor.getValue(), hasSize(1));
+        verify(management).performQuit(player);
+    }
+
+    @Test
+    void shouldProcessQuitEvenIfSavingStateBeforeQuitFails() {
+        // given
+        String name = "Pearlie";
+        Player player = mockPlayerWithName(name);
+        Server server = mock(Server.class);
+        World world = mock(World.class);
+        EnderPearl pearl = mock(EnderPearl.class);
+
+        given(settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)).willReturn(false);
+        given(settings.getProperty(RegistrationSettings.REMOVE_UNLOGGED_LEAVE_MESSAGE)).willReturn(false);
+        given(antiBotService.wasPlayerKicked(name)).willReturn(false);
+        given(listenerService.shouldCancelEvent(player)).willReturn(false);
+        given(player.getServer()).willReturn(server);
+        given(server.getWorlds()).willReturn(Collections.singletonList(world));
+        given(world.getEntitiesByClass(EnderPearl.class)).willReturn(Collections.singletonList(pearl));
+        given(bukkitService.isOwnedByCurrentThread(pearl)).willReturn(true);
+        given(pearl.getShooter())
+            .willThrow(new IllegalStateException("Accessing entity state off owning region's thread"));
+        PlayerQuitEvent event = new PlayerQuitEvent(player, "quit");
+
+        // when
+        assertThrows(IllegalStateException.class, () -> listener.onPlayerQuit(event));
+
+        // then - the player must not stay authenticated, or anyone could join with this name without logging in
+        verify(management).performQuit(player);
+    }
+
+    @Test
+    void shouldDiscardStaleAuthenticationOnPreLogin() {
+        // given
+        String name = "Bobby";
+        UUID uniqueId = UUID.fromString("753493c9-33ba-4a4a-bf61-1bce9d3c9a71");
+        AsyncPlayerPreLoginEvent event = new AsyncPlayerPreLoginEvent(name, createInetAddress("12.34.56.78"), uniqueId);
+        given(playerCache.isAuthenticated(name)).willReturn(true);
+        Player otherPlayer = mockPlayerWithName("Bob");
+        given(bukkitService.getOnlinePlayers()).willReturn(Collections.singletonList(otherPlayer));
+
+        // when
+        listener.onAsyncPlayerPreLoginEventLowest(event);
+
+        // then
+        verify(playerCache).removePlayer(name);
+    }
+
+    @Test
+    void shouldKeepAuthenticationOfOnlinePlayerOnPreLogin() {
+        // given
+        String name = "Bobby";
+        UUID uniqueId = UUID.fromString("753493c9-33ba-4a4a-bf61-1bce9d3c9a71");
+        AsyncPlayerPreLoginEvent event = new AsyncPlayerPreLoginEvent(name, createInetAddress("12.34.56.78"), uniqueId);
+        given(playerCache.isAuthenticated(name)).willReturn(true);
+        Player onlinePlayer = mockPlayerWithName("bOBBY");
+        given(bukkitService.getOnlinePlayers()).willReturn(Collections.singletonList(onlinePlayer));
+
+        // when
+        listener.onAsyncPlayerPreLoginEventLowest(event);
+
+        // then
+        verify(playerCache, never()).removePlayer(anyString());
     }
 
     @Test

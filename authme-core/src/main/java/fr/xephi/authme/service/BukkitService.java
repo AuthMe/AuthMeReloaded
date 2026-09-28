@@ -103,6 +103,28 @@ public class BukkitService implements SettingsDependent {
     }
 
     /**
+     * Returns whether the current thread may interact with the given entity. On Folia, this is only
+     * the case if the entity belongs to the region ticked by the current thread.
+     *
+     * @param entity the entity to check
+     * @return true if the entity can be safely accessed from the current thread, false otherwise
+     */
+    public boolean isOwnedByCurrentThread(Entity entity) {
+        return schedulingAdapter.isOwnedByCurrentThread(entity);
+    }
+
+    /**
+     * Returns whether the current thread may interact with the world at the given location. On Folia,
+     * this is only the case if the location belongs to the region ticked by the current thread.
+     *
+     * @param location the location to check
+     * @return true if the location can be safely accessed from the current thread, false otherwise
+     */
+    public boolean isOwnedByCurrentThread(Location location) {
+        return schedulingAdapter.isOwnedByCurrentThread(location);
+    }
+
+    /**
      * Schedules a synchronous task if we are currently on a async thread; if not, it runs the task immediately.
      * Use this when {@link #runTaskOptionallyAsync(Runnable) optionally asynchronous tasks} have to
      * run something synchronously.
@@ -407,12 +429,21 @@ public class BukkitService implements SettingsDependent {
 
     /**
      * Dispatches a command to be run as console user on this server, and executes it if found.
+     * <p>
+     * On Folia a console command must be dispatched from the global region thread; when this method is
+     * called from another thread (e.g. a player's region thread while running configured commands) the
+     * dispatch is handed off to the global region. In that case the command runs slightly later and the
+     * returned value is not the real dispatch result — no caller relies on it.
      *
      * @param commandLine the command + arguments. Example: <code>test abc 123</code>
-     * @return returns false if no target is found
+     * @return false if the command has no target (only meaningful when already on the global thread)
      */
     public boolean dispatchConsoleCommand(String commandLine) {
-        return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), commandLine);
+        if (schedulingAdapter.isGlobalThread()) {
+            return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), commandLine);
+        }
+        runOnGlobalRegion(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), commandLine));
+        return true;
     }
 
     @Override
