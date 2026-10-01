@@ -206,6 +206,16 @@ public class PlayerListener implements Listener {
         }
     }
 
+    // A player who has just joined has not logged in yet, so any authentication cached for their name belongs to
+    // another connection: a previous one whose quit cleanup (asynchronous) has not run yet, e.g. when this player
+    // took over the name through a duplicate login, or one still online under the same name in another letter case.
+    // Discard it before anything relies on it, so it can never be inherited. Lowest priority so that it also happens
+    // before other plugins query the authentication state on join.
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerJoinLowest(PlayerJoinEvent event) {
+        playerCache.removePlayer(event.getPlayer().getName());
+    }
+
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
@@ -321,7 +331,9 @@ public class PlayerListener implements Listener {
         }
         // The quit itself is processed in onPlayerQuit, which is also fired for kicked players. Processing it
         // here as well ran it twice, and ran it even when a later listener cancelled the kick, leaving the
-        // player online but logged out and without any limbo restrictions.
+        // player online but logged out and without any limbo restrictions. A connection that takes over the name
+        // (duplicate login) cannot inherit the authentication before that asynchronous cleanup has run either:
+        // see onPlayerJoinLowest.
     }
 
     /*

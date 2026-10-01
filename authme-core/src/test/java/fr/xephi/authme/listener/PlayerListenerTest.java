@@ -777,6 +777,20 @@ class PlayerListenerTest {
     }
 
     @Test
+    void shouldDiscardAuthenticationOfPreviousConnectionOnJoin() {
+        // given - e.g. a duplicate login took over the name before the previous connection's asynchronous quit ran
+        Player player = mockPlayerWithName("Bobby");
+        PlayerJoinEvent event = new PlayerJoinEvent(player, "join message");
+
+        // when
+        listener.onPlayerJoinLowest(event);
+
+        // then - the joining player has not logged in yet and must not inherit the previous authentication
+        verify(playerCache).removePlayer("Bobby");
+        verifyNoInteractions(management);
+    }
+
+    @Test
     void shouldHandlePlayerJoining() {
         // given
         Player player = mock(Player.class);
