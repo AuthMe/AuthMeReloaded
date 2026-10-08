@@ -25,9 +25,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -76,6 +80,7 @@ class BukkitServiceTest {
     @Test
     void shouldDispatchConsoleCommand() {
         // given
+        given(schedulingAdapter.isGlobalThread()).willReturn(true);
         ConsoleCommandSender consoleSender = mock(ConsoleCommandSender.class);
         given(server.getConsoleSender()).willReturn(consoleSender);
         String command = "my command";
@@ -85,6 +90,20 @@ class BukkitServiceTest {
 
         // then
         verify(server).dispatchCommand(consoleSender, command);
+    }
+
+    @Test
+    void shouldDispatchConsoleCommandOnGlobalRegionWhenOffThread() {
+        // given - not on the global region thread (e.g. a Folia player region thread)
+        given(schedulingAdapter.isGlobalThread()).willReturn(false);
+        String command = "my command";
+
+        // when
+        bukkitService.dispatchConsoleCommand(command);
+
+        // then - the dispatch is handed off to the global region rather than run inline
+        verify(schedulingAdapter).runOnGlobalThread(eq(authMe), any(Runnable.class));
+        verify(server, never()).dispatchCommand(any(), anyString());
     }
 
     @Test

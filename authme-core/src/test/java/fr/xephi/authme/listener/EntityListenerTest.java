@@ -11,6 +11,9 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.vehicle.VehicleDamageEvent;
+import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.projectiles.ProjectileSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -243,5 +246,68 @@ class EntityListenerTest {
         // then
         verify(listenerService).shouldCancelEvent(target);
         verify(event, only()).getTarget();
+    }
+
+    @Test
+    void shouldCancelHangingBreakByUnauthenticatedPlayer() {
+        // given
+        HangingBreakByEntityEvent event = mock(HangingBreakByEntityEvent.class);
+        Entity player = mock(Player.class);
+        given(event.getRemover()).willReturn(player);
+        given(listenerService.shouldCancelEvent(player)).willReturn(true);
+
+        // when
+        listener.onHangingBreakByEntity(event);
+
+        // then
+        verify(event).setCancelled(true);
+    }
+
+    @Test
+    void shouldNotCancelHangingBreakByAuthenticatedPlayer() {
+        // given
+        HangingBreakByEntityEvent event = mock(HangingBreakByEntityEvent.class);
+        Entity player = mock(Player.class);
+        given(event.getRemover()).willReturn(player);
+        given(listenerService.shouldCancelEvent(player)).willReturn(false);
+
+        // when
+        listener.onHangingBreakByEntity(event);
+
+        // then
+        verify(event, only()).getRemover();
+    }
+
+    @Test
+    void shouldCancelVehicleDamageAndDestroyByUnauthenticatedPlayer() {
+        // given
+        Entity player = mock(Player.class);
+        given(listenerService.shouldCancelEvent(player)).willReturn(true);
+        VehicleDamageEvent damageEvent = mock(VehicleDamageEvent.class);
+        given(damageEvent.getAttacker()).willReturn(player);
+        VehicleDestroyEvent destroyEvent = mock(VehicleDestroyEvent.class);
+        given(destroyEvent.getAttacker()).willReturn(player);
+
+        // when
+        listener.onVehicleDamage(damageEvent);
+        listener.onVehicleDestroy(destroyEvent);
+
+        // then
+        verify(damageEvent).setCancelled(true);
+        verify(destroyEvent).setCancelled(true);
+    }
+
+    @Test
+    void shouldNotCancelVehicleDamageWithoutAttacker() {
+        // given - e.g. damage from lava or an explosion
+        VehicleDamageEvent event = mock(VehicleDamageEvent.class);
+        given(event.getAttacker()).willReturn(null);
+        given(listenerService.shouldCancelEvent((Entity) null)).willReturn(false);
+
+        // when
+        listener.onVehicleDamage(event);
+
+        // then
+        verify(event, only()).getAttacker();
     }
 }

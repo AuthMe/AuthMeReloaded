@@ -381,7 +381,17 @@ public class SpawnLoader implements Reloadable {
      * @return the player's respawn location if available, otherwise the configured spawn
      */
     public Location getPlayerRespawnLocationOrSpawn(Player player) {
-        Location respawnLocation = teleportAdapter.getPlayerRespawnLocation(player);
+        Location respawnLocation;
+        try {
+            respawnLocation = teleportAdapter.getPlayerRespawnLocation(player);
+        } catch (RuntimeException e) {
+            // The respawn location is validated against the bed/anchor block. On Folia that block read throws
+            // when it is not owned by the current thread (async quit processing, a bed in another region), and
+            // callers such as the quit and limbo processes must not be aborted by it: use the spawn instead.
+            logger.debug("Could not read the respawn location of `{0}`, using the spawn instead: {1}",
+                player.getName(), e.getMessage());
+            respawnLocation = null;
+        }
         if (respawnLocation != null && respawnLocation.getWorld() != null) {
             return respawnLocation;
         }

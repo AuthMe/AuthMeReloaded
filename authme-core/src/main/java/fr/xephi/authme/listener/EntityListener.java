@@ -13,6 +13,9 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.vehicle.VehicleDamageEvent;
+import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.projectiles.ProjectileSource;
 
 import javax.inject.Inject;
@@ -93,6 +96,29 @@ public class EntityListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onShoot(EntityShootBowEvent event) {
         if (listenerService.shouldCancelEvent(event)) {
+            event.setCancelled(true);
+        }
+    }
+
+    // Non-living entities hit by a player do not go through EntityDamageByEntityEvent: paintings, item frames and
+    // leash knots are broken through HangingBreakByEntityEvent, boats and minecarts through the vehicle events.
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
+        if (listenerService.shouldCancelEvent(event.getRemover())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onVehicleDamage(VehicleDamageEvent event) {
+        if (listenerService.shouldCancelEvent(event.getAttacker())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onVehicleDestroy(VehicleDestroyEvent event) {
+        if (listenerService.shouldCancelEvent(event.getAttacker())) {
             event.setCancelled(true);
         }
     }

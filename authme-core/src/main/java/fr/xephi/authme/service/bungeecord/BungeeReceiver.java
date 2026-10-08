@@ -274,6 +274,8 @@ public class BungeeReceiver implements PluginMessageListener, SettingsDependent 
     private void completeProxyLogin(Player player) {
         // Player is already online: also drive the login directly in case processJoin
         // has already run past the proxy-session check and created a limbo player.
+        // Consume the queued request so it cannot be inherited by a later connection with this name.
+        proxySessionManager.removeLoginRequest(player.getName());
         management.forceLoginFromProxy(player);
         logger.debug("Sending auto-login ACK for {0}", player.getName());
         bungeeSender.sendAuthMeBungeecordMessage(player, MessageType.PERFORM_LOGIN_ACK);

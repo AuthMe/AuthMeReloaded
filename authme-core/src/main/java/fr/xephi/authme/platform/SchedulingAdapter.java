@@ -2,6 +2,7 @@ package fr.xephi.authme.platform;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.service.CancellableTask;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 
 /**
@@ -16,6 +17,12 @@ public interface SchedulingAdapter {
      * @return true if the current thread may already safely interact with the entity
      */
     boolean isOwnedByCurrentThread(Entity entity);
+
+    /**
+     * @param location the location whose world area would be accessed
+     * @return true if the current thread may already safely interact with the world at the location
+     */
+    boolean isOwnedByCurrentThread(Location location);
 
     /**
      * @return true if the current thread may already safely perform global server work

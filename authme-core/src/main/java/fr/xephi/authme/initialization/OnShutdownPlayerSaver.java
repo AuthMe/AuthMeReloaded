@@ -1,9 +1,11 @@
 package fr.xephi.authme.initialization;
 
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
@@ -20,6 +22,8 @@ import java.util.Locale;
  * Saves all players' data when the plugin shuts down.
  */
 public class OnShutdownPlayerSaver {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(OnShutdownPlayerSaver.class);
 
     @Inject
     private BukkitService bukkitService;
@@ -44,7 +48,13 @@ public class OnShutdownPlayerSaver {
      */
     public void saveAllPlayers() {
         for (Player player : bukkitService.getOnlinePlayers()) {
-            savePlayer(player);
+            try {
+                savePlayer(player);
+            } catch (RuntimeException e) {
+                // One failing player (e.g. a region-owned read on Folia's shutdown thread) must not prevent the
+                // limbo data of all the remaining players from being restored
+                logger.logException("Could not save the data of '" + player.getName() + "' on shutdown:", e);
+            }
         }
     }
 
@@ -53,12 +63,15 @@ public class OnShutdownPlayerSaver {
         if (PlayerUtils.isNpc(player) || validationService.isUnrestricted(name)) {
             return;
         }
-        if (limboService.hasLimboPlayer(name)) {
-            limboService.restoreData(player);
-        } else {
-            saveLoggedinPlayer(player);
+        try {
+            if (limboService.hasLimboPlayer(name)) {
+                limboService.restoreData(player);
+            } else {
+                saveLoggedinPlayer(player);
+            }
+        } finally {
+            playerCache.removePlayer(name);
         }
-        playerCache.removePlayer(name);
     }
 
     private void saveLoggedinPlayer(Player player) {

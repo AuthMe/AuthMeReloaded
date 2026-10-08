@@ -50,6 +50,11 @@ public abstract class AbstractSpigotPlatformAdapter implements PlatformAdapter {
     }
 
     @Override
+    public boolean isOwnedByCurrentThread(Location location) {
+        return Bukkit.isPrimaryThread();
+    }
+
+    @Override
     public boolean isGlobalThread() {
         return Bukkit.isPrimaryThread();
     }
