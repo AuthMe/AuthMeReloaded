@@ -15,6 +15,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import static fr.xephi.authme.AuthMeMatchers.stringWithLength;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -67,6 +70,25 @@ class TotpAuthenticatorTest {
         assertThat(key1.getAuthenticatorQrCodeUrl(), containsString("margin=10"));
         assertThat(key2.getAuthenticatorQrCodeUrl(), startsWith("https://api.qrserver.com/v1/create-qr-code/?data="));
         assertThat(key1.getTotpKey(), not(equalTo(key2.getTotpKey())));
+    }
+
+    @Test
+    void shouldGenerateTotpKeyForServerNameWithColon() {
+        // given
+        totpAuthenticator = new TotpAuthenticator(settings);
+
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn("Bobby");
+        given(settings.getProperty(PluginSettings.SERVER_NAME)).willReturn("UT:Rebirth");
+
+        // when
+        TotpGenerationResult key = totpAuthenticator.generateTotpKey(player);
+
+        // then
+        assertThat(key.getTotpKey(), stringWithLength(32));
+        assertThat(key.getAuthenticatorQrCodeUrl(), containsString(URLEncoder.encode(
+            "otpauth://totp/UT-Rebirth:Bobby?secret=" + key.getTotpKey() + "&issuer=UT-Rebirth&",
+            StandardCharsets.UTF_8)));
     }
 
     @Test

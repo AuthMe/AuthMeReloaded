@@ -69,8 +69,9 @@ public class TotpAuthenticator implements HasCleanup {
 
     public TotpGenerationResult generateTotpKey(Player player) {
         GoogleAuthenticatorKey credentials = authenticator.createCredentials();
-        String otpAuthUrl = GoogleAuthenticatorQRGenerator.getOtpAuthTotpURL(
-            settings.getProperty(PluginSettings.SERVER_NAME), player.getName(), credentials);
+        // The otpauth label is "issuer:account", so the issuer must not contain a colon
+        String issuer = settings.getProperty(PluginSettings.SERVER_NAME).replace(':', '-');
+        String otpAuthUrl = GoogleAuthenticatorQRGenerator.getOtpAuthTotpURL(issuer, player.getName(), credentials);
         String qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?data="
             + URLEncoder.encode(otpAuthUrl, StandardCharsets.UTF_8)
             + "&size=200x200&ecc=M&margin=10";
