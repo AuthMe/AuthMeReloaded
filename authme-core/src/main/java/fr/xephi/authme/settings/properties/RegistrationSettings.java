@@ -21,6 +21,13 @@ public final class RegistrationSettings implements SettingsHolder {
         newProperty("settings.registration.messageInterval", 5);
 
     @Comment({
+        "Delay in seconds before showing the first registration reminder.",
+        "When the delay expires, AuthMe checks whether the player is still unregistered",
+        "before sending it."})
+    public static final Property<Integer> REGISTER_MESSAGE_DELAY =
+        newProperty("settings.registration.registerMessageDelay", 1);
+
+    @Comment({
         "Only registered and logged in players can play.",
         "See restrictions for exceptions"})
     public static final Property<Boolean> FORCE =

@@ -3,6 +3,7 @@ package fr.xephi.authme.data.limbo;
 import ch.jalu.configme.properties.Property;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.captcha.RegistrationCaptchaManager;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.service.BukkitService;
@@ -15,6 +16,8 @@ import fr.xephi.authme.task.TimeoutTask;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
 
@@ -38,6 +41,9 @@ class LimboPlayerTaskManager {
     @Inject
     private RegistrationCaptchaManager registrationCaptchaManager;
 
+    @Inject
+    private DataSource dataSource;
+
     LimboPlayerTaskManager() {
     }
 
@@ -54,10 +60,22 @@ class LimboPlayerTaskManager {
         if (interval > 0) {
             String[] joinMessage = messages.retrieveSingle(player, result.messageKey, result.args).split("\n");
             MessageTask messageTask = new MessageTask(player, joinMessage);
-            CancellableTask taskHandle =
-                bukkitService.runTaskTimer(player, messageTask, 2 * TICKS_PER_SECOND, interval * TICKS_PER_SECOND);
+            CancellableTask taskHandle = messageType == LimboMessageType.REGISTER
+                ? scheduleRegistrationMessageTask(player, messageTask, interval)
+                : bukkitService.runTaskTimer(player, messageTask, 2 * TICKS_PER_SECOND,
+                    interval * TICKS_PER_SECOND);
             limbo.setMessageTask(messageTask, taskHandle);
         }
+    }
+
+    private CancellableTask scheduleRegistrationMessageTask(Player player, MessageTask messageTask, int interval) {
+        int configuredDelay = settings.getProperty(RegistrationSettings.REGISTER_MESSAGE_DELAY);
+        long delayTicks = Math.max(0, configuredDelay) * (long) TICKS_PER_SECOND;
+        long intervalTicks = interval * (long) TICKS_PER_SECOND;
+        RegistrationMessageTaskHandle taskHandle =
+            new RegistrationMessageTaskHandle(player, messageTask, intervalTicks);
+        taskHandle.scheduleInitialCheck(delayTicks);
+        return taskHandle;
     }
 
     /**
@@ -108,6 +126,79 @@ class LimboPlayerTaskManager {
             return new MessageResult(MessageKey.CAPTCHA_FOR_REGISTRATION_REQUIRED, captchaCode);
         } else {
             return new MessageResult(MessageKey.REGISTER_MESSAGE);
+        }
+    }
+
+    private final class RegistrationMessageTaskHandle implements CancellableTask {
+        private final Player player;
+        private final MessageTask messageTask;
+        private final long intervalTicks;
+        private final AtomicBoolean cancelled = new AtomicBoolean();
+        private final AtomicReference<CancellableTask> delayedTask = new AtomicReference<>();
+        private final AtomicReference<CancellableTask> lookupTask = new AtomicReference<>();
+        private final AtomicReference<CancellableTask> repeatingTask = new AtomicReference<>();
+
+        private RegistrationMessageTaskHandle(Player player, MessageTask messageTask, long intervalTicks) {
+            this.player = player;
+            this.messageTask = messageTask;
+            this.intervalTicks = intervalTicks;
+        }
+
+        private void scheduleInitialCheck(long delayTicks) {
+            CancellableTask task = bukkitService.runTaskLater(player, this::checkRegistrationAsync, delayTicks);
+            setTask(delayedTask, task);
+        }
+
+        private void checkRegistrationAsync() {
+            if (cancelled.get() || !player.isOnline() || playerCache.isAuthenticated(player.getName())) {
+                return;
+            }
+
+            CancellableTask task = bukkitService.runTaskAsynchronously(() -> {
+                boolean isRegistered = dataSource.isAuthAvailable(player.getName());
+                if (cancelled.get() || isRegistered || playerCache.isAuthenticated(player.getName())) {
+                    return;
+                }
+
+                bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player, () -> {
+                    if (cancelled.get() || !player.isOnline() || playerCache.isAuthenticated(player.getName())) {
+                        return;
+                    }
+
+                    messageTask.run();
+                    CancellableTask repeating = bukkitService.runTaskTimer(
+                        player, messageTask, intervalTicks, intervalTicks);
+                    setTask(repeatingTask, repeating);
+                });
+            });
+            setTask(lookupTask, task);
+        }
+
+        private void setTask(AtomicReference<CancellableTask> taskReference, CancellableTask task) {
+            if (cancelled.get()) {
+                task.cancel();
+            } else {
+                taskReference.set(task);
+                if (cancelled.get() && taskReference.compareAndSet(task, null)) {
+                    task.cancel();
+                }
+            }
+        }
+
+        @Override
+        public void cancel() {
+            if (cancelled.compareAndSet(false, true)) {
+                cancelTask(delayedTask);
+                cancelTask(lookupTask);
+                cancelTask(repeatingTask);
+            }
+        }
+
+        private void cancelTask(AtomicReference<CancellableTask> taskReference) {
+            CancellableTask task = taskReference.getAndSet(null);
+            if (task != null) {
+                task.cancel();
+            }
         }
     }
 
