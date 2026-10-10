@@ -31,6 +31,9 @@ public class PaperLoginValidationListener implements Listener {
     /** Safety net for a connection that never reports itself as gone; not the release mechanism. */
     private static final long CLAIM_GRACE_MILLIS = TimeUnit.SECONDS.toMillis(60);
 
+    /** Used when a timeout is disabled: the pre-join dialog then stays open for as long as the connection does. */
+    private static final long CLAIM_WITHOUT_TIMEOUT_MILLIS = TimeUnit.DAYS.toMillis(1);
+
     @Inject
     private OnJoinVerifier onJoinVerifier;
 
@@ -142,9 +145,12 @@ public class PaperLoginValidationListener implements Listener {
     }
 
     private long getClaimTtlMillis() {
-        int timeoutSeconds = Math.max(settings.getProperty(RestrictionSettings.LOGIN_TIMEOUT),
-            settings.getProperty(RestrictionSettings.REGISTER_TIMEOUT));
-        return TimeUnit.SECONDS.toMillis(Math.max(timeoutSeconds, 0)) + CLAIM_GRACE_MILLIS;
+        int loginTimeout = settings.getProperty(RestrictionSettings.LOGIN_TIMEOUT);
+        int registerTimeout = settings.getProperty(RestrictionSettings.REGISTER_TIMEOUT);
+        if (loginTimeout <= 0 || registerTimeout <= 0) {
+            return CLAIM_WITHOUT_TIMEOUT_MILLIS;
+        }
+        return TimeUnit.SECONDS.toMillis(Math.max(loginTimeout, registerTimeout)) + CLAIM_GRACE_MILLIS;
     }
 
     private static String getPlayerName(PlayerLoginConnection connection) {
