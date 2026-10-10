@@ -206,17 +206,26 @@ public class PaperDialogFlowListener implements Listener {
     private void retireSession(PlayerConfigurationConnection connection) {
         Long sessionId = connectionSessions.remove(connection);
         if (sessionId != null) {
-            pendingLoginResponses.remove(sessionId);
-            pendingRegisterResponses.remove(sessionId);
+            releaseResponse(pendingLoginResponses.remove(sessionId));
+            releaseResponse(pendingRegisterResponses.remove(sessionId));
             preJoinDialogService.retireSession(sessionId);
+        }
+    }
+
+    // Without a timeout nothing else wakes the configuration thread waiting on a connection that is gone
+    private static void releaseResponse(CompletableFuture<String> response) {
+        if (response != null) {
+            response.complete(null);
         }
     }
 
     private void handleBlockingLoginDialog(PlayerConfigurationConnection connection, long sessionId, String playerName) {
         CompletableFuture<String> loginResponse = new CompletableFuture<>();
-        long timeoutSeconds = Math.max(commonService.getProperty(RestrictionSettings.LOGIN_TIMEOUT), 1);
-        loginResponse.completeOnTimeout(
-            messages.retrieveSingle(playerName, MessageKey.LOGIN_TIMEOUT_ERROR), timeoutSeconds, TimeUnit.SECONDS);
+        int timeoutSeconds = commonService.getProperty(RestrictionSettings.LOGIN_TIMEOUT);
+        if (timeoutSeconds > 0) {
+            loginResponse.completeOnTimeout(
+                messages.retrieveSingle(playerName, MessageKey.LOGIN_TIMEOUT_ERROR), timeoutSeconds, TimeUnit.SECONDS);
+        }
         String normalizedName = playerName.toLowerCase(Locale.ROOT);
         pendingLoginResponses.put(sessionId, loginResponse);
         preJoinDialogService.registerPreJoinFuture(sessionId, loginResponse);
@@ -284,9 +293,11 @@ public class PaperDialogFlowListener implements Listener {
     private void handleBlockingRegisterDialog(PlayerConfigurationConnection connection, long sessionId,
                                               String playerName, Dialog dialog) {
         CompletableFuture<String> registerResponse = new CompletableFuture<>();
-        long timeoutSeconds = Math.max(commonService.getProperty(RestrictionSettings.REGISTER_TIMEOUT), 1);
-        registerResponse.completeOnTimeout(
-            messages.retrieveSingle(playerName, MessageKey.LOGIN_TIMEOUT_ERROR), timeoutSeconds, TimeUnit.SECONDS);
+        int timeoutSeconds = commonService.getProperty(RestrictionSettings.REGISTER_TIMEOUT);
+        if (timeoutSeconds > 0) {
+            registerResponse.completeOnTimeout(
+                messages.retrieveSingle(playerName, MessageKey.LOGIN_TIMEOUT_ERROR), timeoutSeconds, TimeUnit.SECONDS);
+        }
         pendingRegisterResponses.put(sessionId, registerResponse);
 
         connection.getAudience().showDialog(dialog);

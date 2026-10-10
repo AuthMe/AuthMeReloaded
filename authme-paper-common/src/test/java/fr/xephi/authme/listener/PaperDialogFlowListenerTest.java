@@ -1,5 +1,6 @@
 package fr.xephi.authme.listener;
 
+import ch.jalu.configme.properties.Property;
 import com.destroystokyo.paper.event.player.PlayerConnectionCloseEvent;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import fr.xephi.authme.data.ProxySessionManager;
@@ -24,6 +25,7 @@ import fr.xephi.authme.settings.properties.PremiumSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import io.papermc.paper.connection.PlayerConfigurationConnection;
+import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.dialog.DialogResponseView;
 import io.papermc.paper.event.connection.configuration.AsyncPlayerConnectionConfigureEvent;
 import io.papermc.paper.event.player.PlayerCustomClickEvent;
@@ -42,6 +44,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -49,6 +52,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
@@ -503,10 +507,11 @@ public class PaperDialogFlowListenerTest {
         given(gone.isConnected()).willReturn(false);
         PlayerConfigurationConnection live = mockConnection("Bobby");
         given(live.isConnected()).willReturn(true);
+        CompletableFuture<String> goneFuture = new CompletableFuture<>();
         CompletableFuture<String> liveFuture = new CompletableFuture<>();
         connectionSessions(listener).put(gone, SESSION_ID);
         connectionSessions(listener).put(live, SESSION_ID + 1);
-        pendingResponses(listener, "pendingLoginResponses").put(SESSION_ID, new CompletableFuture<>());
+        pendingResponses(listener, "pendingLoginResponses").put(SESSION_ID, goneFuture);
         pendingResponses(listener, "pendingLoginResponses").put(SESSION_ID + 1, liveFuture);
 
         listener.onPlayerConnectionClose(new PlayerConnectionCloseEvent(
@@ -517,6 +522,107 @@ public class PaperDialogFlowListenerTest {
         assertThat(connectionSessions(listener).containsKey(gone), is(false));
         assertThat(connectionSessions(listener).get(live), is(SESSION_ID + 1));
         assertThat(pendingResponses(listener, "pendingLoginResponses").get(SESSION_ID + 1), is(liveFuture));
+        assertThat("thread waiting on the closed connection must be released", goneFuture.isDone(), is(true));
+        assertThat(liveFuture.isDone(), is(false));
+    }
+
+    @Test
+    public void shouldKeepPreJoinLoginDialogOpenWhenLoginTimeoutIsDisabled() throws Exception {
+        PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
+        Audience audience = mock(Audience.class);
+        PlayerConfigurationConnection connection = newBlockingDialogSetup(listener, preJoinDialogService, audience);
+        setField(listener, "proxySessionManager", mock(ProxySessionManager.class));
+        setField(listener, "dialogWindowService", mock(DialogWindowService.class));
+        givenTimeout(listener, RestrictionSettings.LOGIN_TIMEOUT, 0);
+        givenDialogIsAnsweredLate(listener, audience, "pendingLoginResponses");
+
+        try (var helperStatic = mockStatic(PaperDialogHelper.class)) {
+            helperStatic.when(() -> PaperDialogHelper.createPreJoinLoginDialog(any())).thenReturn(null);
+
+            invokeHandleBlockingLoginDialog(listener, connection);
+        }
+
+        verify(preJoinDialogService, never()).storePendingKickMessage(anyLong(), anyString());
+    }
+
+    @Test
+    public void shouldKeepPreJoinRegisterDialogOpenWhenRegisterTimeoutIsDisabled() throws Exception {
+        PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
+        Audience audience = mock(Audience.class);
+        PlayerConfigurationConnection connection = newBlockingDialogSetup(listener, preJoinDialogService, audience);
+        givenTimeout(listener, RestrictionSettings.REGISTER_TIMEOUT, 0);
+        givenDialogIsAnsweredLate(listener, audience, "pendingRegisterResponses");
+
+        invokeHandleBlockingRegisterDialog(listener, connection);
+
+        verify(preJoinDialogService, never()).storePendingKickMessage(anyLong(), anyString());
+    }
+
+    @Test
+    public void shouldKickWhenPreJoinLoginDialogTimesOut() throws Exception {
+        PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
+        PlayerConfigurationConnection connection =
+            newBlockingDialogSetup(listener, preJoinDialogService, mock(Audience.class));
+        setField(listener, "proxySessionManager", mock(ProxySessionManager.class));
+        setField(listener, "dialogWindowService", mock(DialogWindowService.class));
+        givenTimeout(listener, RestrictionSettings.LOGIN_TIMEOUT, 1);
+
+        try (var helperStatic = mockStatic(PaperDialogHelper.class)) {
+            helperStatic.when(() -> PaperDialogHelper.createPreJoinLoginDialog(any())).thenReturn(null);
+
+            invokeHandleBlockingLoginDialog(listener, connection);
+        }
+
+        verify(preJoinDialogService).storePendingKickMessage(SESSION_ID, "Timed out!");
+    }
+
+    private static PlayerConfigurationConnection newBlockingDialogSetup(PaperDialogFlowListener listener,
+                                                                        PreJoinDialogService preJoinDialogService,
+                                                                        Audience audience) throws Exception {
+        Messages messages = mock(Messages.class);
+        setField(listener, "messages", messages);
+        setField(listener, "preJoinDialogService", preJoinDialogService);
+        given(messages.retrieveSingle("Bobby", MessageKey.LOGIN_TIMEOUT_ERROR)).willReturn("Timed out!");
+
+        PlayerConfigurationConnection connection = mockConnection("Bobby");
+        given(connection.getAudience()).willReturn(audience);
+        return connection;
+    }
+
+    private static void givenTimeout(PaperDialogFlowListener listener, Property<Integer> property,
+                                     int seconds) throws Exception {
+        CommonService commonService = mock(CommonService.class);
+        setField(listener, "commonService", commonService);
+        given(commonService.getProperty(property)).willReturn(seconds);
+    }
+
+    // The player answers after 1.2 seconds; a disabled timeout used to end the wait after one second
+    private static void givenDialogIsAnsweredLate(PaperDialogFlowListener listener, Audience audience,
+                                                  String responseField) {
+        willAnswer(invocation -> {
+            pendingResponses(listener, responseField).get(SESSION_ID)
+                .completeOnTimeout(null, 1200, TimeUnit.MILLISECONDS);
+            return null;
+        }).given(audience).showDialog(any());
+    }
+
+    private static void invokeHandleBlockingLoginDialog(PaperDialogFlowListener listener,
+                                                        PlayerConfigurationConnection connection) throws Exception {
+        Method method = PaperDialogFlowListener.class.getDeclaredMethod("handleBlockingLoginDialog",
+            PlayerConfigurationConnection.class, long.class, String.class);
+        method.setAccessible(true);
+        method.invoke(listener, connection, SESSION_ID, "Bobby");
+    }
+
+    private static void invokeHandleBlockingRegisterDialog(PaperDialogFlowListener listener,
+                                                           PlayerConfigurationConnection connection) throws Exception {
+        Method method = PaperDialogFlowListener.class.getDeclaredMethod("handleBlockingRegisterDialog",
+            PlayerConfigurationConnection.class, long.class, String.class, Dialog.class);
+        method.setAccessible(true);
+        method.invoke(listener, connection, SESSION_ID, "Bobby", null);
     }
 
     private static PlayerConfigurationConnection mockConnection(String playerName) {

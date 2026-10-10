@@ -25,6 +25,7 @@ import org.mockito.quality.Strictness;
 
 import java.net.InetAddress;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -72,6 +73,19 @@ public class PaperLoginValidationListenerTest {
 
         assertThat(event.isAllowed(), is(true));
         verify(pendingConnectionRegistry).tryClaim(eq("Bobby"), eq(connection), anyLong());
+    }
+
+    @Test
+    public void shouldClaimNameForLongerThanTheGracePeriodWhenTimeoutIsDisabled() {
+        given(settings.getProperty(RestrictionSettings.LOGIN_TIMEOUT)).willReturn(0);
+        given(settings.getProperty(RestrictionSettings.REGISTER_TIMEOUT)).willReturn(30);
+        PlayerLoginConnection connection = newLoginConnection("Bobby");
+        given(pendingConnectionRegistry.tryClaim(eq("Bobby"), eq(connection), anyLong())).willReturn(true);
+        PlayerConnectionValidateLoginEvent event = new PlayerConnectionValidateLoginEvent(connection, null);
+
+        listener.onPlayerConnectionValidateLogin(event);
+
+        verify(pendingConnectionRegistry).tryClaim("Bobby", connection, TimeUnit.DAYS.toMillis(1));
     }
 
     @Test
