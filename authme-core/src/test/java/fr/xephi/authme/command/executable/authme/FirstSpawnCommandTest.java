@@ -2,6 +2,7 @@ package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
+import fr.xephi.authme.platform.TeleportAdapter;
 import fr.xephi.authme.settings.SpawnLoader;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -13,12 +14,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link FirstSpawnCommand}.
@@ -35,6 +35,9 @@ class FirstSpawnCommandTest {
     @Mock
     private Messages messages;
 
+    @Mock
+    private TeleportAdapter teleportAdapter;
+
     @Test
     void shouldTeleportToFirstSpawn() {
         // given
@@ -46,7 +49,7 @@ class FirstSpawnCommandTest {
         command.executeCommand(player, Collections.emptyList());
 
         // then
-        verify(player).teleport(firstSpawn);
+        verify(teleportAdapter).teleportPlayer(player, firstSpawn);
         verify(spawnLoader, atLeastOnce()).getFirstSpawn();
     }
 
@@ -61,6 +64,6 @@ class FirstSpawnCommandTest {
 
         // then
         verify(messages).send(player, MessageKey.FIRST_SPAWN_NOT_DEFINED);
-        verify(player, never()).teleport(any(Location.class));
+        verifyNoInteractions(teleportAdapter);
     }
 }
