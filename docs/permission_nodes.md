@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Wed May 06 10:21:25 CEST 2026. See authme-tools/src/test/java/tools/docs/permissions/permission_nodes.tpl.md -->
+<!-- File auto-generated on Wed Sep 23 23:24:40 CEST 2026. See authme-tools/src/test/java/tools/docs/permissions/permission_nodes.tpl.md -->
 
 ## AuthMe Permission Nodes
 The following are the permission nodes that are currently supported by the latest dev builds.
@@ -76,9 +76,9 @@ and Paper 1.21 builds.
 - **authme.player.totpadd** – Permission to enable two-factor authentication.
 - **authme.player.totpremove** – Permission to disable two-factor authentication.
 - **authme.player.unregister** – Command permission to unregister.
+- **authme.session.disable** – Disables sessions for the player, requiring authentication on every join.
 - **authme.vip** – When the server is full and someone with this permission joins the server, someone will be kicked.
-
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed May 06 10:21:25 CEST 2026
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Wed Sep 23 23:24:40 CEST 2026

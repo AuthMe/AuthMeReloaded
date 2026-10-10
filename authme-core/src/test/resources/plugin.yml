@@ -342,6 +342,10 @@ permissions:
   authme.player.unregister:
     description: Command permission to unregister.
     default: true
+  authme.session.disable:
+    description: Disables sessions for the player, requiring authentication on every
+      join.
+    default: false
   authme.vip:
     description: When the server is full and someone with this permission joins the
       server, someone will be kicked.
