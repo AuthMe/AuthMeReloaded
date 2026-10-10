@@ -5,6 +5,7 @@ import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.service.CommonService;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
@@ -26,10 +27,12 @@ public class GetEmailCommand implements ExecutableCommand {
         String playerName = arguments.isEmpty() ? sender.getName() : arguments.get(0);
 
         DataSourceValue<String> email = dataSource.getEmail(playerName);
-        if (email.rowExists()) {
-            commonService.send(sender, MessageKey.ADMIN_EMAIL_SHOW, playerName, email.getValue());
-        } else {
+        if (!email.rowExists()) {
             commonService.send(sender, MessageKey.UNKNOWN_USER);
+        } else if (Utils.isEmailEmpty(email.getValue())) {
+            commonService.send(sender, MessageKey.SHOW_NO_EMAIL);
+        } else {
+            commonService.send(sender, MessageKey.ADMIN_EMAIL_SHOW, playerName, email.getValue());
         }
     }
 }

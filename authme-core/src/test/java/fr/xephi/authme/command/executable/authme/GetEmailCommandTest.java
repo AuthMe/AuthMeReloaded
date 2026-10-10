@@ -61,4 +61,18 @@ class GetEmailCommandTest {
         // then
         verify(service).send(eq(sender), eq(MessageKey.ADMIN_EMAIL_SHOW), eq(user), eq(email));
     }
+
+    @Test
+    void shouldReportMissingEmail() {
+        // given
+        String user = "userWithoutEmail";
+        given(dataSource.getEmail(user)).willReturn(DataSourceValueImpl.of(null));
+        CommandSender sender = mock(CommandSender.class);
+
+        // when
+        command.executeCommand(sender, Collections.singletonList(user));
+
+        // then
+        verify(service).send(sender, MessageKey.SHOW_NO_EMAIL);
+    }
 }
