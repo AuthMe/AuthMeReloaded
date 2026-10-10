@@ -2,6 +2,7 @@ package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.message.MessageKey;
+import fr.xephi.authme.platform.TeleportAdapter;
 import fr.xephi.authme.settings.SpawnLoader;
 import org.bukkit.entity.Player;
 
@@ -16,12 +17,15 @@ public class FirstSpawnCommand extends PlayerCommand {
     @Inject
     private SpawnLoader spawnLoader;
 
+    @Inject
+    private TeleportAdapter teleportAdapter;
+
     @Override
     public void runCommand(Player player, List<String> arguments) {
         if (spawnLoader.getFirstSpawn() == null) {
             messages.send(player, MessageKey.FIRST_SPAWN_NOT_DEFINED);
         } else {
-            player.teleport(spawnLoader.getFirstSpawn());
+            teleportAdapter.teleportPlayer(player, spawnLoader.getFirstSpawn());
         }
     }
 }
