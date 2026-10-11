@@ -8,7 +8,7 @@ import com.maxmind.db.CHMCache;
 import com.maxmind.db.Reader.FileMode;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
-import com.maxmind.geoip2.model.AbstractCountryResponse;
+import com.maxmind.geoip2.model.CountryResponse;
 import com.maxmind.geoip2.record.Country;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.initialization.DataFolder;
@@ -293,7 +293,7 @@ public class GeoIpService {
         if (InternetProtocolUtils.isLocalAddress(ip)) {
             return "LOCALHOST";
         }
-        return getCountry(ip).map(Country::getIsoCode).orElse("--");
+        return getCountry(ip).map(Country::isoCode).orElse("--");
     }
 
     /**
@@ -306,7 +306,7 @@ public class GeoIpService {
         if (InternetProtocolUtils.isLocalAddress(ip)) {
             return "LocalHost";
         }
-        return getCountry(ip).map(Country::getName).orElse("N/A");
+        return getCountry(ip).map(Country::name).orElse("N/A");
     }
 
     /**
@@ -330,7 +330,7 @@ public class GeoIpService {
             InetAddress address = InetAddress.getByName(ip);
 
             // Reader.getCountry() can be null for unknown addresses
-            return Optional.ofNullable(databaseReader.country(address)).map(AbstractCountryResponse::getCountry);
+            return Optional.ofNullable(databaseReader.country(address)).map(CountryResponse::country);
         } catch (UnknownHostException e) {
             // Ignore invalid ip addresses
             // Legacy GEO IP Database returned an unknown country object with Country-Code: '--' and Country-Name: 'N/A'
