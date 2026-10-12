@@ -105,7 +105,7 @@
         </dependencies.mockito.javaagent>
         <dependencies.velocity.version>3.4.0</dependencies.velocity.version>
         <dependencies.bungeecord.version>1.21-R0.4</dependencies.bungeecord.version>
-        <dependencies.packetevents.version>2.12.1</dependencies.packetevents.version>
+        <dependencies.packetevents.version>2.14.0</dependencies.packetevents.version>
         <!-- Spigot -->
         <dependencies.spigot.version>1.16.5-R0.1-SNAPSHOT</dependencies.spigot.version>
         <dependencies.log4j-core.version>2.25.4</dependencies.log4j-core.version> <!-- version bundled 1.16.5 -->
