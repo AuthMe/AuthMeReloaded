@@ -5,6 +5,7 @@ import com.velocitypowered.api.event.player.GameProfileRequestEvent;
 import com.velocitypowered.api.proxy.InboundConnection;
 import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.api.util.UuidUtils;
+import net.kyori.adventure.text.Component;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
@@ -32,6 +33,18 @@ class VelocityPremiumVerificationManagerTest {
 
         assertEquals(PreLoginEvent.PreLoginComponentResult.forceOnlineMode().toString(),
             event.getResult().toString());
+    }
+
+    @Test
+    void shouldNotOverrideEarlierDenialWhenForcingOnlineMode() {
+        VelocityPremiumVerificationManager manager = new VelocityPremiumVerificationManager(
+            mock(Logger.class), "alice"::equals, normalizedName -> false, name -> { }, () -> false, name -> false);
+        PreLoginEvent event = new PreLoginEvent(mock(InboundConnection.class), "Alice", null);
+        event.setResult(PreLoginEvent.PreLoginComponentResult.denied(Component.text("Banned")));
+
+        manager.onPreLogin(event);
+
+        assertFalse(event.getResult().isAllowed());
     }
 
     @Test

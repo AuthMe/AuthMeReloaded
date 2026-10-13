@@ -50,6 +50,9 @@ public final class VelocityPremiumVerificationManager {
     }
 
     public void onPreLogin(PreLoginEvent event) {
+        if (!event.getResult().isAllowed()) {
+            return;
+        }
         String normalizedName = normalize(event.getUsername());
         if (isPendingVerification.test(normalizedName) && !pendingVerificationAttempted.add(normalizedName)) {
             // Velocity fires no event when Mojang rejects a forced online-mode login, so a pending
