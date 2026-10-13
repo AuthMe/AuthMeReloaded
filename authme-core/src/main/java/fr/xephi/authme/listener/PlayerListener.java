@@ -180,7 +180,11 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoinLowest(PlayerJoinEvent event) {
-        playerCache.removePlayer(event.getPlayer().getName());
+        Player player = event.getPlayer();
+        playerCache.removePlayer(player.getName());
+        if (!validationService.isUnrestricted(player.getName())) {
+            limboService.revokeOperatorOnJoin(player);
+        }
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -259,6 +263,7 @@ public class PlayerListener implements Listener {
             if (limboService.hasLimboPlayer(player.getName())) {
                 limboService.restoreData(player);
             } else {
+                limboService.restorePendingOperator(player);
                 limboService.restoreSpeedSync(player);
             }
         } finally {

@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -40,6 +41,8 @@ public class LimboService {
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(LimboService.class);
 
     private final Map<String, LimboPlayer> entries = new ConcurrentHashMap<>();
+
+    private final Set<UUID> pendingOperators = ConcurrentHashMap.newKeySet();
 
     @Inject
     private Settings settings;
@@ -90,7 +93,8 @@ public class LimboService {
 
         Location location = teleportationService.consumeOriginalJoinLocation(name, spawnLoader.getPlayerLocationOrSpawn(player));
         LimboPlayer limboPlayer = helper.merge(existingLimbo, limboFromDisk);
-        limboPlayer = helper.merge(helper.createLimboPlayer(player, isRegistered, location), limboPlayer);
+        boolean wasOperator = pendingOperators.remove(player.getUniqueId());
+        limboPlayer = helper.merge(helper.createLimboPlayer(player, isRegistered, location, wasOperator), limboPlayer);
         if (!isRegistered) {
             limboPlayer = helper.withoutOperator(limboPlayer);
         }
@@ -103,6 +107,31 @@ public class LimboService {
             isRegistered ? AuthGroupType.REGISTERED_UNAUTHENTICATED : AuthGroupType.UNREGISTERED);
         entries.put(name, limboPlayer);
         persistence.saveLimboPlayer(player, limboPlayer);
+    }
+
+    /**
+     * Revokes the OP status of a player who has just joined, before any of their packets is handled.
+     * The status is given back by {@link #createLimboPlayer} (kept in the limbo player) or by
+     * {@link #restorePendingOperator}.
+     *
+     * @param player the player who joined
+     */
+    public void revokeOperatorOnJoin(Player player) {
+        if (player.isOp()) {
+            pendingOperators.add(player.getUniqueId());
+            player.setOp(false);
+        }
+    }
+
+    /**
+     * Gives back the OP status revoked by {@link #revokeOperatorOnJoin} when no limbo player took it over.
+     *
+     * @param player the player to restore
+     */
+    public void restorePendingOperator(Player player) {
+        if (pendingOperators.remove(player.getUniqueId())) {
+            player.setOp(true);
+        }
     }
 
     /**

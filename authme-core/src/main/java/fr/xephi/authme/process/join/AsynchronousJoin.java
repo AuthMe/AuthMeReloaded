@@ -244,6 +244,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             }
         } else if (!service.getProperty(RegistrationSettings.FORCE) && pendingRegistration == null) {
             bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player, () -> {
+                limboService.restorePendingOperator(player);
                 welcomeMessageConfiguration.sendWelcomeMessage(player);
             });
 
@@ -301,7 +302,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
 
         bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player, () -> {
             // Guard: proxy login may have completed between when this task was scheduled and now
-            if (playerCache.isAuthenticated(player.getName())) {
+            if (!player.isOnline() || playerCache.isAuthenticated(player.getName())) {
                 return;
             }
             limboService.createLimboPlayer(player, isAuthAvailable);

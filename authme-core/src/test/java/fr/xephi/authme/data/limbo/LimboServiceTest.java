@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -39,6 +40,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -237,6 +239,92 @@ class LimboServiceTest {
 
         // then
         assertThat(limboService.getLimboPlayer("Bobby").getLocation(), equalTo(rememberedJoinLocation));
+    }
+
+    @Test
+    void shouldRevokeOperatorOnJoinAndKeepItInLimboOfRegisteredPlayer() {
+        // given
+        Player player = newPlayer("Bobby", true, 0.2f, false, 0.1f);
+        given(player.isOp()).willReturn(true, false);
+        given(spawnLoader.getPlayerLocationOrSpawn(player)).willReturn(mock(Location.class));
+        given(settings.getProperty(LimboSettings.RESTORE_ALLOW_FLIGHT)).willReturn(AllowFlightRestoreType.ENABLE);
+        given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
+        given(teleportationService.consumeOriginalJoinLocation(anyString(), any(Location.class)))
+            .willAnswer(invocation -> invocation.getArgument(1));
+
+        // when
+        limboService.revokeOperatorOnJoin(player);
+        limboService.createLimboPlayer(player, true);
+        limboService.restorePendingOperator(player);
+
+        // then
+        assertThat(limboService.getLimboPlayer("Bobby").isOperator(), equalTo(true));
+        verify(player, never()).setOp(true);
+    }
+
+    @Test
+    void shouldNotKeepRevokedOperatorInLimboOfUnregisteredPlayer() {
+        // given
+        Player player = newPlayer("Bobby", true, 0.2f, false, 0.1f);
+        given(player.isOp()).willReturn(true, false);
+        given(spawnLoader.getPlayerLocationOrSpawn(player)).willReturn(mock(Location.class));
+        given(settings.getProperty(LimboSettings.RESTORE_ALLOW_FLIGHT)).willReturn(AllowFlightRestoreType.ENABLE);
+        given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
+        given(teleportationService.consumeOriginalJoinLocation(anyString(), any(Location.class)))
+            .willAnswer(invocation -> invocation.getArgument(1));
+
+        // when
+        limboService.revokeOperatorOnJoin(player);
+        limboService.createLimboPlayer(player, false);
+        limboService.restorePendingOperator(player);
+
+        // then
+        assertThat(limboService.getLimboPlayer("Bobby").isOperator(), equalTo(false));
+        verify(player, never()).setOp(true);
+    }
+
+    @Test
+    void shouldRestoreRevokedOperatorOnce() {
+        // given
+        Player player = newPlayer("Bobby", true, 0.2f, false, 0.1f);
+
+        // when
+        limboService.revokeOperatorOnJoin(player);
+        limboService.restorePendingOperator(player);
+        limboService.restorePendingOperator(player);
+
+        // then
+        verify(player).setOp(false);
+        verify(player).setOp(true);
+    }
+
+    @Test
+    void shouldNotRevokeOperatorOfNonOperator() {
+        // given
+        Player player = newPlayer("Bobby", false, 0.2f, false, 0.1f);
+
+        // when
+        limboService.revokeOperatorOnJoin(player);
+        limboService.restorePendingOperator(player);
+
+        // then
+        verify(player, never()).setOp(anyBoolean());
+    }
+
+    @Test
+    void shouldNotRestoreRevokedOperatorToOtherCaseOfName() {
+        // given
+        Player admin = newPlayer("Admin", true, 0.2f, false, 0.1f);
+        Player impostor = newPlayer("admin", false, 0.2f, false, 0.1f);
+
+        // when
+        limboService.revokeOperatorOnJoin(admin);
+        limboService.restorePendingOperator(impostor);
+        limboService.restorePendingOperator(admin);
+
+        // then
+        verify(impostor, never()).setOp(anyBoolean());
+        verify(admin).setOp(true);
     }
 
     @Test
@@ -520,6 +608,8 @@ class LimboServiceTest {
     private static Player newPlayer(String name) {
         Player player = mock(Player.class);
         lenient().when(player.getName()).thenReturn(name);
+        lenient().when(player.getUniqueId())
+            .thenReturn(UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8)));
         return player;
     }
 

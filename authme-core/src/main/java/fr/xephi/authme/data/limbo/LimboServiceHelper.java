@@ -42,11 +42,12 @@ class LimboServiceHelper {
      * @param player       the player to process
      * @param isRegistered whether the player is registered
      * @param location     the player location
+     * @param wasOperator  whether the player's OP status was revoked when joining
      * @return limbo player with the player's data
      */
-    LimboPlayer createLimboPlayer(Player player, boolean isRegistered, Location location) {
+    LimboPlayer createLimboPlayer(Player player, boolean isRegistered, Location location, boolean wasOperator) {
         // For safety reasons an unregistered player should not have OP status after registration
-        boolean isOperator = isRegistered && player.isOp();
+        boolean isOperator = isRegistered && (wasOperator || player.isOp());
         boolean flyEnabled = player.getAllowFlight();
         float walkSpeed = player.getWalkSpeed();
         if (walkSpeed <= 0.01f) {

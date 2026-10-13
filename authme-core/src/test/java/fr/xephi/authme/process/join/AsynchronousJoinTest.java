@@ -48,6 +48,7 @@ import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceTo
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskOptionallyAsync;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -380,6 +381,40 @@ public class AsynchronousJoinTest {
         // then
         verify(limboService).createLimboPlayer(player, true);
         verify(dialogAdapter, never()).showLoginDialog(eq(player), any(DialogWindowSpec.class));
+    }
+
+    @Test
+    public void shouldNotCreateLimboForPlayerWhoQuitBeforeSyncTaskRuns() {
+        // given
+        Player player = mockPlayer("Bobby");
+        setUpRegisteredJoin(player);
+        given(player.isOnline()).willReturn(false);
+
+        // when
+        asynchronousJoin.processJoin(player);
+
+        // then
+        verify(limboService, never()).createLimboPlayer(eq(player), anyBoolean());
+    }
+
+    @Test
+    public void shouldRestoreOperatorOfUnregisteredPlayerWhenRegistrationIsOptional() {
+        // given
+        Player player = mockPlayer("Bobby");
+        given(validationService.fulfillsNameRestrictions(player)).willReturn(true);
+        given(service.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(Set.of());
+        given(service.getProperty(RestrictionSettings.FORCE_SURVIVAL_MODE)).willReturn(false);
+        given(service.getProperty(HooksSettings.DISABLE_SOCIAL_SPY)).willReturn(false);
+        given(service.getProperty(RestrictionSettings.MAX_JOIN_PER_IP)).willReturn(0);
+        given(database.isAuthAvailable("bobby")).willReturn(false);
+        given(service.getProperty(RegistrationSettings.FORCE)).willReturn(false);
+
+        // when
+        asynchronousJoin.processJoin(player);
+
+        // then
+        verify(limboService).restorePendingOperator(player);
+        verify(limboService, never()).createLimboPlayer(eq(player), anyBoolean());
     }
 
     private void givenPendingDialogState(PreJoinDialogService.PendingDialogState state) {

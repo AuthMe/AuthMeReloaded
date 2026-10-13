@@ -782,6 +782,34 @@ class PlayerListenerTest {
     }
 
     @Test
+    void shouldRevokeOperatorOnJoin() {
+        // given
+        Player player = mockPlayerWithName("Bobby");
+        given(validationService.isUnrestricted("Bobby")).willReturn(false);
+        PlayerJoinEvent event = new PlayerJoinEvent(player, "join message");
+
+        // when
+        listener.onPlayerJoinLowest(event);
+
+        // then
+        verify(limboService).revokeOperatorOnJoin(player);
+    }
+
+    @Test
+    void shouldNotRevokeOperatorOfUnrestrictedPlayerOnJoin() {
+        // given
+        Player player = mockPlayerWithName("Bobby");
+        given(validationService.isUnrestricted("Bobby")).willReturn(true);
+        PlayerJoinEvent event = new PlayerJoinEvent(player, "join message");
+
+        // when
+        listener.onPlayerJoinLowest(event);
+
+        // then
+        verify(limboService, never()).revokeOperatorOnJoin(player);
+    }
+
+    @Test
     void shouldPerformAllJoinVerificationsSuccessfullyPreLoginLowest() throws FailedVerificationException {
         // given
         String name = "someone";
@@ -962,6 +990,26 @@ class PlayerListenerTest {
         // then
         verify(limboService).restoreData(player);
         verify(limboService, never()).restoreSpeedSync(player);
+        verify(management).performQuit(player);
+    }
+
+    @Test
+    void shouldRestoreRevokedOperatorOnQuitOfPlayerWithoutLimbo() {
+        // given
+        Player player = mockPlayerWithName("Bobby");
+        given(settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)).willReturn(false);
+        given(settings.getProperty(RegistrationSettings.REMOVE_UNLOGGED_LEAVE_MESSAGE)).willReturn(false);
+        given(listenerService.shouldCancelEvent(player)).willReturn(true);
+        given(limboService.hasLimboPlayer("Bobby")).willReturn(false);
+        PlayerQuitEvent event = new PlayerQuitEvent(player, "quit");
+
+        // when
+        listener.onPlayerQuit(event);
+
+        // then
+        verify(limboService).restorePendingOperator(player);
+        verify(limboService).restoreSpeedSync(player);
+        verify(limboService, never()).restoreData(player);
         verify(management).performQuit(player);
     }
 

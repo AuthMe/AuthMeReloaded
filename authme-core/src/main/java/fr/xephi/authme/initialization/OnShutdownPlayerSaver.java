@@ -65,6 +65,7 @@ public class OnShutdownPlayerSaver {
             if (limboService.hasLimboPlayer(name)) {
                 limboService.restoreData(player);
             } else {
+                limboService.restorePendingOperator(player);
                 saveLoggedinPlayer(player);
             }
         } finally {

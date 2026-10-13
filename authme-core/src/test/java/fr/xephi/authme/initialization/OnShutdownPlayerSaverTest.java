@@ -8,6 +8,7 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.ValidationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
+import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Locale;
 
 import static org.mockito.BDDMockito.given;
@@ -69,6 +71,22 @@ class OnShutdownPlayerSaverTest {
         verify(playerCache).removePlayer("failing");
         verify(limboService).restoreData(other);
         verify(playerCache).removePlayer("other");
+    }
+
+    @Test
+    void shouldRestoreRevokedOperatorOfPlayerWithoutLimbo() {
+        // given
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn("Bobby");
+        doReturn(Collections.singletonList(player)).when(bukkitService).getOnlinePlayers();
+        given(settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)).willReturn(false);
+
+        // when
+        onShutdownPlayerSaver.saveAllPlayers();
+
+        // then
+        verify(limboService).restorePendingOperator(player);
+        verify(playerCache).removePlayer("bobby");
     }
 
     private Player mockPlayerInLimbo(String name) {

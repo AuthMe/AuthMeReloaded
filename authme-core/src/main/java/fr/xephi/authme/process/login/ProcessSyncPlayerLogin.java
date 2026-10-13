@@ -116,6 +116,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
             limboService.restoreEntities(player);
             limboService.restoreData(player);
         } else {
+            limboService.restorePendingOperator(player);
             limboService.restoreSpeedsForAutoLogin(player);
         }
 
