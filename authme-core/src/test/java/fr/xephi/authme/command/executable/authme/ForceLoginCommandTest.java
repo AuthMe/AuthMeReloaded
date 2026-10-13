@@ -53,6 +53,8 @@ class ForceLoginCommandTest {
         String playerName = "Bobby";
         Player player = mockPlayer(false);
         given(bukkitService.getPlayerExact(playerName)).willReturn(player);
+        given(permissionsManager.hasPermissionOffline(playerName, PlayerPermission.CAN_LOGIN_BE_FORCED))
+            .willReturn(true);
         CommandSender sender = mock(CommandSender.class);
 
         // when
@@ -69,6 +71,8 @@ class ForceLoginCommandTest {
         // given
         String playerName = "us3rname01";
         given(bukkitService.getPlayerExact(playerName)).willReturn(null);
+        given(permissionsManager.hasPermissionOffline(playerName, PlayerPermission.CAN_LOGIN_BE_FORCED))
+            .willReturn(true);
         CommandSender sender = mock(CommandSender.class);
 
         // when
@@ -140,6 +144,8 @@ class ForceLoginCommandTest {
         // given
         String playerName = "Connor";
         given(bukkitService.getPlayerExact(playerName)).willReturn(null);
+        given(permissionsManager.hasPermissionOffline(playerName, PlayerPermission.CAN_LOGIN_BE_FORCED))
+            .willReturn(true);
         given(preJoinDialogService.approvePreJoinForceLogin("connor")).willReturn(true);
         CommandSender sender = mock(CommandSender.class);
 
@@ -153,10 +159,29 @@ class ForceLoginCommandTest {
     }
 
     @Test
+    void shouldNotForceLoginPlayerInPreJoinDialogWithoutPermission() {
+        // given
+        String playerName = "Connor";
+        given(bukkitService.getPlayerExact(playerName)).willReturn(null);
+        given(permissionsManager.hasPermissionOffline(playerName, PlayerPermission.CAN_LOGIN_BE_FORCED))
+            .willReturn(false);
+        CommandSender sender = mock(CommandSender.class);
+
+        // when
+        command.executeCommand(sender, Collections.singletonList(playerName));
+
+        // then
+        verify(messages).send(eq(sender), eq(MessageKey.FORCE_LOGIN_FORBIDDEN), eq(playerName));
+        verifyNoInteractions(preJoinDialogService, management);
+    }
+
+    @Test
     void shouldSendOfflineMessageWhenPlayerNotFoundAndNoPreJoinDialog() {
         // given
         String playerName = "NotConnecting";
         given(bukkitService.getPlayerExact(playerName)).willReturn(null);
+        given(permissionsManager.hasPermissionOffline(playerName, PlayerPermission.CAN_LOGIN_BE_FORCED))
+            .willReturn(true);
         given(preJoinDialogService.approvePreJoinForceLogin("notconnecting")).willReturn(false);
         CommandSender sender = mock(CommandSender.class);
 

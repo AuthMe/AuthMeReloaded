@@ -45,7 +45,9 @@ public class ForceLoginCommand implements ExecutableCommand {
             // Player may be blocked in the pre-join dialog (Paper/Folia configuration phase).
             // Approving the force-login completes the blocking future so the player proceeds to
             // PLAY state, where AsynchronousJoin will call forceLogin() on their behalf.
-            if (preJoinDialogService.approvePreJoinForceLogin(playerName.toLowerCase(Locale.ROOT))) {
+            if (!permissionsManager.hasPermissionOffline(playerName, CAN_LOGIN_BE_FORCED)) {
+                messages.send(sender, MessageKey.FORCE_LOGIN_FORBIDDEN, playerName);
+            } else if (preJoinDialogService.approvePreJoinForceLogin(playerName.toLowerCase(Locale.ROOT))) {
                 messages.send(sender, MessageKey.FORCE_LOGIN_SUCCESS, playerName);
             } else {
                 messages.send(sender, MessageKey.FORCE_LOGIN_PLAYER_OFFLINE);
