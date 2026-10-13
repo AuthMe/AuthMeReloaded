@@ -60,8 +60,8 @@ class TempbanManagerTest {
 
         // then
         assertThat(manager.shouldTempban(address), equalTo(false));
-        assertHasCount(manager, address, "Bob", 1);
-        assertHasCount(manager, address, "Todd", 1);
+        assertHasCount(manager, address, "bob", 1);
+        assertHasCount(manager, address, "todd", 1);
         manager.increaseCount(address, "Bob");
         assertThat(manager.shouldTempban(address), equalTo(true));
         assertThat(manager.shouldTempban("10.0.0.1"), equalTo(false));
@@ -88,6 +88,22 @@ class TempbanManagerTest {
 
         // then 2
         assertThat(manager.shouldTempban(address), equalTo(false));
+        assertHasNoEntries(manager, address);
+    }
+
+    @Test
+    void shouldResetCountRegardlessOfNameCase() {
+        // given
+        String address = "192.168.1.4";
+        Settings settings = mockSettings(3, 60, "");
+        TempbanManager manager = new TempbanManager(bukkitService, messages, settings);
+        manager.increaseCount(address, "bobby");
+        manager.increaseCount(address, "bobby");
+
+        // when
+        manager.resetCount(address, "Bobby");
+
+        // then
         assertHasNoEntries(manager, address);
     }
 

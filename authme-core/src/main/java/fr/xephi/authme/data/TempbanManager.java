@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -52,7 +53,7 @@ public class TempbanManager implements SettingsDependent, HasCleanup {
         if (isEnabled) {
             TimedCounter<String> countsByName = ipLoginFailureCounts.computeIfAbsent(
                 address, k -> new TimedCounter<>(resetThreshold, TimeUnit.MINUTES));
-            countsByName.increment(name);
+            countsByName.increment(name.toLowerCase(Locale.ROOT));
         }
     }
 
@@ -66,7 +67,7 @@ public class TempbanManager implements SettingsDependent, HasCleanup {
         if (isEnabled) {
             TimedCounter<String> counter = ipLoginFailureCounts.get(address);
             if (counter != null) {
-                counter.remove(name);
+                counter.remove(name.toLowerCase(Locale.ROOT));
             }
         }
     }
