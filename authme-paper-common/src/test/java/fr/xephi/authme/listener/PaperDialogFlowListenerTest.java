@@ -226,6 +226,63 @@ public class PaperDialogFlowListenerTest {
     }
 
     @Test
+    public void shouldKickWhenPreJoinRecoveryIsSubmittedWithoutEmailAndSettingEnabled() throws Exception {
+        PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        CommonService commonService = mock(CommonService.class);
+        Messages messages = mock(Messages.class);
+        PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
+        setField(listener, "commonService", commonService);
+        setField(listener, "messages", messages);
+        setField(listener, "preJoinDialogService", preJoinDialogService);
+        given(commonService.getProperty(RegistrationSettings.PRE_JOIN_LOGIN_CANCEL_KICKS)).willReturn(true);
+        given(messages.retrieveSingle("Bobby", MessageKey.DIALOG_LOGIN_CANCELED)).willReturn("Canceled!");
+
+        CompletableFuture<String> future = new CompletableFuture<>();
+        PlayerConfigurationConnection connection = mockConnection("Bobby");
+        seedSession(listener, connection, "pendingLoginResponses", future);
+
+        listener.onPlayerCustomClick(recoverySubmitEvent(connection, " "));
+
+        assertThat(future.getNow("sentinel"), is("Canceled!"));
+        verify(preJoinDialogService, never()).storePendingRecoveryEmail(anyLong(), anyString());
+    }
+
+    @Test
+    public void shouldFallbackToPostJoinDialogWhenPreJoinRecoveryIsSubmittedWithoutEmail() throws Exception {
+        PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        CommonService commonService = mock(CommonService.class);
+        PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
+        setField(listener, "commonService", commonService);
+        setField(listener, "preJoinDialogService", preJoinDialogService);
+        given(commonService.getProperty(RegistrationSettings.PRE_JOIN_LOGIN_CANCEL_KICKS)).willReturn(false);
+
+        CompletableFuture<String> future = new CompletableFuture<>();
+        PlayerConfigurationConnection connection = mockConnection("Bobby");
+        seedSession(listener, connection, "pendingLoginResponses", future);
+
+        listener.onPlayerCustomClick(recoverySubmitEvent(connection, null));
+
+        assertThat(future.getNow("sentinel"), is((String) null));
+        verify(preJoinDialogService, never()).storePendingRecoveryEmail(anyLong(), anyString());
+    }
+
+    @Test
+    public void shouldStoreRecoveryEmailSubmittedInPreJoinDialog() throws Exception {
+        PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
+        setField(listener, "preJoinDialogService", preJoinDialogService);
+
+        CompletableFuture<String> future = new CompletableFuture<>();
+        PlayerConfigurationConnection connection = mockConnection("Bobby");
+        seedSession(listener, connection, "pendingLoginResponses", future);
+
+        listener.onPlayerCustomClick(recoverySubmitEvent(connection, "bobby@example.org"));
+
+        verify(preJoinDialogService).storePendingRecoveryEmail(SESSION_ID, "bobby@example.org");
+        assertThat(future.getNow("sentinel"), is((String) null));
+    }
+
+    @Test
     public void shouldFallbackToPostJoinDialogWhenPreJoinRegisterIsCancelled() throws Exception {
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
         CommonService commonService = mock(CommonService.class);
@@ -714,6 +771,17 @@ public class PaperDialogFlowListenerTest {
             PlayerConfigurationConnection.class, long.class, String.class, Dialog.class);
         method.setAccessible(true);
         method.invoke(listener, connection, SESSION_ID, "Bobby", null);
+    }
+
+    private static PlayerCustomClickEvent recoverySubmitEvent(PlayerConfigurationConnection connection,
+                                                              String email) {
+        DialogResponseView responseView = mock(DialogResponseView.class);
+        given(responseView.getText("email")).willReturn(email);
+        PlayerCustomClickEvent event = mock(PlayerCustomClickEvent.class);
+        given(event.getCommonConnection()).willReturn(connection);
+        given(event.getIdentifier()).willReturn(PaperDialogActionKeys.PRE_JOIN_RECOVERY_SUBMIT);
+        given(event.getDialogResponseView()).willReturn(responseView);
+        return event;
     }
 
     private static PlayerConfigurationConnection mockConnection(String playerName) {

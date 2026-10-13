@@ -174,7 +174,7 @@ public class PaperDialogFlowListener implements Listener {
         }
 
         if (PaperDialogActionKeys.PRE_JOIN_RECOVERY_SUBMIT.equals(event.getIdentifier())) {
-            processPreJoinRecoverySubmit(sessionId, event.getDialogResponseView());
+            processPreJoinRecoverySubmit(sessionId, playerName, event.getDialogResponseView());
             return;
         }
 
@@ -316,11 +316,17 @@ public class PaperDialogFlowListener implements Listener {
         connection.getAudience().showDialog(PaperDialogHelper.createPreJoinRecoveryDialog(recoverySpec));
     }
 
-    private void processPreJoinRecoverySubmit(long sessionId, DialogResponseView dialogResponseView) {
+    private void processPreJoinRecoverySubmit(long sessionId, String playerName,
+                                              DialogResponseView dialogResponseView) {
         String email = dialogResponseView == null ? null : dialogResponseView.getText("email");
-        if (email != null && !email.isBlank()) {
-            preJoinDialogService.storePendingRecoveryEmail(sessionId, email);
+        if (email == null || email.isBlank()) {
+            String kickMessage = commonService.getProperty(RegistrationSettings.PRE_JOIN_LOGIN_CANCEL_KICKS)
+                ? messages.retrieveSingle(playerName, MessageKey.DIALOG_LOGIN_CANCELED)
+                : null;
+            completeLoginResponse(sessionId, kickMessage);
+            return;
         }
+        preJoinDialogService.storePendingRecoveryEmail(sessionId, email);
         // Let the player join; AsynchronousJoin will execute the recovery and kick on failure
         completeLoginResponse(sessionId, null);
     }
