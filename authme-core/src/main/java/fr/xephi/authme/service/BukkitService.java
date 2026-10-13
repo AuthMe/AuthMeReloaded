@@ -429,12 +429,17 @@ public class BukkitService implements SettingsDependent {
 
     /**
      * Dispatches a command to be run as console user on this server, and executes it if found.
+     * When not called from the global thread, the command is run later on the global thread.
      *
      * @param commandLine the command + arguments. Example: <code>test abc 123</code>
-     * @return returns false if no target is found
+     * @return false if no target is found (always true when the command is run later)
      */
     public boolean dispatchConsoleCommand(String commandLine) {
-        return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), commandLine);
+        if (schedulingAdapter.isGlobalThread()) {
+            return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), commandLine);
+        }
+        runOnGlobalRegion(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), commandLine));
+        return true;
     }
 
     @Override

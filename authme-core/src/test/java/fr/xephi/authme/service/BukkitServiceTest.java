@@ -26,9 +26,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -79,6 +82,7 @@ class BukkitServiceTest {
         // given
         ConsoleCommandSender consoleSender = mock(ConsoleCommandSender.class);
         given(server.getConsoleSender()).willReturn(consoleSender);
+        given(schedulingAdapter.isGlobalThread()).willReturn(true);
         String command = "my command";
 
         // when
@@ -86,6 +90,19 @@ class BukkitServiceTest {
 
         // then
         verify(server).dispatchCommand(consoleSender, command);
+    }
+
+    @Test
+    void shouldDispatchConsoleCommandOnGlobalThread() {
+        // given
+        given(schedulingAdapter.isGlobalThread()).willReturn(false);
+
+        // when
+        bukkitService.dispatchConsoleCommand("my command");
+
+        // then
+        verify(schedulingAdapter).runOnGlobalThread(eq(authMe), any(Runnable.class));
+        verify(server, never()).dispatchCommand(any(), any());
     }
 
     @Test
