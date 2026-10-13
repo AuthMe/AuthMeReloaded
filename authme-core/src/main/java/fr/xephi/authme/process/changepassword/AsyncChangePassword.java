@@ -56,7 +56,7 @@ public class AsyncChangePassword implements AsynchronousProcess {
 
             // TODO: send an update when a messaging service will be implemented (PASSWORD_CHANGED)
 
-            playerCache.updatePlayer(auth);
+            playerCache.updatePlayerIfPresent(auth);
             commonService.send(player, MessageKey.PASSWORD_CHANGED_SUCCESS);
             logger.info(player.getName() + " changed his password");
         } else {

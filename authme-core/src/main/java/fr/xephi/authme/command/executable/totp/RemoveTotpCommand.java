@@ -52,7 +52,7 @@ public class RemoveTotpCommand extends PlayerCommand {
     private void removeTotpKeyFromDatabase(Player player, PlayerAuth auth) {
         if (dataSource.removeTotpKey(auth.getNickname())) {
             auth.setTotpKey(null);
-            playerCache.updatePlayer(auth);
+            playerCache.updatePlayerIfPresent(auth);
             messages.send(player, MessageKey.TWO_FACTOR_REMOVED_SUCCESS);
             logger.info("Player '" + player.getName() + "' removed their TOTP key");
         } else {

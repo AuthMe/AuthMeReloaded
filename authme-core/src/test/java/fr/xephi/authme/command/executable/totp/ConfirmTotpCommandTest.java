@@ -76,7 +76,7 @@ public class ConfirmTotpCommandTest {
         verify(generateTotpService).isTotpCodeCorrectForGeneratedTotpKey(player, totpCode);
         verify(generateTotpService).removeGenerateTotpKey(player);
         verify(dataSource).setTotpKey(playerName, generatedTotpKey);
-        verify(playerCache).updatePlayer(auth);
+        verify(playerCache).updatePlayerIfPresent(auth);
         verify(messages).send(player, MessageKey.TWO_FACTOR_ENABLE_SUCCESS);
         assertThat(auth.getTotpKey(), equalTo(generatedTotpKey));
     }

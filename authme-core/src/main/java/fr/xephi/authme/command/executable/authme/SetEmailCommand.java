@@ -66,9 +66,7 @@ public class SetEmailCommand implements ExecutableCommand {
                 }
 
                 // Update the player cache
-                if (playerCache.getAuth(playerName) != null) {
-                    playerCache.updatePlayer(auth);
-                }
+                playerCache.updatePlayerIfPresent(auth);
 
                 // Show a status message
                 commonService.send(sender, MessageKey.EMAIL_CHANGED_SUCCESS);

@@ -25,6 +25,15 @@ public class PlayerCache {
     }
 
     /**
+     * Replaces the auth object of a player already in the cache, without adding a player who is not.
+     *
+     * @param auth the player auth object to save
+     */
+    public void updatePlayerIfPresent(PlayerAuth auth) {
+        cache.computeIfPresent(auth.getNickname().toLowerCase(Locale.ROOT), (name, cachedAuth) -> auth);
+    }
+
+    /**
      * Removes a player from the player cache.
      *
      * @param user name of the player to remove

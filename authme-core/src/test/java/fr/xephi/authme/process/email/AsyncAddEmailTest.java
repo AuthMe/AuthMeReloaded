@@ -95,7 +95,7 @@ class AsyncAddEmailTest {
         verify(dataSource).updateEmail(auth);
         verify(service).send(player, MessageKey.EMAIL_ADDED_SUCCESS);
         verify(auth).setEmail(email);
-        verify(playerCache).updatePlayer(auth);
+        verify(playerCache).updatePlayerIfPresent(auth);
     }
 
     @Test
@@ -161,7 +161,7 @@ class AsyncAddEmailTest {
 
         // then
         verify(service).send(player, MessageKey.USAGE_CHANGE_EMAIL);
-        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
+        verify(playerCache, never()).updatePlayerIfPresent(any(PlayerAuth.class));
     }
 
     @Test
@@ -180,7 +180,7 @@ class AsyncAddEmailTest {
 
         // then
         verify(service).send(player, MessageKey.INVALID_EMAIL);
-        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
+        verify(playerCache, never()).updatePlayerIfPresent(any(PlayerAuth.class));
     }
 
     @Test
@@ -200,7 +200,7 @@ class AsyncAddEmailTest {
 
         // then
         verify(service).send(player, MessageKey.EMAIL_ALREADY_USED_ERROR);
-        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
+        verify(playerCache, never()).updatePlayerIfPresent(any(PlayerAuth.class));
     }
 
     @Test
@@ -215,7 +215,7 @@ class AsyncAddEmailTest {
 
         // then
         verify(service).send(player, MessageKey.LOGIN_MESSAGE);
-        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
+        verify(playerCache, never()).updatePlayerIfPresent(any(PlayerAuth.class));
     }
 
     @Test
@@ -230,7 +230,7 @@ class AsyncAddEmailTest {
 
         // then
         verify(service).send(player, MessageKey.REGISTER_MESSAGE);
-        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
+        verify(playerCache, never()).updatePlayerIfPresent(any(PlayerAuth.class));
     }
 
     @Test
@@ -253,7 +253,7 @@ class AsyncAddEmailTest {
 
         // then
         verify(service).send(player, MessageKey.EMAIL_ADD_NOT_ALLOWED);
-        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
+        verify(playerCache, never()).updatePlayerIfPresent(any(PlayerAuth.class));
     }
 
 }

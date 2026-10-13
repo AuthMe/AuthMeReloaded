@@ -2,6 +2,7 @@ package fr.xephi.authme.listener;
 
 import fr.xephi.authme.data.QuickCommandsProtectionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
@@ -139,6 +140,8 @@ class PlayerListenerTest {
     private ChatAdapter chatAdapter;
     @Mock
     private TeleportAdapter teleportAdapter;
+    @Mock
+    private PlayerCache playerCache;
 
     @AfterEach
     void resetSpawnLocationTracker() throws ReflectiveOperationException {
@@ -798,7 +801,25 @@ class PlayerListenerTest {
         verify(onJoinVerifier).checkAntibot(name, true);
         verify(onJoinVerifier).checkNameCasing(name, auth);
         verify(onJoinVerifier).checkPlayerCountry(name, ip, true);
+        verify(playerCache).removePlayer(name);
         verifyNoModifyingCalls(preLoginEvent);
+    }
+
+    @Test
+    void shouldKeepCachedLoginOnPreLoginWhenPlayerWithNameIsOnline() {
+        // given
+        String name = "someone";
+        UUID uniqueId = UUID.fromString("753493c9-33ba-4a4a-bf61-1bce9d3c9a71");
+        AsyncPlayerPreLoginEvent preLoginEvent = spy(
+            new AsyncPlayerPreLoginEvent(name, createInetAddress("12.34.56.78"), uniqueId));
+        given(validationService.isUnrestricted(name)).willReturn(false);
+        given(bukkitService.getPlayerExact(name)).willReturn(mock(Player.class));
+
+        // when
+        listener.onAsyncPlayerPreLoginEventHighest(preLoginEvent);
+
+        // then
+        verify(playerCache, never()).removePlayer(anyString());
     }
 
     @Test

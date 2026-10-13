@@ -2,6 +2,7 @@ package fr.xephi.authme.listener;
 
 import fr.xephi.authme.data.QuickCommandsProtectionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.data.limbo.EnderPearlRestoreData;
 import fr.xephi.authme.data.limbo.LimboService;
 import fr.xephi.authme.datasource.DataSource;
@@ -106,6 +107,8 @@ public class PlayerListener implements Listener {
     private ChatAdapter chatAdapter;
     @Inject
     private TeleportAdapter teleportAdapter;
+    @Inject
+    private PlayerCache playerCache;
 
     // Lowest priority to apply fast protection checks
     @EventHandler(priority = EventPriority.LOWEST)
@@ -151,6 +154,10 @@ public class PlayerListener implements Listener {
 
         if (validationService.isUnrestricted(name)) {
             return;
+        }
+
+        if (bukkitService.getPlayerExact(name) == null) {
+            playerCache.removePlayer(name);
         }
 
         // Slow, blocking checks

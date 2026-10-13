@@ -65,7 +65,7 @@ public class ConfirmTotpCommand extends PlayerCommand {
         if (dataSource.setTotpKey(player.getName(), totpDetails.getTotpKey())) {
             messages.send(player, MessageKey.TWO_FACTOR_ENABLE_SUCCESS);
             auth.setTotpKey(totpDetails.getTotpKey());
-            playerCache.updatePlayer(auth);
+            playerCache.updatePlayerIfPresent(auth);
             logger.info("Player '" + player.getName() + "' has successfully added a TOTP key to their account");
         } else {
             messages.send(player, MessageKey.ERROR);

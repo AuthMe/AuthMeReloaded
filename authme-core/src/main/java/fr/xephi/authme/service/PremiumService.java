@@ -130,7 +130,7 @@ public class PremiumService implements HasCleanup {
         String playerName = player.getName();
         bukkitService.runTaskOptionallyAsync(() -> {
             if (dataSource.updatePremiumUuid(auth)) {
-                playerCache.updatePlayer(auth);
+                playerCache.updatePlayerIfPresent(auth);
                 bungeeSender.sendPremiumUnset(playerName);
                 messages.send(player, MessageKey.PREMIUM_DISABLE_SUCCESS);
             } else {
@@ -190,7 +190,7 @@ public class PremiumService implements HasCleanup {
                     && mojangUuid.get().equals(onlinePlayer.getUniqueId())) {
                 auth.setPremiumUuid(mojangUuid.get());
                 if (dataSource.updatePremiumUuid(auth)) {
-                    playerCache.updatePlayer(auth);
+                    playerCache.updatePlayerIfPresent(auth);
                     bungeeSender.sendPremiumSet(playerName);
                     messages.send(sender, MessageKey.PREMIUM_ADMIN_ENABLE_SUCCESS, playerName);
                 } else {
@@ -245,9 +245,7 @@ public class PremiumService implements HasCleanup {
             }
 
             bungeeSender.sendPremiumUnset(playerName);
-            if (playerCache.isAuthenticated(playerName)) {
-                playerCache.updatePlayer(auth);
-            }
+            playerCache.updatePlayerIfPresent(auth);
 
             Player onlinePlayer = bukkitService.getPlayerExact(playerName);
             if (onlinePlayer != null) {
@@ -298,7 +296,7 @@ public class PremiumService implements HasCleanup {
         auth.setPremiumUuid(uuid);
         if (dataSource.updatePremiumUuid(auth)) {
             if (updateCache) {
-                playerCache.updatePlayer(auth);
+                playerCache.updatePlayerIfPresent(auth);
             }
             bungeeSender.sendPremiumSet(playerName);
             messages.send(feedbackTarget, MessageKey.PREMIUM_ENABLE_SUCCESS);

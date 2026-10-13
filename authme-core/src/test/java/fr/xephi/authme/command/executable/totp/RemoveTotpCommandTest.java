@@ -68,7 +68,7 @@ public class RemoveTotpCommandTest {
         // then
         verify(dataSource).removeTotpKey(name);
         verify(messages, only()).send(player, MessageKey.TWO_FACTOR_REMOVED_SUCCESS);
-        verify(playerCache).updatePlayer(auth);
+        verify(playerCache).updatePlayerIfPresent(auth);
         assertThat(auth.getTotpKey(), nullValue());
     }
 

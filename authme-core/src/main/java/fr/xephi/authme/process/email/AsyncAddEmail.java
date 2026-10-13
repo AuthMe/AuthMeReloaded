@@ -105,7 +105,7 @@ public class AsyncAddEmail implements AsynchronousProcess {
     private void saveEmailDirectly(PlayerAuth auth, Player player, String email) {
         auth.setEmail(email);
         if (dataSource.updateEmail(auth)) {
-            playerCache.updatePlayer(auth);
+            playerCache.updatePlayerIfPresent(auth);
             service.send(player, MessageKey.EMAIL_ADDED_SUCCESS);
         } else {
             logger.warning("Could not save email for player '" + player + "'");

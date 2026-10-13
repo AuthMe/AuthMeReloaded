@@ -347,6 +347,14 @@ public class AsynchronousLogin implements AsynchronousProcess {
             dataSource.setLogged(name);
             sessionService.grantSession(name);
 
+            if (!player.isOnline()) {
+                playerCache.removePlayer(name);
+                dataSource.setUnlogged(name);
+                sessionService.revokeSession(name);
+                logger.warning("Player '" + name + "' quit during the login process, login reverted");
+                return;
+            }
+
             if (bungeeSender.isEnabled()) {
                 // As described at https://www.spigotmc.org/wiki/bukkit-bungee-plugin-messaging-channel/
                 // "Keep in mind that you can't send plugin messages directly after a player joins."

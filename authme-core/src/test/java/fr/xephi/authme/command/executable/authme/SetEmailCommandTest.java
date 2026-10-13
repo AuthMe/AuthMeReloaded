@@ -17,10 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Arrays;
 
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskOptionallyAsync;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -136,33 +134,6 @@ class SetEmailCommandTest {
     }
 
     @Test
-    void shouldUpdateEmail() {
-        // given
-        String user = "Bobby";
-        String email = "new-addr@example.org";
-        given(validationService.validateEmail(email)).willReturn(true);
-        PlayerAuth auth = mock(PlayerAuth.class);
-        given(dataSource.getAuth(user)).willReturn(auth);
-        CommandSender sender = mock(CommandSender.class);
-        given(validationService.isEmailFreeForRegistration(email, sender)).willReturn(true);
-        given(dataSource.updateEmail(auth)).willReturn(true);
-        given(playerCache.getAuth(user)).willReturn(null);
-        setBukkitServiceToRunTaskOptionallyAsync(bukkitService);
-
-        // when
-        command.executeCommand(sender, Arrays.asList(user, email));
-
-        // then
-        verify(validationService).validateEmail(email);
-        verify(dataSource).getAuth(user);
-        verify(validationService).isEmailFreeForRegistration(email, sender);
-        verify(commandService).send(sender, MessageKey.EMAIL_CHANGED_SUCCESS);
-        verify(dataSource).updateEmail(auth);
-        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
-        verifyNoMoreInteractions(dataSource);
-    }
-
-    @Test
     void shouldUpdateEmailAndPlayerCache() {
         // given
         String user = "Bobby";
@@ -173,7 +144,6 @@ class SetEmailCommandTest {
         CommandSender sender = mock(CommandSender.class);
         given(validationService.isEmailFreeForRegistration(email, sender)).willReturn(true);
         given(dataSource.updateEmail(auth)).willReturn(true);
-        given(playerCache.getAuth(user)).willReturn(mock(PlayerAuth.class));
         setBukkitServiceToRunTaskOptionallyAsync(bukkitService);
 
         // when
@@ -185,7 +155,7 @@ class SetEmailCommandTest {
         verify(validationService).isEmailFreeForRegistration(email, sender);
         verify(commandService).send(sender, MessageKey.EMAIL_CHANGED_SUCCESS);
         verify(dataSource).updateEmail(auth);
-        verify(playerCache).updatePlayer(auth);
+        verify(playerCache).updatePlayerIfPresent(auth);
         verifyNoMoreInteractions(dataSource);
     }
 

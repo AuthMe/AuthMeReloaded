@@ -91,7 +91,7 @@ class AsyncChangeEmailTest {
 
         // then
         verify(dataSource).updateEmail(auth);
-        verify(playerCache).updatePlayer(auth);
+        verify(playerCache).updatePlayerIfPresent(auth);
         verify(service).send(player, MessageKey.EMAIL_CHANGED_SUCCESS);
     }
 
@@ -116,7 +116,7 @@ class AsyncChangeEmailTest {
 
         // then
         verify(dataSource).updateEmail(auth);
-        verify(playerCache).updatePlayer(auth);
+        verify(playerCache).updatePlayerIfPresent(auth);
         verify(service).send(player, MessageKey.EMAIL_CHANGED_SUCCESS);
     }
 
@@ -140,7 +140,7 @@ class AsyncChangeEmailTest {
 
         // then
         verify(dataSource).updateEmail(auth);
-        verify(playerCache, never()).updatePlayer(auth);
+        verify(playerCache, never()).updatePlayerIfPresent(auth);
         verify(service).send(player, MessageKey.ERROR);
     }
 
@@ -157,7 +157,7 @@ class AsyncChangeEmailTest {
 
         // then
         verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
-        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
+        verify(playerCache, never()).updatePlayerIfPresent(any(PlayerAuth.class));
         verify(service).send(player, MessageKey.USAGE_ADD_EMAIL);
     }
 
@@ -176,7 +176,7 @@ class AsyncChangeEmailTest {
 
         // then
         verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
-        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
+        verify(playerCache, never()).updatePlayerIfPresent(any(PlayerAuth.class));
         verify(service).send(player, MessageKey.INVALID_NEW_EMAIL);
     }
 
@@ -195,7 +195,7 @@ class AsyncChangeEmailTest {
 
         // then
         verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
-        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
+        verify(playerCache, never()).updatePlayerIfPresent(any(PlayerAuth.class));
         verify(service).send(player, MessageKey.INVALID_OLD_EMAIL);
     }
 
@@ -215,7 +215,7 @@ class AsyncChangeEmailTest {
 
         // then
         verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
-        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
+        verify(playerCache, never()).updatePlayerIfPresent(any(PlayerAuth.class));
         verify(service).send(player, MessageKey.EMAIL_ALREADY_USED_ERROR);
     }
 
@@ -231,7 +231,7 @@ class AsyncChangeEmailTest {
 
         // then
         verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
-        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
+        verify(playerCache, never()).updatePlayerIfPresent(any(PlayerAuth.class));
         verify(service).send(player, MessageKey.LOGIN_MESSAGE);
     }
 
@@ -247,7 +247,7 @@ class AsyncChangeEmailTest {
 
         // then
         verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
-        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
+        verify(playerCache, never()).updatePlayerIfPresent(any(PlayerAuth.class));
         verify(service).send(player, MessageKey.REGISTER_MESSAGE);
     }
 
@@ -271,7 +271,7 @@ class AsyncChangeEmailTest {
 
         // then
         verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
-        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
+        verify(playerCache, never()).updatePlayerIfPresent(any(PlayerAuth.class));
         verify(service).send(player, MessageKey.EMAIL_CHANGE_NOT_ALLOWED);
     }
 

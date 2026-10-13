@@ -25,6 +25,7 @@ import fr.xephi.authme.service.DialogWindowService;
 import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -325,6 +326,27 @@ class AsynchronousLoginTest {
         verify(limboService).resetMessageTask(player, LimboMessageType.TOTP_CODE);
         verify(limboPlayer).setState(LimboPlayerState.TOTP_REQUIRED);
         verify(dialogAdapter, never()).showTotpDialog(eq(player), any(DialogWindowSpec.class));
+    }
+
+    @Test
+    void shouldRevertLoginWhenPlayerQuitDuringLoginProcess() {
+        // given
+        Player player = mockPlayer("bobby");
+        TestHelper.mockIpAddressToPlayer(player, "203.0.113.5");
+        PlayerAuth auth = PlayerAuth.builder().name("bobby").build();
+        given(player.isOnline()).willReturn(true, false);
+        given(commonService.getProperty(RestrictionSettings.DISPLAY_OTHER_ACCOUNTS)).willReturn(false);
+        given(commonService.getProperty(EmailSettings.RECALL_PLAYERS)).willReturn(false);
+
+        // when
+        asynchronousLogin.performLogin(player, auth);
+
+        // then
+        verify(playerCache).updatePlayer(auth);
+        verify(playerCache).removePlayer("bobby");
+        verify(dataSource).setUnlogged("bobby");
+        verify(sessionService).revokeSession("bobby");
+        verify(bungeeSender, never()).isEnabled();
     }
 
     private static Player mockPlayer(String name) {
