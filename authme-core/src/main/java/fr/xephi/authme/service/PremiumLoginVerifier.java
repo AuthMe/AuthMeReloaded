@@ -194,6 +194,15 @@ public class PremiumLoginVerifier {
         return verifiedUuid;
     }
 
+    /**
+     * Discards the verification stored for the given username, if any.
+     *
+     * @param username the username whose verification should be discarded
+     */
+    public void removeVerified(String username) {
+        verified.remove(username.toLowerCase(Locale.ROOT));
+    }
+
     private byte[] rsaDecrypt(byte[] encrypted) throws GeneralSecurityException {
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.DECRYPT_MODE, rsaKeyPair.getPrivate());

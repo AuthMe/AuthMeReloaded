@@ -10,6 +10,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.DialogStateService;
+import fr.xephi.authme.service.PremiumLoginVerifier;
 import fr.xephi.authme.service.SessionService;
 import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.service.ValidationService;
@@ -65,6 +66,8 @@ class AsynchronousQuitTest {
     private DialogStateService dialogStateService;
     @Mock
     private ProxySessionManager proxySessionManager;
+    @Mock
+    private PremiumLoginVerifier premiumLoginVerifier;
 
     @BeforeAll
     static void initLogger() {
@@ -72,7 +75,7 @@ class AsynchronousQuitTest {
     }
 
     @Test
-    void shouldDropQueuedProxyLoginRequestOnQuit() {
+    void shouldDropAutoLoginGrantsOnQuit() {
         // given
         Player player = mock(Player.class);
         given(player.getName()).willReturn("Bobby");
@@ -82,6 +85,7 @@ class AsynchronousQuitTest {
 
         // then
         verify(proxySessionManager).removeLoginRequest("bobby");
+        verify(premiumLoginVerifier).removeVerified("bobby");
         verify(playerCache).removePlayer("bobby");
     }
 

@@ -125,6 +125,7 @@ class BungeeReceiverTest {
         given(messenger.isIncomingChannelRegistered(plugin, "authme:main")).willReturn(false);
 
         Player player = mock(Player.class);
+        given(player.getName()).willReturn(playerName);
         given(player.isOnline()).willReturn(true);
         given(bukkitService.getPlayerExact(playerName)).willReturn(player);
         given(proxyLoginRequestValidator.validate(player, null)).willReturn(true);
@@ -140,6 +141,7 @@ class BungeeReceiverTest {
 
         // then
         verify(proxySessionManager).processProxySessionMessage(playerName, null);
+        verify(proxySessionManager).removeLoginRequest(playerName);
         verify(management).forceLoginFromProxy(player);
         verify(bungeeSender).sendAuthMeBungeecordMessage(player, MessageType.PERFORM_LOGIN_ACK);
     }

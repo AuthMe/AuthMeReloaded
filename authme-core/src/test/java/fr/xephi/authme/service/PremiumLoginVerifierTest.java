@@ -45,4 +45,16 @@ class PremiumLoginVerifierTest {
         // then
         assertThat(verifier.getVerifiedUuid("Notch"), nullValue());
     }
+
+    @Test
+    void shouldRemoveVerification() {
+        // given
+        verifier.storeVerified("Notch", UUID.randomUUID());
+
+        // when
+        verifier.removeVerified("NOTCH");
+
+        // then
+        assertThat(verifier.getVerifiedUuid("Notch"), nullValue());
+    }
 }
