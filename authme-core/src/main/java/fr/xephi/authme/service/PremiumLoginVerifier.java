@@ -75,6 +75,7 @@ public class PremiumLoginVerifier {
      */
     public byte[] startVerification(String connectionKey, String username, UUID playerUUID) {
         evictStalePendingEntries();
+        verified.remove(username.toLowerCase(Locale.ROOT));
         byte[] verifyToken = new byte[4];
         secureRandom.nextBytes(verifyToken);
         pending.put(connectionKey, new PendingVerification(username, playerUUID, verifyToken, System.currentTimeMillis()));
@@ -182,6 +183,15 @@ public class PremiumLoginVerifier {
             return null;
         }
         return session.mojangUuid();
+    }
+
+    /**
+     * Same as {@link #getVerifiedUuid}, but also removes the verification.
+     */
+    public UUID consumeVerifiedUuid(String username) {
+        UUID verifiedUuid = getVerifiedUuid(username);
+        verified.remove(username.toLowerCase(Locale.ROOT));
+        return verifiedUuid;
     }
 
     private byte[] rsaDecrypt(byte[] encrypted) throws GeneralSecurityException {

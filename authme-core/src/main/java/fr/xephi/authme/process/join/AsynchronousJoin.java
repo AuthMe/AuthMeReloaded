@@ -490,7 +490,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 if (pendingUuid == null) {
                     return false;
                 }
-                UUID verified = premiumLoginVerifier.getVerifiedUuid(name);
+                UUID verified = premiumLoginVerifier.consumeVerifiedUuid(name);
                 UUID confirmedUuid = (verified != null && verified.equals(pendingUuid)) ? verified : null;
                 pendingPremiumCache.removePending(name);
                 if (confirmedUuid != null) {
@@ -514,7 +514,7 @@ public class AsynchronousJoin implements AsynchronousProcess {
             return false;
         }
         // UUID v3 = Bukkit offline UUID: require cryptographic session verification via PacketEvents.
-        UUID verifiedUuid = premiumLoginVerifier.getVerifiedUuid(name);
+        UUID verifiedUuid = premiumLoginVerifier.consumeVerifiedUuid(name);
         return verifiedUuid != null && verifiedUuid.equals(auth.getPremiumUuid());
     }
 
