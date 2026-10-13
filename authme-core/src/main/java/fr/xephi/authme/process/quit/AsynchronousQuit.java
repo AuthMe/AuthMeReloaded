@@ -1,11 +1,13 @@
 package fr.xephi.authme.process.quit;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.ProxySessionManager;
 import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.output.ConsoleLoggerFactory;
 import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.service.CommonService;
@@ -27,6 +29,8 @@ import java.util.Locale;
  * Async process called when a player quits the server.
  */
 public class AsynchronousQuit implements AsynchronousProcess {
+
+    private final ConsoleLogger logger = ConsoleLoggerFactory.get(AsynchronousQuit.class);
 
     @Inject
     private AuthMe plugin;
@@ -82,45 +86,55 @@ public class AsynchronousQuit implements AsynchronousProcess {
         proxySessionManager.removeLoginRequest(name);
         boolean wasLoggedIn = playerCache.isAuthenticated(name);
 
-        if (wasLoggedIn) {
-            if (service.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
+        try {
+            if (wasLoggedIn) {
+                saveQuitState(player, name);
+            }
+        } finally {
+            //always unauthenticate the player - use session only for auto logins on the same ip
+            playerCache.removePlayer(name);
+            codeManager.unverify(name);
+
+            //always update the database when the player quit the game (if sessions are disabled)
+            if (wasLoggedIn) {
+                database.setUnlogged(name);
+                if (!service.getProperty(PluginSettings.SESSIONS_ENABLED)) {
+                    sessionService.revokeSession(name);
+                }
+            }
+
+            if (plugin.isEnabled()) {
+                syncProcessManager.processSyncPlayerQuit(player, wasLoggedIn);
+            }
+
+            // remove player from cache
+            database.invalidateCache(name);
+        }
+    }
+
+    private void saveQuitState(Player player, String name) {
+        if (service.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
+            try {
                 Location loc = spawnLoader.getPlayerLocationOrSpawn(player);
                 PlayerAuth auth = PlayerAuth.builder()
                     .name(name).location(loc)
                     .realName(player.getName()).build();
                 database.updateQuitLoc(auth);
-            }
-
-            String ip = PlayerUtils.getPlayerIp(player);
-            PlayerAuth auth = PlayerAuth.builder()
-                .name(name)
-                .realName(player.getName())
-                .lastIp(ip)
-                .lastLogin(System.currentTimeMillis())
-                .build();
-            database.updateSession(auth);
-
-            // TODO: send an update when a messaging service will be implemented (QUITLOC)
-        }
-
-        //always unauthenticate the player - use session only for auto logins on the same ip
-        playerCache.removePlayer(name);
-        codeManager.unverify(name);
-
-        //always update the database when the player quit the game (if sessions are disabled)
-        if (wasLoggedIn) {
-            database.setUnlogged(name);
-            if (!service.getProperty(PluginSettings.SESSIONS_ENABLED)) {
-                sessionService.revokeSession(name);
+            } catch (RuntimeException e) {
+                logger.warning("Could not save the quit location of '" + name + "': " + e.getMessage());
             }
         }
 
-        if (plugin.isEnabled()) {
-            syncProcessManager.processSyncPlayerQuit(player, wasLoggedIn);
-        }
+        String ip = PlayerUtils.getPlayerIp(player);
+        PlayerAuth auth = PlayerAuth.builder()
+            .name(name)
+            .realName(player.getName())
+            .lastIp(ip)
+            .lastLogin(System.currentTimeMillis())
+            .build();
+        database.updateSession(auth);
 
-        // remove player from cache
-        database.invalidateCache(name);
+        // TODO: send an update when a messaging service will be implemented (QUITLOC)
     }
 
 }
