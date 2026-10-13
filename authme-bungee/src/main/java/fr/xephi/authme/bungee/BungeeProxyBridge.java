@@ -241,6 +241,7 @@ public final class BungeeProxyBridge implements Listener {
             event.setCancelled(true);
             return;
         }
+        event.setCancelled(true);
 
         ParsedPluginMessage parsedMessage = parsePluginMessage(event.getData());
         if (parsedMessage.typeId() == null || parsedMessage.playerName() == null) {

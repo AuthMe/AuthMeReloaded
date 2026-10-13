@@ -122,6 +122,20 @@ class BungeeProxyBridgeTest {
 
         verify(authServerInfo).sendData(eq(BungeeProxyBridge.AUTHME_CHANNEL), payloadCaptor.capture(), eq(false));
         assertPerformLoginPayload(payloadCaptor.getValue(), "alice", "test-secret");
+        verify(pluginMessageEvent).setCancelled(true);
+    }
+
+    @Test
+    void shouldNotForwardBackendPremiumListToClient() {
+        given(pluginMessageEvent.isCancelled()).willReturn(false);
+        given(pluginMessageEvent.getTag()).willReturn(BungeeProxyBridge.AUTHME_CHANNEL);
+        given(pluginMessageEvent.getSender()).willReturn(sourceServer);
+        given(pluginMessageEvent.getData()).willReturn(createAuthMePayload("premium.list.chunk", "0:1:notch,jeb_"));
+
+        BungeeProxyBridge bridge = new BungeeProxyBridge(proxyServer, logger, createConfiguration(), new BungeeAuthenticationStore(), null);
+        bridge.onPluginMessage(pluginMessageEvent);
+
+        verify(pluginMessageEvent).setCancelled(true);
     }
 
     @Test
