@@ -103,7 +103,7 @@
         <dependencies.mockito.javaagent>
             ${settings.localRepository}/org/mockito/mockito-core/${dependencies.mockito.version}/mockito-core-${dependencies.mockito.version}.jar
         </dependencies.mockito.javaagent>
-        <dependencies.velocity.version>3.4.0</dependencies.velocity.version>
+        <dependencies.velocity.version>4.2.0</dependencies.velocity.version>
         <dependencies.bungeecord.version>1.21-R0.4</dependencies.bungeecord.version>
         <dependencies.packetevents.version>2.12.1</dependencies.packetevents.version>
         <!-- Spigot -->
