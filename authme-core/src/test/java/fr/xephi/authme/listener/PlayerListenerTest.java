@@ -32,6 +32,7 @@ import org.bukkit.event.entity.EntityAirChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -1005,6 +1006,36 @@ class PlayerListenerTest {
 
         // then
         verify(event).setCancelled(true);
+    }
+
+    @Test
+    void shouldCancelInventoryDragEvent() {
+        // given
+        InventoryDragEvent event = mock(InventoryDragEvent.class);
+        HumanEntity player = mock(Player.class);
+        given(event.getWhoClicked()).willReturn(player);
+        given(listenerService.shouldCancelEvent(player)).willReturn(true);
+
+        // when
+        listener.onPlayerInventoryDrag(event);
+
+        // then
+        verify(event).setCancelled(true);
+    }
+
+    @Test
+    void shouldAllowInventoryDragEvent() {
+        // given
+        InventoryDragEvent event = mock(InventoryDragEvent.class);
+        HumanEntity player = mock(Player.class);
+        given(event.getWhoClicked()).willReturn(player);
+        given(listenerService.shouldCancelEvent(player)).willReturn(false);
+
+        // when
+        listener.onPlayerInventoryDrag(event);
+
+        // then
+        verify(event, only()).getWhoClicked();
     }
 
     @Test
