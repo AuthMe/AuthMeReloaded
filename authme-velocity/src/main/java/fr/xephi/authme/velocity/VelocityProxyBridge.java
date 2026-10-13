@@ -530,6 +530,11 @@ final class VelocityProxyBridge {
 
     void onDisconnect(DisconnectEvent event) {
         String normalizedName = normalizeName(event.getPlayer().getUsername());
+        Optional<Player> connectedPlayer = proxyServer.getPlayer(event.getPlayer().getUsername());
+        if (connectedPlayer.isPresent() && connectedPlayer.get() != event.getPlayer()) {
+            logger.debug("Keeping auth state for {}: a duplicate connection was closed", normalizedName);
+            return;
+        }
         if (pendingAutoLogins.containsKey(normalizedName)) {
             logger.debug("Cancelling pending auto-login for {} (player disconnected)", normalizedName);
         }

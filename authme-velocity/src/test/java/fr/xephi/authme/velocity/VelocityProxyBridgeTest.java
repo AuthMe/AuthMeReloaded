@@ -161,6 +161,33 @@ class VelocityProxyBridgeTest {
     }
 
     @Test
+    void shouldKeepSessionWhenDuplicateConnectionWithSameNameDisconnects() {
+        given(pluginMessageEvent.getResult()).willReturn(PluginMessageEvent.ForwardResult.forward());
+        given(pluginMessageEvent.getIdentifier()).willReturn(VelocityProxyBridge.AUTHME_CHANNEL);
+        given(pluginMessageEvent.getSource()).willReturn(sourceConnection);
+        given(pluginMessageEvent.getData()).willReturn(createAuthMePayload("login", "Alice"));
+        given(sourceConnection.getServer()).willReturn(authServer);
+        given(player.getUsername()).willReturn("Alice");
+        given(player.getCurrentServer()).willReturn(Optional.of(currentServer));
+        given(authServer.getServerInfo()).willReturn(authServerInfo);
+        given(authServerInfo.getName()).willReturn("lobby");
+        given(currentServer.getServer()).willReturn(authServer);
+        given(currentServer.sendPluginMessage(eq(VelocityProxyBridge.AUTHME_CHANNEL), any(byte[].class)))
+            .willReturn(true);
+        Player duplicate = mock(Player.class);
+        given(duplicate.getUsername()).willReturn("Alice");
+        given(proxyServer.getPlayer("Alice")).willReturn(Optional.of(player));
+
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
+        bridge.onPluginMessage(pluginMessageEvent);
+        bridge.onDisconnect(new DisconnectEvent(duplicate, DisconnectEvent.LoginStatus.PRE_SERVER_JOIN));
+        bridge.onServerConnected(new ServerConnectedEvent(player, authServer, null));
+
+        verify(currentServer, times(2)).sendPluginMessage(eq(VelocityProxyBridge.AUTHME_CHANNEL), payloadCaptor.capture());
+        assertPerformLoginPayload(payloadCaptor.getValue(), "alice", "test-secret");
+    }
+
+    @Test
     void shouldDropSessionWhenPlayerDisconnects() {
         given(pluginMessageEvent.getResult()).willReturn(PluginMessageEvent.ForwardResult.forward());
         given(pluginMessageEvent.getIdentifier()).willReturn(VelocityProxyBridge.AUTHME_CHANNEL);
