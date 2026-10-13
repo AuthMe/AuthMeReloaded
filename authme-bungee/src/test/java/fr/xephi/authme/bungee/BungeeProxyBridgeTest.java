@@ -526,6 +526,27 @@ class BungeeProxyBridgeTest {
         verify(pendingConnection).setOnlineMode(true);
     }
 
+    @Test
+    void shouldDiscardPremiumListWithMissingChunk() {
+        given(pluginMessageEvent.isCancelled()).willReturn(false);
+        given(pluginMessageEvent.getTag()).willReturn(BungeeProxyBridge.AUTHME_CHANNEL);
+        given(pluginMessageEvent.getSender()).willReturn(sourceServer);
+        given(pluginMessageEvent.getData())
+            .willReturn(createChunkPayload(0, true, "Alice"), createChunkPayload(0, false, "Bob"),
+                createChunkPayload(2, true, "Carol"));
+        given(preLoginEvent.getConnection()).willReturn(pendingConnection);
+        given(pendingConnection.getName()).willReturn("Alice");
+        given(pendingConnection.isOnlineMode()).willReturn(false);
+
+        BungeeProxyBridge bridge = new BungeeProxyBridge(proxyServer, logger, createConfiguration(), new BungeeAuthenticationStore(), null);
+        bridge.onPluginMessage(pluginMessageEvent);
+        bridge.onPluginMessage(pluginMessageEvent);
+        bridge.onPluginMessage(pluginMessageEvent);
+        bridge.onPreLogin(preLoginEvent);
+
+        verify(pendingConnection).setOnlineMode(true);
+    }
+
     private static byte[] createChunkPayload(int seq, boolean last, String csv) {
         ByteArrayDataOutput output = ByteStreams.newDataOutput();
         output.writeUTF("premium.list.chunk");

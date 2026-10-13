@@ -696,6 +696,32 @@ class VelocityProxyBridgeTest {
     }
 
     @Test
+    void shouldDiscardPremiumListWithMissingChunk() {
+        given(pluginMessageEvent.getResult()).willReturn(PluginMessageEvent.ForwardResult.forward());
+        given(pluginMessageEvent.getIdentifier()).willReturn(VelocityProxyBridge.AUTHME_CHANNEL);
+        given(pluginMessageEvent.getSource()).willReturn(sourceConnection);
+        given(pluginMessageEvent.getData())
+            .willReturn(createChunkPayload(0, true, "Alice"), createChunkPayload(0, false, "Bob"),
+                createChunkPayload(2, true, "Carol"));
+        given(sourceConnection.getServer()).willReturn(authServer);
+        given(authServer.getServerInfo()).willReturn(authServerInfo);
+        given(authServerInfo.getName()).willReturn("lobby");
+
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
+        bridge.onPluginMessage(pluginMessageEvent);
+        bridge.onPluginMessage(pluginMessageEvent);
+        bridge.onPluginMessage(pluginMessageEvent);
+
+        PreLoginEvent aliceLogin = new PreLoginEvent(mock(InboundConnection.class), "Alice", null);
+        bridge.onPreLogin(aliceLogin);
+        PreLoginEvent carolLogin = new PreLoginEvent(mock(InboundConnection.class), "Carol", null);
+        bridge.onPreLogin(carolLogin);
+
+        assertEquals(PreLoginEvent.PreLoginComponentResult.forceOnlineMode().toString(), aliceLogin.getResult().toString());
+        assertEquals(PreLoginEvent.PreLoginComponentResult.allowed().toString(), carolLogin.getResult().toString());
+    }
+
+    @Test
     void shouldCancelPendingPremiumVerificationWhenForcedOnlineLoginNeverCompletes() {
         given(pluginMessageEvent.getResult()).willReturn(PluginMessageEvent.ForwardResult.forward());
         given(pluginMessageEvent.getIdentifier()).willReturn(VelocityProxyBridge.AUTHME_CHANNEL);

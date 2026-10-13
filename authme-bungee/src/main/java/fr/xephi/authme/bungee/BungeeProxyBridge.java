@@ -69,6 +69,7 @@ public final class BungeeProxyBridge implements Listener {
     private final Set<String> notifiedAuthServers = ConcurrentHashMap.newKeySet();
     private volatile Set<String> premiumUsernames = ConcurrentHashMap.newKeySet();
     private List<String> premiumListBuffer = new ArrayList<>();
+    private int expectedPremiumListChunk = -1;
     // Players with a pending premium verification (ran /premium but not yet confirmed via reconnect)
     private volatile Set<String> pendingPremiumUsernames = ConcurrentHashMap.newKeySet();
     private final BungeePremiumOnlineModeHandler premiumOnlineModeHandler;
@@ -295,30 +296,50 @@ public final class BungeeProxyBridge implements Listener {
             premiumUsernames = newPremiumSet;
             logger.info("Premium list received from backend: " + premiumUsernames.size() + " premium player(s)");
         } else if (PREMIUM_LIST_CHUNK_MESSAGE.equals(parsedMessage.typeId())) {
-            String[] parts = parsedMessage.playerName().split(":", 3);
-            if (parts.length < 3) {
-                logger.warning("Malformed premium.list.chunk payload: " + parsedMessage.playerName());
-                return;
-            }
-            if ("0".equals(parts[0])) {
-                premiumListBuffer = new ArrayList<>();
-            }
-            String csv = parts[2];
-            if (!csv.isEmpty()) {
-                for (String name : csv.split(",")) {
-                    if (!name.isEmpty()) {
-                        premiumListBuffer.add(normalizeName(name.trim()));
-                    }
+            handlePremiumListChunk(parsedMessage.playerName());
+        }
+    }
+
+    private synchronized void handlePremiumListChunk(String payload) {
+        String[] parts = payload.split(":", 3);
+        int sequence;
+        try {
+            sequence = parts.length < 3 ? -1 : Integer.parseInt(parts[0]);
+        } catch (NumberFormatException e) {
+            sequence = -1;
+        }
+        if (sequence < 0) {
+            logger.warning("Malformed premium.list.chunk payload: " + payload);
+            return;
+        }
+        if (sequence == 0) {
+            premiumListBuffer = new ArrayList<>();
+            expectedPremiumListChunk = 0;
+        }
+        if (sequence != expectedPremiumListChunk) {
+            logger.warning("Discarding premium list: received chunk " + sequence + " instead of "
+                + expectedPremiumListChunk);
+            premiumListBuffer = new ArrayList<>();
+            expectedPremiumListChunk = -1;
+            return;
+        }
+        ++expectedPremiumListChunk;
+        String csv = parts[2];
+        if (!csv.isEmpty()) {
+            for (String name : csv.split(",")) {
+                if (!name.isEmpty()) {
+                    premiumListBuffer.add(normalizeName(name.trim()));
                 }
             }
-            if ("1".equals(parts[1])) {
-                Set<String> newPremiumSet = ConcurrentHashMap.newKeySet();
-                newPremiumSet.addAll(premiumListBuffer);
-                premiumUsernames = newPremiumSet;
-                premiumListBuffer = new ArrayList<>();
-                logger.info("Premium list received from backend: " + premiumUsernames.size() + " premium player(s)");
-                savePremiumNamesAsync();
-            }
+        }
+        if ("1".equals(parts[1])) {
+            Set<String> newPremiumSet = ConcurrentHashMap.newKeySet();
+            newPremiumSet.addAll(premiumListBuffer);
+            premiumUsernames = newPremiumSet;
+            premiumListBuffer = new ArrayList<>();
+            expectedPremiumListChunk = -1;
+            logger.info("Premium list received from backend: " + premiumUsernames.size() + " premium player(s)");
+            savePremiumNamesAsync();
         }
     }
 
