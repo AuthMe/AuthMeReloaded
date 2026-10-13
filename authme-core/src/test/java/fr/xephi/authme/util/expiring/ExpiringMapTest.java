@@ -36,9 +36,11 @@ class ExpiringMapTest {
         map.put("ha", false);
 
         // when
-        map.remove("ha");
+        Boolean removed = map.remove("ha");
 
         // then
+        assertThat(removed, equalTo(false));
+        assertThat(map.remove("ha"), nullValue());
         assertThat(map.get("ha"), nullValue());
         assertThat(map.get("hi"), equalTo(true));
     }

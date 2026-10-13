@@ -71,9 +71,14 @@ public class ExpiringMap<K, V> {
      * Removes the value for the given key, if available.
      *
      * @param key the key to remove the value for
+     * @return the removed value, or {@code null} if it was not available or had expired
      */
-    public void remove(K key) {
-        entries.remove(key);
+    public V remove(K key) {
+        ExpiringEntry<V> value = entries.remove(key);
+        if (value == null || System.currentTimeMillis() > value.getExpiration()) {
+            return null;
+        }
+        return value.getValue();
     }
 
     /**

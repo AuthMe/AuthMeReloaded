@@ -1,6 +1,7 @@
 package fr.xephi.authme.process.quit;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.data.ProxySessionManager;
 import fr.xephi.authme.data.VerificationCodeManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
@@ -60,6 +61,9 @@ public class AsynchronousQuit implements AsynchronousProcess {
     @Inject
     private DialogStateService dialogStateService;
 
+    @Inject
+    private ProxySessionManager proxySessionManager;
+
     AsynchronousQuit() {
     }
 
@@ -75,6 +79,7 @@ public class AsynchronousQuit implements AsynchronousProcess {
         String name = player.getName().toLowerCase(Locale.ROOT);
         teleportationService.clearOriginalJoinLocation(name);
         dialogStateService.clearDialogOpen(player);
+        proxySessionManager.removeLoginRequest(name);
         boolean wasLoggedIn = playerCache.isAuthenticated(name);
 
         if (wasLoggedIn) {

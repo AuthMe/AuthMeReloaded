@@ -201,6 +201,9 @@ public class PaperDialogFlowListener implements Listener {
                 retireSession(connection);
             }
         }
+        if (Bukkit.getPlayerExact(event.getPlayerName()) == null) {
+            proxySessionManager.removeLoginRequest(event.getPlayerName());
+        }
     }
 
     private void retireSession(PlayerConfigurationConnection connection) {

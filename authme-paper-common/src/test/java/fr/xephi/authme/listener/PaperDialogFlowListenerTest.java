@@ -31,6 +31,8 @@ import io.papermc.paper.event.connection.configuration.AsyncPlayerConnectionConf
 import io.papermc.paper.event.player.PlayerCustomClickEvent;
 import fr.xephi.authme.platform.PaperDialogHelper;
 import net.kyori.adventure.audience.Audience;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.junit.jupiter.api.Test;
@@ -514,8 +516,12 @@ public class PaperDialogFlowListenerTest {
         pendingResponses(listener, "pendingLoginResponses").put(SESSION_ID, goneFuture);
         pendingResponses(listener, "pendingLoginResponses").put(SESSION_ID + 1, liveFuture);
 
-        listener.onPlayerConnectionClose(new PlayerConnectionCloseEvent(
-            UUID.randomUUID(), "Bobby", InetAddress.getLoopbackAddress(), false));
+        setField(listener, "proxySessionManager", mock(ProxySessionManager.class));
+
+        try (var bukkit = mockStatic(Bukkit.class)) {
+            listener.onPlayerConnectionClose(new PlayerConnectionCloseEvent(
+                UUID.randomUUID(), "Bobby", InetAddress.getLoopbackAddress(), false));
+        }
 
         verify(preJoinDialogService).retireSession(SESSION_ID);
         verify(preJoinDialogService, never()).retireSession(SESSION_ID + 1);
@@ -524,6 +530,35 @@ public class PaperDialogFlowListenerTest {
         assertThat(pendingResponses(listener, "pendingLoginResponses").get(SESSION_ID + 1), is(liveFuture));
         assertThat("thread waiting on the closed connection must be released", goneFuture.isDone(), is(true));
         assertThat(liveFuture.isDone(), is(false));
+    }
+
+    @Test
+    public void shouldDropQueuedProxyLoginWhenConnectionClosesBeforeJoin() throws Exception {
+        PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        ProxySessionManager proxySessionManager = mock(ProxySessionManager.class);
+        setField(listener, "proxySessionManager", proxySessionManager);
+
+        try (var bukkit = mockStatic(Bukkit.class)) {
+            listener.onPlayerConnectionClose(new PlayerConnectionCloseEvent(
+                UUID.randomUUID(), "Bobby", InetAddress.getLoopbackAddress(), false));
+        }
+
+        verify(proxySessionManager).removeLoginRequest("Bobby");
+    }
+
+    @Test
+    public void shouldKeepQueuedProxyLoginWhenPlayerWithNameIsOnline() throws Exception {
+        PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        ProxySessionManager proxySessionManager = mock(ProxySessionManager.class);
+        setField(listener, "proxySessionManager", proxySessionManager);
+
+        try (var bukkit = mockStatic(Bukkit.class)) {
+            bukkit.when(() -> Bukkit.getPlayerExact("Bobby")).thenReturn(mock(Player.class));
+            listener.onPlayerConnectionClose(new PlayerConnectionCloseEvent(
+                UUID.randomUUID(), "Bobby", InetAddress.getLoopbackAddress(), false));
+        }
+
+        verify(proxySessionManager, never()).removeLoginRequest(anyString());
     }
 
     @Test

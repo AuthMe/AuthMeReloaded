@@ -65,12 +65,7 @@ public class ProxySessionManager implements HasCleanup {
      * @return the queued proxy login request, or null
      */
     public ProxyLoginRequest consumeLoginRequest(String name) {
-        String normalizedName = name.toLowerCase(Locale.ROOT);
-        ProxyLoginRequest loginRequest = activeProxySessions.get(normalizedName);
-        if (loginRequest != null) {
-            activeProxySessions.remove(normalizedName);
-        }
-        return loginRequest;
+        return activeProxySessions.remove(name.toLowerCase(Locale.ROOT));
     }
 
     /**
