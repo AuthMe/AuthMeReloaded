@@ -52,11 +52,14 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPickupArrowEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.InventoryView;
 
 import javax.inject.Inject;
@@ -395,6 +398,35 @@ public class PlayerListener implements Listener {
         }
     }
 
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        if (isBlockedTeleportCause(event.getCause()) && listenerService.shouldCancelEvent(event)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerPortal(PlayerPortalEvent event) {
+        if (listenerService.shouldCancelEvent(event)) {
+            event.setCancelled(true);
+        }
+    }
+
+    private static boolean isBlockedTeleportCause(PlayerTeleportEvent.TeleportCause cause) {
+        switch (cause.name()) {
+            case "ENDER_PEARL":
+            case "CHORUS_FRUIT":
+            case "CONSUMABLE_EFFECT":
+            case "NETHER_PORTAL":
+            case "END_PORTAL":
+            case "END_GATEWAY":
+            case "SPECTATE":
+                return true;
+            default:
+                return false;
+        }
+    }
+
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
@@ -416,7 +448,7 @@ public class PlayerListener implements Listener {
      * Entity/block interaction events
      */
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
@@ -497,6 +529,13 @@ public class PlayerListener implements Listener {
             return;
         }
         if (listenerService.shouldCancelEvent((Player) event.getEntity())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerPickupArrow(PlayerPickupArrowEvent event) {
+        if (listenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }

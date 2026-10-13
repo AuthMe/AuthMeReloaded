@@ -49,10 +49,13 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPickupArrowEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.InventoryView;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -213,7 +216,37 @@ class PlayerListenerTest {
             .check(listener::onPlayerConsumeItem, PlayerItemConsumeEvent.class)
             .check(listener::onPlayerInteract, PlayerInteractEvent.class)
             .check(listener::onPlayerInteractEntity, PlayerInteractEntityEvent.class)
-            .check(listener::onPlayerHeldItem, PlayerItemHeldEvent.class);
+            .check(listener::onPlayerHeldItem, PlayerItemHeldEvent.class)
+            .check(listener::onPlayerPortal, PlayerPortalEvent.class)
+            .check(listener::onPlayerPickupArrow, PlayerPickupArrowEvent.class);
+    }
+
+    @Test
+    void shouldCancelEnderPearlTeleportOfUnauthenticatedPlayer() {
+        // given
+        PlayerTeleportEvent event = mock(PlayerTeleportEvent.class);
+        given(event.getCause()).willReturn(PlayerTeleportEvent.TeleportCause.ENDER_PEARL);
+        given(listenerService.shouldCancelEvent(event)).willReturn(true);
+
+        // when
+        listener.onPlayerTeleport(event);
+
+        // then
+        verify(event).setCancelled(true);
+    }
+
+    @Test
+    void shouldNotCancelPluginTeleport() {
+        // given
+        PlayerTeleportEvent event = mock(PlayerTeleportEvent.class);
+        given(event.getCause()).willReturn(PlayerTeleportEvent.TeleportCause.PLUGIN);
+
+        // when
+        listener.onPlayerTeleport(event);
+
+        // then
+        verify(event, never()).setCancelled(anyBoolean());
+        verifyNoInteractions(listenerService);
     }
 
     @Test
