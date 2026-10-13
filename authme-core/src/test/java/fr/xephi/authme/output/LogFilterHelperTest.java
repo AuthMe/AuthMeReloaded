@@ -21,7 +21,7 @@ class LogFilterHelperTest {
 
     /**
      * Checks that {@link LogFilterHelper#COMMANDS_TO_SKIP} contains the entries we expect
-     * (commands with password argument).
+     * (commands with password or one-time code argument).
      */
     @Test
     void shouldBlacklistAllSensitiveCommands() {
@@ -29,7 +29,7 @@ class LogFilterHelperTest {
         List<CommandDescription> sensitiveCommands = Arrays.asList(
             getCommand("register"), getCommand("login"), getCommand("changepassword"), getCommand("unregister"),
             getCommand("authme", "register"), getCommand("authme", "changepassword"),
-            getCommand("email", "setpassword")
+            getCommand("email", "setpassword"), getCommand("email", "code"), getCommand("totp", "code")
         );
         // Build array with entries like "/register ", "/authme cp ", "/authme changepass "
         String[] expectedEntries = sensitiveCommands.stream()
