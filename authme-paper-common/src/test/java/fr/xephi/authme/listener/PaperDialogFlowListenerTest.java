@@ -4,7 +4,9 @@ import ch.jalu.configme.properties.Property;
 import com.destroystokyo.paper.event.player.PlayerConnectionCloseEvent;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import fr.xephi.authme.data.ProxySessionManager;
+import fr.xephi.authme.data.TempbanManager;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.captcha.LoginCaptchaManager;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.platform.DialogInputSpec;
@@ -14,7 +16,9 @@ import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.DialogWindowService;
 import fr.xephi.authme.service.PreJoinDialogService;
@@ -55,6 +59,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willAnswer;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
@@ -143,6 +148,57 @@ public class PaperDialogFlowListenerTest {
 
         assertThat(future.isDone(), is(true));
         assertThat(future.getNow("sentinel"), is((String) null));
+    }
+
+    @Test
+    public void shouldCountPreJoinLoginAttemptAndRejectWrongPassword() throws Exception {
+        PreJoinLoginSetup setup = new PreJoinLoginSetup();
+        given(setup.passwordSecurity.comparePassword("wrong", setup.auth.getPassword(), "Bobby")).willReturn(false);
+        given(setup.messages.retrieveSingle("Bobby", MessageKey.WRONG_PASSWORD)).willReturn("Wrong password!");
+
+        setup.listener.onPlayerCustomClick(setup.submitEvent("wrong"));
+
+        verify(setup.loginCaptchaManager).increaseLoginFailureCount("bobby");
+        verify(setup.tempbanManager).increaseCount("203.0.113.5", "bobby");
+        verify(setup.preJoinDialogService, never()).storePendingLoginPassword(anyLong(), anyString());
+        assertThat(setup.future.getNow("sentinel"), is("Wrong password!"));
+    }
+
+    @Test
+    public void shouldStorePasswordAndResetCountersForCorrectPreJoinLogin() throws Exception {
+        PreJoinLoginSetup setup = new PreJoinLoginSetup();
+        given(setup.passwordSecurity.comparePassword("hunter2", setup.auth.getPassword(), "Bobby")).willReturn(true);
+
+        setup.listener.onPlayerCustomClick(setup.submitEvent("hunter2"));
+
+        verify(setup.loginCaptchaManager).resetLoginFailureCount("bobby");
+        verify(setup.tempbanManager).resetCount("203.0.113.5", "bobby");
+        verify(setup.preJoinDialogService).storePendingLoginPassword(SESSION_ID, "hunter2");
+        assertThat(setup.future.getNow("sentinel"), is((String) null));
+    }
+
+    @Test
+    public void shouldNotCheckPreJoinPasswordWhenCaptchaIsRequired() throws Exception {
+        PreJoinLoginSetup setup = new PreJoinLoginSetup();
+        given(setup.loginCaptchaManager.isCaptchaRequired("bobby")).willReturn(true);
+
+        setup.listener.onPlayerCustomClick(setup.submitEvent("guess"));
+
+        verifyNoInteractions(setup.passwordSecurity, setup.bukkitService);
+        verify(setup.preJoinDialogService, never()).storePendingLoginPassword(anyLong(), anyString());
+        assertThat("player joins without a pending password and logs in through /login",
+            setup.future.getNow("sentinel"), is((String) null));
+    }
+
+    @Test
+    public void shouldNotCheckPreJoinPasswordWhenIpReachedTempbanThreshold() throws Exception {
+        PreJoinLoginSetup setup = new PreJoinLoginSetup();
+        given(setup.tempbanManager.shouldTempban("203.0.113.5")).willReturn(true);
+
+        setup.listener.onPlayerCustomClick(setup.submitEvent("guess"));
+
+        verifyNoInteractions(setup.passwordSecurity, setup.bukkitService);
+        assertThat(setup.future.getNow("sentinel"), is((String) null));
     }
 
     @Test
@@ -694,5 +750,48 @@ public class PaperDialogFlowListenerTest {
         Field field = target.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(target, value);
+    }
+
+    private static final class PreJoinLoginSetup {
+        final PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        final Messages messages = mock(Messages.class);
+        final DataSource dataSource = mock(DataSource.class);
+        final PasswordSecurity passwordSecurity = mock(PasswordSecurity.class);
+        final PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
+        final LoginCaptchaManager loginCaptchaManager = mock(LoginCaptchaManager.class);
+        final TempbanManager tempbanManager = mock(TempbanManager.class);
+        final BukkitService bukkitService = mock(BukkitService.class);
+        final PlayerAuth auth = PlayerAuth.builder().name("bobby")
+            .password(new HashedPassword("hash")).build();
+        final CompletableFuture<String> future = new CompletableFuture<>();
+        final PlayerConfigurationConnection connection = mockConnection("Bobby");
+
+        PreJoinLoginSetup() throws Exception {
+            setField(listener, "messages", messages);
+            setField(listener, "dataSource", dataSource);
+            setField(listener, "passwordSecurity", passwordSecurity);
+            setField(listener, "preJoinDialogService", preJoinDialogService);
+            setField(listener, "loginCaptchaManager", loginCaptchaManager);
+            setField(listener, "tempbanManager", tempbanManager);
+            setField(listener, "bukkitService", bukkitService);
+            lenient().when(dataSource.getAuth("bobby")).thenReturn(auth);
+            lenient().when(bukkitService.runTaskAsynchronously(any(Runnable.class))).thenAnswer(invocation -> {
+                invocation.<Runnable>getArgument(0).run();
+                return null;
+            });
+            given(connection.getClientAddress())
+                .willReturn(new InetSocketAddress(InetAddress.getByName("203.0.113.5"), 25565));
+            seedSession(listener, connection, "pendingLoginResponses", future);
+        }
+
+        PlayerCustomClickEvent submitEvent(String password) {
+            DialogResponseView responseView = mock(DialogResponseView.class);
+            given(responseView.getText("password")).willReturn(password);
+            PlayerCustomClickEvent event = mock(PlayerCustomClickEvent.class);
+            given(event.getCommonConnection()).willReturn(connection);
+            given(event.getIdentifier()).willReturn(PaperDialogActionKeys.PRE_JOIN_LOGIN_SUBMIT);
+            given(event.getDialogResponseView()).willReturn(responseView);
+            return event;
+        }
     }
 }

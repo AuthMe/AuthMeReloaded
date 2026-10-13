@@ -66,5 +66,11 @@
             <artifactId>datasourcecolumns</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- needed to mock core classes referencing the injector, e.g. PasswordSecurity -->
+        <dependency>
+            <groupId>ch.jalu</groupId>
+            <artifactId>injector</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

@@ -3,8 +3,10 @@ package fr.xephi.authme.listener;
 import com.destroystokyo.paper.event.player.PlayerConnectionCloseEvent;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import fr.xephi.authme.data.ProxySessionManager;
+import fr.xephi.authme.data.TempbanManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.data.auth.PlayerCache;
+import fr.xephi.authme.data.captcha.LoginCaptchaManager;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
@@ -14,6 +16,7 @@ import fr.xephi.authme.platform.PaperDialogHelper;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.security.PasswordSecurity;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.DialogWindowService;
 import fr.xephi.authme.service.PendingPremiumCache;
@@ -91,6 +94,15 @@ public class PaperDialogFlowListener implements Listener {
 
     @Inject
     private PremiumLoginVerifier premiumLoginVerifier;
+
+    @Inject
+    private LoginCaptchaManager loginCaptchaManager;
+
+    @Inject
+    private TempbanManager tempbanManager;
+
+    @Inject
+    private BukkitService bukkitService;
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerConfigure(AsyncPlayerConnectionConfigureEvent event) {
@@ -175,7 +187,7 @@ public class PaperDialogFlowListener implements Listener {
         }
 
         if (PaperDialogActionKeys.PRE_JOIN_LOGIN_SUBMIT.equals(event.getIdentifier())) {
-            processPreJoinLogin(sessionId, playerName, event.getDialogResponseView());
+            processPreJoinLogin(sessionId, connection, playerName, event.getDialogResponseView());
             return;
         }
 
@@ -258,25 +270,45 @@ public class PaperDialogFlowListener implements Listener {
         connection.getAudience().closeDialog();
     }
 
-    private void processPreJoinLogin(long sessionId, String playerName, DialogResponseView dialogResponseView) {
+    private void processPreJoinLogin(long sessionId, PlayerConfigurationConnection connection, String playerName,
+                                     DialogResponseView dialogResponseView) {
         String password = dialogResponseView == null ? null : dialogResponseView.getText("password");
         if (password == null || password.isBlank()) {
             completeLoginResponse(sessionId, messages.retrieveSingle(playerName, MessageKey.LOGIN_TIMEOUT_ERROR));
             return;
         }
 
-        PlayerAuth auth = dataSource.getAuth(playerName.toLowerCase(Locale.ROOT));
-        if (auth == null) {
-            completeLoginResponse(sessionId, messages.retrieveSingle(playerName, MessageKey.UNKNOWN_USER));
+        String normalizedName = playerName.toLowerCase(Locale.ROOT);
+        InetSocketAddress clientAddress = connection.getClientAddress();
+        String ip = clientAddress == null ? null : clientAddress.getAddress().getHostAddress();
+        if (loginCaptchaManager.isCaptchaRequired(normalizedName) || (ip != null && tempbanManager.shouldTempban(ip))) {
+            completeLoginResponse(sessionId, null);
             return;
         }
 
-        if (passwordSecurity.comparePassword(password, auth.getPassword(), playerName)) {
-            preJoinDialogService.storePendingLoginPassword(sessionId, password);
-            completeLoginResponse(sessionId, null);
-        } else {
-            completeLoginResponse(sessionId, messages.retrieveSingle(playerName, MessageKey.WRONG_PASSWORD));
-        }
+        bukkitService.runTaskAsynchronously(() -> {
+            PlayerAuth auth = dataSource.getAuth(normalizedName);
+            if (auth == null) {
+                completeLoginResponse(sessionId, messages.retrieveSingle(playerName, MessageKey.UNKNOWN_USER));
+                return;
+            }
+
+            loginCaptchaManager.increaseLoginFailureCount(normalizedName);
+            if (ip != null) {
+                tempbanManager.increaseCount(ip, normalizedName);
+            }
+
+            if (passwordSecurity.comparePassword(password, auth.getPassword(), playerName)) {
+                loginCaptchaManager.resetLoginFailureCount(normalizedName);
+                if (ip != null) {
+                    tempbanManager.resetCount(ip, normalizedName);
+                }
+                preJoinDialogService.storePendingLoginPassword(sessionId, password);
+                completeLoginResponse(sessionId, null);
+            } else {
+                completeLoginResponse(sessionId, messages.retrieveSingle(playerName, MessageKey.WRONG_PASSWORD));
+            }
+        });
     }
 
     private void processPreJoinLoginRecovery(String playerName, PlayerConfigurationConnection connection) {
