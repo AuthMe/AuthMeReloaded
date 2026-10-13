@@ -473,12 +473,12 @@ final class VelocityProxyBridge {
         if (authenticationStore.isAuthenticated(player)) {
             return;
         }
-        if (configuration.isAuthServer(event.getOriginalServer())) {
+        Optional<RegisteredServer> target = event.getResult().getServer();
+        if (target.isEmpty() || configuration.isAuthServer(target.get())) {
             return;
         }
 
-        String targetName = event.getResult().getServer()
-            .map(s -> s.getServerInfo().getName()).orElse("unknown");
+        String targetName = target.get().getServerInfo().getName();
         logger.debug("Blocking unauthenticated player {} from switching to server '{}'",
             player.getUsername(), targetName);
 

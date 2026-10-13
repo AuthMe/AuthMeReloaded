@@ -88,7 +88,7 @@ public final class AuthMeVelocityPlugin extends AbstractAuthMeVelocityPlugin {
         proxyBridge.onServerConnected(event);
     }
 
-    @Subscribe
+    @Subscribe(priority = Short.MIN_VALUE)
     public void onServerPreConnect(ServerPreConnectEvent event) {
         proxyBridge.onServerPreConnect(event);
     }

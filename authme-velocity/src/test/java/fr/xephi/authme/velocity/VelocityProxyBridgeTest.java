@@ -314,6 +314,39 @@ class VelocityProxyBridgeTest {
     }
 
     @Test
+    void shouldDenySwitchRedirectedAwayFromAuthServerForUnauthenticatedPlayer() {
+        given(player.getUsername()).willReturn("Alice");
+        given(authServer.getServerInfo()).willReturn(authServerInfo);
+        given(authServerInfo.getName()).willReturn("lobby");
+        given(player.getCurrentServer()).willReturn(Optional.of(currentServer));
+        given(nonAuthServer.getServerInfo()).willReturn(nonAuthServerInfo);
+        given(nonAuthServerInfo.getName()).willReturn("survival");
+
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
+        ServerPreConnectEvent event = new ServerPreConnectEvent(player, authServer, authServer);
+        event.setResult(ServerPreConnectEvent.ServerResult.allowed(nonAuthServer));
+
+        bridge.onServerPreConnect(event);
+
+        assertFalse(event.getResult().isAllowed());
+    }
+
+    @Test
+    void shouldAllowSwitchRedirectedToAuthServerForUnauthenticatedPlayer() {
+        given(player.getUsername()).willReturn("Alice");
+        given(authServer.getServerInfo()).willReturn(authServerInfo);
+        given(authServerInfo.getName()).willReturn("lobby");
+
+        VelocityProxyBridge bridge = new VelocityProxyBridge(proxyServer, logger, createConfiguration(), new VelocityAuthenticationStore(), null);
+        ServerPreConnectEvent event = new ServerPreConnectEvent(player, nonAuthServer);
+        event.setResult(ServerPreConnectEvent.ServerResult.allowed(authServer));
+
+        bridge.onServerPreConnect(event);
+
+        assertTrue(event.getResult().isAllowed());
+    }
+
+    @Test
     void shouldDisconnectPlayerOnInitialJoinToNonAuthServerWhenSwitchRequiresAuth() {
         given(player.getUsername()).willReturn("Alice");
         given(player.getCurrentServer()).willReturn(Optional.empty());
