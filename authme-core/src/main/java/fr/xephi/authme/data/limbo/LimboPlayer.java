@@ -35,6 +35,7 @@ public class LimboPlayer {
     private MessageTask messageTask = null;
     private CancellableTask messageTaskHandle = null;
     private LimboPlayerState state = LimboPlayerState.PASSWORD_REQUIRED;
+    private int failedTotpAttempts;
     private Set<UUID> enderPearlUuids = new HashSet<>();
     private Map<UUID, EnderPearlRestoreData> enderPearls = new HashMap<>();
     private UUID vehicleUuid;
@@ -156,6 +157,15 @@ public class LimboPlayer {
 
     public void setState(LimboPlayerState state) {
         this.state = state;
+    }
+
+    /**
+     * Records a failed attempt at entering the TOTP code.
+     *
+     * @return the number of failed TOTP attempts, including this one
+     */
+    public int increaseFailedTotpAttempts() {
+        return ++failedTotpAttempts;
     }
 
     /**
