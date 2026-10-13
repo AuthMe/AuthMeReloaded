@@ -122,6 +122,23 @@ class LimboServiceHelper {
         return merged;
     }
 
+    /**
+     * Returns the given limbo player without OP status, keeping all other data.
+     *
+     * @param limbo the limbo player
+     * @return the limbo player itself if it is not an operator, otherwise a copy that is not
+     */
+    LimboPlayer withoutOperator(LimboPlayer limbo) {
+        if (!limbo.isOperator()) {
+            return limbo;
+        }
+        LimboPlayer copy = new LimboPlayer(limbo.getLocation(), false, limbo.getGroups(), limbo.isCanFly(),
+            limbo.getWalkSpeed(), limbo.getFlySpeed());
+        copy.setEnderPearls(limbo.getEnderPearls());
+        copy.setVehicle(limbo.getVehicleUuid(), limbo.getVehicleType());
+        return copy;
+    }
+
     private static Collection<EnderPearlRestoreData> mergeEnderPearls(LimboPlayer newLimbo, LimboPlayer oldLimbo) {
         Map<UUID, EnderPearlRestoreData> mergedPearls = new LinkedHashMap<>();
         for (EnderPearlRestoreData pearl : oldLimbo.getEnderPearls()) {

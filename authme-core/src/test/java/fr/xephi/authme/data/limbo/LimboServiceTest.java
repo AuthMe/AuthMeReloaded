@@ -20,6 +20,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -156,6 +157,41 @@ class LimboServiceTest {
         assertThat(limbo.getFlySpeed(), equalTo(0.4f));
         assertThat(limbo.getLocation(), equalTo(playerLoc));
         assertThat(limbo.getGroups(), equalTo(Collections.emptyList()));
+    }
+
+    @Test
+    void shouldNotRestoreOpStatusFromDiskLimboForUnregisteredPlayer() {
+        // given
+        Player player = newPlayer("Purged", false, 0.2f, false, 0.1f);
+        LimboPlayer diskLimbo = new LimboPlayer(null, true, Collections.emptyList(), false, 0.2f, 0.1f);
+        given(limboPersistence.getLimboPlayer(player)).willReturn(diskLimbo);
+        given(spawnLoader.getPlayerLocationOrSpawn(player)).willReturn(mock(Location.class));
+        given(permissionsManager.hasGroupSupport()).willReturn(false);
+        given(settings.getProperty(LimboSettings.RESTORE_ALLOW_FLIGHT)).willReturn(AllowFlightRestoreType.RESTORE);
+        given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
+        given(teleportationService.consumeOriginalJoinLocation(anyString(), any(Location.class)))
+            .willAnswer(invocation -> invocation.getArgument(1));
+
+        // when
+        limboService.createLimboPlayer(player, false);
+
+        // then
+        assertThat(limboService.getLimboPlayer("purged").isOperator(), equalTo(false));
+    }
+
+    @Test
+    void shouldNotStoreOpStatusWhenSavingStateOfAuthenticatedPlayer() {
+        // given
+        Player player = newPlayer("Rider", true, 0.2f, false, 0.1f);
+        given(limboPersistence.getLimboPlayer(player)).willReturn(null);
+
+        // when
+        limboService.saveVehicleForPlayer(player, UUID.randomUUID(), EntityType.BOAT);
+
+        // then
+        ArgumentCaptor<LimboPlayer> captor = ArgumentCaptor.forClass(LimboPlayer.class);
+        verify(limboPersistence).saveLimboPlayer(eq(player), captor.capture());
+        assertThat(captor.getValue().isOperator(), equalTo(false));
     }
 
     @Test

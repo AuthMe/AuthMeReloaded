@@ -87,6 +87,9 @@ public class LimboService {
         Location location = teleportationService.consumeOriginalJoinLocation(name, spawnLoader.getPlayerLocationOrSpawn(player));
         LimboPlayer limboPlayer = helper.merge(existingLimbo, limboFromDisk);
         limboPlayer = helper.merge(helper.createLimboPlayer(player, isRegistered, location), limboPlayer);
+        if (!isRegistered) {
+            limboPlayer = helper.withoutOperator(limboPlayer);
+        }
 
         LimboMessageType messageType = isRegistered ? LimboMessageType.LOG_IN : LimboMessageType.REGISTER;
         taskManager.registerMessageTask(player, limboPlayer, messageType);
@@ -289,7 +292,7 @@ public class LimboService {
     public void saveEnderPearlsForPlayer(Player player, Collection<EnderPearlRestoreData> pearls) {
         LimboPlayer limbo = persistence.getLimboPlayer(player);
         if (limbo == null) {
-            limbo = new LimboPlayer(null, player.isOp(), Collections.emptyList(), player.getAllowFlight(),
+            limbo = new LimboPlayer(null, false, Collections.emptyList(), player.getAllowFlight(),
                 player.getWalkSpeed(), player.getFlySpeed());
         }
         limbo.setEnderPearls(pearls);
@@ -322,7 +325,7 @@ public class LimboService {
     public void saveVehicleForPlayer(Player player, UUID vehicleUuid, EntityType vehicleType) {
         LimboPlayer limbo = persistence.getLimboPlayer(player);
         if (limbo == null) {
-            limbo = new LimboPlayer(null, player.isOp(), Collections.emptyList(), player.getAllowFlight(),
+            limbo = new LimboPlayer(null, false, Collections.emptyList(), player.getAllowFlight(),
                 player.getWalkSpeed(), player.getFlySpeed());
         }
         limbo.setVehicle(vehicleUuid, vehicleType);
