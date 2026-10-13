@@ -33,17 +33,20 @@ final class ProxyPremiumVerificationPacketListener extends PacketListenerAbstrac
     private final Predicate<String> isPendingVerification;
     private final Consumer<String> pendingVerificationFailureHandler;
     private final ProxyPremiumLoginVerifier loginVerifier;
+    private final Predicate<String> isNameConnected;
     private final Consumer<String> warningLogger;
 
     ProxyPremiumVerificationPacketListener(Predicate<String> requiresVerification,
                                            Predicate<String> isPendingVerification,
                                            Consumer<String> pendingVerificationFailureHandler,
                                            ProxyPremiumLoginVerifier loginVerifier,
+                                           Predicate<String> isNameConnected,
                                            Consumer<String> warningLogger) {
         this.requiresVerification = requiresVerification;
         this.isPendingVerification = isPendingVerification;
         this.pendingVerificationFailureHandler = pendingVerificationFailureHandler;
         this.loginVerifier = loginVerifier;
+        this.isNameConnected = isNameConnected;
         this.warningLogger = warningLogger;
     }
 
@@ -140,11 +143,7 @@ final class ProxyPremiumVerificationPacketListener extends PacketListenerAbstrac
 
         loginVerifier.completeVerification(connectionKey, sharedSecret, encryptedVerifyToken)
             .thenAccept(maybeUuid -> {
-                if (maybeUuid.isPresent()) {
-                    loginVerifier.storeVerified(username, maybeUuid.get());
-                } else {
-                    handlePendingVerificationFailure(username, pendingPremiumEnrollment);
-                }
+                onVerificationCompleted(username, maybeUuid, pendingPremiumEnrollment);
                 resumeLogin(user, username, clientVersion, playerUuid);
             })
             .exceptionally(ex -> {
@@ -154,6 +153,17 @@ final class ProxyPremiumVerificationPacketListener extends PacketListenerAbstrac
                 resumeLogin(user, username, clientVersion, playerUuid);
                 return null;
             });
+    }
+
+    void onVerificationCompleted(String username, Optional<UUID> maybeUuid, boolean pendingPremiumEnrollment) {
+        if (maybeUuid.isEmpty()) {
+            handlePendingVerificationFailure(username, pendingPremiumEnrollment);
+        } else if (isNameConnected.test(username)) {
+            warningLogger.accept("Discarding premium verification for '" + username
+                + "': a player with this name is already connected");
+        } else {
+            loginVerifier.storeVerified(username, maybeUuid.get());
+        }
     }
 
     private boolean enableChannelEncryption(Object channel, byte[] sharedSecret) {

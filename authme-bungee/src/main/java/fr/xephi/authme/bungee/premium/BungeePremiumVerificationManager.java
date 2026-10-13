@@ -54,7 +54,8 @@ public final class BungeePremiumVerificationManager implements PremiumVerificati
             return;
         }
         packetListener = new ProxyPremiumVerificationPacketListener(
-            requiresVerification, isPendingVerification, pendingVerificationFailureHandler, loginVerifier, logger::warning);
+            requiresVerification, isPendingVerification, pendingVerificationFailureHandler, loginVerifier,
+            name -> proxyServer.getPlayer(name) != null, logger::warning);
         PacketEvents.getAPI().getEventManager().registerListener(packetListener);
         registered = true;
         logger.info("Registered PacketEvents premium verification on the Bungee proxy");

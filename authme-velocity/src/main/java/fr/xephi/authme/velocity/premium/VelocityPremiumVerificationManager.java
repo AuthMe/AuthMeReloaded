@@ -20,6 +20,7 @@ public final class VelocityPremiumVerificationManager {
     private final Predicate<String> isPendingVerification;
     private final Consumer<String> pendingVerificationFailureHandler;
     private final BooleanSupplier keepOfflineUuidCompatibility;
+    private final Predicate<String> isNameConnected;
     private final Set<String> pendingVerificationAttempted = ConcurrentHashMap.newKeySet();
     private final ProxyPremiumLoginVerifier loginVerifier;
     private boolean registered;
@@ -28,12 +29,14 @@ public final class VelocityPremiumVerificationManager {
                                               Predicate<String> requiresVerification,
                                               Predicate<String> isPendingVerification,
                                               Consumer<String> pendingVerificationFailureHandler,
-                                              BooleanSupplier keepOfflineUuidCompatibility) {
+                                              BooleanSupplier keepOfflineUuidCompatibility,
+                                              Predicate<String> isNameConnected) {
         this.logger = logger;
         this.requiresVerification = requiresVerification;
         this.isPendingVerification = isPendingVerification;
         this.pendingVerificationFailureHandler = pendingVerificationFailureHandler;
         this.keepOfflineUuidCompatibility = keepOfflineUuidCompatibility;
+        this.isNameConnected = isNameConnected;
         this.loginVerifier = new ProxyPremiumLoginVerifier("authme-velocity-premium",
             message -> this.logger.warn(message));
     }
@@ -67,6 +70,11 @@ public final class VelocityPremiumVerificationManager {
         }
 
         UUID verifiedPremiumUuid = event.getOriginalProfile().getId();
+        if (isNameConnected.test(normalizedName)) {
+            logger.warn("Discarding premium verification for '{}': a player with this name is already connected",
+                normalizedName);
+            return;
+        }
         loginVerifier.storeVerified(normalizedName, verifiedPremiumUuid);
         pendingVerificationAttempted.remove(normalizedName);
         boolean rewrite = keepOfflineUuidCompatibility.getAsBoolean();

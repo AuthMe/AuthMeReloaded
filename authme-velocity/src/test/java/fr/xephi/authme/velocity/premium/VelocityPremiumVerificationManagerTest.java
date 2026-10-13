@@ -25,7 +25,7 @@ class VelocityPremiumVerificationManagerTest {
     @Test
     void shouldForceOnlineModeForPremiumUser() {
         VelocityPremiumVerificationManager manager = new VelocityPremiumVerificationManager(
-            mock(Logger.class), "alice"::equals, normalizedName -> false, name -> { }, () -> false);
+            mock(Logger.class), "alice"::equals, normalizedName -> false, name -> { }, () -> false, name -> false);
 
         PreLoginEvent event = new PreLoginEvent(mock(InboundConnection.class), "Alice", null);
         manager.onPreLogin(event);
@@ -37,7 +37,7 @@ class VelocityPremiumVerificationManagerTest {
     @Test
     void shouldRewriteVerifiedProfileToOfflineUuid() {
         VelocityPremiumVerificationManager manager = new VelocityPremiumVerificationManager(
-            mock(Logger.class), "alice"::equals, normalizedName -> false, name -> { }, () -> true);
+            mock(Logger.class), "alice"::equals, normalizedName -> false, name -> { }, () -> true, name -> false);
         UUID mojangUuid = UUID.fromString("8d6d0684-d8b4-4d40-8d2d-0dd4df5555c8");
         GameProfile originalProfile = new GameProfile(mojangUuid, "Alice", List.of());
         GameProfileRequestEvent event = new GameProfileRequestEvent(
@@ -50,9 +50,22 @@ class VelocityPremiumVerificationManagerTest {
     }
 
     @Test
+    void shouldNotStoreVerificationWhenPlayerWithNameIsAlreadyConnected() {
+        VelocityPremiumVerificationManager manager = new VelocityPremiumVerificationManager(
+            mock(Logger.class), "alice"::equals, normalizedName -> false, name -> { }, () -> false, "alice"::equals);
+        UUID mojangUuid = UUID.fromString("8d6d0684-d8b4-4d40-8d2d-0dd4df5555c8");
+        GameProfileRequestEvent event = new GameProfileRequestEvent(
+            mock(InboundConnection.class), new GameProfile(mojangUuid, "Alice", List.of()), true);
+
+        manager.onGameProfileRequest(event);
+
+        assertNull(manager.getVerifiedPremiumUuid("alice"));
+    }
+
+    @Test
     void shouldIgnoreOfflineModeProfileRequest() {
         VelocityPremiumVerificationManager manager = new VelocityPremiumVerificationManager(
-            mock(Logger.class), "alice"::equals, normalizedName -> false, name -> { }, () -> true);
+            mock(Logger.class), "alice"::equals, normalizedName -> false, name -> { }, () -> true, name -> false);
         UUID mojangUuid = UUID.fromString("8d6d0684-d8b4-4d40-8d2d-0dd4df5555c8");
         GameProfile originalProfile = new GameProfile(mojangUuid, "Alice", List.of());
         GameProfileRequestEvent event = new GameProfileRequestEvent(
@@ -67,7 +80,7 @@ class VelocityPremiumVerificationManagerTest {
     @Test
     void shouldKeepMojangUuidWhenOfflineCompatibilityDisabled() {
         VelocityPremiumVerificationManager manager = new VelocityPremiumVerificationManager(
-            mock(Logger.class), "alice"::equals, normalizedName -> false, name -> { }, () -> false);
+            mock(Logger.class), "alice"::equals, normalizedName -> false, name -> { }, () -> false, name -> false);
         UUID mojangUuid = UUID.fromString("8d6d0684-d8b4-4d40-8d2d-0dd4df5555c8");
         GameProfile originalProfile = new GameProfile(mojangUuid, "Alice", List.of());
         GameProfileRequestEvent event = new GameProfileRequestEvent(
@@ -83,7 +96,7 @@ class VelocityPremiumVerificationManagerTest {
     void shouldForceOnlineModeOnFirstPendingAttemptThenCancelOnSecond() {
         Set<String> pending = new HashSet<>(Set.of("alice"));
         VelocityPremiumVerificationManager manager = new VelocityPremiumVerificationManager(
-            mock(Logger.class), pending::contains, pending::contains, pending::remove, () -> false);
+            mock(Logger.class), pending::contains, pending::contains, pending::remove, () -> false, name -> false);
 
         PreLoginEvent firstAttempt = new PreLoginEvent(mock(InboundConnection.class), "Alice", null);
         manager.onPreLogin(firstAttempt);
@@ -102,7 +115,7 @@ class VelocityPremiumVerificationManagerTest {
     void shouldKeepForcingOnlineModeForPendingPlayerAfterSuccessfulVerification() {
         Set<String> pending = new HashSet<>(Set.of("alice"));
         VelocityPremiumVerificationManager manager = new VelocityPremiumVerificationManager(
-            mock(Logger.class), pending::contains, pending::contains, pending::remove, () -> false);
+            mock(Logger.class), pending::contains, pending::contains, pending::remove, () -> false, name -> false);
         GameProfile profile = new GameProfile(
             UUID.fromString("8d6d0684-d8b4-4d40-8d2d-0dd4df5555c8"), "Alice", List.of());
 
@@ -122,7 +135,7 @@ class VelocityPremiumVerificationManagerTest {
         Set<String> pending = new HashSet<>(Set.of("alice"));
         Predicate<String> requiresVerification = name -> "alice".equals(name) || pending.contains(name);
         VelocityPremiumVerificationManager manager = new VelocityPremiumVerificationManager(
-            mock(Logger.class), requiresVerification, pending::contains, pending::remove, () -> false);
+            mock(Logger.class), requiresVerification, pending::contains, pending::remove, () -> false, name -> false);
 
         manager.onPreLogin(new PreLoginEvent(mock(InboundConnection.class), "Alice", null));
         PreLoginEvent secondAttempt = new PreLoginEvent(mock(InboundConnection.class), "Alice", null);
@@ -137,7 +150,7 @@ class VelocityPremiumVerificationManagerTest {
     void shouldResetAttemptWhenPendingVerificationIsRearmed() {
         Set<String> pending = new HashSet<>(Set.of("alice"));
         VelocityPremiumVerificationManager manager = new VelocityPremiumVerificationManager(
-            mock(Logger.class), pending::contains, pending::contains, pending::remove, () -> false);
+            mock(Logger.class), pending::contains, pending::contains, pending::remove, () -> false, name -> false);
 
         manager.onPreLogin(new PreLoginEvent(mock(InboundConnection.class), "Alice", null));
         // A new /premium run sends premium.pending.set again, which clears the verification state
