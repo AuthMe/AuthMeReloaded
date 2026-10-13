@@ -381,7 +381,14 @@ public class SpawnLoader implements Reloadable {
      * @return the player's respawn location if available, otherwise the configured spawn
      */
     public Location getPlayerRespawnLocationOrSpawn(Player player) {
-        Location respawnLocation = teleportAdapter.getPlayerRespawnLocation(player);
+        Location respawnLocation;
+        try {
+            respawnLocation = teleportAdapter.getPlayerRespawnLocation(player);
+        } catch (RuntimeException e) {
+            logger.debug("Could not read the respawn location of `{0}`, using the spawn instead: {1}",
+                player.getName(), e.getMessage());
+            respawnLocation = null;
+        }
         if (respawnLocation != null && respawnLocation.getWorld() != null) {
             return respawnLocation;
         }

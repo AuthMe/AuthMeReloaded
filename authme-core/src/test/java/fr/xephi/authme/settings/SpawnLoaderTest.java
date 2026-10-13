@@ -132,6 +132,27 @@ class SpawnLoaderTest {
     }
 
     @Test
+    void shouldFallbackToConfiguredSpawnIfRespawnLocationCannotBeRead() {
+        // given
+        given(settings.getProperty(RestrictionSettings.SPAWN_PRIORITY)).willReturn("default");
+        spawnLoader.reload();
+
+        Player player = mock(Player.class);
+        given(player.getHealth()).willReturn(0.0);
+        given(teleportAdapter.getPlayerRespawnLocation(player)).willThrow(IllegalStateException.class);
+        World world = mock(World.class);
+        Location worldSpawn = new Location(world, 5.0, 65.0, 5.0);
+        given(player.getWorld()).willReturn(world);
+        given(world.getSpawnLocation()).willReturn(worldSpawn);
+
+        // when
+        Location result = spawnLoader.getPlayerLocationOrSpawn(player);
+
+        // then
+        assertThat(result, equalTo(worldSpawn));
+    }
+
+    @Test
     void shouldReturnExactWorldSpawnForServerPriorityWithZeroRadius() {
         // given
         given(settings.getProperty(RestrictionSettings.SPAWN_PRIORITY)).willReturn("server");
