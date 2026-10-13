@@ -62,7 +62,7 @@ public class OnShutdownPlayerSaver {
             return;
         }
         try {
-            if (limboService.hasLimboPlayer(name)) {
+            if (limboService.hasLimboPlayer(player)) {
                 limboService.restoreData(player);
             } else {
                 limboService.restorePendingOperator(player);

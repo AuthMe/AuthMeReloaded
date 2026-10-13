@@ -68,7 +68,7 @@ public class TotpCodeCommand extends PlayerCommand {
             return;
         }
 
-        LimboPlayer limbo = limboService.getLimboPlayer(player.getName());
+        LimboPlayer limbo = limboService.getLimboPlayer(player);
         if (limbo != null && limbo.getState() == LimboPlayerState.TOTP_REQUIRED) {
             processCode(player, auth, limbo, arguments.get(0));
         } else {

@@ -977,11 +977,11 @@ class PlayerListenerTest {
     @Test
     void shouldRestoreLimboDataSynchronouslyOnQuitOfPlayerInLimbo() {
         // given
-        Player player = mockPlayerWithName("Limbo");
+        Player player = mock(Player.class);
         given(settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)).willReturn(false);
         given(settings.getProperty(RegistrationSettings.REMOVE_UNLOGGED_LEAVE_MESSAGE)).willReturn(false);
         given(listenerService.shouldCancelEvent(player)).willReturn(true);
-        given(limboService.hasLimboPlayer("Limbo")).willReturn(true);
+        given(limboService.hasLimboPlayer(player)).willReturn(true);
         PlayerQuitEvent event = new PlayerQuitEvent(player, "quit");
 
         // when
@@ -996,11 +996,11 @@ class PlayerListenerTest {
     @Test
     void shouldRestoreRevokedOperatorOnQuitOfPlayerWithoutLimbo() {
         // given
-        Player player = mockPlayerWithName("Bobby");
+        Player player = mock(Player.class);
         given(settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)).willReturn(false);
         given(settings.getProperty(RegistrationSettings.REMOVE_UNLOGGED_LEAVE_MESSAGE)).willReturn(false);
         given(listenerService.shouldCancelEvent(player)).willReturn(true);
-        given(limboService.hasLimboPlayer("Bobby")).willReturn(false);
+        given(limboService.hasLimboPlayer(player)).willReturn(false);
         PlayerQuitEvent event = new PlayerQuitEvent(player, "quit");
 
         // when

@@ -112,7 +112,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
         PlayerAuth auth = getPlayerAuth(player);
         if (auth != null && checkPlayerInfo(player, auth, password)) {
             if (auth.getTotpKey() != null) {
-                LimboPlayer limbo = limboService.getLimboPlayer(player.getName());
+                LimboPlayer limbo = limboService.getLimboPlayer(player);
                 if (limbo == null) {
                     service.send(player, MessageKey.LOGIN_MESSAGE);
                     return;

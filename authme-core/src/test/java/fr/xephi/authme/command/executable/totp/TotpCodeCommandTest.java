@@ -78,7 +78,7 @@ class TotpCodeCommandTest {
         given(dataSource.getAuth("Bobby")).willReturn(auth);
         limbo = new LimboPlayer(null, false, Collections.emptyList(), false, 0.2f, 0.1f);
         limbo.setState(LimboPlayerState.TOTP_REQUIRED);
-        given(limboService.getLimboPlayer("Bobby")).willReturn(limbo);
+        given(limboService.getLimboPlayer(player)).willReturn(limbo);
     }
 
     @Test

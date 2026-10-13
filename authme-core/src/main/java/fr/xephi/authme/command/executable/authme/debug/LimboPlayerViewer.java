@@ -56,14 +56,14 @@ class LimboPlayerViewer implements DebugSection {
             return;
         }
 
-        LimboPlayer memoryLimbo = limboService.getLimboPlayer(arguments.get(0));
         Player player = bukkitService.getPlayerExact(arguments.get(0));
-        LimboPlayer diskLimbo = player != null ? limboPersistence.getLimboPlayer(player) : null;
-        if (memoryLimbo == null && player == null) {
+        if (player == null) {
             sender.sendMessage(ChatColor.BLUE + "No AuthMe limbo data");
             sender.sendMessage("No limbo data and no player online with name '" + arguments.get(0) + "'");
             return;
         }
+        LimboPlayer memoryLimbo = limboService.getLimboPlayer(player);
+        LimboPlayer diskLimbo = limboPersistence.getLimboPlayer(player);
 
         sender.sendMessage(ChatColor.BLUE + "Player / limbo / disk limbo info for '" + arguments.get(0) + "'");
         new InfoDisplayer(sender, player, memoryLimbo, diskLimbo)

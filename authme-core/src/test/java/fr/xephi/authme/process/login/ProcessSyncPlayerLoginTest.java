@@ -75,7 +75,7 @@ class ProcessSyncPlayerLoginTest {
     @Test
     void shouldRestoreRevokedOperatorWhenLoggedInWithoutLimbo() {
         // given
-        given(limboService.getLimboPlayer("bobby")).willReturn(null);
+        given(limboService.getLimboPlayer(player)).willReturn(null);
 
         // when
         processSyncPlayerLogin.processPlayerLogin(player, false, Collections.emptyList());
@@ -89,7 +89,7 @@ class ProcessSyncPlayerLoginTest {
     @Test
     void shouldRestoreDataFromLimboWhenLoggedInWithLimbo() {
         // given
-        given(limboService.getLimboPlayer("bobby")).willReturn(mock(LimboPlayer.class));
+        given(limboService.getLimboPlayer(player)).willReturn(mock(LimboPlayer.class));
 
         // when
         processSyncPlayerLogin.processPlayerLogin(player, false, Collections.emptyList());

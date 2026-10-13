@@ -281,7 +281,7 @@ class AsynchronousLoginTest {
         given(commonService.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(false);
         given(loginCaptchaManager.isCaptchaRequired("bobby")).willReturn(false);
         given(passwordSecurity.comparePassword("hunter2", auth.getPassword(), "bobby")).willReturn(true);
-        given(limboService.getLimboPlayer("bobby")).willReturn(limboPlayer);
+        given(limboService.getLimboPlayer(player)).willReturn(limboPlayer);
         given(commonService.getProperty(RegistrationSettings.USE_DIALOG_UI)).willReturn(true);
         given(dialogAdapter.isDialogSupported()).willReturn(true);
         given(player.isOnline()).willReturn(true);
@@ -315,7 +315,7 @@ class AsynchronousLoginTest {
         given(commonService.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(false);
         given(loginCaptchaManager.isCaptchaRequired("bobby")).willReturn(false);
         given(passwordSecurity.comparePassword("hunter2", auth.getPassword(), "bobby")).willReturn(true);
-        given(limboService.getLimboPlayer("bobby")).willReturn(limboPlayer);
+        given(limboService.getLimboPlayer(player)).willReturn(limboPlayer);
         given(commonService.getProperty(RegistrationSettings.USE_DIALOG_UI)).willReturn(false);
         given(commonService.getProperty(RegistrationSettings.USE_PREJOIN_DIALOG_UI)).willReturn(false);
 
@@ -341,7 +341,7 @@ class AsynchronousLoginTest {
         given(commonService.getProperty(PluginSettings.USE_ASYNC_TASKS)).willReturn(false);
         given(loginCaptchaManager.isCaptchaRequired("bobby")).willReturn(false);
         given(passwordSecurity.comparePassword("hunter2", auth.getPassword(), "bobby")).willReturn(true);
-        given(limboService.getLimboPlayer("bobby")).willReturn(null);
+        given(limboService.getLimboPlayer(player)).willReturn(null);
 
         // when
         asynchronousLogin.login(player, "hunter2");

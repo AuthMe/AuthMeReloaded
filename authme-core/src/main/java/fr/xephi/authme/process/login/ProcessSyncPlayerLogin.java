@@ -107,7 +107,7 @@ public class ProcessSyncPlayerLogin implements SynchronousProcess {
         }
 
         final String name = player.getName().toLowerCase(Locale.ROOT);
-        final LimboPlayer limbo = limboService.getLimboPlayer(name);
+        final LimboPlayer limbo = limboService.getLimboPlayer(player);
 
         player.setNoDamageTicks(0);
 

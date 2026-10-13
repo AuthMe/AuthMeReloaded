@@ -19,7 +19,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Locale;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
@@ -92,7 +91,7 @@ class OnShutdownPlayerSaverTest {
     private Player mockPlayerInLimbo(String name) {
         Player player = mock(Player.class);
         given(player.getName()).willReturn(name);
-        given(limboService.hasLimboPlayer(name.toLowerCase(Locale.ROOT))).willReturn(true);
+        given(limboService.hasLimboPlayer(player)).willReturn(true);
         return player;
     }
 }

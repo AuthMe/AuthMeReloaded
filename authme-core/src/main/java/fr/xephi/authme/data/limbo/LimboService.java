@@ -40,7 +40,7 @@ public class LimboService {
 
     private final ConsoleLogger logger = ConsoleLoggerFactory.get(LimboService.class);
 
-    private final Map<String, LimboPlayer> entries = new ConcurrentHashMap<>();
+    private final Map<UUID, LimboPlayer> entries = new ConcurrentHashMap<>();
 
     private final Set<UUID> pendingOperators = ConcurrentHashMap.newKeySet();
 
@@ -85,7 +85,7 @@ public class LimboService {
             logger.debug("LimboPlayer for `{0}` already exists on disk", name);
         }
 
-        LimboPlayer existingLimbo = entries.remove(name);
+        LimboPlayer existingLimbo = entries.remove(player.getUniqueId());
         if (existingLimbo != null) {
             existingLimbo.clearTasks();
             logger.debug("LimboPlayer for `{0}` already present in memory", name);
@@ -105,7 +105,7 @@ public class LimboService {
         helper.revokeLimboStates(player);
         authGroupHandler.setGroup(player, limboPlayer,
             isRegistered ? AuthGroupType.REGISTERED_UNAUTHENTICATED : AuthGroupType.UNREGISTERED);
-        entries.put(name, limboPlayer);
+        entries.put(player.getUniqueId(), limboPlayer);
         persistence.saveLimboPlayer(player, limboPlayer);
     }
 
@@ -135,23 +135,23 @@ public class LimboService {
     }
 
     /**
-     * Returns the limbo player for the given name, or null otherwise.
+     * Returns the limbo player of the given player, or null otherwise.
      *
-     * @param name the name to retrieve the data for
+     * @param player the player to retrieve the data for
      * @return the associated limbo player, or null if none available
      */
-    public LimboPlayer getLimboPlayer(String name) {
-        return entries.get(name.toLowerCase(Locale.ROOT));
+    public LimboPlayer getLimboPlayer(Player player) {
+        return entries.get(player.getUniqueId());
     }
 
     /**
-     * Returns whether there is a limbo player for the given name.
+     * Returns whether there is a limbo player for the given player.
      *
-     * @param name the name to check
+     * @param player the player to check
      * @return true if present, false otherwise
      */
-    public boolean hasLimboPlayer(String name) {
-        return entries.containsKey(name.toLowerCase(Locale.ROOT));
+    public boolean hasLimboPlayer(Player player) {
+        return entries.containsKey(player.getUniqueId());
     }
 
     /**
@@ -164,7 +164,7 @@ public class LimboService {
      */
     public void restoreData(Player player) {
         String lowerName = player.getName().toLowerCase(Locale.ROOT);
-        LimboPlayer limbo = entries.remove(lowerName);
+        LimboPlayer limbo = entries.remove(player.getUniqueId());
 
         if (limbo == null) {
             logger.debug("No LimboPlayer found for `{0}` - cannot restore", lowerName);
@@ -233,8 +233,7 @@ public class LimboService {
      * @param player the player whose speed should be restored
      */
     public void restoreSpeedSync(Player player) {
-        String lowerName = player.getName().toLowerCase(Locale.ROOT);
-        LimboPlayer limbo = entries.get(lowerName);
+        LimboPlayer limbo = entries.get(player.getUniqueId());
         if (limbo != null) {
             settings.getProperty(RESTORE_FLY_SPEED).restoreFlySpeed(player, limbo);
             settings.getProperty(RESTORE_WALK_SPEED).restoreWalkSpeed(player, limbo);
@@ -252,7 +251,7 @@ public class LimboService {
      * @param player the player to re-apply restrictions for
      */
     public void reapplyLimboRestrictions(Player player) {
-        if (hasLimboPlayer(player.getName())) {
+        if (hasLimboPlayer(player)) {
             helper.revokeLimboStates(player);
         }
     }
@@ -307,7 +306,7 @@ public class LimboService {
      * @return Optional with the limbo player
      */
     private Optional<LimboPlayer> getLimboOrLogError(Player player, String context) {
-        LimboPlayer limbo = entries.get(player.getName().toLowerCase(Locale.ROOT));
+        LimboPlayer limbo = entries.get(player.getUniqueId());
         if (limbo == null) {
             logger.debug("No LimboPlayer found for `{0}`. Action: {1}", player.getName(), context);
         }
@@ -375,8 +374,7 @@ public class LimboService {
      * @param player the player whose entities should be restored
      */
     public void restoreEntities(Player player) {
-        String name = player.getName().toLowerCase(Locale.ROOT);
-        LimboPlayer limbo = entries.get(name);
+        LimboPlayer limbo = entries.get(player.getUniqueId());
         if (limbo == null) {
             return;
         }

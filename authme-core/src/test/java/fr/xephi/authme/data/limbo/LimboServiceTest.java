@@ -120,8 +120,8 @@ class LimboServiceTest {
         verify(player).setFlySpeed(0.0f);
         verify(player).setWalkSpeed(0.0f);
 
-        assertThat(limboService.hasLimboPlayer("Bobby"), equalTo(true));
-        LimboPlayer limbo = limboService.getLimboPlayer("Bobby");
+        assertThat(limboService.hasLimboPlayer(player), equalTo(true));
+        LimboPlayer limbo = limboService.getLimboPlayer(player);
         verify(authGroupHandler).setGroup(player, limbo, AuthGroupType.REGISTERED_UNAUTHENTICATED);
         assertThat(limbo, not(nullValue()));
         assertThat(limbo.isOperator(), equalTo(true));
@@ -155,7 +155,7 @@ class LimboServiceTest {
         verify(player).setFlySpeed(0.0f);
         verify(player).setWalkSpeed(0.0f);
 
-        LimboPlayer limbo = limboService.getLimboPlayer("charles");
+        LimboPlayer limbo = limboService.getLimboPlayer(player);
         verify(authGroupHandler).setGroup(player, limbo, AuthGroupType.UNREGISTERED);
         assertThat(limbo, not(nullValue()));
         assertThat(limbo.isOperator(), equalTo(false));
@@ -183,7 +183,7 @@ class LimboServiceTest {
         limboService.createLimboPlayer(player, false);
 
         // then
-        assertThat(limboService.getLimboPlayer("purged").isOperator(), equalTo(false));
+        assertThat(limboService.getLimboPlayer(player).isOperator(), equalTo(false));
     }
 
     @Test
@@ -205,8 +205,8 @@ class LimboServiceTest {
     void shouldClearTasksOnAlreadyExistingLimbo() {
         // given
         LimboPlayer existingLimbo = mock(LimboPlayer.class);
-        getLimboMap().put("carlos", existingLimbo);
         Player player = newPlayer("Carlos");
+        getLimboMap().put(player.getUniqueId(), existingLimbo);
         given(settings.getProperty(LimboSettings.RESTORE_ALLOW_FLIGHT)).willReturn(AllowFlightRestoreType.ENABLE);
         given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
 
@@ -215,10 +215,36 @@ class LimboServiceTest {
 
         // then
         verify(existingLimbo).clearTasks();
-        LimboPlayer newLimbo = limboService.getLimboPlayer("Carlos");
+        LimboPlayer newLimbo = limboService.getLimboPlayer(player);
         verify(authGroupHandler).setGroup(player, newLimbo, AuthGroupType.UNREGISTERED);
         assertThat(newLimbo, not(nullValue()));
         assertThat(newLimbo, not(sameInstance(existingLimbo)));
+    }
+
+    @Test
+    void shouldKeepLimboPlayersOfOtherCaseOfNameApart() {
+        // given
+        Player admin = newPlayer("Admin", false, 0.2f, false, 0.1f);
+        LimboPlayer adminLimbo = Mockito.spy(new LimboPlayer(null, true,
+            Collections.singletonList(new UserGroup("admins")), false, 0.2f, 0.1f));
+        getLimboMap().put(admin.getUniqueId(), adminLimbo);
+        Player impostor = newPlayer("admin", false, 0.2f, false, 0.1f);
+        given(settings.getProperty(LimboSettings.RESTORE_ALLOW_FLIGHT)).willReturn(AllowFlightRestoreType.ENABLE);
+        given(settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)).willReturn(false);
+        given(settings.getProperty(LimboSettings.RESTORE_WALK_SPEED)).willReturn(WalkFlySpeedRestoreType.RESTORE);
+        given(settings.getProperty(LimboSettings.RESTORE_FLY_SPEED)).willReturn(WalkFlySpeedRestoreType.RESTORE);
+
+        // when
+        limboService.createLimboPlayer(impostor, true);
+        limboService.restoreData(impostor);
+        limboService.restoreData(admin);
+
+        // then
+        verify(adminLimbo).clearTasks();
+        verify(impostor, never()).setOp(true);
+        verify(authGroupHandler, never()).setGroup(impostor, adminLimbo, AuthGroupType.LOGGED_IN);
+        verify(admin).setOp(true);
+        verify(authGroupHandler).setGroup(admin, adminLimbo, AuthGroupType.LOGGED_IN);
     }
 
     @Test
@@ -238,7 +264,7 @@ class LimboServiceTest {
         limboService.createLimboPlayer(player, true);
 
         // then
-        assertThat(limboService.getLimboPlayer("Bobby").getLocation(), equalTo(rememberedJoinLocation));
+        assertThat(limboService.getLimboPlayer(player).getLocation(), equalTo(rememberedJoinLocation));
     }
 
     @Test
@@ -258,7 +284,7 @@ class LimboServiceTest {
         limboService.restorePendingOperator(player);
 
         // then
-        assertThat(limboService.getLimboPlayer("Bobby").isOperator(), equalTo(true));
+        assertThat(limboService.getLimboPlayer(player).isOperator(), equalTo(true));
         verify(player, never()).setOp(true);
     }
 
@@ -279,7 +305,7 @@ class LimboServiceTest {
         limboService.restorePendingOperator(player);
 
         // then
-        assertThat(limboService.getLimboPlayer("Bobby").isOperator(), equalTo(false));
+        assertThat(limboService.getLimboPlayer(player).isOperator(), equalTo(false));
         verify(player, never()).setOp(true);
     }
 
@@ -332,8 +358,8 @@ class LimboServiceTest {
         // given
         LimboPlayer limbo = Mockito.spy(convertToLimboPlayer(
             newPlayer("John", true, 0.4f, false, 0.0f), null, Collections.emptyList()));
-        getLimboMap().put("john", limbo);
         Player player = newPlayer("John", false, 0.2f, false, 0.7f);
+        getLimboMap().put(player.getUniqueId(), limbo);
 
         given(settings.getProperty(LimboSettings.RESTORE_ALLOW_FLIGHT)).willReturn(AllowFlightRestoreType.ENABLE);
         given(settings.getProperty(LimboSettings.RESTORE_WALK_SPEED)).willReturn(WalkFlySpeedRestoreType.RESTORE);
@@ -350,7 +376,7 @@ class LimboServiceTest {
         verify(limbo).clearTasks();
         verify(authGroupHandler).setGroup(player, limbo, AuthGroupType.LOGGED_IN);
         verify(limboPersistence).removeLimboPlayer(player);
-        assertThat(limboService.hasLimboPlayer("John"), equalTo(false));
+        assertThat(limboService.hasLimboPlayer(player), equalTo(false));
     }
 
     @Test
@@ -397,8 +423,8 @@ class LimboServiceTest {
     void shouldReplaceTasks() {
         // given
         LimboPlayer limbo = mock(LimboPlayer.class);
-        getLimboMap().put("jeff", limbo);
         Player player = newPlayer("JEFF");
+        getLimboMap().put(player.getUniqueId(), limbo);
 
 
         // when
@@ -430,7 +456,7 @@ class LimboServiceTest {
 
         LimboPlayer limbo = new LimboPlayer(null, false, Collections.emptyList(), false, 0.0f, 0.0f);
         limbo.setEnderPearls(Collections.singletonList(new EnderPearlRestoreData(pearlUuid, pearlLocation, pearlVelocity)));
-        getLimboMap().put("pearlie", limbo);
+        getLimboMap().put(player.getUniqueId(), limbo);
 
         given(settings.getProperty(LimboSettings.RECREATE_ENDER_PEARLS)).willReturn(true);
 
@@ -463,7 +489,7 @@ class LimboServiceTest {
 
         LimboPlayer limbo = new LimboPlayer(null, false, Collections.emptyList(), false, 0.0f, 0.0f);
         limbo.setEnderPearls(Collections.singletonList(new EnderPearlRestoreData(pearlUuid, pearlLocation, pearlVelocity)));
-        getLimboMap().put("pearlie", limbo);
+        getLimboMap().put(player.getUniqueId(), limbo);
 
         // when
         limboService.restoreEntities(player);
@@ -492,7 +518,7 @@ class LimboServiceTest {
 
         LimboPlayer limbo = new LimboPlayer(null, false, Collections.emptyList(), false, 0.0f, 0.0f);
         limbo.setEnderPearls(Collections.singletonList(new EnderPearlRestoreData(pearlUuid, pearlLocation, null)));
-        getLimboMap().put("pearlie", limbo);
+        getLimboMap().put(player.getUniqueId(), limbo);
 
         given(settings.getProperty(LimboSettings.RECREATE_ENDER_PEARLS)).willReturn(true);
 
@@ -627,7 +653,7 @@ class LimboServiceTest {
             player.getWalkSpeed(), player.getFlySpeed());
     }
 
-    private Map<String, LimboPlayer> getLimboMap() {
+    private Map<UUID, LimboPlayer> getLimboMap() {
         return ReflectionTestUtils.getFieldValue(LimboService.class, limboService, "entries");
     }
 }
