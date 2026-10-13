@@ -12,6 +12,7 @@ import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.Listener;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +30,11 @@ public class FoliaPlatformAdapter extends AbstractPaperPlatformAdapter {
     @Override
     public boolean isOwnedByCurrentThread(Entity entity) {
         return Bukkit.isOwnedByCurrentRegion(entity);
+    }
+
+    @Override
+    public boolean isOwnedByCurrentThread(Location location) {
+        return Bukkit.isOwnedByCurrentRegion(location);
     }
 
     @Override

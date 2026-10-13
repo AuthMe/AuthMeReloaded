@@ -3,6 +3,7 @@ package fr.xephi.authme.data.limbo;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.data.limbo.persistence.LimboPersistence;
 import fr.xephi.authme.output.ConsoleLoggerFactory;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
@@ -60,6 +61,9 @@ public class LimboService {
 
     @Inject
     private TeleportationService teleportationService;
+
+    @Inject
+    private BukkitService bukkitService;
 
     LimboService() {
     }
@@ -372,6 +376,9 @@ public class LimboService {
         outer:
         for (World world : player.getServer().getWorlds()) {
             for (Entity entity : world.getEntities()) {
+                if (!bukkitService.isOwnedByCurrentThread(entity)) {
+                    continue;
+                }
                 if (!pendingPearls.isEmpty() && entity instanceof EnderPearl
                         && pendingPearls.containsKey(entity.getUniqueId())) {
                     ((EnderPearl) entity).setShooter(player);
@@ -418,6 +425,11 @@ public class LimboService {
     private boolean recreateEnderPearl(Player player, EnderPearlRestoreData pearl) {
         if (!pearl.canBeRecreated()) {
             logger.debug("Unable to recreate ender pearl {0} for `{1}` because its saved location is unavailable",
+                pearl.getUuid(), player.getName().toLowerCase(Locale.ROOT));
+            return false;
+        }
+        if (!bukkitService.isOwnedByCurrentThread(pearl.getLocation())) {
+            logger.debug("Unable to recreate ender pearl {0} for `{1}` because its saved location is in another region",
                 pearl.getUuid(), player.getName().toLowerCase(Locale.ROOT));
             return false;
         }

@@ -7,6 +7,7 @@ import fr.xephi.authme.platform.SchedulingAdapter;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -174,6 +175,19 @@ class BukkitServiceTest {
 
         // then
         verify(task).run();
+    }
+
+    @Test
+    void shouldCheckRegionOwnershipThroughAdapter() {
+        // given
+        Entity entity = mock(Player.class);
+        Location location = new Location(null, 1.0, 2.0, 3.0);
+        given(schedulingAdapter.isOwnedByCurrentThread(entity)).willReturn(true);
+        given(schedulingAdapter.isOwnedByCurrentThread(location)).willReturn(false);
+
+        // when / then
+        assertThat(bukkitService.isOwnedByCurrentThread(entity), equalTo(true));
+        assertThat(bukkitService.isOwnedByCurrentThread(location), equalTo(false));
     }
 
     @Test

@@ -985,6 +985,7 @@ class PlayerListenerTest {
         given(player.getServer()).willReturn(server);
         given(server.getWorlds()).willReturn(Collections.singletonList(world));
         given(world.getEntitiesByClass(EnderPearl.class)).willReturn(Collections.singletonList(pearl));
+        given(bukkitService.isOwnedByCurrentThread(pearl)).willReturn(true);
         given(pearl.getShooter()).willReturn(player);
         given(pearl.getUniqueId()).willReturn(UUID.nameUUIDFromBytes("quit-pearl".getBytes()));
         given(pearl.getLocation()).willReturn(pearlLocation);
@@ -1004,6 +1005,31 @@ class PlayerListenerTest {
         fr.xephi.authme.data.limbo.EnderPearlRestoreData savedPearl = pearls.iterator().next();
         assertThat(savedPearl.getLocation(), equalTo(pearlLocation));
         assertThat(savedPearl.getVelocity(), equalTo(pearlVelocity));
+        verify(management).performQuit(player);
+    }
+
+    @Test
+    void shouldNotReadEnderPearlsOfAnotherRegionOnQuit() {
+        // given
+        Player player = mock(Player.class);
+        Server server = mock(Server.class);
+        World world = mock(World.class);
+        EnderPearl pearl = mock(EnderPearl.class);
+        given(settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)).willReturn(false);
+        given(settings.getProperty(RegistrationSettings.REMOVE_UNLOGGED_LEAVE_MESSAGE)).willReturn(false);
+        given(listenerService.shouldCancelEvent(player)).willReturn(false);
+        given(player.getServer()).willReturn(server);
+        given(server.getWorlds()).willReturn(Collections.singletonList(world));
+        given(world.getEntitiesByClass(EnderPearl.class)).willReturn(Collections.singletonList(pearl));
+        given(bukkitService.isOwnedByCurrentThread(pearl)).willReturn(false);
+        PlayerQuitEvent event = new PlayerQuitEvent(player, "quit");
+
+        // when
+        listener.onPlayerQuit(event);
+
+        // then
+        verify(pearl, never()).getShooter();
+        verify(limboService, never()).saveEnderPearlsForPlayer(eq(player), any(Collection.class));
         verify(management).performQuit(player);
     }
 

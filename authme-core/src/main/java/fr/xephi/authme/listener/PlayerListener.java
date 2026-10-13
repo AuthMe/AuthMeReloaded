@@ -266,6 +266,7 @@ public class PlayerListener implements Listener {
     private void saveStateBeforeQuit(Player player) {
         Set<EnderPearlRestoreData> pearls = player.getServer().getWorlds().stream()
             .flatMap(world -> world.getEntitiesByClass(EnderPearl.class).stream())
+            .filter(bukkitService::isOwnedByCurrentThread)
             .filter(pearl -> player.equals(pearl.getShooter()))
             .map(pearl -> new EnderPearlRestoreData(pearl.getUniqueId(), pearl.getLocation(), pearl.getVelocity()))
             .collect(Collectors.toSet());

@@ -4,6 +4,7 @@ import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.limbo.persistence.LimboPersistence;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.TeleportationService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
@@ -43,6 +44,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -79,6 +81,9 @@ class LimboServiceTest {
 
     @Mock
     private TeleportationService teleportationService;
+
+    @Mock
+    private BukkitService bukkitService;
 
     @BeforeAll
     public static void initLogger() {
@@ -333,6 +338,7 @@ class LimboServiceTest {
         Location pearlLocation = new Location(pearlWorld, 5.0, 64.0, -2.5, 15.0f, 30.0f);
         Vector pearlVelocity = new Vector(0.01, 0.2, -0.03);
         UUID pearlUuid = UUID.nameUUIDFromBytes("missing-pearl".getBytes());
+        given(bukkitService.isOwnedByCurrentThread(pearlLocation)).willReturn(true);
 
         LimboPlayer limbo = new LimboPlayer(null, false, Collections.emptyList(), false, 0.0f, 0.0f);
         limbo.setEnderPearls(Collections.singletonList(new EnderPearlRestoreData(pearlUuid, pearlLocation, pearlVelocity)));
@@ -375,6 +381,38 @@ class LimboServiceTest {
         limboService.restoreEntities(player);
 
         // then
+        verifyNoInteractions(pearlWorld);
+        assertThat(limbo.getEnderPearls(), hasSize(0));
+    }
+
+    @Test
+    void shouldNotAccessEnderPearlsOfAnotherRegion() {
+        // given
+        Player player = newPlayer("Pearlie");
+        Server server = mock(Server.class);
+        World world = mock(World.class);
+        World pearlWorld = mock(World.class);
+        EnderPearl pearlEntity = mock(EnderPearl.class);
+        given(player.getServer()).willReturn(server);
+        given(server.getWorlds()).willReturn(Collections.singletonList(world));
+        given(world.getEntities()).willReturn(Collections.singletonList(pearlEntity));
+        given(bukkitService.isOwnedByCurrentThread(pearlEntity)).willReturn(false);
+
+        Location pearlLocation = new Location(pearlWorld, 5.0, 64.0, -2.5, 15.0f, 30.0f);
+        given(bukkitService.isOwnedByCurrentThread(pearlLocation)).willReturn(false);
+        UUID pearlUuid = UUID.nameUUIDFromBytes("other-region-pearl".getBytes());
+
+        LimboPlayer limbo = new LimboPlayer(null, false, Collections.emptyList(), false, 0.0f, 0.0f);
+        limbo.setEnderPearls(Collections.singletonList(new EnderPearlRestoreData(pearlUuid, pearlLocation, null)));
+        getLimboMap().put("pearlie", limbo);
+
+        given(settings.getProperty(LimboSettings.RECREATE_ENDER_PEARLS)).willReturn(true);
+
+        // when
+        limboService.restoreEntities(player);
+
+        // then
+        verify(pearlEntity, never()).setShooter(any());
         verifyNoInteractions(pearlWorld);
         assertThat(limbo.getEnderPearls(), hasSize(0));
     }
@@ -428,6 +466,7 @@ class LimboServiceTest {
         Location pearlLocation = new Location(pearlWorld, 5.0, 64.0, -2.5, 15.0f, 30.0f);
         Vector pearlVelocity = new Vector(0.01, 0.2, -0.03);
         UUID pearlUuid = UUID.nameUUIDFromBytes("premium-pearl".getBytes());
+        given(bukkitService.isOwnedByCurrentThread(pearlLocation)).willReturn(true);
 
         LimboPlayer diskLimbo = new LimboPlayer(null, false, Collections.emptyList(), false, 0.2f, 0.1f);
         diskLimbo.setEnderPearls(Collections.singletonList(new EnderPearlRestoreData(pearlUuid, pearlLocation, pearlVelocity)));
