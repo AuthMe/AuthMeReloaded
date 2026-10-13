@@ -28,6 +28,8 @@ public class ProcessSyncPlayerQuit implements SynchronousProcess {
         } else {
             limboService.restoreData(player);
         }
-        player.leaveVehicle();
+        if (player.isOnline()) {
+            player.leaveVehicle();
+        }
     }
 }

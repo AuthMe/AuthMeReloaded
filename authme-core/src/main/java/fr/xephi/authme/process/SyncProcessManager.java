@@ -57,7 +57,8 @@ public class SyncProcessManager {
     }
 
     public void processSyncPlayerQuit(Player player, boolean wasLoggedIn) {
-        runTask(player, () -> processSyncPlayerQuit.processSyncQuit(player, wasLoggedIn));
+        bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(
+            () -> processSyncPlayerQuit.processSyncQuit(player, wasLoggedIn));
     }
 
     private void runTask(Player player, Runnable runnable) {

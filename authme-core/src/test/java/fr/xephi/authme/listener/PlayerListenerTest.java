@@ -899,6 +899,25 @@ class PlayerListenerTest {
     }
 
     @Test
+    void shouldRestoreLimboDataSynchronouslyOnQuitOfPlayerInLimbo() {
+        // given
+        Player player = mockPlayerWithName("Limbo");
+        given(settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)).willReturn(false);
+        given(settings.getProperty(RegistrationSettings.REMOVE_UNLOGGED_LEAVE_MESSAGE)).willReturn(false);
+        given(listenerService.shouldCancelEvent(player)).willReturn(true);
+        given(limboService.hasLimboPlayer("Limbo")).willReturn(true);
+        PlayerQuitEvent event = new PlayerQuitEvent(player, "quit");
+
+        // when
+        listener.onPlayerQuit(event);
+
+        // then
+        verify(limboService).restoreData(player);
+        verify(limboService, never()).restoreSpeedSync(player);
+        verify(management).performQuit(player);
+    }
+
+    @Test
     void shouldRunQuitProcessEvenIfSavingQuitStateFails() {
         // given
         Player player = mock(Player.class);

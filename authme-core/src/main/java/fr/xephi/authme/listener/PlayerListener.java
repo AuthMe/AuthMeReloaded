@@ -247,7 +247,11 @@ public class PlayerListener implements Listener {
 
             // Restore speed synchronously before the async quit, so the player's
             // .dat file is saved with the correct speed (not 0.0f).
-            limboService.restoreSpeedSync(player);
+            if (limboService.hasLimboPlayer(player.getName())) {
+                limboService.restoreData(player);
+            } else {
+                limboService.restoreSpeedSync(player);
+            }
         } finally {
             management.performQuit(player);
         }
