@@ -99,7 +99,7 @@ public class OnStartupTasks {
         }
         bukkitService.runTaskTimerAsynchronously(() -> {
             List<String> loggedPlayersWithEmptyMail = dataSource.getLoggedPlayersWithEmptyMail();
-            bukkitService.runTask(() -> {
+            bukkitService.runOnGlobalRegion(() -> {
                 for (String playerWithoutMail : loggedPlayersWithEmptyMail) {
                     Player player = bukkitService.getPlayerExact(playerWithoutMail);
                     if (player != null) {
