@@ -334,7 +334,7 @@ public class AuthMeApi {
      * @param name the name of the player (case-insensitive)
      */
     public void forceUnregister(String name) {
-        management.performUnregisterByAdmin(null, name, Bukkit.getPlayer(name));
+        management.performUnregisterByAdmin(null, name, Bukkit.getPlayerExact(name));
     }
 
     /**

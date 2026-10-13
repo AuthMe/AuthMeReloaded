@@ -363,7 +363,7 @@ class AuthMeApiTest {
         ReflectionTestUtils.setField(Bukkit.class, null, "server", server);
         String name = "tristan";
         Player player = mock(Player.class);
-        given(server.getPlayer(name)).willReturn(player);
+        given(server.getPlayerExact(name)).willReturn(player);
 
         // when
         api.forceUnregister(name);
