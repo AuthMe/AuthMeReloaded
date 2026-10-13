@@ -13,7 +13,6 @@ import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.platform.ChatAdapter;
 import fr.xephi.authme.platform.TeleportAdapter;
 import fr.xephi.authme.process.Management;
-import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.JoinMessageService;
 import fr.xephi.authme.service.TeleportationService;
@@ -79,8 +78,6 @@ public class PlayerListener implements Listener {
     private Messages messages;
     @Inject
     private DataSource dataSource;
-    @Inject
-    private AntiBotService antiBotService;
     @Inject
     private Management management;
     @Inject
@@ -241,20 +238,19 @@ public class PlayerListener implements Listener {
             }
         }
 
-        if (antiBotService.wasPlayerKicked(player.getName())) {
-            return;
-        }
+        try {
+            // Save in-flight ender pearls and vehicle state to disk so they can be restored on reconnect.
+            // Only authenticated players can throw pearls or ride vehicles, so we skip unauthenticated ones.
+            if (!listenerService.shouldCancelEvent(player)) {
+                saveStateBeforeQuit(player);
+            }
 
-        // Save in-flight ender pearls and vehicle state to disk so they can be restored on reconnect.
-        // Only authenticated players can throw pearls or ride vehicles, so we skip unauthenticated ones.
-        if (!listenerService.shouldCancelEvent(player)) {
-            saveStateBeforeQuit(player);
+            // Restore speed synchronously before the async quit, so the player's
+            // .dat file is saved with the correct speed (not 0.0f).
+            limboService.restoreSpeedSync(player);
+        } finally {
+            management.performQuit(player);
         }
-
-        // Restore speed synchronously before the async quit, so the player's
-        // .dat file is saved with the correct speed (not 0.0f).
-        limboService.restoreSpeedSync(player);
-        management.performQuit(player);
     }
 
     private void saveStateBeforeQuit(Player player) {
@@ -285,10 +281,7 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        final Player player = event.getPlayer();
-        if (!antiBotService.wasPlayerKicked(player.getName())) {
-            management.performQuit(player);
-        }
+        management.performQuit(event.getPlayer());
     }
 
     /*

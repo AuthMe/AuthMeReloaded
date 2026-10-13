@@ -113,21 +113,6 @@ class AntiBotServiceTest {
     }
 
     @Test
-    void shouldKeepTrackOfKickedPlayers() {
-        // given
-        String name = "eratic";
-        antiBotService.addPlayerKick(name);
-
-        // when
-        boolean result1 = antiBotService.wasPlayerKicked(name);
-        boolean result2 = antiBotService.wasPlayerKicked("other");
-
-        // then
-        assertThat(result1, equalTo(true));
-        assertThat(result2, equalTo(false));
-    }
-
-    @Test
     void shouldAcceptPlayerToJoin() {
         // given / when
         boolean result = antiBotService.shouldKick();

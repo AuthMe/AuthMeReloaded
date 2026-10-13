@@ -98,7 +98,6 @@ public class OnJoinVerifier implements Reloadable {
             return;
         }
         if (antiBotService.shouldKick()) {
-            antiBotService.addPlayerKick(name);
             throw new FailedVerificationException(MessageKey.KICK_ANTIBOT);
         }
     }

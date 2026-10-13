@@ -11,8 +11,6 @@ import fr.xephi.authme.util.AtomicIntervalCounter;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
-import java.util.Locale;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_MINUTE;
 import static fr.xephi.authme.service.BukkitService.TICKS_PER_SECOND;
@@ -26,7 +24,6 @@ public class AntiBotService implements SettingsDependent {
     private final Messages messages;
     private final PermissionsManager permissionsManager;
     private final BukkitService bukkitService;
-    private final CopyOnWriteArrayList<String> antibotKicked = new CopyOnWriteArrayList<>();
     // Settings
     private int duration;
     // Service status
@@ -107,7 +104,6 @@ public class AntiBotService implements SettingsDependent {
         // Change status
         antiBotStatus = AntiBotStatus.LISTENING;
         flaggedCounter.reset();
-        antibotKicked.clear();
 
         // Cancel auto-disable task
         disableTask.cancel();
@@ -158,28 +154,6 @@ public class AntiBotService implements SettingsDependent {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Returns whether the player was kicked because of activated antibot. The list is reset
-     * when antibot is deactivated.
-     *
-     * @param name the name to check
-     *
-     * @return true if the given name has been kicked because of Antibot
-     */
-    public boolean wasPlayerKicked(String name) {
-        return antibotKicked.contains(name.toLowerCase(Locale.ROOT));
-    }
-
-    /**
-     * Adds a name to the list of players kicked by antibot. Should only be used when a player
-     * is determined to be kicked because of failed antibot verification.
-     *
-     * @param name the name to add
-     */
-    public void addPlayerKick(String name) {
-        antibotKicked.addIfAbsent(name.toLowerCase(Locale.ROOT));
     }
 
     private void notifyAdmins(MessageKey key, String... args) {

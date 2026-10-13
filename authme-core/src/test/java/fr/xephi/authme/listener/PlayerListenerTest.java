@@ -12,7 +12,6 @@ import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.platform.ChatAdapter;
 import fr.xephi.authme.platform.TeleportAdapter;
 import fr.xephi.authme.process.Management;
-import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.JoinMessageService;
 import fr.xephi.authme.service.TeleportationService;
@@ -81,6 +80,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -112,8 +112,6 @@ class PlayerListenerTest {
     private Messages messages;
     @Mock
     private DataSource dataSource;
-    @Mock
-    private AntiBotService antiBotService;
     @Mock
     private Management management;
     @Mock
@@ -167,24 +165,21 @@ class PlayerListenerTest {
 
         // then
         assertThat(event.isCancelled(), equalTo(true));
-        verifyNoInteractions(player, management, antiBotService);
+        verifyNoInteractions(player, management);
     }
 
     @Test
     void shouldNotCancelKick() {
         // given
         given(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)).willReturn(false);
-        String name = "Bobby";
-        Player player = mockPlayerWithName(name);
+        Player player = mock(Player.class);
         PlayerKickEvent event = new PlayerKickEvent(player, "You logged in from another location", "");
-        given(antiBotService.wasPlayerKicked(name)).willReturn(false);
 
         // when
         listener.onPlayerKick(event);
 
         // then
         assertThat(event.isCancelled(), equalTo(false));
-        verify(antiBotService).wasPlayerKicked(name);
         verify(management).performQuit(player);
     }
 
@@ -193,18 +188,15 @@ class PlayerListenerTest {
         // given
         given(settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)).willReturn(true);
         given(chatAdapter.getKickReason(any())).willAnswer(inv -> inv.getArgument(0, PlayerKickEvent.class).getReason());
-        String name = "Bobby";
-        Player player = mockPlayerWithName(name);
+        Player player = mock(Player.class);
         PlayerKickEvent event = new PlayerKickEvent(player, "No longer desired here!", "");
-        given(antiBotService.wasPlayerKicked(name)).willReturn(true);
 
         // when
         listener.onPlayerKick(event);
 
         // then
         assertThat(event.isCancelled(), equalTo(false));
-        verify(antiBotService).wasPlayerKicked(name);
-        verifyNoInteractions(management);
+        verify(management).performQuit(player);
     }
 
     @Test
@@ -876,8 +868,7 @@ class PlayerListenerTest {
     void shouldRemoveMessageOnQuit() {
         // given
         given(settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)).willReturn(true);
-        given(antiBotService.wasPlayerKicked(anyString())).willReturn(false);
-        Player player = mockPlayerWithName("Billy");
+        Player player = mock(Player.class);
         given(listenerService.shouldCancelEvent(player)).willReturn(true); // player not authenticated
         PlayerQuitEvent event = new PlayerQuitEvent(player, "Player has quit the server");
 
@@ -886,7 +877,6 @@ class PlayerListenerTest {
 
         // then
         assertThat(event.getQuitMessage(), nullValue());
-        verify(antiBotService).wasPlayerKicked("Billy");
         verify(management).performQuit(player);
     }
 
@@ -895,29 +885,42 @@ class PlayerListenerTest {
         // given
         given(settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)).willReturn(false);
         given(settings.getProperty(RegistrationSettings.REMOVE_UNLOGGED_LEAVE_MESSAGE)).willReturn(true);
-        String name = "Joel";
-        given(antiBotService.wasPlayerKicked(name)).willReturn(true);
-        Player player = mockPlayerWithName(name);
+        Player player = mock(Player.class);
         PlayerQuitEvent event = new PlayerQuitEvent(player, "Joel exits the party");
         given(listenerService.shouldCancelEvent(event)).willReturn(true);
+        given(listenerService.shouldCancelEvent(player)).willReturn(true);
 
         // when
         listener.onPlayerQuit(event);
 
         // then
         assertThat(event.getQuitMessage(), nullValue());
-        verify(antiBotService).wasPlayerKicked(name);
-        verifyNoInteractions(management);
+        verify(management).performQuit(player);
+    }
+
+    @Test
+    void shouldRunQuitProcessEvenIfSavingQuitStateFails() {
+        // given
+        Player player = mock(Player.class);
+        given(settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)).willReturn(false);
+        given(settings.getProperty(RegistrationSettings.REMOVE_UNLOGGED_LEAVE_MESSAGE)).willReturn(false);
+        given(listenerService.shouldCancelEvent(player)).willReturn(false);
+        given(player.getServer()).willThrow(new UnsupportedOperationException("cross-region access"));
+        PlayerQuitEvent event = new PlayerQuitEvent(player, "quit");
+
+        // when
+        assertThrows(UnsupportedOperationException.class, () -> listener.onPlayerQuit(event));
+
+        // then
+        verify(management).performQuit(player);
     }
 
     @Test
     void shouldProcessPlayerAndKeepQuitMessage() {
         // given
-        String name = "Louis";
-        Player player = mockPlayerWithName(name);
+        Player player = mock(Player.class);
         given(settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)).willReturn(false);
         given(settings.getProperty(RegistrationSettings.REMOVE_UNLOGGED_LEAVE_MESSAGE)).willReturn(false);
-        given(antiBotService.wasPlayerKicked(name)).willReturn(false);
         given(listenerService.shouldCancelEvent(player)).willReturn(true); // player not authenticated
         String quitMessage = "The player has left the server.";
         PlayerQuitEvent event = new PlayerQuitEvent(player, quitMessage);
@@ -927,7 +930,6 @@ class PlayerListenerTest {
 
         // then
         assertThat(event.getQuitMessage(), equalTo(quitMessage));
-        verify(antiBotService).wasPlayerKicked(name);
         verify(management).performQuit(player);
     }
 
@@ -935,8 +937,7 @@ class PlayerListenerTest {
     @SuppressWarnings("unchecked")
     void shouldSaveEnderPearlRestoreDataOnQuit() {
         // given
-        String name = "Pearlie";
-        Player player = mockPlayerWithName(name);
+        Player player = mock(Player.class);
         Server server = mock(Server.class);
         World world = mock(World.class);
         EnderPearl pearl = mock(EnderPearl.class);
@@ -946,7 +947,6 @@ class PlayerListenerTest {
 
         given(settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)).willReturn(false);
         given(settings.getProperty(RegistrationSettings.REMOVE_UNLOGGED_LEAVE_MESSAGE)).willReturn(false);
-        given(antiBotService.wasPlayerKicked(name)).willReturn(false);
         given(listenerService.shouldCancelEvent(player)).willReturn(false);
         given(player.getServer()).willReturn(server);
         given(server.getWorlds()).willReturn(Collections.singletonList(world));
