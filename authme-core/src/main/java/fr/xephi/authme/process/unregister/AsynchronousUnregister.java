@@ -70,6 +70,9 @@ public class AsynchronousUnregister implements AsynchronousProcess {
     public void unregister(Player player, String password) {
         String name = player.getName();
         PlayerAuth cachedAuth = playerCache.getAuth(name);
+        if (cachedAuth == null) {
+            return;
+        }
         if (passwordSecurity.comparePassword(password, cachedAuth.getPassword(), name)) {
             if (dataSource.removeAuth(name)) {
                 performPostUnregisterActions(name, player);

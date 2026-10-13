@@ -97,6 +97,20 @@ class AsynchronousUnregisterTest {
     }
 
     @Test
+    void shouldDoNothingIfPlayerIsNoLongerLoggedIn() {
+        // given
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn("Bobby");
+        given(playerCache.getAuth("Bobby")).willReturn(null);
+
+        // when
+        asynchronousUnregister.unregister(player, "pass");
+
+        // then
+        verifyNoInteractions(passwordSecurity, dataSource, service);
+    }
+
+    @Test
     void shouldPerformUnregister() {
         // given
         Player player = mock(Player.class);

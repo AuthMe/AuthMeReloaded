@@ -45,6 +45,9 @@ public class AsyncChangePassword implements AsynchronousProcess {
     public void changePassword(Player player, String oldPassword, String newPassword) {
         String name = player.getName().toLowerCase(Locale.ROOT);
         PlayerAuth auth = playerCache.getAuth(name);
+        if (auth == null) {
+            return;
+        }
         if (passwordSecurity.comparePassword(oldPassword, auth.getPassword(), player.getName())) {
             HashedPassword hashedPassword = passwordSecurity.computeHash(newPassword, name);
             auth.setPassword(hashedPassword);

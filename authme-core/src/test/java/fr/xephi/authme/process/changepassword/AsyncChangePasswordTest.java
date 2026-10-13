@@ -9,6 +9,7 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +21,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Test for {@link AsyncChangePassword}.
@@ -61,6 +63,20 @@ class AsyncChangePasswordTest {
         // then
         verify(commonService).send(sender, MessageKey.UNKNOWN_USER);
         verify(dataSource, only()).isAuthAvailable(player);
+    }
+
+    @Test
+    void shouldDoNothingIfPlayerIsNoLongerLoggedIn() {
+        // given
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn("Bobby");
+        given(playerCache.getAuth("bobby")).willReturn(null);
+
+        // when
+        asyncChangePassword.changePassword(player, "old", "new");
+
+        // then
+        verifyNoInteractions(passwordSecurity, dataSource, commonService);
     }
 
     @Test
