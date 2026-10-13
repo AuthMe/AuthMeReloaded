@@ -176,6 +176,15 @@ class ValidationServiceTest {
     }
 
     @Test
+    void shouldRejectEmailWithSeveralAtSigns() {
+        // given / when
+        boolean result = validationService.validateEmail("user@example.com@other-domain.abc");
+
+        // then
+        assertThat(result, equalTo(false));
+    }
+
+    @Test
     void shouldAcceptEmailNotInBlacklist() {
         // given
         given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.emptyList());

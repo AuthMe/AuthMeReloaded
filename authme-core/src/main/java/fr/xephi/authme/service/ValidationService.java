@@ -93,10 +93,11 @@ public class ValidationService implements Reloadable {
      * @return true if the email is valid, false otherwise
      */
     public boolean validateEmail(String email) {
-        if (Utils.isEmailEmpty(email) || !StringUtils.isInsideString('@', email)) {
+        if (Utils.isEmailEmpty(email) || !StringUtils.isInsideString('@', email)
+            || email.indexOf('@') != email.lastIndexOf('@')) {
             return false;
         }
-        final String emailDomain = email.split("@")[1];
+        final String emailDomain = email.substring(email.indexOf('@') + 1);
         return validateWhitelistAndBlacklist(
             emailDomain, EmailSettings.DOMAIN_WHITELIST, EmailSettings.DOMAIN_BLACKLIST);
     }
