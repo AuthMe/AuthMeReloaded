@@ -175,6 +175,11 @@ public class PlayerListener implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerJoinLowest(PlayerJoinEvent event) {
+        playerCache.removePlayer(event.getPlayer().getName());
+    }
+
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();

@@ -735,6 +735,20 @@ class PlayerListenerTest {
     }
 
     @Test
+    void shouldDiscardCachedAuthenticationOnJoin() {
+        // given
+        Player player = mock(Player.class);
+        given(player.getName()).willReturn("Bobby");
+        PlayerJoinEvent event = new PlayerJoinEvent(player, "join message");
+
+        // when
+        listener.onPlayerJoinLowest(event);
+
+        // then
+        verify(playerCache).removePlayer("Bobby");
+    }
+
+    @Test
     void shouldPerformAllJoinVerificationsSuccessfullyPreLoginLowest() throws FailedVerificationException {
         // given
         String name = "someone";
