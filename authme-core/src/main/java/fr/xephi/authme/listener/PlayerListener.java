@@ -283,10 +283,7 @@ public class PlayerListener implements Listener {
         if (settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)
             && chatAdapter.getKickReason(event).contains("You logged in from another location")) {
             event.setCancelled(true);
-            return;
         }
-
-        management.performQuit(event.getPlayer());
     }
 
     /*

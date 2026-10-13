@@ -181,7 +181,7 @@ class PlayerListenerTest {
 
         // then
         assertThat(event.isCancelled(), equalTo(false));
-        verify(management).performQuit(player);
+        verifyNoInteractions(management);
     }
 
     @Test
@@ -197,7 +197,7 @@ class PlayerListenerTest {
 
         // then
         assertThat(event.isCancelled(), equalTo(false));
-        verify(management).performQuit(player);
+        verifyNoInteractions(management);
     }
 
     @Test
