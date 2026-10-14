@@ -298,6 +298,7 @@ final class VelocityProxyBridge {
             }
             premiumUsernames = newPremiumSet;
             logger.info("Premium list received from backend: {} premium player(s)", premiumUsernames.size());
+            savePremiumNamesAsync();
         } else if (PREMIUM_LIST_CHUNK_MESSAGE.equals(parsedMessage.typeId())) {
             handlePremiumListChunk(parsedMessage.playerName());
         }
