@@ -16,6 +16,7 @@ import fr.xephi.authme.process.login.AsynchronousLogin;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
 import fr.xephi.authme.process.register.AsyncRegister;
+import fr.xephi.authme.process.register.executors.ApiPasswordRegisterParams;
 import fr.xephi.authme.process.register.executors.EmailRegisterParams;
 import fr.xephi.authme.process.register.executors.PasswordRegisterParams;
 import fr.xephi.authme.process.register.executors.RegistrationMethod;
@@ -23,6 +24,7 @@ import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.DialogStateService;
 import fr.xephi.authme.service.DialogWindowService;
+import fr.xephi.authme.service.FloodgateService;
 import fr.xephi.authme.service.PendingPremiumCache;
 import fr.xephi.authme.service.PreJoinDialogService;
 import fr.xephi.authme.service.PremiumLoginVerifier;
@@ -42,8 +44,10 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PremiumSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.InternetProtocolUtils;
 import fr.xephi.authme.util.PlayerUtils;
+import fr.xephi.authme.util.RandomStringUtils;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.GameMode;
 import org.bukkit.Server;
@@ -130,6 +134,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
     private PremiumService premiumService;
 
     @Inject
+    private FloodgateService floodgateService;
+
+    @Inject
     private ProxyLoginRequestValidator proxyLoginRequestValidator;
 
     @Inject
@@ -199,6 +206,13 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 }
             }
 
+            // Bedrock players verified by Floodgate (Xbox account) — same idea as premium below
+            if (floodgateService.canAutoLogin(player.getUniqueId())) {
+                logger.info("The Bedrock player " + player.getName() + " has been automatically logged in (Floodgate).");
+                bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
+                return;
+            }
+
             // Premium players are always verified by Mojang — skip the session mechanism entirely,
             // which would send a misleading SESSION_RECONNECTION message and run session commands.
             if (canBypassWithPremium(player)) {
@@ -242,6 +256,11 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
                 return;
             }
+        } else if (pendingRegistration == null && floodgateService.canAutoRegister(player.getUniqueId())) {
+            logger.info("The Bedrock player " + player.getName() + " has been automatically registered (Floodgate).");
+            asyncRegister.register(RegistrationMethod.API_REGISTRATION,
+                ApiPasswordRegisterParams.of(player, generateFloodgatePassword(), true));
+            return;
         } else if (!service.getProperty(RegistrationSettings.FORCE) && pendingRegistration == null) {
             bukkitService.scheduleSyncTaskFromOptionallyAsyncTask(player, () -> {
                 limboService.restorePendingOperator(player);
@@ -275,6 +294,16 @@ public class AsynchronousJoin implements AsynchronousProcess {
         }
 
         processJoinSync(player, isAuthAvailable, pendingLoginPassword, pendingRecoveryEmail, pendingRegistration, shouldSkipPostJoinDialog, pendingForceLogin);
+    }
+
+    /**
+     * Generates a random password for a Bedrock player registered automatically through Floodgate.
+     * The player never types it; it only has to pass the configured password restrictions.
+     */
+    private String generateFloodgatePassword() {
+        int length = Math.max(service.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH),
+            Math.min(24, service.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)));
+        return RandomStringUtils.generate(length);
     }
 
     private void handlePlayerWithUnmetNameRestriction(Player player, String ip) {
