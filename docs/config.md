@@ -477,6 +477,13 @@ Hooks:
     # All backend servers must have the same value set here.
     # Leaving this empty disables auto-login: all perform.login messages will be rejected.
     proxySharedSecret: ''
+    floodgate:
+        # Log in Bedrock players connected through Floodgate (Geyser) without asking for a password.
+        # Floodgate has already verified their Xbox account. Java players are not affected.
+        autoLogin: false
+        # Also register Bedrock players (Floodgate) that have no account yet,
+        # with a random password, and log them in. Requires Hooks.floodgate.autoLogin.
+        autoRegister: false
     # Do we need to disable Essentials SocialSpy on join?
     disableSocialSpy: false
     # Do we need to force /motd Essentials command on join?
