@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Fri Sep 18 18:25:33 CST 2026. See authme-tools/src/test/java/tools/docs/config/config.tpl.md -->
+<!-- File auto-generated on Sun Oct 18 16:44:41 BRT 2026. See authme-tools/src/test/java/tools/docs/config/config.tpl.md -->
 
 ## AuthMe Configuration
 The first time you run AuthMe it will create a config.yml file in the plugins/AuthMe folder,
@@ -474,6 +474,13 @@ Hooks:
     # All backend servers must have the same value set here.
     # Leaving this empty disables auto-login: all perform.login messages will be rejected.
     proxySharedSecret: ''
+    floodgate:
+        # Log in Bedrock players connected through Floodgate (Geyser) without asking for a password.
+        # Floodgate has already verified their Xbox account. Java players are not affected.
+        autoLogin: false
+        # Also register Bedrock players (Floodgate) that have no account yet,
+        # with a random password, and log them in. Requires Hooks.floodgate.autoLogin.
+        autoRegister: false
     # Do we need to disable Essentials SocialSpy on join?
     disableSocialSpy: false
     # Do we need to force /motd Essentials command on join?
@@ -650,4 +657,4 @@ To change settings on a running server, save your changes to config.yml and use
 
 ---
 
-This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Fri Sep 18 18:25:33 CST 2026
+This page was automatically generated on the [AuthMe/AuthMeReloaded repository](https://github.com/AuthMe/AuthMeReloaded/tree/master/docs/) on Sun Oct 18 16:44:41 BRT 2026
