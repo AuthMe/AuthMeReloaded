@@ -85,7 +85,9 @@ public class PasswordRecoveryService implements Reloadable, HasCleanup {
 
     /**
      * Generate a new password and send it to the player via
-     * email. This will update the database with the new password.
+     * email. The database is only updated with the new password
+     * once the email has been sent, so the old password keeps
+     * working if sending fails.
      *
      * @param player The player recovering their password.
      * @param email The email to send the password to.
@@ -101,14 +103,18 @@ public class PasswordRecoveryService implements Reloadable, HasCleanup {
 
         logger.info("Generating new password for '" + name + "'");
 
-        dataSource.updatePassword(name, hashNew);
         boolean couldSendMail = emailService.sendPasswordMail(name, email, thePass);
-        if (couldSendMail) {
-            commonService.send(player, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
-            emailCooldown.add(player.getName().toLowerCase(Locale.ROOT));
-        } else {
+        if (!couldSendMail) {
             commonService.send(player, MessageKey.EMAIL_SEND_FAILURE);
+            return;
         }
+        if (!dataSource.updatePassword(name, hashNew)) {
+            logger.warning("Could not save the new password of '" + name + "' after sending it by email");
+            commonService.send(player, MessageKey.ERROR);
+            return;
+        }
+        commonService.send(player, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
+        emailCooldown.add(name.toLowerCase(Locale.ROOT));
     }
 
     /**
