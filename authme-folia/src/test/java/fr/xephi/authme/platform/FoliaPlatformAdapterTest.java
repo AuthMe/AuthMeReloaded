@@ -1,5 +1,6 @@
 package fr.xephi.authme.platform;
 
+import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.listener.BlockListener;
 import fr.xephi.authme.listener.EntityListener;
 import fr.xephi.authme.listener.FoliaChatListener;
@@ -12,6 +13,7 @@ import fr.xephi.authme.listener.PlayerOpenSignListener;
 import fr.xephi.authme.listener.ServerListener;
 import fr.xephi.authme.service.CancellableTask;
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
+import io.papermc.paper.threadedregions.scheduler.EntityScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
@@ -21,10 +23,15 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -35,6 +42,7 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.TimeUnit;
@@ -118,13 +126,47 @@ public class FoliaPlatformAdapterTest {
     public void teleportPlayerCallsTeleportAsync() {
         // given
         Player player = mock(Player.class);
+        given(player.getUniqueId()).willReturn(UUID.randomUUID());
         Location location = mock(Location.class);
+        given(player.teleportAsync(location)).willReturn(new CompletableFuture<>());
 
         // when
         adapter.teleportPlayer(player, location);
 
         // then
         verify(player).teleportAsync(location);
+    }
+
+    @Test
+    public void teleportPlayerWaitsForPendingTeleportOfSamePlayer() {
+        // given
+        Player player = mock(Player.class);
+        given(player.getUniqueId()).willReturn(UUID.randomUUID());
+        Location first = mock(Location.class);
+        Location second = mock(Location.class);
+        CompletableFuture<Boolean> firstTeleport = new CompletableFuture<>();
+        given(player.teleportAsync(first)).willReturn(firstTeleport);
+        given(player.teleportAsync(second)).willReturn(new CompletableFuture<>());
+        EntityScheduler scheduler = mock(EntityScheduler.class);
+        given(player.getScheduler()).willReturn(scheduler);
+        given(scheduler.run(isNull(), any(), any())).willReturn(mock(ScheduledTask.class));
+
+        try (MockedStatic<JavaPlugin> javaPluginMock = mockStatic(JavaPlugin.class)) {
+            javaPluginMock.when(() -> JavaPlugin.getPlugin(AuthMe.class)).thenReturn(null);
+
+            // when
+            adapter.teleportPlayer(player, first);
+            adapter.teleportPlayer(player, second);
+
+            // then
+            verify(player, never()).teleportAsync(second);
+
+            firstTeleport.complete(true);
+            ArgumentCaptor<Consumer<ScheduledTask>> taskCaptor = ArgumentCaptor.captor();
+            verify(scheduler).run(isNull(), taskCaptor.capture(), any());
+            taskCaptor.getValue().accept(mock(ScheduledTask.class));
+            verify(player).teleportAsync(second);
+        }
     }
 
     @Test

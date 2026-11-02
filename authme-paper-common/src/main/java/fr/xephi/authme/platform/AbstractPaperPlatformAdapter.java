@@ -5,14 +5,20 @@ import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.process.register.RegisterSecondaryArgument;
 import fr.xephi.authme.process.register.RegistrationType;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Shared platform adapter behavior for Paper-derived servers.
@@ -21,9 +27,38 @@ public abstract class AbstractPaperPlatformAdapter extends AbstractSpigotPlatfor
 
     private static final boolean DIALOG_AVAILABLE = hasDialogApi();
 
+    private final Map<UUID, CompletableFuture<Boolean>> pendingTeleports = new ConcurrentHashMap<>();
+
     @Override
     public void teleportPlayer(Player player, Location location) {
-        player.teleportAsync(location);
+        UUID playerId = player.getUniqueId();
+        CompletableFuture<Boolean> previous = pendingTeleports.get(playerId);
+        CompletableFuture<Boolean> teleport;
+        if (previous == null) {
+            teleport = player.teleportAsync(location);
+        } else {
+            teleport = new CompletableFuture<>();
+            previous.whenComplete((ignoredResult, ignoredError) -> {
+                ScheduledTask task = player.getScheduler().run(JavaPlugin.getPlugin(AuthMe.class),
+                    ignored -> completeWith(teleport, player.teleportAsync(location)),
+                    () -> teleport.complete(false));
+                if (task == null) {
+                    teleport.complete(false);
+                }
+            });
+        }
+        pendingTeleports.put(playerId, teleport);
+        teleport.whenComplete((ignoredResult, ignoredError) -> pendingTeleports.remove(playerId, teleport));
+    }
+
+    private static void completeWith(CompletableFuture<Boolean> target, CompletableFuture<Boolean> source) {
+        source.whenComplete((result, error) -> {
+            if (error == null) {
+                target.complete(result);
+            } else {
+                target.completeExceptionally(error);
+            }
+        });
     }
 
     @Override

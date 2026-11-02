@@ -21,6 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -124,7 +126,9 @@ public class PaperPlatformAdapterTest {
     public void teleportPlayerCallsTeleportAsync() {
         // given
         Player player = mock(Player.class);
+        given(player.getUniqueId()).willReturn(UUID.randomUUID());
         Location location = mock(Location.class);
+        given(player.teleportAsync(location)).willReturn(new CompletableFuture<>());
 
         // when
         adapter.teleportPlayer(player, location);
