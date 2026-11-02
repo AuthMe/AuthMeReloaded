@@ -15,6 +15,7 @@ import java.util.Objects;
  * @param secondaryButtonCommand command template the secondary button should execute in post-join dialogs
  *                               (null for pre-join dialogs where the secondary button is a cancel action)
  * @param body optional translated body text shown below the title (null = no body)
+ * @param stackButtonsVertically whether buttons should be stacked vertically instead of shown side by side
  */
 public record DialogWindowSpec(String title,
                                List<DialogInputSpec> inputs,
@@ -23,7 +24,8 @@ public record DialogWindowSpec(String title,
                                boolean showSecondaryButton,
                                boolean canCloseWithEscape,
                                String secondaryButtonCommand,
-                               String body) {
+                               String body,
+                               boolean stackButtonsVertically) {
 
     public DialogWindowSpec {
         Objects.requireNonNull(title, "title");
@@ -42,12 +44,17 @@ public record DialogWindowSpec(String title,
                             boolean canCloseWithEscape,
                             String secondaryButtonCommand) {
         this(title, inputs, primaryButtonLabel, secondaryButtonLabel,
-            showSecondaryButton, canCloseWithEscape, secondaryButtonCommand, null);
+            showSecondaryButton, canCloseWithEscape, secondaryButtonCommand, null, false);
     }
 
     /** Returns a copy of this spec with the given body text (may be null). */
     public DialogWindowSpec withBody(String newBody) {
         return new DialogWindowSpec(title, inputs, primaryButtonLabel, secondaryButtonLabel,
-            showSecondaryButton, canCloseWithEscape, secondaryButtonCommand, newBody);
+            showSecondaryButton, canCloseWithEscape, secondaryButtonCommand, newBody, stackButtonsVertically);
+    }
+
+    /** Returns the number of columns the dialog buttons should be arranged in. */
+    public int buttonColumns() {
+        return stackButtonsVertically ? 1 : 2;
     }
 }

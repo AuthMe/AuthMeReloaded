@@ -30,6 +30,29 @@ public class SpigotDialogHelperTest {
     }
 
     @Test
+    public void showLoginDialogStacksButtonsWhenEnabled() {
+        // given
+        Player player = mock(Player.class);
+        DialogWindowSpec dialog = new DialogWindowSpec("Login",
+            java.util.List.of(new DialogInputSpec("password", "Password", 100)),
+            "Login",
+            "Forgot Password?",
+            true,
+            false,
+            "email recover $(email)",
+            null,
+            true);
+
+        // when
+        SpigotDialogHelper.showLoginDialog(player, dialog);
+
+        // then
+        ArgumentCaptor<MultiActionDialog> captor = ArgumentCaptor.forClass(MultiActionDialog.class);
+        verify(player).showDialog(captor.capture());
+        assertThat(captor.getValue().columns(), is(1));
+    }
+
+    @Test
     public void showLoginDialogIncludesForgotPasswordButtonWhenSpecified() {
         // given
         Player player = mock(Player.class);

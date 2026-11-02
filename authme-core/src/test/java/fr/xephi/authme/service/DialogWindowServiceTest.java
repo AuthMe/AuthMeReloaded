@@ -49,6 +49,7 @@ class DialogWindowServiceTest {
             .willAnswer(invocation -> invocation.getArgument(1, MessageKey.class).getKey());
         given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_FORGOT_PASSWORD_BUTTON)).willReturn(true);
         given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_BODY)).willReturn(true);
+        given(commonService.getProperty(RegistrationSettings.DIALOG_STACK_BUTTONS_VERTICALLY)).willReturn(false);
         given(emailService.hasAllInformation()).willReturn(true);
 
         // when
@@ -73,6 +74,7 @@ class DialogWindowServiceTest {
             .willAnswer(invocation -> invocation.getArgument(1, MessageKey.class).getKey());
         given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_FORGOT_PASSWORD_BUTTON)).willReturn(true);
         given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_BODY)).willReturn(false);
+        given(commonService.getProperty(RegistrationSettings.DIALOG_STACK_BUTTONS_VERTICALLY)).willReturn(false);
         given(emailService.hasAllInformation()).willReturn(false);
 
         // when — email service not configured: recovery must not appear regardless of the flag
@@ -92,6 +94,7 @@ class DialogWindowServiceTest {
             .willAnswer(invocation -> invocation.getArgument(1, MessageKey.class).getKey());
         given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_FORGOT_PASSWORD_BUTTON)).willReturn(false);
         given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_BODY)).willReturn(false);
+        given(commonService.getProperty(RegistrationSettings.DIALOG_STACK_BUTTONS_VERTICALLY)).willReturn(false);
 
         // when — disabled by config even when email service is available
         DialogWindowSpec dialog = dialogWindowService.createLoginDialog(player);
@@ -110,6 +113,7 @@ class DialogWindowServiceTest {
         given(commonService.retrieveSingleMessage(eq(player), any(MessageKey.class)))
             .willAnswer(invocation -> invocation.getArgument(1, MessageKey.class).getKey());
         given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_BODY)).willReturn(false);
+        given(commonService.getProperty(RegistrationSettings.DIALOG_STACK_BUTTONS_VERTICALLY)).willReturn(false);
 
         // when
         DialogWindowSpec dialog = dialogWindowService.createRegisterDialog(
@@ -126,6 +130,7 @@ class DialogWindowServiceTest {
         given(commonService.retrieveSingleMessage(eq(player), any(MessageKey.class)))
             .willAnswer(invocation -> invocation.getArgument(1, MessageKey.class).getKey());
         given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_BODY)).willReturn(false);
+        given(commonService.getProperty(RegistrationSettings.DIALOG_STACK_BUTTONS_VERTICALLY)).willReturn(false);
 
         // when
         DialogWindowSpec dialog = dialogWindowService.createRegisterDialog(
@@ -148,6 +153,7 @@ class DialogWindowServiceTest {
         given(commonService.getProperty(RegistrationSettings.PRE_JOIN_DIALOG_SHOW_CANCEL_BUTTON)).willReturn(true);
         given(commonService.getProperty(RegistrationSettings.PRE_JOIN_DIALOG_ALLOW_CLOSE_WITH_ESCAPE)).willReturn(true);
         given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_BODY)).willReturn(true);
+        given(commonService.getProperty(RegistrationSettings.DIALOG_STACK_BUTTONS_VERTICALLY)).willReturn(false);
         given(emailService.hasAllInformation()).willReturn(false);
 
         // when — email not configured: no recovery, cancel button shown instead
@@ -160,6 +166,7 @@ class DialogWindowServiceTest {
         assertThat(dialog.showSecondaryButton(), is(true));
         assertThat(dialog.canCloseWithEscape(), is(true));
         assertThat(dialog.body(), is("dialog.login.body"));
+        assertThat(dialog.buttonColumns(), is(2));
         assertThat(dialog.inputs().stream().map(input -> input.id()).toList(), contains("password"));
         assertThat(dialog.secondaryButtonCommand(), is(nullValue()));
     }
@@ -171,6 +178,7 @@ class DialogWindowServiceTest {
             .willAnswer(invocation -> invocation.getArgument(1, MessageKey.class).getKey());
         given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_FORGOT_PASSWORD_BUTTON)).willReturn(true);
         given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_BODY)).willReturn(false);
+        given(commonService.getProperty(RegistrationSettings.DIALOG_STACK_BUTTONS_VERTICALLY)).willReturn(false);
         given(emailService.hasAllInformation()).willReturn(true);
 
         // when — email configured: recovery button shown, cancel suppressed, email field present
@@ -182,5 +190,25 @@ class DialogWindowServiceTest {
         assertThat(dialog.canCloseWithEscape(), is(false));
         assertThat(dialog.secondaryButtonCommand(), is(notNullValue()));
         assertThat(dialog.inputs().stream().map(input -> input.id()).toList(), contains("password"));
+    }
+
+    @Test
+    void shouldKeepStackedButtonsInPreJoinRegisterDialogWhenBodyIsReplaced() {
+        // given
+        given(messages.retrieveSingle(eq("Bobby"), any(MessageKey.class)))
+            .willAnswer(invocation -> invocation.getArgument(1, MessageKey.class).getKey());
+        given(commonService.getProperty(RegistrationSettings.PRE_JOIN_DIALOG_SHOW_CANCEL_BUTTON)).willReturn(true);
+        given(commonService.getProperty(RegistrationSettings.PRE_JOIN_DIALOG_ALLOW_CLOSE_WITH_ESCAPE)).willReturn(true);
+        given(commonService.getProperty(RegistrationSettings.DIALOG_SHOW_BODY)).willReturn(false);
+        given(commonService.getProperty(RegistrationSettings.DIALOG_STACK_BUTTONS_VERTICALLY)).willReturn(true);
+
+        // when
+        DialogWindowSpec dialog = dialogWindowService.createPreJoinRegisterDialog(
+            "Bobby", RegistrationType.PASSWORD, RegisterSecondaryArgument.CONFIRMATION).withBody("error");
+
+        // then
+        assertThat(dialog.body(), is("error"));
+        assertThat(dialog.showSecondaryButton(), is(true));
+        assertThat(dialog.buttonColumns(), is(1));
     }
 }

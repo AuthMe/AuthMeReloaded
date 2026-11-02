@@ -63,7 +63,7 @@ public final class PaperDialogHelper {
 
         return Dialog.create(factory -> factory.empty()
             .base(base)
-            .type(DialogType.multiAction(createPreJoinButtons(dialog, loginButton, secondaryKey)).build()));
+            .type(createButtonDialogType(dialog, createPreJoinButtons(dialog, loginButton, secondaryKey))));
     }
 
     public static Dialog createPreJoinRecoveryDialog(DialogWindowSpec dialog) {
@@ -80,8 +80,8 @@ public final class PaperDialogHelper {
 
         return Dialog.create(factory -> factory.empty()
             .base(base)
-            .type(DialogType.multiAction(createPreJoinButtons(dialog, submitButton,
-                PaperDialogActionKeys.PRE_JOIN_RECOVERY_CANCEL)).build()));
+            .type(createButtonDialogType(dialog, createPreJoinButtons(dialog, submitButton,
+                PaperDialogActionKeys.PRE_JOIN_RECOVERY_CANCEL))));
     }
 
     public static Dialog createPreJoinRegisterDialog(DialogWindowSpec dialog) {
@@ -98,9 +98,9 @@ public final class PaperDialogHelper {
 
         return Dialog.create(factory -> factory.empty()
             .base(base)
-            .type(DialogType.multiAction(createPreJoinButtons(dialog,
+            .type(createButtonDialogType(dialog, createPreJoinButtons(dialog,
                 registerButton,
-                PaperDialogActionKeys.PRE_JOIN_REGISTER_CANCEL)).build()));
+                PaperDialogActionKeys.PRE_JOIN_REGISTER_CANCEL))));
     }
 
     private static Dialog createInGameCommandDialog(DialogWindowSpec dialog, String commandTemplate) {
@@ -124,7 +124,11 @@ public final class PaperDialogHelper {
 
         return Dialog.create(factory -> factory.empty()
             .base(base)
-            .type(DialogType.multiAction(buttons).build()));
+            .type(createButtonDialogType(dialog, buttons)));
+    }
+
+    private static DialogType createButtonDialogType(DialogWindowSpec dialog, List<ActionButton> buttons) {
+        return DialogType.multiAction(buttons).columns(dialog.buttonColumns()).build();
     }
 
     private static List<ActionButton> createPreJoinButtons(DialogWindowSpec dialog,

@@ -40,7 +40,8 @@ final class SpigotDialogHelper {
             buttons.add(new ActionButton(toTextComponent(dialog.secondaryButtonLabel()),
                 new RunCommandAction(dialog.secondaryButtonCommand())));
         }
-        player.showDialog(new MultiActionDialog(base, buttons.toArray(new ActionButton[0])));
+        player.showDialog(new MultiActionDialog(base, buttons.toArray(new ActionButton[0]))
+            .columns(dialog.buttonColumns()));
     }
 
     static void showTotpDialog(Player player, DialogWindowSpec dialog) {
