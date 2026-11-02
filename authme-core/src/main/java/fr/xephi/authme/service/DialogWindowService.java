@@ -67,7 +67,8 @@ public class DialogWindowService {
             showRecovery || showCancelButton,
             canCloseWithEscape,
             showRecovery ? "forgot_password" : null,
-            showBody ? text.apply(MessageKey.DIALOG_LOGIN_BODY) : null);
+            showBody ? text.apply(MessageKey.DIALOG_LOGIN_BODY) : null,
+            commonService.getProperty(RegistrationSettings.DIALOG_STACK_BUTTONS_VERTICALLY));
     }
 
     public DialogWindowSpec createPreJoinRecoveryDialog(String playerName) {
@@ -82,7 +83,8 @@ public class DialogWindowService {
             true,
             false,
             null,
-            showBody ? text.apply(MessageKey.DIALOG_RECOVERY_BODY) : null);
+            showBody ? text.apply(MessageKey.DIALOG_RECOVERY_BODY) : null,
+            commonService.getProperty(RegistrationSettings.DIALOG_STACK_BUTTONS_VERTICALLY));
     }
 
     public DialogWindowSpec createTotpDialog(Player player) {
@@ -99,7 +101,8 @@ public class DialogWindowService {
             false,
             false,
             null,
-            showBody ? text.apply(MessageKey.DIALOG_TWO_FACTOR_BODY) : null);
+            showBody ? text.apply(MessageKey.DIALOG_TWO_FACTOR_BODY) : null,
+            commonService.getProperty(RegistrationSettings.DIALOG_STACK_BUTTONS_VERTICALLY));
     }
 
     public DialogWindowSpec createRegisterDialog(Player player,
@@ -144,7 +147,8 @@ public class DialogWindowService {
             showSecondaryButton,
             canCloseWithEscape,
             showRecovery ? "email recover $(email)" : null,
-            showBody ? textResolver.apply(MessageKey.DIALOG_LOGIN_BODY) : null);
+            showBody ? textResolver.apply(MessageKey.DIALOG_LOGIN_BODY) : null,
+            commonService.getProperty(RegistrationSettings.DIALOG_STACK_BUTTONS_VERTICALLY));
     }
 
     private DialogWindowSpec createRegisterDialogSpec(RegistrationType type,
@@ -194,7 +198,8 @@ public class DialogWindowService {
             showSecondaryButton,
             canCloseWithEscape,
             null,
-            showBody ? textResolver.apply(MessageKey.DIALOG_REGISTER_BODY) : null);
+            showBody ? textResolver.apply(MessageKey.DIALOG_REGISTER_BODY) : null,
+            commonService.getProperty(RegistrationSettings.DIALOG_STACK_BUTTONS_VERTICALLY));
     }
 
     private String getPostJoinMessage(Player player, MessageKey key) {

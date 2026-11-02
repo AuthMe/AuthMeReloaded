@@ -121,6 +121,12 @@ public final class RegistrationSettings implements SettingsHolder {
         newProperty("settings.registration.dialog.showBody", true);
 
     @Comment({
+        "Stack dialog buttons vertically, with the primary button on top.",
+        "If disabled, dialog buttons are shown side by side."})
+    public static final Property<Boolean> DIALOG_STACK_BUTTONS_VERTICALLY =
+        newProperty("settings.registration.dialog.stackButtonsVertically", false);
+
+    @Comment({
         "Show the login/register dialog during the Paper/Folia pre-join phase.",
         "Independent from postJoin.enable; you may enable either or both options.",
         "On non-Paper/Folia platforms this option has no effect."})
