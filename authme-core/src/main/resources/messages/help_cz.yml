@@ -3,11 +3,11 @@
 # -------------------------------------------------------
 # List of texts used in the help section
 common:
-    header: '==========[ AuthMeReloaded HELP ]=========='
+    header: '==========[ AuthMeReloaded NÁPOVĚDA ]=========='
     optional: 'Volitelné'
     hasPermission: 'Máš oprávnění'
     noPermission: 'Bez oprávnění'
-    default: 'Defaultní'
+    default: 'Výchozí'
     result: 'Výsledek'
     defaultPermissions:
         notAllowed: 'Bez oprávnění'

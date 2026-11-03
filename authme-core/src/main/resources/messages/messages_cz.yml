@@ -10,8 +10,8 @@ registration:
     register_request: '&cProsím, zaregistruj se pomocí "/register <heslo> <ZnovuHeslo>"'
     command_usage: '&cPoužij: "/register heslo ZnovuHeslo".'
     reg_only: '&cServer je pouze pro registrované! Navštiv naši webovou stránku https://priklad.cz.'
-    success: '&cRegistrace úspěšná!'
-    kicked_admin_registered: 'Admin vás právě zaregistroval; Přihlašte se prosím znovu.'
+    success: '&2Registrace proběhla úspěšně!'
+    kicked_admin_registered: 'Admin tě právě zaregistroval, přihlas se prosím znovu.'
 
 # Password errors on registration
 password:
@@ -19,33 +19,33 @@ password:
     name_in_password: '&cNemůžeš použít své jméno jako heslo, prosím, zvol si jiné heslo...'
     unsafe_password: '&cToto heslo není bezpečné, prosím, zvol si jiné heslo...'
     forbidden_characters: '&4Tvoje heslo obsahuje nepovolené znaky. Přípustné znaky jsou: %valid_chars'
-    wrong_length: '&cTvoje heslo nedosahuje minimální délky (4).'
+    wrong_length: '&cTvoje heslo je příliš krátké, nebo příliš dlouhé! Zkus prosím jiné.'
 
 # Login
 login:
     command_usage: '&cPoužij: "/login TvojeHeslo".'
     wrong_password: '&cŠpatné heslo.'
-    success: '&cÚspěšně přihlášen!'
+    success: '&2Přihlášení proběhlo úspěšně!'
     login_request: '&cProsím přihlaš se pomocí "/login TvojeHeslo".'
     timeout_error: '&cČas pro přihlášení vypršel!'
 
 # Errors
 error:
-    denied_command: '&cPokud chceš použít tento příkaz musíš být přihlášen/registrován!'
-    denied_chat: '&cNemůžeš psát do chatu dokuď se nepřihlásíš/nezaregistruješ!'
+    denied_command: '&cTento příkaz můžeš použít až po přihlášení nebo registraci!'
+    denied_chat: '&cDo chatu můžeš psát až po přihlášení nebo registraci!'
     unregistered_user: '&cUživatelské jméno není zaregistrováno.'
     not_logged_in: '&cNejsi přihlášený!'
-    no_permission: '&cNa tento příkaz nemáš dostatečné pravomoce.'
-    unexpected_error: '&cVyskytla se chyba - kontaktujte prosím administrátora ...'
+    no_permission: '&cNa tuto akci nemáš oprávnění!'
+    unexpected_error: '&cVyskytla se neočekávaná chyba, kontaktuj prosím administrátora!'
     max_registration: '&cPřekročil(a) jsi limit pro počet účtů (%reg_count/%max_acc %reg_names) z jedné IP adresy.'
     logged_in: '&cJiž jsi přihlášen!'
     kick_for_vip: '&cOmlouváme se, ale VIP hráč se připojil na plný server!'
-    kick_unresolved_hostname: '&cChyba: unresolved player hostname!'
+    kick_unresolved_hostname: '&cDošlo k chybě: nepodařilo se zjistit hostname hráče!'
     tempban_max_logins: '&cByl jsi dočasně zabanován za příliš mnoho neúspěšných pokusů o přihlášení.'
 
 # AntiBot
 antibot:
-    kick_antibot: 'Bezpečnostní mód AntiBot je zapnut! Musíš počkat několik minut než se budeš moct připojit znovu na server.'
+    kick_antibot: 'Ochrana AntiBot je zapnutá! Musíš počkat několik minut, než se budeš moct znovu připojit na server.'
     auto_enabled: '[AuthMe] AntiBotMod automaticky spuštěn z důvodu mnoha souběžných připojení!'
     auto_disabled: '[AuthMe] AntiBotMod automaticky ukončen po %m minutách, doufejme v konec invaze'
 
@@ -57,23 +57,23 @@ unregister:
 # Other messages
 misc:
     account_not_activated: '&cTvůj účet ještě není aktivovaný, zkontroluj svůj E-mail.'
-    password_changed: '&cHeslo změněno!'
-    logout: '&cÚspěšně jsi se odhlásil.'
-    reload: '&cZnovu načtení nastavení AuthMe proběhlo úspěšně.'
+    password_changed: '&2Heslo bylo úspěšně změněno!'
+    logout: '&2Odhlášení proběhlo úspěšně!'
+    reload: '&2Konfigurace a databáze byly úspěšně znovu načteny!'
     usage_change_password: '&cPoužij: "/changepassword StaréHeslo NovéHeslo".'
     accounts_owned_self: 'Vlastníš tyto účty (%count):'
     accounts_owned_other: 'Hráč %name vlastní tyto účty (%count):'
 
 # Session messages
 session:
-    valid_session: '&cAutomatické znovupřihlášení.'
-    invalid_session: '&cChyba: Počkej než vyprší tvoje relace.'
+    valid_session: '&2Přihlášení obnoveno z předchozí relace.'
+    invalid_session: '&cTvoje IP adresa se změnila a tvoje relace vypršela!'
 
 # Error messages when joining
 on_join_validation:
     same_ip_online: 'Hráč se stejnou IP adresou nyní hraje na serveru!'
     same_nick_online: '&cUživatel s tímto jménem již hraje na serveru.'
-    name_length: '&cTvůj nick je přílíš krátký, nebo přílíš dlouhý'
+    name_length: '&cTvůj nick je příliš krátký, nebo příliš dlouhý!'
     characters_in_name: '&cTvůj nick obsahuje nepovolené znaky. Přípustné znaky jsou: %valid_chars'
     kick_full_server: '&cServer je momentálně plný, zkus to prosím později!'
     country_banned: 'Připojení z tvé země je na tomto serveru zakázáno.'
@@ -83,7 +83,7 @@ on_join_validation:
 
 # Email
 email:
-    add_email_request: '&cPřidej prosím svůj email pomocí : /email add TvůjEmail TvůjEmail'
+    add_email_request: '&cPřidej si prosím ke svému účtu email příkazem: /email add <tvůjEmail> <potvrzeníEmailu>'
     usage_email_add: '&fPoužij: /email add <email> <potvrzení_emailu>'
     usage_email_change: '&fPoužij: /email change <StarýEmail> <NovýEmail>'
     new_email_invalid: '[AuthMe] Nový email je chybně zadán!'
@@ -99,11 +99,11 @@ email:
     already_used: '&4Tato emailová adresa je již používána'
     incomplete_settings: 'Chyba: Chybí některé důležité informace pro odeslání emailu. Kontaktuj prosím admina.'
     send_failure: 'Email nemohl být odeslán. Kontaktuj prosím admina.'
-    change_password_expired: 'Nemůžeš si změnit heslo pomocí toho příkazu.'
-    email_cooldown_error: '&cEmail už byl nedávno odeslán. Musíš čekat ještě %time před odesláním nového.'
+    change_password_expired: 'Pomocí tohoto příkazu si už heslo změnit nemůžeš.'
+    email_cooldown_error: '&cEmail už byl nedávno odeslán. Další můžeš poslat za %time.'
     confirm_code_sent: '&3Ověřovací kód byl odeslán na &f%email&3. Použij &f/email confirm <code>&3 k potvrzení.'
     usage_email_confirm: '&cPoužití: /email confirm <code>'
-    confirm_wrong_code: '&cNesprávný ověřovací kód. Zkuste to prosím znovu.'
+    confirm_wrong_code: '&cNesprávný ověřovací kód. Zkus to prosím znovu.'
     confirm_code_expired: '&cNebylo nalezeno žádné čekající potvrzení emailu. Začni prosím znovu.'
     confirm_success: '&2E-mailová adresa potvrzena a uložena do tvého účtu!'
 
@@ -113,17 +113,17 @@ recovery:
     command_usage: '&fPoužij: /email recovery <Email>'
     email_sent: '[AuthMe] Email pro obnovení hesla odeslán!'
     code:
-        code_sent: 'Kód pro obnovení hesla byl odeslán na váš email.'
+        code_sent: 'Kód pro obnovení hesla byl odeslán na tvůj email.'
         incorrect: 'Obnovovací kód není správný! Počet zbývajících pokusů: %count.'
-        tries_exceeded: 'Překročil(a) jsi počet pokusů pro vložení kódu. Použij "/email recovery [email]" pro vygenerování nového'
+        tries_exceeded: 'Překročil(a) jsi maximální počet pokusů o zadání kódu. Nový si vygeneruj příkazem "/email recovery [email]".'
         correct: 'Obnovovací kód zadán správně!'
-        change_password: 'Prosím, použij příkaz /email setpassword <nové heslo> pro změnu hesla okamžitě.'
+        change_password: 'Hned si změň heslo příkazem /email setpassword <nové heslo>.'
 
 # Captcha
 captcha:
-    usage_captcha: '&cPoužij: /captcha %captcha_code'
-    wrong_captcha: '&cŠpatné opsána Captcha, použij prosím: /captcha %captcha_code'
-    valid_captcha: '&cCaptcha je zadána v pořádku!'
+    usage_captcha: '&cPro přihlášení musíš opsat captchu, použij příkaz: /captcha %captcha_code'
+    wrong_captcha: '&cŠpatně opsaná captcha, napiš prosím do chatu "/captcha %captcha_code"!'
+    valid_captcha: '&2Captcha byla opsána správně!'
     captcha_for_registration: 'Před registrací je nutné správně opsat captchu. Prosím použij příkaz: /captcha %captcha_code'
     register_captcha_valid: '&2Captcha je v pořádku! Nyní se můžeš zaregistrovat příkazem /register'
 
@@ -131,8 +131,8 @@ captcha:
 verification:
     code_required: '&3Tento příkaz vyžaduje ověření emailu! Zkontroluj svou mailovou schránku a postupuj dle instrukcí'
     command_usage: '&cPoužití: /verification <code>'
-    incorrect_code: '&cNesprávný kód, prosím napiš "/verification <code>" do chatu, místo <code> použij kód co ti přišel emailem'
-    success: '&2Tvoje identita ověřena! V rámci své relace můžeš nyní používat všechny příkazy.'
+    incorrect_code: '&cNesprávný kód, napiš prosím do chatu "/verification <code>" a místo <code> použij kód, který ti přišel emailem.'
+    success: '&2Tvoje identita byla ověřena! V rámci této relace teď můžeš používat všechny příkazy.'
     already_verified: '&2Již můžeš používat příkazy ve své relaci bez omezení.'
     code_expired: '&3Tvůj kód vypršel. Použij další citlivý příkaz pro získání nového kódu.'
     email_needed: '&3Pro ověření tvé identity potřebujeme, abys ke svému účtu přidal svůj email.'
@@ -143,29 +143,29 @@ verification:
 dialog:
   login:
     title: '&6Přihlášení'
-    body: '&7Pro pokračování zadejte své heslo.'
+    body: '&7Pro pokračování zadej své heslo.'
     password: '&fHeslo'
     recovery_email: '&fObnovovací e-mail (volitelné)'
     recovery_button: '&eZapomenuté heslo?'
     button: '&aPřihlásit se'
-    canceled: '&cYou have canceled the login.'
+    canceled: '&cPřihlášení bylo zrušeno.'
   register:
     title: '&6Registrace'
-    body: '&7Vytvořte si účet a začněte hrát na tomto serveru.'
+    body: '&7Vytvoř si účet a začni hrát na tomto serveru.'
     password: '&fHeslo'
     confirm_password: '&fPotvrdit heslo'
     email: '&fE-mail'
     confirm_email: '&fPotvrdit e-mail'
     button: '&aRegistrovat'
-    canceled: '&cYou have canceled the registration.'
+    canceled: '&cRegistrace byla zrušena.'
   two_factor:
     title: '&6Dvoufaktorové ověření'
-    body: '&7Otevřete svou autentizační aplikaci a zadejte 6místný kód.'
+    body: '&7Otevři svou autentizační aplikaci a zadej 6místný kód.'
     code: '&fKód 2FA'
     button: '&aOvěřit'
   recovery:
     title: '&6Obnova hesla'
-    body: '&7Zadejte svou registrovanou e-mailovou adresu a bude vám zaslán kód pro reset.'
+    body: '&7Zadej e-mailovou adresu svého účtu a pošleme ti kód pro obnovení hesla.'
     email: '&fE-mailová adresa'
     button: '&aOdeslat obnovovací e-mail'
 
@@ -173,26 +173,26 @@ dialog:
     cancel: '&cZrušit'
 
 time:
-    second: 'sekundy'
+    second: 'sekundu'
     seconds: 'sekund'
-    minute: 'minuty'
+    minute: 'minutu'
     minutes: 'minut'
-    hour: 'hodiny'
+    hour: 'hodinu'
     hours: 'hodin'
-    day: 'dny'
-    days: 'dnu'
+    day: 'den'
+    days: 'dní'
 
 # Two-factor authentication
 two_factor:
-    code_created: '&2Tvůj tajný kód je %code. Můžeš ho oskenovat zde %url'
+    code_created: '&2Tvůj tajný kód je %code. Můžeš ho naskenovat zde: %url'
     confirmation_required: 'Prosím, potvrď svůj kód příkazem /2fa confirm <code>'
     code_required: 'Prosím, zadej kód dvoufaktorového ověření příkazem /2fa code <code>'
-    already_enabled: 'Dvoufaktorové ověření je již zapnuté pro tomto účtu.'
-    enable_error_no_code: 'Pro tvůj účet nebyl vygenerován žádný 2FA klíč, a nebo již vypršel. Prosím vygeneruj si ho pomocí /2fa add'
+    already_enabled: 'Dvoufaktorové ověření už máš na svém účtu zapnuté!'
+    enable_error_no_code: 'Pro tvůj účet nebyl vygenerován žádný 2FA klíč, nebo už vypršel. Vygeneruj si ho prosím příkazem /2fa add'
     enable_success: 'Dvoufaktorové ověření bylo úspěšně nastaveno pro tvůj účet'
     enable_error_wrong_code: 'Nesprávný kód, nebo kód vypršel. Prosím spusť příkaz /2fa add'
     not_enabled_error: 'Dvoufaktorové ověření není zapnuté na tvém účtu. Můžeš ho zapnout použitím příkazu /2fa add'
-    removed_success: 'Dvoufaktorovka byla úspěšně odebrána z tvého účtu'
+    removed_success: 'Dvoufaktorové ověření bylo z tvého účtu úspěšně odebráno.'
     invalid_code: 'Nesprávný kód!'
 
 # Zprávy pro ověření příkazů
@@ -237,11 +237,11 @@ admin:
 premium:
     feature_disabled: '&cPrémiový režim není na tomto serveru povolen.'
     account_not_found: '&cPro toto uživatelské jméno nebyl nalezen žádný prémiový účet Minecraft.'
-    already_enabled: '&ePrémiový režim je pro váš účet již povolen.'
-    enable_success: '&2Prémiový režim byl aktivován! Při přihlašování se již nebudete muset ověřovat.'
-    not_enabled: '&ePrémiový režim není pro váš účet povolen.'
-    disable_success: '&2Prémiový režim byl deaktivován. Budete se muset znovu ověřit.'
-    error: '&cPři ověřování vašeho prémiového stavu došlo k chybě. Zkuste to prosím znovu.'
+    already_enabled: '&ePrémiový režim už máš na svém účtu zapnutý.'
+    enable_success: '&2Prémiový režim byl zapnut! Při přihlášení se už nebudeš muset ověřovat.'
+    not_enabled: '&ePrémiový režim nemáš na svém účtu zapnutý.'
+    disable_success: '&2Prémiový režim byl vypnut. Při přihlášení se budeš muset znovu ověřovat.'
+    error: '&cPři ověřování tvého prémiového stavu došlo k chybě. Zkus to prosím později.'
     admin:
         not_registered: '&c%name není zaregistrován.'
         already_enabled: '&ePrémiový režim je pro %name již povolen.'
@@ -250,7 +250,7 @@ premium:
         not_enabled: '&ePrémiový režim není pro %name povolen.'
         disable_success: '&2Prémiový režim byl deaktivován pro %name.'
         impostor_kicked: '&eHráč připojený jako %name měl neshodující se UUID a byl vyhozen.'
-        kick_reason: '&cNastavení premium vašeho účtu bylo změněno administrátorem. Připojte se znovu.'
-        pending: '&ePrémiové ověření čeká na vyřízení pro %name. Musí se znovu připojit, aby potvrdili vlastnictví účtu Mojang.'
-    pending_kick: '&ePrémiové ověření bylo vyžádáno. Připojte se prosím znovu, abyste potvrdili vlastnictví svého účtu Mojang.'
-    pending_fail: '&cPrémiové ověření se nezdařilo. Přihlaste se prosím pomocí hesla.'
+        kick_reason: '&cAdministrátor změnil prémiové nastavení tvého účtu. Připoj se prosím znovu.'
+        pending: '&ePrémiové ověření hráče %name čeká na vyřízení. Hráč se musí znovu připojit, aby potvrdil vlastnictví účtu Mojang.'
+    pending_kick: '&ePrémiové ověření bylo vyžádáno. Připoj se prosím znovu a potvrď tím vlastnictví svého účtu Mojang.'
+    pending_fail: '&cPrémiové ověření se nezdařilo. Přihlas se prosím heslem.'
