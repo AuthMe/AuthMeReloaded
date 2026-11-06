@@ -10,10 +10,13 @@ import fr.xephi.authme.platform.DialogInputSpec;
 import fr.xephi.authme.platform.DialogWindowSpec;
 import fr.xephi.authme.process.login.AsynchronousLogin;
 import fr.xephi.authme.process.register.AsyncRegister;
+import fr.xephi.authme.process.register.executors.ApiPasswordRegisterParams;
+import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.DialogStateService;
 import fr.xephi.authme.service.DialogWindowService;
+import fr.xephi.authme.service.FloodgateService;
 import fr.xephi.authme.service.PendingPremiumCache;
 import fr.xephi.authme.service.PluginHookService;
 import fr.xephi.authme.service.PreJoinDialogService;
@@ -29,11 +32,13 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PremiumSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -47,6 +52,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskLater;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToRunTaskOptionallyAsync;
 import static fr.xephi.authme.service.BukkitServiceTestHelper.setBukkitServiceToScheduleSyncEntityTaskFromOptionallyAsyncTask;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -106,6 +113,8 @@ public class AsynchronousJoinTest {
     private PendingPremiumCache pendingPremiumCache;
     @Mock
     private PremiumService premiumService;
+    @Mock
+    private FloodgateService floodgateService;
     @Mock
     private ProxyLoginRequestValidator proxyLoginRequestValidator;
 
@@ -414,6 +423,52 @@ public class AsynchronousJoinTest {
 
         // then
         verify(limboService).restorePendingOperator(player);
+        verify(limboService, never()).createLimboPlayer(eq(player), anyBoolean());
+    }
+
+    @Test
+    public void shouldAutoLoginRegisteredFloodgatePlayerWithoutCreatingLimbo() {
+        // given
+        Player player = mockPlayer(".Bobby");
+        UUID playerId = UUID.fromString("00000000-0000-0000-0009-01f163ba2c3a");
+        given(player.getUniqueId()).willReturn(playerId);
+        setUpRegisteredJoin(player);
+        given(floodgateService.canAutoLogin(playerId)).willReturn(true);
+
+        // when
+        asynchronousJoin.processJoin(player);
+
+        // then
+        verify(asynchronousLogin).forceLogin(player);
+        verify(limboService, never()).createLimboPlayer(eq(player), anyBoolean());
+        verify(dialogAdapter, never()).showLoginDialog(eq(player), any(DialogWindowSpec.class));
+    }
+
+    @Test
+    public void shouldAutoRegisterUnregisteredFloodgatePlayer() {
+        // given
+        Player player = mockPlayer(".Bobby");
+        UUID playerId = UUID.fromString("00000000-0000-0000-0009-01f163ba2c3a");
+        given(player.getUniqueId()).willReturn(playerId);
+        given(validationService.fulfillsNameRestrictions(player)).willReturn(true);
+        given(service.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(Set.of());
+        given(service.getProperty(RestrictionSettings.FORCE_SURVIVAL_MODE)).willReturn(false);
+        given(service.getProperty(HooksSettings.DISABLE_SOCIAL_SPY)).willReturn(false);
+        given(service.getProperty(RestrictionSettings.MAX_JOIN_PER_IP)).willReturn(0);
+        given(database.isAuthAvailable(".bobby")).willReturn(false);
+        given(floodgateService.canAutoRegister(playerId)).willReturn(true);
+        given(service.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH)).willReturn(5);
+        given(service.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)).willReturn(30);
+
+        // when
+        asynchronousJoin.processJoin(player);
+
+        // then
+        ArgumentCaptor<ApiPasswordRegisterParams> params = ArgumentCaptor.forClass(ApiPasswordRegisterParams.class);
+        verify(asyncRegister).register(eq(RegistrationMethod.API_REGISTRATION), params.capture());
+        assertThat(params.getValue().getPlayer(), is(player));
+        assertThat(params.getValue().getPassword().length(), is(24));
+        assertThat(params.getValue().getLoginAfterRegister(), is(true));
         verify(limboService, never()).createLimboPlayer(eq(player), anyBoolean());
     }
 
