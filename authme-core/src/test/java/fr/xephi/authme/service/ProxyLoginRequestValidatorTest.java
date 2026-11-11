@@ -2,6 +2,7 @@ package fr.xephi.authme.service;
 
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.data.auth.PlayerAuth;
+import fr.xephi.authme.data.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.message.MessageKey;
 import fr.xephi.authme.message.Messages;
@@ -38,7 +39,7 @@ class ProxyLoginRequestValidatorTest {
     private DataSource dataSource;
 
     @Mock
-    private fr.xephi.authme.data.auth.PlayerCache playerCache;
+    private PlayerCache playerCache;
 
     @Mock
     private PendingPremiumCache pendingPremiumCache;
