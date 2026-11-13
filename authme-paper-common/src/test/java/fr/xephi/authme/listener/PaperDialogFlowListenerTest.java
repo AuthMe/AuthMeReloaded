@@ -21,6 +21,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.DialogWindowService;
+import fr.xephi.authme.service.FloodgateService;
 import fr.xephi.authme.service.PreJoinDialogService;
 import fr.xephi.authme.service.PremiumLoginVerifier;
 import fr.xephi.authme.service.SessionService;
@@ -464,6 +465,7 @@ public class PaperDialogFlowListenerTest {
         setField(listener, "sessionService", sessionService);
         setField(listener, "proxySessionManager", proxySessionManager);
         setField(listener, "premiumLoginVerifier", premiumLoginVerifier);
+        setField(listener, "floodgateService", mock(FloodgateService.class));
 
         UUID premiumUuid = UUID.randomUUID();
         // Offline (v3) UUID simulates an offline-mode backend without proxy
@@ -500,6 +502,74 @@ public class PaperDialogFlowListenerTest {
 
         verify(preJoinDialogService).markSkipPostJoinDialog(SESSION_ID);
         verifyNoInteractions(audience);
+    }
+
+    @Test
+    public void shouldSkipPreJoinDialogsForRegisteredFloodgatePlayer() throws Exception {
+        PlayerAuth auth = PlayerAuth.builder().name(".bobby").password(new HashedPassword("hash")).build();
+        FloodgateService floodgateService = mock(FloodgateService.class);
+        UUID playerId = UUID.fromString("00000000-0000-0000-0009-01f163ba2c3a");
+        given(floodgateService.canAutoLogin(playerId)).willReturn(true);
+
+        PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
+        Audience audience = mock(Audience.class);
+
+        configureFloodgateJoin(floodgateService, preJoinDialogService, audience, playerId, auth);
+
+        verify(preJoinDialogService).markSkipPostJoinDialog(SESSION_ID);
+        verifyNoInteractions(audience);
+    }
+
+    @Test
+    public void shouldSkipPreJoinDialogsForUnregisteredFloodgatePlayerWithAutoRegister() throws Exception {
+        FloodgateService floodgateService = mock(FloodgateService.class);
+        UUID playerId = UUID.fromString("00000000-0000-0000-0009-01f163ba2c3a");
+        given(floodgateService.canAutoRegister(playerId)).willReturn(true);
+
+        PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
+        Audience audience = mock(Audience.class);
+
+        configureFloodgateJoin(floodgateService, preJoinDialogService, audience, playerId, null);
+
+        verify(preJoinDialogService).markSkipPostJoinDialog(SESSION_ID);
+        verifyNoInteractions(audience);
+    }
+
+    /** Runs onPlayerConfigure for the Bedrock player ".Bobby" (stored auth, or null if unregistered). */
+    private static void configureFloodgateJoin(FloodgateService floodgateService,
+                                               PreJoinDialogService preJoinDialogService, Audience audience,
+                                               UUID playerId, PlayerAuth auth) throws Exception {
+        PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        CommonService commonService = mock(CommonService.class);
+        PlayerCache playerCache = mock(PlayerCache.class);
+        DataSource dataSource = mock(DataSource.class);
+        SessionService sessionService = mock(SessionService.class);
+        ProxySessionManager proxySessionManager = mock(ProxySessionManager.class);
+        setField(listener, "commonService", commonService);
+        setField(listener, "playerCache", playerCache);
+        setField(listener, "dataSource", dataSource);
+        setField(listener, "preJoinDialogService", preJoinDialogService);
+        setField(listener, "sessionService", sessionService);
+        setField(listener, "proxySessionManager", proxySessionManager);
+        setField(listener, "floodgateService", floodgateService);
+
+        given(commonService.getProperty(RegistrationSettings.USE_PREJOIN_DIALOG_UI)).willReturn(true);
+        given(commonService.getProperty(RestrictionSettings.UNRESTRICTED_NAMES)).willReturn(Set.of());
+        given(dataSource.getAuth(".bobby")).willReturn(auth);
+        given(preJoinDialogService.openSession(".bobby")).willReturn(SESSION_ID);
+
+        PlayerProfile profile = mock(PlayerProfile.class);
+        given(profile.getId()).willReturn(playerId);
+        given(profile.getName()).willReturn(".Bobby");
+
+        PlayerConfigurationConnection connection = mock(PlayerConfigurationConnection.class);
+        given(connection.getProfile()).willReturn(profile);
+        given(connection.getAudience()).willReturn(audience);
+
+        AsyncPlayerConnectionConfigureEvent event = mock(AsyncPlayerConnectionConfigureEvent.class);
+        given(event.getConnection()).willReturn(connection);
+
+        listener.onPlayerConfigure(event);
     }
 
     @Test

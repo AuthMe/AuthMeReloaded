@@ -32,6 +32,20 @@ public final class HooksSettings implements SettingsHolder {
     public static final Property<String> PROXY_SHARED_SECRET =
         newProperty("Hooks.proxySharedSecret", "");
 
+    @Comment({
+        "Log in Bedrock players connected through Floodgate (Geyser) without asking for a password.",
+        "Floodgate has already verified their Xbox account. Java players are not affected."
+    })
+    public static final Property<Boolean> FLOODGATE_AUTO_LOGIN =
+        newProperty("Hooks.floodgate.autoLogin", false);
+
+    @Comment({
+        "Also register Bedrock players (Floodgate) that have no account yet,",
+        "with a random password, and log them in. Requires Hooks.floodgate.autoLogin."
+    })
+    public static final Property<Boolean> FLOODGATE_AUTO_REGISTER =
+        newProperty("Hooks.floodgate.autoRegister", false);
+
     @Comment("Do we need to disable Essentials SocialSpy on join?")
     public static final Property<Boolean> DISABLE_SOCIAL_SPY =
         newProperty("Hooks.disableSocialSpy", false);
