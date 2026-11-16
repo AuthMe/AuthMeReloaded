@@ -295,6 +295,7 @@ public final class BungeeProxyBridge implements Listener {
             }
             premiumUsernames = newPremiumSet;
             logger.info("Premium list received from backend: " + premiumUsernames.size() + " premium player(s)");
+            savePremiumNamesAsync();
         } else if (PREMIUM_LIST_CHUNK_MESSAGE.equals(parsedMessage.typeId())) {
             handlePremiumListChunk(parsedMessage.playerName());
         }
