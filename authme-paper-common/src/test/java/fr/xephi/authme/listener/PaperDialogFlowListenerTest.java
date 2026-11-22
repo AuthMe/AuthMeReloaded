@@ -724,7 +724,8 @@ public class PaperDialogFlowListenerTest {
             invokeHandleBlockingLoginDialog(listener, connection);
         }
 
-        verify(preJoinDialogService).storePendingKickMessage(SESSION_ID, "Timed out!");
+        verify(connection).disconnect(any(net.kyori.adventure.text.Component.class));
+        verify(preJoinDialogService, never()).storePendingKickMessage(anyLong(), anyString());
     }
 
     private static PlayerConfigurationConnection newBlockingDialogSetup(PaperDialogFlowListener listener,

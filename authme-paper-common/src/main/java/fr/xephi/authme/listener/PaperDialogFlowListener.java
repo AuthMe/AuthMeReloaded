@@ -33,6 +33,7 @@ import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.dialog.DialogResponseView;
 import io.papermc.paper.event.connection.configuration.AsyncPlayerConnectionConfigureEvent;
 import io.papermc.paper.event.player.PlayerCustomClickEvent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -264,10 +265,10 @@ public class PaperDialogFlowListener implements Listener {
         pendingLoginResponses.remove(sessionId);
         preJoinDialogService.unregisterPreJoinFuture(sessionId);
 
-        if (kickMessage != null) {
-            preJoinDialogService.storePendingKickMessage(sessionId, kickMessage);
-        }
         connection.getAudience().closeDialog();
+        if (kickMessage != null) {
+            connection.disconnect(LegacyComponentSerializer.legacySection().deserialize(kickMessage));
+        }
     }
 
     private void processPreJoinLogin(long sessionId, PlayerConfigurationConnection connection, String playerName,
@@ -345,10 +346,10 @@ public class PaperDialogFlowListener implements Listener {
         String kickMessage = registerResponse.join();
         pendingRegisterResponses.remove(sessionId);
 
-        if (kickMessage != null) {
-            preJoinDialogService.storePendingKickMessage(sessionId, kickMessage);
-        }
         connection.getAudience().closeDialog();
+        if (kickMessage != null) {
+            connection.disconnect(LegacyComponentSerializer.legacySection().deserialize(kickMessage));
+        }
     }
 
     private void storePendingRegistration(PlayerConfigurationConnection connection, long sessionId,
