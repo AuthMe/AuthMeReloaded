@@ -165,7 +165,7 @@ public class PaperDialogFlowListener implements Listener {
             String kickMessage = commonService.getProperty(RegistrationSettings.PRE_JOIN_LOGIN_CANCEL_KICKS)
                 ? messages.retrieveSingle(playerName, MessageKey.DIALOG_LOGIN_CANCELED)
                 : null;
-            completeLoginResponse(sessionId, kickMessage);
+            completeLoginCancellation(sessionId, kickMessage);
             return;
         }
 
@@ -183,7 +183,7 @@ public class PaperDialogFlowListener implements Listener {
             String kickMessage = commonService.getProperty(RegistrationSettings.PRE_JOIN_LOGIN_CANCEL_KICKS)
                 ? messages.retrieveSingle(playerName, MessageKey.DIALOG_LOGIN_CANCELED)
                 : null;
-            completeLoginResponse(sessionId, kickMessage);
+            completeLoginCancellation(sessionId, kickMessage);
             return;
         }
 
@@ -201,7 +201,7 @@ public class PaperDialogFlowListener implements Listener {
             String kickMessage = commonService.getProperty(RegistrationSettings.PRE_JOIN_REGISTER_CANCEL_KICKS)
                 ? messages.retrieveSingle(playerName, MessageKey.DIALOG_REGISTER_CANCELED)
                 : null;
-            completeRegisterResponse(sessionId, kickMessage);
+            completeRegisterCancellation(sessionId, kickMessage);
         }
     }
 
@@ -324,7 +324,7 @@ public class PaperDialogFlowListener implements Listener {
             String kickMessage = commonService.getProperty(RegistrationSettings.PRE_JOIN_LOGIN_CANCEL_KICKS)
                 ? messages.retrieveSingle(playerName, MessageKey.DIALOG_LOGIN_CANCELED)
                 : null;
-            completeLoginResponse(sessionId, kickMessage);
+            completeLoginCancellation(sessionId, kickMessage);
             return;
         }
         preJoinDialogService.storePendingRecoveryEmail(sessionId, email);
@@ -458,11 +458,25 @@ public class PaperDialogFlowListener implements Listener {
         }
     }
 
+    private void completeLoginCancellation(long sessionId, String kickMessage) {
+        if (kickMessage != null) {
+            preJoinDialogService.storePendingKickMessage(sessionId, kickMessage);
+        }
+        completeLoginResponse(sessionId, null);
+    }
+
     private void completeRegisterResponse(long sessionId, String kickMessage) {
         CompletableFuture<String> registerResponse = pendingRegisterResponses.get(sessionId);
         if (registerResponse != null) {
             registerResponse.complete(kickMessage);
         }
+    }
+
+    private void completeRegisterCancellation(long sessionId, String kickMessage) {
+        if (kickMessage != null) {
+            preJoinDialogService.storePendingKickMessage(sessionId, kickMessage);
+        }
+        completeRegisterResponse(sessionId, null);
     }
 
     private boolean shouldSkipPreJoinDialogForPremium(PlayerAuth auth, String playerName, UUID playerId) {

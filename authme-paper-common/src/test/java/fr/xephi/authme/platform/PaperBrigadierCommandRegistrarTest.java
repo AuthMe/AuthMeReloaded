@@ -1,6 +1,9 @@
 package fr.xephi.authme.platform;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType.StringType;
+import com.mojang.brigadier.tree.ArgumentCommandNode;
 import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -23,6 +26,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -111,6 +115,13 @@ public class PaperBrigadierCommandRegistrarTest {
     public void shouldAcceptAtSignInEmailAddArguments() throws Exception {
         String input = "email add test@example.org test@example.org";
         assertThat(dispatcher.parse(input, sourceStack).getExceptions().isEmpty(), equalTo(true));
+
+        var emailAdd = dispatcher.getRoot().getChild("email").getChild("add");
+        ArgumentCommandNode<CommandSourceStack, String> fallback =
+            (ArgumentCommandNode<CommandSourceStack, String>) emailAdd.getChild("unparsed");
+        assertThat(fallback.getType(), instanceOf(StringArgumentType.class));
+        assertThat(((StringArgumentType) fallback.getType()).getType(),
+            equalTo(StringType.GREEDY_PHRASE));
 
         dispatcher.execute(input, sourceStack);
 
