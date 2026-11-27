@@ -60,6 +60,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
@@ -206,8 +207,10 @@ public class PaperDialogFlowListenerTest {
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
         CommonService commonService = mock(CommonService.class);
         Messages messages = mock(Messages.class);
+        PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
         setField(listener, "commonService", commonService);
         setField(listener, "messages", messages);
+        setField(listener, "preJoinDialogService", preJoinDialogService);
         given(commonService.getProperty(RegistrationSettings.PRE_JOIN_LOGIN_CANCEL_KICKS)).willReturn(true);
         given(messages.retrieveSingle("Bobby", MessageKey.DIALOG_LOGIN_CANCELED)).willReturn("Canceled!");
 
@@ -222,7 +225,8 @@ public class PaperDialogFlowListenerTest {
         listener.onPlayerCustomClick(event);
 
         assertThat(future.isDone(), is(true));
-        assertThat(future.getNow(null), is("Canceled!"));
+        assertThat(future.getNow("sentinel"), is((String) null));
+        verify(preJoinDialogService).storePendingKickMessage(SESSION_ID, "Canceled!");
     }
 
     @Test
@@ -243,7 +247,8 @@ public class PaperDialogFlowListenerTest {
 
         listener.onPlayerCustomClick(recoverySubmitEvent(connection, " "));
 
-        assertThat(future.getNow("sentinel"), is("Canceled!"));
+        assertThat(future.getNow("sentinel"), is((String) null));
+        verify(preJoinDialogService).storePendingKickMessage(SESSION_ID, "Canceled!");
         verify(preJoinDialogService, never()).storePendingRecoveryEmail(anyLong(), anyString());
     }
 
@@ -308,8 +313,10 @@ public class PaperDialogFlowListenerTest {
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
         CommonService commonService = mock(CommonService.class);
         Messages messages = mock(Messages.class);
+        PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
         setField(listener, "commonService", commonService);
         setField(listener, "messages", messages);
+        setField(listener, "preJoinDialogService", preJoinDialogService);
         given(commonService.getProperty(RegistrationSettings.PRE_JOIN_REGISTER_CANCEL_KICKS)).willReturn(true);
         given(messages.retrieveSingle("Bobby", MessageKey.DIALOG_REGISTER_CANCELED)).willReturn("Canceled!");
 
@@ -324,7 +331,8 @@ public class PaperDialogFlowListenerTest {
         listener.onPlayerCustomClick(event);
 
         assertThat(future.isDone(), is(true));
-        assertThat(future.getNow(null), is("Canceled!"));
+        assertThat(future.getNow("sentinel"), is((String) null));
+        verify(preJoinDialogService).storePendingKickMessage(SESSION_ID, "Canceled!");
     }
 
     @Test
@@ -712,8 +720,8 @@ public class PaperDialogFlowListenerTest {
     public void shouldKickWhenPreJoinLoginDialogTimesOut() throws Exception {
         PaperDialogFlowListener listener = new PaperDialogFlowListener();
         PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
-        PlayerConfigurationConnection connection =
-            newBlockingDialogSetup(listener, preJoinDialogService, mock(Audience.class));
+        Audience audience = mock(Audience.class);
+        PlayerConfigurationConnection connection = newBlockingDialogSetup(listener, preJoinDialogService, audience);
         setField(listener, "proxySessionManager", mock(ProxySessionManager.class));
         setField(listener, "dialogWindowService", mock(DialogWindowService.class));
         givenTimeout(listener, RestrictionSettings.LOGIN_TIMEOUT, 1);
@@ -724,7 +732,30 @@ public class PaperDialogFlowListenerTest {
             invokeHandleBlockingLoginDialog(listener, connection);
         }
 
-        verify(preJoinDialogService).storePendingKickMessage(SESSION_ID, "Timed out!");
+        var inOrder = inOrder(audience, connection);
+        inOrder.verify(audience).closeDialog();
+        inOrder.verify(connection).disconnect(
+            net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection()
+                .deserialize("Timed out!"));
+        verify(preJoinDialogService, never()).storePendingKickMessage(anyLong(), anyString());
+    }
+
+    @Test
+    public void shouldKickWhenPreJoinRegisterDialogTimesOut() throws Exception {
+        PaperDialogFlowListener listener = new PaperDialogFlowListener();
+        PreJoinDialogService preJoinDialogService = mock(PreJoinDialogService.class);
+        Audience audience = mock(Audience.class);
+        PlayerConfigurationConnection connection = newBlockingDialogSetup(listener, preJoinDialogService, audience);
+        givenTimeout(listener, RestrictionSettings.REGISTER_TIMEOUT, 1);
+
+        invokeHandleBlockingRegisterDialog(listener, connection);
+
+        var inOrder = inOrder(audience, connection);
+        inOrder.verify(audience).closeDialog();
+        inOrder.verify(connection).disconnect(
+            net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection()
+                .deserialize("Timed out!"));
+        verify(preJoinDialogService, never()).storePendingKickMessage(anyLong(), anyString());
     }
 
     private static PlayerConfigurationConnection newBlockingDialogSetup(PaperDialogFlowListener listener,

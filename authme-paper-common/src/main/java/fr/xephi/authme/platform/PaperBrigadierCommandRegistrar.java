@@ -78,11 +78,23 @@ final class PaperBrigadierCommandRegistrar {
             return builder;
         }
 
-        addArgumentChain(builder, command.getArguments());
+        if (isEmailAddCommand(command)) {
+            builder.then(createFallbackArgument(FALLBACK_ARGUMENT_NAME));
+        } else {
+            addArgumentChain(builder, command.getArguments());
+        }
         if (command.getArguments().isEmpty()) {
             builder.then(createFallbackArgument(EXTRA_ARGUMENTS_NAME));
         }
         return builder;
+    }
+
+    private static boolean isEmailAddCommand(CommandDescription command) {
+        List<String> labels = command.getLabels();
+        List<CommandArgumentDescription> arguments = command.getArguments();
+        return labels.contains("add") && arguments.size() == 2
+            && "email".equals(arguments.get(0).getName())
+            && "verifyEmail".equals(arguments.get(1).getName());
     }
 
     private void addArgumentChain(ArgumentBuilder<CommandSourceStack, ?> parent,
